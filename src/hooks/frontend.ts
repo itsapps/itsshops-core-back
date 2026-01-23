@@ -1,0 +1,76 @@
+import React from 'react'
+import { v4 as uuidv4 } from 'uuid';
+import { SendMailType } from '@typings/models'
+
+export function useFrontendClient(locale: string) {
+  const client = React.useMemo(() => {
+    return FrontendClient(locale)
+  }, [locale])
+  return client
+}
+
+export const FrontendClient = (locale: string) => {
+  const url = process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_ENDPOINT! + '/api'
+  const secret = process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_SECRET!
+
+  const requestData = async (accept: string, path: string, payload?: Record<string, any>) => {
+    const requestId = uuidv4().replaceAll("-", "")
+    const merged = {
+      requestId,
+      secret,
+      ...payload
+    }
+
+    try {
+      const response = await fetch(url + path, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": accept,
+          "Accept-Language": locale,
+          'X-Request-ID': requestId,
+        },
+        body: JSON.stringify(merged)
+      });
+
+      if (accept === "application/json") {
+        const data = await response.json()
+        if (!response.ok) {
+          return {error: data.meta?.details || data.message || response.statusText}
+        } else {
+          return {data}
+        }
+      } else {
+        if (!response.ok) {
+          return {error: response.statusText}
+        }
+        return {data: response}
+      }
+      
+    } catch (err) {
+      const error = err as Error
+      // Network error or thrown above
+      console.error("API call failed:", err)
+      // throw err
+      return {error: error.message}
+    }
+  }
+
+  const post = async (path: string, payload: any) => {
+    return await requestData("application/json", path, payload);
+  }
+  const postPdf = async (path: string, payload: any) => {
+    return await requestData("application/pdf", path, payload);
+  }
+  const postXlsx = async (path: string, payload: any) => {
+    return await requestData("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", path, payload);
+  }
+  
+  return {
+    sendMail: (mailType: SendMailType, orderId: string) => post(`/mail`, {mailType, orderId}),
+    sendRefund: (paymentIntentId: string, options: {amount?: number} = {}) => post(`/payment/refund`, {paymentIntentId, ...options.amount && {amount: options.amount}}),
+    getOrderInvoicePdf: (orderId: string) => postPdf(`/pdf/invoice`, {orderId}),
+    getExportXlsx: (kind: string) => postXlsx(`/export`, {format: 'xlsx', kind}),
+  }
+  
+}
