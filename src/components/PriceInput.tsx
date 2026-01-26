@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { TextInput } from "@sanity/ui";
 import { useCurrentLocale, set, unset, NumberInputProps } from "sanity";
-import {localizeMoney} from '../utils'
+import {formatCurrency} from '../utils'
 
 function getSeparators(locale: string) {
   const parts = Intl.NumberFormat(locale).formatToParts(1234.5);
@@ -17,7 +17,7 @@ export const PriceInput = ({ value, onChange, ...props }: NumberInputProps) => {
   // Internal state for raw input (for a smooth editing experience)
   const [editValue, setEditValue] = useState<string>(() => {
     if (typeof value === "number") {
-      return localizeMoney(value/100, locale);
+      return formatCurrency(locale, value/100);
     }
     return "";
   });
@@ -27,7 +27,7 @@ export const PriceInput = ({ value, onChange, ...props }: NumberInputProps) => {
   useEffect(() => {
     if (!focused) {
       if (typeof value === "number") {
-        setEditValue(localizeMoney(value/100, locale));
+        setEditValue(formatCurrency(locale, value/100));
       } else {
         setEditValue("");
       }
@@ -63,7 +63,7 @@ export const PriceInput = ({ value, onChange, ...props }: NumberInputProps) => {
   function handleBlur() {
     setFocused(false);
     if (typeof value === "number") {
-      setEditValue(localizeMoney(value/100, locale));
+      setEditValue(formatCurrency(locale, value/100));
     } else {
       setEditValue("");
     }

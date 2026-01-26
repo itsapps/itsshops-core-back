@@ -2,6 +2,7 @@ export default {
   document: {
     references: 'Referenzen',
   },
+  shop: "Shop",
   content: "Inhalt",
   products: "Produkte",
   product: "Produkt",

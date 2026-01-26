@@ -1,51 +1,53 @@
-import { SchemaContext, LocalSchemaContext } from "../../types";
-import { createFieldFactory, shapeSchema } from "../../utils";
+import { SchemaContext, FieldContext, CoreDocument } from "../../types";
 import { createSharedProductFields } from "../productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
 
-export const createProductVariantSchema = (ctx: SchemaContext) => {
-  const docName = 'productVariant';
-  const { t } = ctx;
-  const f = createFieldFactory(docName, ctx);
-  const localCtx: LocalSchemaContext = { ...ctx, f };
-  
-  const baseFields = [
-    f('title', 'i18nString'),
-    f('price', 'number', {
-      validation: (Rule) => Rule.positive(),
-      // group: 'pricing',
-      components: {
-        input: PriceInput,
+export const productVariant: CoreDocument = {
+  name: 'productVariant',
+  baseFields: (ctx: FieldContext) => {
+    const { f } = ctx;
+    return [
+      f('title', 'i18nString'),
+      f('price', 'number', {
+        validation: (Rule) => Rule.positive(),
+        // group: 'pricing',
+        components: {
+          input: PriceInput,
+        },
+      }),
+      ...createSharedProductFields(ctx),
+      f('active', 'boolean', { initialValue: true }),
+      // f('options', 'array', { 
+      //   of: [
+      //     {
+      //       type: 'reference',
+      //       to: [{type: 'variantOption'}]
+      //     }
+      //   ],
+      //   readOnly: true
+    
+      // }),
+      f('featured', 'boolean', { initialValue: false }),
+      f('coverImage', 'string', { hidden: true }),
+    ]
+  },
+  preview: (ctx: SchemaContext) => {
+    return {
+      select: {
+        title: 'title',
+        options0: 'options.0.title',
+        options1: 'options.1.title',
+        options2: 'options.2.title',
+        image: 'images.0.asset',
       },
-    }),
-    ...createSharedProductFields(localCtx),
-    f('active', 'boolean', { initialValue: true }),
-    // f('options', 'array', { 
-    //   of: [
-    //     {
-    //       type: 'reference',
-    //       to: [{type: 'variantOption'}]
-    //     }
-    //   ],
-    //   readOnly: true
-  
-    // }),
-    f('featured', 'boolean', { initialValue: false }),
-    f('coverImage', 'string', { hidden: true }),
-  ];
-
-  const { fields, groups, fieldsets } = shapeSchema(
-    docName,
-    baseFields,
-    localCtx
-  );
-
-  return {
-    name: docName,
-    title: t(`${docName}.title`),
-    type: 'document',
-    groups,
-    fieldsets,
-    fields
-  };
+      prepare(s: any) {
+        const { title, options0, options1, options2, image } = s
+        return {
+          title: ctx.getLocalizedValue(title),
+          subtitle: [options0, options1, options2].map(o => ctx.getLocalizedValue(o)).filter(Boolean).join(", "),
+          media: image,
+        }
+      },
+    }
+  }
 };

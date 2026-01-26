@@ -1,37 +1,35 @@
-import { LocalSchemaContext } from '../types';
-
-// function resolve<T>(ext: T | ((t: TranslatorFunction) => T), t: TranslatorFunction): T {
-//   return typeof ext === 'function' ? (ext as any)(t) : ext;
-// }
+import { FieldDefinition, FieldGroupDefinition, FieldsetDefinition } from 'sanity';
+import { FieldContext, SchemaContext } from '../types';
 
 export function shapeSchema(
   docName: string,
-  coreFields: any[],
-  ctx: LocalSchemaContext,
+  coreFields: FieldDefinition[],
+  ctx: FieldContext,
 ) {
-  const { t, f, config } = ctx;
-  const extension = config.schemaExtensions?.[docName];
+  const extension = ctx.config.schemaExtensions?.[docName];
   if (!extension) return { fields: coreFields, groups: [], fieldsets: [] };
-  // const extension = config.schemaExtensions?.[docName];
 
-  const resolve = (val: any) => (typeof val === 'function' ? val(t, f) : val);
+  // const resolve = (val: any) => (typeof val === 'function' ? val(ctx) : val);
+  const resolveWithFieldCtx = (val: any) => (typeof val === 'function' ? val(ctx) : val);
+  const resolveWithSchemaCtx = (val: any) => (typeof val === 'function' ? val(ctx as SchemaContext) : val);
 
-  // Resolve all functional extensions into static Sanity objects
-  const groups = resolve(extension?.groups) || [];
-  const fieldsets = resolve(extension?.fieldsets) || [];
-  const customFields = resolve(extension?.fields) || [];
-  const overrides = resolve(extension?.overrides) || {};
-  const order = extension?.order || [];
+  const groups: FieldGroupDefinition[] = resolveWithSchemaCtx(extension.groups) || [];
+  const fieldsets: FieldsetDefinition[] = resolveWithSchemaCtx(extension.fieldsets) || [];
+  const customFields: FieldDefinition[] = resolveWithFieldCtx(extension.fields) || [];
+  const fieldOverrides = resolveWithFieldCtx(extension.fieldOverrides) || {};
+  const order = extension.order || [];
 
-  // const { fields: customFields = [], order = [], overrides = {}, groups = [], fieldsets = [] } = extension;
-
-  // 1. Combine all fields
+  // 2. Combine Core + Custom
   let allFields = [...coreFields, ...customFields];
 
-  // 2. Apply Overrides (This is how we change groups/fieldsets of Core fields)
+  // 3. Apply Overrides
+  // This allows customers to move core fields into their new groups/fieldsets
   allFields = allFields.map(field => {
-    const override = overrides[field.name];
-    return override ? { ...field, ...override } : field;
+    const override = fieldOverrides[field.name];
+    if (override) {
+      return { ...field, ...override } as FieldDefinition;
+    }
+    return field;
   });
 
   // 3. Sort
@@ -43,5 +41,9 @@ export function shapeSchema(
     });
   }
 
-  return { fields: allFields, groups, fieldsets };
+  return {
+    fields: allFields,
+    groups,
+    fieldsets
+  };
 }

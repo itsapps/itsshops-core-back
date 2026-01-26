@@ -1,22 +1,19 @@
-import { SchemaContext } from '../types'
+import { SchemaTypeDefinition } from 'sanity';
+import { SchemaContext, CoreDocument } from '../types'
 // import {createSchema} from './schemaBuilder'
-import {createProductSchema} from './documents/product'
-import {createProductVariantSchema} from './documents/productVariant'
+import {product, productVariant} from './documents'
+import { createDocumentSchema } from './documents'
 import { getCoreObjects } from './objects'
 
-
-export default function (ctx: SchemaContext) {
-  // const baseSchemas = [product]
-  // return baseSchemas.map(schema => {
-  //   return createSchema(schema, props.translator)
-  // })
+export function buildSchemas(ctx: SchemaContext): SchemaTypeDefinition[] {
   const objects = getCoreObjects(ctx);
-  const documents = []
-
+  
+  const documentBuilders: CoreDocument[] = []
   if (ctx.config.features.shop) {
-    documents.push(createProductSchema(ctx))
-    documents.push(createProductVariantSchema(ctx))
+    documentBuilders.push(product)
+    documentBuilders.push(productVariant)
   }
+  const documents = documentBuilders.map(b => createDocumentSchema(ctx, b))
 
   return [
     ...objects,

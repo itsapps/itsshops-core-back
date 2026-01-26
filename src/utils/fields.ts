@@ -1,4 +1,4 @@
-import { Rule } from 'sanity';
+import { Rule, FieldDefinition } from 'sanity';
 import { i18nValidators } from './validation';
 import { SchemaContext, FieldFactory, I18nRuleShortcut } from "../types";
 
@@ -6,8 +6,9 @@ import { SchemaContext, FieldFactory, I18nRuleShortcut } from "../types";
 const typeMap: Record<string, string> = {
   // Your custom internationalized shorthand
   'i18nString': 'internationalizedArrayString',
+  'i18nImage': 'internationalizedArrayCropImage',
   'i18nText':   'internationalizedArrayText',
-  'i18nBlock':  'internationalizedArrayBlockContent',
+  'i18nBlock':  'internationalizedArrayComplexPortableText',
   
   // Standard shorthand (optional, for convenience)
   'string':     'string',
@@ -26,7 +27,7 @@ export const createFieldFactory = (namespace: string, ctx: SchemaContext): Field
   const allLocales = config.localization.fieldLocales;
 
   const runShortcut = (shortcut: I18nRuleShortcut, Rule: Rule, fieldName: string) => {
-    const vCtx = { t, docName: namespace, fieldName };
+    const vCtx = { t, fieldName };
     
     switch (shortcut) {
       case 'requiredDefault': return i18nValidators.requiredDefault(defaultLocale, true, vCtx)(Rule);
@@ -52,7 +53,7 @@ export const createFieldFactory = (namespace: string, ctx: SchemaContext): Field
       ? tKey 
       : `${namespace}.fields.${fieldName}`;
 
-    return {
+    const field: FieldDefinition = {
       name: fieldName,
       type: typeMap[type] || type,
       title: t(`${translationPath}.title`),
@@ -67,10 +68,11 @@ export const createFieldFactory = (namespace: string, ctx: SchemaContext): Field
           });
         }
         if (typeof validation === 'function') rules.push(validation(Rule));
-        return rules;
+        return rules.length ? rules : undefined;
       },
       ...rest,
     };
+    return field;
   };
 };
 

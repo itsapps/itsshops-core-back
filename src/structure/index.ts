@@ -1,23 +1,25 @@
 import type {StructureResolver} from 'sanity/structure'
 import {BasketIcon, CogIcon, HomeIcon, UserIcon, ConfettiIcon} from '@sanity/icons'
 // import { Note } from 'phosphor-react'
-import type { CoreFeaturesConfig } from '../types';
+import type { SchemaContext } from '../types';
 
-export const localizedStructure = (t: any, features: CoreFeaturesConfig) => {
+export const localizedStructure = (ctx: SchemaContext) => {
+  const { t, config } = ctx;
+  const features = config.features
   const structure: StructureResolver = (S, context) => {
     const items = []
 
     if (features.shop) {
       items.push(
         S.listItem()
-          .title('Shop')
+          .title(t('structure:shop'))
           .icon(BasketIcon)
           .child(
             S.list()
-              .title('Shop')
+              .title(t('structure:shop'))
               .items([
-                S.documentTypeListItem('product').title('products'),
-                S.documentTypeListItem('productVariant').title('productsVV'),
+                S.documentTypeListItem('product').title(t('structure:products')),
+                S.documentTypeListItem('productVariant').title(t('structure:productVariants')),
               ])
           )
       )
@@ -25,7 +27,7 @@ export const localizedStructure = (t: any, features: CoreFeaturesConfig) => {
 
     return S.list()
       .id('root')
-      .title('content')
+      .title(t('structure:content'))
       .items(items)
   }
     

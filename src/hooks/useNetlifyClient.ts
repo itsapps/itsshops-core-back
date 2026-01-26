@@ -1,7 +1,7 @@
 // studio/hooks/useNetlifyClient.ts
 import React from 'react'
 // import { useCoreBackConfig } from '../context/CoreBackConfigContext'
-import { getCoreConfig } from '../config';
+// import { getCoreConfig } from '../config';
 
 export type NetlifyBuild = {
   id?: string;
@@ -43,8 +43,12 @@ export const NetlifyClient = (config: { accessToken: string; siteId: string }) =
 }
 
 export function useNetlifyClient() {
-  const config = getCoreConfig();
-  const { integrations } = config
-  const netlify = integrations.netlify
+  // const config = getCoreConfig();
+  // const { integrations } = config
+  // const netlify = integrations.netlify
+  const netlify = {
+    accessToken: "sdfsd",
+    siteId: "sdfsd"
+  }
   return React.useMemo(() => NetlifyClient(netlify), [netlify])
 }

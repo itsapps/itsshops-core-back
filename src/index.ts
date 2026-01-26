@@ -1,10 +1,13 @@
 import { defineConfig, WorkspaceOptions } from 'sanity'
 import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
+import { media } from 'sanity-plugin-media'
+// import { documentListWidget } from 'sanity-plugin-dashboard-widget-document-list'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 
 import { ItsshopsConfig, SchemaContext } from './types';
-import { setCoreConfig } from './config';
+// import { setCoreConfig } from './config';
+import { mapConfig } from './config/mapper';
 
 import { localizedStructure } from './structure'
 import {
@@ -15,26 +18,57 @@ import {
   getStructureOverrideBundles,
   getTranslationPackage,
 } from './localization'
-import buildSchemas from './schemas'
+import { buildSchemas } from './schemas'
 import { CustomToolbar } from './components/CustomToolbar'
+import { createI18nHelper, createFormatHelpers } from './utils/localization';
 
 export function createCoreBack(config: ItsshopsConfig) {
-  const coreConfig = setCoreConfig(config);
+  const coreConfig = mapConfig(config);
   
   const { projectId, dataset, workspaceName } = config
   
-  const localizedFieldTypes = ['string', ...config.i18n!.localizedFieldTypes || []]
-  const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.translationOverrides)
+  const localizedFieldTypes = [
+    'string',
+    'cropImage',
+    // 'complexPortableText',
+    // {
+    //   name: 'cropImage', // This is the base type
+    //   type: 'image',
+    //   options: { layout: 'grid' },
+    //   // of: [
+    //   //   { type: 'localeImage' }, 
+    //   // ]
+    // },
+    {
+      name: 'complexPortableText', // This is the base type
+      type: 'array',
+      of: [
+        { type: 'block' }, 
+      ]
+    },
+    ...config.i18n?.localizedFieldTypes || []]
+  const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.overrides.general)
   const structureOverrideBundles = getStructureOverrideBundles(coreConfig.localization.uiLanguages)
   
-  return defineConfig(coreConfig.localization.uiLanguages.map(language => {
+  const workspace = defineConfig(coreConfig.localization.uiLanguages.map(language => {
     const coreTranslator = createCoreTranslator(coreConfig, language.id)
+    const getLocalizedValue = createI18nHelper(language.id, coreConfig.localization.defaultLocale);
+    const format = createFormatHelpers(language.id);
 
     // const fieldTranslator = createFieldTranslator(coreConfig.localization.uiLanguages, language, coreConfig.localization.fieldTranslationOverrides)
-    const schemaContext: SchemaContext = { config: coreConfig, t: coreTranslator.t, tStrict: coreTranslator.tStrict };
+    const schemaContext: SchemaContext = { config: coreConfig, t: coreTranslator.t, tStrict: coreTranslator.tStrict, locale: language.id, getLocalizedValue, format };
+    const structureContext: SchemaContext = { config: coreConfig, t: coreTranslator.t, tStrict: coreTranslator.tStrict, locale: language.id, getLocalizedValue, format };
 
     // const structureTranslator = createStructureTranslator(coreConfig.localization.uiLanguages, language, coreConfig.localization.structureTranslationOverrides)
-    const structure = localizedStructure("bla", coreConfig.features)
+    const structure = localizedStructure(structureContext)
+
+    const schemaTypes = buildSchemas(schemaContext)
+    const internalizedArrayPlugin = internationalizedArray({
+      languages: coreConfig.localization.uiLanguages,
+      fieldTypes: localizedFieldTypes,
+      buttonAddAll: false,
+      languageDisplay: 'titleOnly',
+    })
 
     const config: WorkspaceOptions = {
       name: language.id,
@@ -42,8 +76,15 @@ export function createCoreBack(config: ItsshopsConfig) {
       title: `${workspaceName} (${language.title})`,
       projectId,
       dataset,
+      plugins: [
+        internalizedArrayPlugin,
+        structureTool({structure}),
+        visionTool(),
+        media(),
+        ...getTranslationPackage(language.id),
+      ],
       schema: {
-        types: buildSchemas(schemaContext),
+        types: schemaTypes,
         // types: [...customerSchemas],
         // types: [...coreSchemas, ...customerSchemas],
       },
@@ -56,22 +97,14 @@ export function createCoreBack(config: ItsshopsConfig) {
         comments: {
           enabled: false,
         },
+        unstable_fieldActions: () => [],
       },
-      plugins: [
-        internationalizedArray({
-          languages: coreConfig.localization.uiLanguages,
-          fieldTypes: localizedFieldTypes,
-          buttonAddAll: false,
-          languageDisplay: 'titleOnly',
-        }),
-        structureTool({structure}),
-        visionTool(),
-        ...getTranslationPackage(language.id),
-      ],
       i18n: {
         bundles: [...translationBundles, ...structureOverrideBundles]
       },
     }
     return config
   }))
+
+  return workspace
 }

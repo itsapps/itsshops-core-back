@@ -12,11 +12,12 @@ import {
 } from "@sanity/ui"
 import {
   useTranslation,
+  useCurrentLocale,
 } from 'sanity'
 import {RocketLaunch} from 'phosphor-react'
 
 import { useNetlifyClient, NetlifyBuild } from '../hooks/useNetlifyClient'
-import { localizeDate } from '../utils'
+import { formatDate } from '../utils'
 
 const getStatus = (build: NetlifyBuild | null): "building" | "ready" | "error" | "none" => {
   if (!build) return "none"
@@ -27,6 +28,7 @@ const getStatus = (build: NetlifyBuild | null): "building" | "ready" | "error" |
 
 export function DeployDialog() {
   const {t} = useTranslation('itsapps')
+  const locale = useCurrentLocale().id.substring(0, 2)
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [build, setBuild] = useState<NetlifyBuild | null>(null)
@@ -126,7 +128,7 @@ export function DeployDialog() {
                       <Text>({build.error})</Text>
                     )}
                   </Flex>
-                  <Text size={1} muted>{t('deployments.startedOn')} {build.created_at ? localizeDate(build.created_at, "de", "medium", "medium") : "–"}</Text>
+                  <Text size={1} muted>{t('deployments.startedOn')} {build.created_at ? formatDate(locale, build.created_at, { dateStyle: 'medium', timeStyle: 'medium' }) : "–"}</Text>
                     {status !== "building" && (
                       <TextArea
                         onChange={e => setTitle(e.currentTarget.value)}

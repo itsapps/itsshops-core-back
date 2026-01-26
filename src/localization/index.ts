@@ -1,4 +1,4 @@
-import { Language, LocaleTranslations, CoreBackConfig } from '../types'
+import { Language, CoreBackConfig } from '../types'
 import fields_de from './resources/fields_de'
 import fields_en from './resources/fields_en'
 import structure_de from './resources/structure_de'
@@ -86,7 +86,7 @@ export const getTranslationPackage = (locale: string) => {
   return []
 }
 
-export function getTranslationBundles(languages: Language[], overrides?: LocaleTranslations) {
+export function getTranslationBundles(languages: Language[], overrides?: any) {
   const resourceMap: Record<string, any> = { de: studio_de, en: studio_en }
   const merged = deepMerge(resourceMap, overrides || {})
 
@@ -116,44 +116,6 @@ export function getStructureOverrideBundles(languages: Language[]) {
   )
 }
 
-
-// export const translator = (translations: LocaleTranslations): TranslatorFunction => {
-//   const getTranslationKeyPath = ( { keyPath, defaultValue, params }: TranslationProps): string => {
-//     const path = keyPath.split('.').reduce((obj, key) => obj?.[key], translations);
-//     // let translation = get(translations, path, path);
-//     let translation = typeof path === 'string' ? path : get(translations, keyPath, defaultValue);
-//     if (!params) return translation
-//     Object.entries(params).forEach(([k,v]) => {
-//       translation = translation.replace(`{{${k}}}`, v)
-//     })
-//     return translation
-//   }
-//   return getTranslationKeyPath
-// }
-
-// const fieldTranslations: LocaleTranslations = {
-//   'de': fields_de,
-//   'en': fields_en,
-// }
-// export function createTranslator (translations: LocaleTranslations, languages: Language[], language: Language, overrides?: LocaleTranslations) {
-//   const merged = deepMerge(translations[language.id], overrides?.[language.id] || {})
-//   // const usedTranslations = languages.map(l => fieldTranslations[l.id])
-//   return function (props: TranslationProps): string {
-//     return translator(merged)(props)
-//   }
-// }
-// export const createFieldTranslator = (
-//   languages: Language[],
-//   language: Language,
-//   overrides?: LocaleTranslations
-// ) => createTranslator(fieldTranslations, languages, language, overrides)
-
-// export const createStructureTranslator = (
-//   languages: Language[],
-//   language: Language,
-//   overrides?: LocaleTranslations
-// ) => createTranslator(structureTranslations, languages, language, overrides)
-
 export const createCoreTranslator = (
   config: CoreBackConfig,
   locale: string
@@ -161,12 +123,12 @@ export const createCoreTranslator = (
   // const { defaultLocale, fieldLocales } = config.localization;
   const resources: Record<string, any> = {
     de: () => ({
-      schema: flattenAndMerge(fields_de, config.localization.fieldTranslationOverrides?.de || {}),
-      structure: flattenAndMerge(structure_de, config.localization.structureTranslationOverrides?.de || {}),
+      schema: flattenAndMerge(fields_de, config.localization.overrides.fields?.de || {}),
+      structure: flattenAndMerge(structure_de, config.localization.overrides.structure?.de || {}),
     }),
     en: () => ({
-      schema: flattenAndMerge(fields_en, config.localization.fieldTranslationOverrides?.en || {}),
-      structure: flattenAndMerge(structure_en, config.localization.structureTranslationOverrides?.en || {}),
+      schema: flattenAndMerge(fields_en, config.localization.overrides.fields?.en || {}),
+      structure: flattenAndMerge(structure_en, config.localization.overrides.structure?.en || {}),
     }),
   }
 
@@ -176,28 +138,21 @@ export const createCoreTranslator = (
     lng: locale,
     // fallbackLng: defaultLocale,
     // supportedLngs: fieldLocales,
-    resources: {de: resources?.[locale]() || {}},
+    resources: {[locale]: resources?.[locale]() || {}},
     ns: ['schema', 'structure'],
     defaultNS: 'schema',
     interpolation: { escapeValue: false },
     // This ensures i18next returns 'undefined' if a key is missing 
     // instead of returning the key itself
-    returnEmptyString: false, 
+    // returnEmptyString: false, 
+    parseMissingKeyHandler: () => null,
   });
 
   return {
-    // t: (key, fallback, params) => instance.t(key, { defaultValue: fallback || key, ...params }),
-    // tStrict: (key, params) => instance.exists(key) ? instance.t(key, params) : undefined
-    // Standard t function for titles (with fallback)
     t: (key: string, fallback?: string, params = {}) => {
-      const exists = instance.exists(key);
-      if (!exists) return fallback || key; // Return placeholder
-      return instance.t(key, params);
+      return instance.t(key, params) || (fallback || key)
     },
-
-    // Strict function for descriptions (no fallback)
     tStrict: (key: string, params = {}) => {
-      if (!instance.exists(key)) return undefined;
       return instance.t(key, params);
     }
   };
