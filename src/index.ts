@@ -17,6 +17,7 @@ import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 // import { setCoreConfig } from './config';
 import { mapConfig } from './config/mapper';
 import { localizedStructure } from './structure'
+import { localizedDefaultDocumentNode } from './structure/defaultDocumentNode'
 import {
   createTranslator,
   getTranslationBundles,
@@ -91,7 +92,10 @@ export function createCoreBack(config: ItsshopsConfig) {
           buttonAddAll: false,
           languageDisplay: 'titleOnly',
         }),
-        structureTool({structure: localizedStructure(structureContext)}),
+        structureTool({
+          structure: localizedStructure(structureContext),
+          defaultDocumentNode: localizedDefaultDocumentNode(structureContext),
+        }),
         visionTool(),
         media(),
         ...getTranslationPackage(language.id),

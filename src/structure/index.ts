@@ -25,7 +25,7 @@ export const localizedStructure = (ctx: ITSContext) => {
         icon: BasketIcon,
         feature: 'shop',
         children: [
-          ...mapItems(['order', 'product']),
+          ...mapItems(['order', 'product', 'variantOptionGroup']),
           { type: 'custom', id: 'categories', component: categoriesMenu },
           ...mapItems(['manufacturer']),
         ]
@@ -38,6 +38,17 @@ export const localizedStructure = (ctx: ITSContext) => {
         children: mapItems(['voucher'])
       },
       {
+        type: 'divider',
+        id: 'divider1',
+      },
+      {
+        type: 'group',
+        id: 'users',
+        icon: UserIcon,
+        feature: 'shop',
+        children: mapItems(['user', 'customerGroup'])
+      },
+      {
         type: 'group',
         id: 'settingsGroup',
         icon: CogIcon,
@@ -47,13 +58,6 @@ export const localizedStructure = (ctx: ITSContext) => {
         //   { type: 'singleton', id: 'blog', title: 'blog', icon: Note, feature: 'blog' },
         //   { type: 'document', id: 'shippingCountry', title: 'shippingCountries', feature: 'shop' },
         // ]
-      },
-      {
-        type: 'group',
-        id: 'users',
-        icon: UserIcon,
-        feature: 'shop',
-        children: mapItems(['user', 'customerGroup'])
       },
     ];
 

@@ -1,9 +1,6 @@
 export default {
-  document: {
-    references: 'Referenzen',
-  },
   shop: "Shop",
-  website: "WebsAAite",
+  website: "Webseite",
   content: "Inhalt",
   // products: "Produkte",
   product: "Produkte",
@@ -23,7 +20,9 @@ export default {
   menu: "Menüs",
   drafts: "Entwürfe",
   allDrafts: "Alle Entwürfe",
+  category_single: "Kategorie",
   category: "Kategorien",
+  categories: "Kategorien",
   customerGroup: "Kundengruppen",
   marketing: "Marketing",
   voucher: "Gutscheine",
@@ -40,9 +39,10 @@ export default {
     editType: "{{type}} bearbeiten",
   },
   views: {
-    order: {
+    titles: {
       overview: "Übersicht",
       edit: "Bearbeiten",
+      references: 'Referenzen',
     },
   },
   widgets: {

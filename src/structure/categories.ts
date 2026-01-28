@@ -5,10 +5,11 @@ import type { ITSContext } from '../types';
 
 export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContext) => {
   const client = context.getClient({ apiVersion: sanityApiVersion });
+  const t = ctx.helpers.t.default
 
   const getCategoryMenuItems = (id: string) => {
     const customEditButton = S.menuItem()
-      .title(ctx.helpers.t.default('structure:editCategory'))
+      .title(t('actions.editType', 'Edit category', { type: t('category_single') }))
       .showAsAction(true)
       .icon(EditIcon)
       .intent({
@@ -43,11 +44,11 @@ export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContex
   }
 
   return S.listItem()
-    .title(ctx.helpers.t.default('structure:categories'))
+    .title(t('categories'))
     .icon(SchemaIcon)
     .child(
       S.documentTypeList('category')
-        .title(ctx.helpers.t.default('structure:categories'))
+        .title(t('categories'))
         .apiVersion(sanityApiVersion)
         .defaultOrdering([{field: 'sortOrder', direction: 'asc'}])
         .filter('_type == "category" && !defined(parent)')
