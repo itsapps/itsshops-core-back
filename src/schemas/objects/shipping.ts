@@ -4,13 +4,14 @@ import { PriceInput } from '../../components/PriceInput';
 export const shipping: CoreObject = {
   name: 'shipping',
   type: 'object',
+  feature: 'shop',
   build: (ctx: FieldContext) => {
     const { f } = ctx;
     return {
       fieldsets: [
         {
           name: 'shippingRate',
-          title: ctx.helpers.t.default('shipping.fieldsets.rate'),
+          title: ctx.t.default('shipping.fieldsets.rate'),
           options: { collapsed: true, collapsible: true },
           // Instead of global useAdminUI, use your config features
           // hidden: config.features.shippingDetailsHidden, 

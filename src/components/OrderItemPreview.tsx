@@ -7,7 +7,6 @@ import { Inline, Card, Stack, Flex, Button, Text, Checkbox } from '@sanity/ui'
 import { usePaneRouter } from 'sanity/structure'
 import { useClient } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import { ProductTypes } from '../utils/constants'
 
 type ProductData = {
   _id: string
@@ -15,23 +14,20 @@ type ProductData = {
   title?: ITSi18nArray
   images?: any[]
 }
-type VariantData = {
+type ProductVariantData = ProductData & {
   coverImage: string
 }
-type ProductVariantData = ProductData & VariantData
 
 
 export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleItem), orderId: string}) {
-  const { helpers, apiVersion } = useITSContext();
+  const { localizer, format, config: { apiVersion, shop } } = useITSContext();
   const client = useClient({ apiVersion })
-  
-  const localizers = helpers.localizer
 
   const imageBuilder = imageUrlBuilder(client)
   const { type, productId, parentId, quantity, price, title } = props.item || {}
   const [packed, setPacked] = useState(props.item.packed || false)
   const [loading, setLoading] = useState(false)
-  const isBundleProduct = type == ProductTypes.SANITY_PRODUCT_BUNDLE
+  const isBundleProduct = type == shop.productTypes.bundle
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
   const [product, setProduct] = useState<ProductData | null>(null)
   const [variant, setVariant] = useState<ProductVariantData | null>(null)
@@ -95,9 +91,9 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
     })
   }
 
-  const displayTitle = (localizers.objectStringValue(variant, 'title') ||
-    localizers.objectStringValue(product, 'title') ||
-    localizers.stringValue(title) || 'No title')
+  const displayTitle = (localizer.objectStringValue(variant, 'title') ||
+    localizer.objectStringValue(product, 'title') ||
+    localizer.stringValue(title) || 'No title')
 
   const getImage = () => {
     if (!product && !variant) {
@@ -121,8 +117,8 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
   if (!isBundleProduct) {
     const variantProps = props.item as OrderItem
     optionGroups = isBundleProduct ? [] : (variantProps.options || []).map((option) => {
-      const groupTitle = localizers.objectStringValue(option, 'group') || 'No group'
-      const optionTitle = localizers.objectStringValue(option, 'title') || 'No title'
+      const groupTitle = localizer.objectStringValue(option, 'group') || 'No group'
+      const optionTitle = localizer.objectStringValue(option, 'title') || 'No title'
       return {group: groupTitle, title: optionTitle}
     })
   }
@@ -130,7 +126,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
   if (isBundleProduct) {
     const bundleProps = props.item as OrderBundleItem
     bundleItems = !isBundleProduct ? [] : (bundleProps.items || []).map((item) => {
-      return {count: item.count, title: localizers.objectStringValue(item, 'title') || 'No title'}
+      return {count: item.count, title: localizer.objectStringValue(item, 'title') || 'No title'}
     })
   }
 
@@ -204,7 +200,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
             )}
             
           </Stack>    
-          <Text align={'right'}>{helpers.format.currency(price*quantity/100)}</Text>
+          <Text align={'right'}>{format.currency(price*quantity/100)}</Text>
         </Flex>
     </Card>
   )

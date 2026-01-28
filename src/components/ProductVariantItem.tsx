@@ -20,8 +20,7 @@ type Props = {
 }
 
 export const ProductVariantItem = ({variant, variantOptionGroups, product, onClick, onCoverImageClick, onDelete, loading}: Props) => {
-  const { t, helpers, apiVersion } = useITSContext();
-  const stringValue = helpers.localizer.stringValue
+  const { t, localizer, config: { apiVersion } } = useITSContext();
 
   const client = useClient({apiVersion})
   const imageBuilder = imageUrlBuilder(client)
@@ -42,13 +41,13 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
         return {
           group: null,
           groupTitle: null,
-          optionTitle: stringValue(option.title)
+          optionTitle: localizer.stringValue(option.title)
         }
       }
       return {
         group: optionGroup?._id,
-        groupTitle: stringValue(optionGroup?.title),
-        optionTitle: stringValue(option.title)
+        groupTitle: localizer.stringValue(optionGroup?.title),
+        optionTitle: localizer.stringValue(option.title)
       }
     })
     // sort optionsTitles by group sortOrder
@@ -75,7 +74,7 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
           <Flex gap={1} direction={['column', 'column', 'row']} justify={'space-between'}>
             <Stack space={1} flex={1}>
               <Flex flex={[1, 2, 3]} gap={1} direction={'column'}>
-                <Heading as="h3" onClick={() => onClick(item._id)} style={{ cursor: 'pointer' }}>{stringValue(item.title)}</Heading>
+                <Heading as="h3" onClick={() => onClick(item._id)} style={{ cursor: 'pointer' }}>{localizer.stringValue(item.title)}</Heading>
                 {item.productNumber && <Text size={0}>{item.productNumber}</Text>}
                 <Container paddingTop={3}>
                   <ul style={{ margin: 0, marginLeft: "10px", padding: 0 }}>

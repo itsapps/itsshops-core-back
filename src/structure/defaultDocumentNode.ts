@@ -1,9 +1,8 @@
+import { OrderView } from '../components/OrderView';
+
 import {EditIcon} from '@sanity/icons'
 import type {DefaultDocumentNodeResolver} from 'sanity/structure'
 import DocumentsPane from 'sanity-plugin-documents-pane'
-// import {translator} from '@helpers/globals'
-// import {OrderView} from '@components/OrderView'
-// import { TranslatorFunction } from '@typings/models'
 
 import type { ITSContext, ITSStructureItem } from '../types';
 
@@ -12,13 +11,13 @@ import type { ITSContext, ITSStructureItem } from '../types';
 // )
 
 export const localizedDefaultDocumentNode = (ctx: ITSContext) => {
-  const t = ctx.helpers.t.default
+  const t = ctx.t.default
 
   const defaultDocumentNode: DefaultDocumentNodeResolver = (S, {schemaType}) => {
     switch (schemaType) {
       case `order`:
         return S.document().views([
-          // S.view.component(OrderView).title(t('order.views.overview')),
+          S.view.component(OrderView).title(t('order.views.overview')),
           S.view.form().icon(EditIcon).title(t('views.titles.edit')),
         ])
       case `product`:

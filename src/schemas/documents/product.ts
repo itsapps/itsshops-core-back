@@ -64,10 +64,10 @@ export const product: CoreDocument = {
       prepare(s: any) {
         const { title, image, variants } = s
         const count = (variants && variants.length > 0) ? variants.length : 0
-        const variantInfo = count > 0 ? ctx.helpers.t.default('product.preview.variants', undefined, { count }) : undefined
+        const variantInfo = count > 0 ? ctx.t.default('product.preview.variants', undefined, { count }) : undefined
         // const subtitle = [variantInfo].filter(Boolean).join(", ")
         return {
-          title: ctx.helpers.localizer.value(title),
+          title: ctx.localizer.value(title),
           ...variantInfo && {subtitle: variantInfo},
           media: image,
         }

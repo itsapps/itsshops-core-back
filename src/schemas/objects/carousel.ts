@@ -25,8 +25,8 @@ export const carousel: CoreObject = {
         },
         prepare: ({slides}: any) => {
           return {
-            title: ctx.helpers.t.default('carousel.title'),
-            subtitle: ctx.helpers.t.default('carousel.preview.slides', undefined, { count: slides?.length || 0 }),
+            title: ctx.t.default('carousel.title'),
+            subtitle: ctx.t.default('carousel.preview.slides', undefined, { count: slides?.length || 0 }),
             // subtitle: `${slides?.length || 0} ${ctx.t('carousel.preview.slides')}`,
           }
         }

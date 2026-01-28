@@ -1,25 +1,26 @@
-
+import { ITSi18nArray } from '../types'
+import { useITSContext } from '../context/ITSCoreProvider'
 import React, { useEffect, useState } from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import { Card, Stack, Flex, Button, Text, Checkbox } from '@sanity/ui'
 import { usePaneRouter } from 'sanity/structure'
-import { useClient, useCurrentLocale } from 'sanity'
+import { useClient } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {apiVersion} from '@helpers/globals'
-import {localizedObjectValue, localizedValue} from '@helpers/utils'
-import { OrderFreeProduct } from '@typings/models'
+
+import { OrderFreeProduct } from '../types'
 
 type ProductData = {
   _id: string
   _type: string
   productNumber: string
-  title?: Record<string, string> | string
+  title?: ITSi18nArray
   images?: any[]
 }
 
 export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, orderId: string}) {
-  const client = useClient({ apiVersion })
-  const locale = useCurrentLocale().id.substring(0, 2)
+  const { localizer, config: { apiVersion } } = useITSContext();
+  const client = useClient({apiVersion})
+
   const imageBuilder = imageUrlBuilder(client)
   const { productId, quantity, title } = props.item || {}
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
@@ -75,8 +76,9 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
   }
 
   const displayTitle = 
-    localizedObjectValue(product, 'title', locale) ||
-    localizedValue(title, locale) || 'No title'
+    localizer.objectStringValue(product, 'title') ||
+    localizer.stringValue(title) ||
+    'No title'
 
   const getImage = () => {
     if (!product) {

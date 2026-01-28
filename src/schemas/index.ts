@@ -1,71 +1,80 @@
 import { SchemaTypeDefinition } from 'sanity';
-import { ITSContext, CoreBackConfig, CoreDocument, ITSFeatureRegistry, ITSFeatureKey } from '../types'
+import { ITSContext, FieldContext, CoreDocument, CoreObject } from '../types'
+import { createFieldFactory, shapeSchema } from "../utils";
 
-import { blog } from './documents/blog'
-import { category } from './documents/category'
-import { customerGroup } from './documents/customerGroup'
-import { manufacturer } from './documents/manufacturer'
-import { menu } from './documents/menu'
-import { order } from './documents/order'
-import { orderMeta } from './documents/orderMeta'
-import { page } from './documents/page';
-import { post } from './documents/post';
-import { product } from './documents/product'
-import { productVariant } from './documents/productVariant'
-import { settings } from './documents/settings';
-import { shippingCountry } from './documents/shippingCountry'
-import { user } from './documents/user'
-import { variantOption } from './documents/variantOption'
-import { variantOptionGroup } from './documents/variantOptionGroup'
-import { voucher } from './documents/voucher';
+export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
+  const objectBuilders = ctx.featureRegistry.getEnabledObjects();
+  const objects = objectBuilders.map(b => createObjectSchema(ctx, b))
 
-import { createDocumentSchema } from './documents'
-import { getCoreObjects } from './objects'
-
-export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistry => {
-  const docs = [
-    blog, category, customerGroup, manufacturer, menu, order, orderMeta, page, post, product, productVariant,
-    settings, shippingCountry, user, variantOption, variantOptionGroup, voucher,
-    ...config.documents ? config.documents : [],
-  ]
-
-  const enabledDocs = docs
-    .filter(doc => {
-       if (!doc.feature) return true;
-       if (doc.feature === 'shop') return !!config.features.shop.enabled;
-       if (doc.feature === 'shop.manufacturer') 
-           return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
-       return true;
-    })
-  const enabledDocNames = enabledDocs.map(d => d.name);
-
-  return {
-    all: docs,
-    get: (name: string) => docs.find(d => d.name === name),
-    isFeatureEnabled: (feature: ITSFeatureKey) => {
-      const { features } = config;
-  
-      // Logic to handle nested keys like 'shop.manufacturer'
-      if (feature === 'shop') return !!features.shop.enabled;
-      if (feature === 'shop.manufacturer') return !!features.shop.enabled && !!features.shop.manufacturer;
-      if (feature === 'blog') return !!features.blog;
-      if (feature === 'users') return !!features.users;
-
-      return false;
-    },
-    isEnabled: (name: string) => enabledDocNames.includes(name),
-    getEnabled: () => enabledDocs,
-    // Helper to see if a specific document type should exist right now
-    
-  };
-};
-
-export function buildSchemas(documentBuilders: CoreDocument[], ctx: ITSContext): SchemaTypeDefinition[] {
-  const objects = getCoreObjects(ctx);
+  const documentBuilders = ctx.featureRegistry.getEnabledDocs();
   const documents = documentBuilders.map(b => createDocumentSchema(ctx, b))
 
   return [
     ...objects,
     ...documents
   ]
+}
+
+const createDocumentSchema = (
+  ctx: ITSContext,
+  documentDefinition: CoreDocument,
+): SchemaTypeDefinition => {
+  const documentName = documentDefinition.name;
+  const f = createFieldFactory(documentName, ctx);
+  const fieldCtx: FieldContext = { ...ctx, f };
+  const extension = ctx.config.schemaExtensions?.[documentName];
+
+  const coreGroups = typeof documentDefinition.groups === 'function' 
+    ? documentDefinition.groups(ctx) 
+    : documentDefinition.groups || [];
+  const coreFieldsets = typeof documentDefinition.fieldsets === 'function' 
+    ? documentDefinition.fieldsets(ctx) 
+    : documentDefinition.fieldsets || [];
+
+  const { fields, groups, fieldsets } = shapeSchema(
+    documentName,
+    fieldCtx,
+    coreGroups,
+    coreFieldsets,
+    documentDefinition.baseFields(fieldCtx),
+    extension
+  );
+
+  const preview = extension?.preview ?
+    extension.preview(ctx) :
+    documentDefinition.preview ? documentDefinition.preview(ctx) : undefined
+  
+  return {
+    name: documentName,
+    title: ctx.t.default(`${documentName}.title`),
+    type: 'document',
+    icon: extension?.icon ?? documentDefinition.icon,
+    groups,
+    fieldsets,
+    fields,
+    preview
+  } as SchemaTypeDefinition;
+};
+
+const createObjectSchema = (
+  ctx: ITSContext,
+  objectDefinition: CoreObject,
+): SchemaTypeDefinition => {
+  const f = createFieldFactory(objectDefinition.name, ctx);
+  
+  const built = objectDefinition.build({ ...ctx, f });
+  const finalType = built.type || objectDefinition.type || 'object';
+  const fieldsAdjustment = (finalType === 'object' && !built.fields) // TODO: check this
+    ? { fields: [] } 
+    : {};
+
+  const obj = {
+    name: objectDefinition.name,
+    type: finalType,
+    title: ctx.t.default(`${objectDefinition.name}.title`),
+    ...built,
+    ...fieldsAdjustment,
+  } as SchemaTypeDefinition
+
+  return obj
 }

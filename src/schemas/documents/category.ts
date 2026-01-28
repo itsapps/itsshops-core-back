@@ -7,7 +7,7 @@ export const category: CoreDocument = {
   feature: 'shop',
   disallowedActions: ['delete' ],
   baseFields: (ctx: FieldContext) => {
-    const { f, apiVersion } = ctx;
+    const { f, config: { apiVersion } } = ctx;
     return [
       f('title', 'i18nString', { i18n: 'atLeastOne' }),
       // f('description', 'i18nString', { i18n: 'atLeastOne' }),
@@ -54,9 +54,9 @@ export const category: CoreDocument = {
       },
       prepare(s: any) {
         const { title, subtitle, media } = s
-        const sub = ctx.helpers.localizer.value(subtitle)
+        const sub = ctx.localizer.value(subtitle)
         return {
-          title: ctx.helpers.localizer.value(title),
+          title: ctx.localizer.value(title),
           subtitle: sub ? `– ${sub}` : ``,
           media: media,
         }

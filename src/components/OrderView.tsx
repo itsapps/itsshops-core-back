@@ -1,18 +1,19 @@
 
 import { Order, OrderStatus } from '../types/orders'
+import { useITSContext } from '../context/ITSCoreProvider'
+
 import { Dialog, Button, Flex, Stack, Box, Card, Text, Heading, useToast } from '@sanity/ui'
 import { SanityDocument } from 'sanity'
 import { useState } from 'react'
 import { FilePdf, CheckCircle } from 'phosphor-react'
 
-import { useITSContext } from '../context/ITSCoreProvider'
 import { isWebKit, getFilename } from '../utils/browser'
 import { getStateTranslationKey, canChangeToFullfillmentStatus } from '../utils/orders'
 
 import OrderItemPreview from './OrderItemPreview'
 import OrderFreeProductPreview from './OrderFreeProductPreview'
 import OrderVoucherPreview from './OrderVoucherPreview'
-import { OrderActions } from '@actions/OrderActions'
+import { OrderActions } from './actions/OrderActions'
 
 type OrderViewProps = {
   document: {
@@ -22,8 +23,7 @@ type OrderViewProps = {
 }
 
 export function OrderView({document}: OrderViewProps) {
-  const { t, frontendClient, helpers } = useITSContext();
-  const formatters = helpers.format
+  const { t, frontendClient, format } = useITSContext();
 
   // const {document} = props.published
   const order = document.published
@@ -86,7 +86,7 @@ export function OrderView({document}: OrderViewProps) {
       <Stack space={[2, 3]}>
         <Flex align="center" gap={3}>
           <Text weight='medium'>
-            {`${formatters.date(order._createdAt, {dateStyle: 'short', timeStyle: 'short'})}`}
+            {`${format.date(order._createdAt, {dateStyle: 'short', timeStyle: 'short'})}`}
           </Text>
           <Button icon={FilePdf} loading={loadingPdf} mode="ghost" title={'PDF'} tone={'neutral'} onClick={handlePdfClick} />
           {open && pdfUrl && (
@@ -156,7 +156,7 @@ export function OrderView({document}: OrderViewProps) {
             {t('order.subtotal')}
           </Text>
           <Text weight='medium'>
-            {`${formatters.currency(order.totals.subtotal / 100)}`}
+            {`${format.currency(order.totals.subtotal / 100)}`}
           </Text>
         </Flex>
         <Flex justify="space-between" wrap={'wrap'} gap={3}>
@@ -164,7 +164,7 @@ export function OrderView({document}: OrderViewProps) {
             {t('order.shipping')}
           </Text>
           <Text weight='medium'>
-            {`${formatters.currency(order.shipping.rateCost / 100)}`}
+            {`${format.currency(order.shipping.rateCost / 100)}`}
           </Text>
         </Flex>
         {(order.totals.discount && order.totals.discount > 0) ? <Flex justify="space-between" wrap={'wrap'} gap={3}>
@@ -172,7 +172,7 @@ export function OrderView({document}: OrderViewProps) {
             {t('order.discount')}
           </Text>
           <Text weight='medium'>
-            {`${formatters.currency(-(order.totals.discount / 100))}`}
+            {`${format.currency(-(order.totals.discount / 100))}`}
           </Text>
         </Flex> : null}
         <Flex justify="space-between" wrap={'wrap'} gap={3}>
@@ -181,7 +181,7 @@ export function OrderView({document}: OrderViewProps) {
             {/* {t('order.totalWithVat', {vatRate: order.totals.vatRate, total: localizeMoney(order.totals.vat / 100, locale)})} */}
           </Text>
           <Text weight='medium'>
-            {`${formatters.currency(order.totals.total / 100)}`}
+            {`${format.currency(order.totals.total / 100)}`}
           </Text>
         </Flex>
         <Stack marginTop={4} space={2}>
@@ -269,7 +269,7 @@ export function OrderView({document}: OrderViewProps) {
               tone="primary"
             >
               <Flex gap={3} direction="column" padding={2} marginTop={1}>
-                <Text weight='medium'>{`${formatters.date(item.timestamp, {dateStyle: 'medium', timeStyle: 'medium'})}`}</Text>
+                <Text weight='medium'>{`${format.date(item.timestamp, {dateStyle: 'medium', timeStyle: 'medium'})}`}</Text>
                 <Text>{`${t(`order.statusHistory.type.options.${item.type}`)} - ${t(getStateTranslationKey(item.state))}`}</Text>
                 <Text>{[item.source || '', item.note || ''].filter(Boolean).join(' - ')}</Text>
               </Flex>

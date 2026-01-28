@@ -26,7 +26,7 @@ export const variantOption: CoreDocument = {
       prepare(s: any) {
         const { title } = s
         return {
-          title: ctx.helpers.localizer.value(title),
+          title: ctx.localizer.value(title),
         }
       },
     }

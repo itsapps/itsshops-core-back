@@ -1,12 +1,13 @@
 // packages/core-back/src/schemas/objects/multiColumns.ts
 import { CoreObject, FieldContext } from '../../types';
-import { countryOptions, defaultCountry } from '../../utils/constants';
 
 export const address: CoreObject = {
   name: 'address',
   type: 'object',
+  feature: 'shop',
   build: (ctx: FieldContext) => {
-    const { f } = ctx;
+    const { f, config } = ctx;
+
     return {
       fields: [
         f('name', 'string', { validation: (Rule) => Rule.required() }),
@@ -19,9 +20,9 @@ export const address: CoreObject = {
         f('city', 'string', { validation: (Rule) => Rule.required() }),
         f('country', 'string', {
           options: {
-            list: countryOptions.map(country => ({ title: `${country.value} (${ctx.helpers.localizer.dictValue(country.title)})`, value: country.value }))
+            list: config.localization.countries.map(country => ({ title: `${country.value} (${ctx.localizer.dictValue(country.title)})`, value: country.value }))
           },
-          initialValue: defaultCountry.value,
+          initialValue: config.defaultCountryCode,
           validation: (Rule) => Rule.required()
         }),
         f('state', 'string'),

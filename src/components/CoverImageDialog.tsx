@@ -18,7 +18,7 @@ type Props = {
 }
 
 export const CoverImageDialog = ({ images, value, onSubmit, onRemove, onCancel, loading }: Props) => {
-  const { t, helpers, apiVersion } = useITSContext();
+  const { t, config: { apiVersion } } = useITSContext();
   const client = useClient({apiVersion})
   const imageBuilder = imageUrlBuilder(client)
 

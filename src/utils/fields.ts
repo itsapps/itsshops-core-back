@@ -1,4 +1,4 @@
-import { Rule, FieldDefinition } from 'sanity';
+import { Rule, FieldDefinition, type TypeReference } from 'sanity';
 import { i18nValidators } from './validation';
 import { ITSContext, FieldFactory, I18nRuleShortcut } from "../types";
 
@@ -23,8 +23,8 @@ const typeMap: Record<string, string> = {
 
 export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFactory => {
   const { config } = ctx;
-  const t = ctx.helpers.t.default;
-  const tStrict = ctx.helpers.t.strict;
+  const t = ctx.t.default;
+  const tStrict = ctx.t.strict;
   const defaultLocale = config.localization.defaultLocale;
   const allLocales = config.localization.fieldLocales;
 
@@ -46,7 +46,56 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
   };
 
   return (fieldName, type = 'string', overrides = {}) => {
-    const { i18n, validation, tKey, ...rest } = overrides;
+    let { to, of, i18n, validation, tKey, ...rest } = overrides;
+
+    // remove references to disabled docs
+    if (type === 'reference' && Array.isArray(to)) {
+      to = to.filter((t) => {
+        const target = t as TypeReference;
+        const docDef = ctx.featureRegistry.getDoc(target.type);
+        if (!docDef) {
+          console.warn(`Structure Error: Schema type "${target.type}" not found for reference.`);
+          return false;
+        }
+        return ctx.featureRegistry.isDocEnabled(target.type);
+      });
+    }
+    if (type === 'array' && Array.isArray(of)) {
+      of = of.filter((item) => {
+        // 1. Check if the item is an object with a 'type' property
+        if (typeof item !== 'object' || item === null) return true;
+
+        // Use a type cast to 'any' locally to perform the check safely
+        const itemDef = item as any;
+
+        // 2. Handle References inside the array
+        if (itemDef.type === 'reference' && Array.isArray(itemDef.to)) {
+          // 'target' was implicitly 'any', so we type it here
+          return itemDef.to.every((target: { type: string }) => 
+            ctx.featureRegistry.isDocEnabled(target.type)
+          );
+        }
+
+        // 3. Handle Custom Objects or Named Types inside the array
+        // e.g. of: [{ type: 'product' }]
+        if (itemDef.type && typeof itemDef.type === 'string') {
+          // If the type name itself is a registered document, check if it's enabled
+          const docDef = ctx.featureRegistry.getDoc(itemDef.type);
+          if (docDef) {
+            return ctx.featureRegistry.isDocEnabled(itemDef.type);
+          }
+        }
+
+        return true; // Keep standard types like 'string', 'number', etc.
+
+        // const schemaDef = item as SchemaTypeDefinition;
+        // // If the array item is a reference, check its 'to' target
+        // if (schemaDef.type === 'reference' && Array.isArray(schemaDef.to)) {
+        //   return item.to.every(target => ctx.featureRegistry.isDocEnabled(target.type));
+        // }
+        // return true; // Keep non-reference items (or add logic for custom objects)
+      });
+    }
 
     // 1. Resolve the path. 
     // If tKey is provided: use it directly.
@@ -72,6 +121,8 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
         if (typeof validation === 'function') rules.push(validation(Rule));
         return rules.length ? rules : undefined;
       },
+      ...(to && { to }),
+      ...(of && { of }),
       ...rest,
     };
     return field;

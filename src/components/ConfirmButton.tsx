@@ -1,6 +1,7 @@
+import { useITSContext } from '../context/ITSCoreProvider'
+
 import React, { useState, ButtonHTMLAttributes } from 'react';
 import { Button, Dialog, Flex, Stack, Text, ButtonProps } from '@sanity/ui';
-import {useTranslation} from 'sanity'
 
 type ConfirmButtonProps = {
   onConfirm: () => void;
@@ -11,7 +12,7 @@ type ConfirmButtonProps = {
 export function ConfirmButton(
   { onConfirm, confirmText, confirmDescription=null, ...buttonProps }: ConfirmButtonProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const {t} = useTranslation('itsapps')
+  const {t} = useITSContext()
 
   const { onClick: _originalOnClick, style, ...restOfProps } = buttonProps;
 

@@ -34,6 +34,17 @@ export interface ITSi18nEntry<T = string> {
 // export type ITSi18nString = ITSi18nStringEntry[];
 export type ITSi18nArray<T = string> = ITSi18nEntry<T>[];
 
+// export interface LocaleImage {
+//   _type: 'localeImage';
+//   image: {
+//     asset: {
+//       _ref: string;
+//       _type: 'reference';
+//     };
+//   },
+//   alt?: ITSi18nArray;
+//   title?: ITSi18nArray;
+// }
 export interface LocaleImage {
   _type: 'cropImage';
   asset: {
@@ -58,12 +69,6 @@ export interface ITSFormatter {
   date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string;
   number: (num: number, options?: Intl.NumberFormatOptions) => string;
   currency: (num: number, currency?: string) => string;
-}
-
-export interface ITSTranslationHelpers {
-  t: ITSTranslator;
-  localizer: ITSLocalizer;
-  format: ITSFormatter;
 }
 
 /** 2. Field Factory Types **/

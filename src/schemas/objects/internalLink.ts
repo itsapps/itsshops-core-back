@@ -5,7 +5,7 @@ export const internalLink: CoreObject = {
   type: 'object',
   build: (ctx: FieldContext) => {
     const { f } = ctx;
-    const t = ctx.helpers.t.default
+    const t = ctx.t.default
     return {
       fields: [
         f('reference', 'reference', {
@@ -43,8 +43,8 @@ export const internalLink: CoreObject = {
         prepare: ({ image, title, alt }: any) => {
           return {
             // We use our new array-based helper here
-            title: ctx.helpers.localizer.value(title) || 'No title',
-            subtitle: ctx.helpers.localizer.value(alt) || 'No alt',
+            title: ctx.localizer.value(title) || 'No title',
+            subtitle: ctx.localizer.value(alt) || 'No alt',
             media: image?.asset,
             // media: ctx.getLocalizedValue(image)?.asset,
           };

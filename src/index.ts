@@ -1,4 +1,11 @@
-import { ItsshopsConfig, ITSContext, ITSTranslator, CoreBackConfig, ITSFeatureRegistry } from './types';
+import {
+  ItsshopsConfig,
+  ITSLocaleContext,
+  ITSContext,
+  ITSTranslator,
+  CoreBackConfig,
+  ITSFeatureRegistry
+} from './types';
 export type { 
   CoreDocument,
   CoreObject,
@@ -7,9 +14,7 @@ export type {
 } from './types';
 export type { Rule } from 'sanity'
 
-import { sanityApiVersion } from './utils/constants'
-
-import { defineConfig, WorkspaceOptions, Template } from 'sanity'
+import { defineConfig, WorkspaceOptions } from 'sanity'
 import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
 import { media } from 'sanity-plugin-media'
@@ -29,9 +34,11 @@ import {
 } from './localization'
 import { createI18nHelpers, createFormatHelpers } from './utils/localization';
 
-import { buildSchemas, createFeatureRegistry } from './schemas'
+import { buildSchemas } from './schemas'
 import { CustomToolbar } from './components/CustomToolbar'
+import { createFeatureRegistry } from './config/features'
 import { actionResolver } from './config/actions'
+import { templateResolver } from './config/templates'
 import { ITSStudioWrapper } from './context/ITSStudioWrapper'
 
 export function createCoreBack(config: ItsshopsConfig) {
@@ -40,7 +47,6 @@ export function createCoreBack(config: ItsshopsConfig) {
   const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.overrides.general)
   const structureOverrideBundles = getStructureOverrideBundles(coreConfig.localization.uiLanguages)
   const featureRegistry = createFeatureRegistry(coreConfig)
-  const enabledDocuments = featureRegistry.getEnabled();
   
   const { projectId, dataset, workspaceName } = config
   
@@ -67,21 +73,8 @@ export function createCoreBack(config: ItsshopsConfig) {
   
   
   const workspace = defineConfig(coreConfig.localization.uiLanguages.map(language => {
-    const schemaContext = createContext(
-      'schema',
-      language.id,
-      coreConfig,
-      featureRegistry,
-      translator,
-    );
-    
-    const structureContext = createContext(
-      'structure',
-      language.id,
-      coreConfig,
-      featureRegistry,
-      translator,
-    )
+    const localeContext = createBaseContext(language.id, coreConfig, featureRegistry);
+    const { schemaContext, structureContext } = createContexts(localeContext, translator);
 
     const config: WorkspaceOptions = {
       name: language.id,
@@ -111,43 +104,12 @@ export function createCoreBack(config: ItsshopsConfig) {
         ...getTranslationPackage(language.id),
       ],
       schema: {
-        types: buildSchemas(enabledDocuments, schemaContext),
-        templates: (prev) => {
-          const templates = []
-          if (featureRegistry.isEnabled('category')) {
-            const category2Child: Template = {
-              id: 'subCategory',
-              title: 'Sub-category',
-              schemaType: 'category',
-              parameters: [{name: `parentCategoryId`, title: `Parent Category ID`, type: `string`}],
-              value: (parameters: {parentCategoryId: string}) => ({
-                parent: {
-                  _type: `reference`,
-                  _ref: parameters.parentCategoryId
-                }
-              })
-            }
-            templates.push(category2Child)
-          }
-          const allowedDocs = featureRegistry.getEnabled()
-            .filter(doc => {
-              return !doc.isSingleton && doc.allowCreate !== false;
-            })
-
-          const allowedDocIds = allowedDocs.map(doc => doc.name)
-          return [
-            ...prev.filter((template) => allowedDocIds.includes(template.schemaType)),
-            ...templates,
-          ]
-        },
-        // templates: (prev) => {
-        //   const singletons = enabledDocs.filter(d => d.isSingleton).map(d => d.name);
-        //   return prev.filter(template => !singletons.includes(template.schemaType));
-        // }
+        types: buildSchemas(schemaContext),
+        templates: (prev) => templateResolver(prev, featureRegistry),
       },
       studio: {
         components: {
-          layout: ITSStudioWrapper(structureContext),
+          layout: ITSStudioWrapper(localeContext),
           toolMenu: (props) => CustomToolbar({...props}),
         },
       },
@@ -155,7 +117,7 @@ export function createCoreBack(config: ItsshopsConfig) {
         comments: {
           enabled: false,
         },
-        actions:  (prev, context) => actionResolver(prev, context, featureRegistry),
+        actions: (prev, context) => actionResolver(prev, context, featureRegistry, coreConfig.apiVersion),
         unstable_fieldActions: () => [],
       },
       i18n: {
@@ -168,29 +130,31 @@ export function createCoreBack(config: ItsshopsConfig) {
   return workspace
 }
 
-function createContext(
-  ns: string,
+function createBaseContext(
   locale: string,
   coreConfig: CoreBackConfig,
-  featureRegistry: ITSFeatureRegistry,
-  translator: (namespace: string, locale: string) => ITSTranslator,
-) { 
-  const context: ITSContext = {
+  featureRegistry: ITSFeatureRegistry
+): ITSLocaleContext {
+  return {
     config: coreConfig,
-    apiVersion: sanityApiVersion,
     featureRegistry,
     locale,
-    helpers: {
-      t: translator(ns, locale),
-      localizer: createI18nHelpers(locale, coreConfig.localization.defaultLocale),
-      // localizer: {
-      //   value: createI18nHelper(locale, coreConfig.localization.defaultLocale),
-      //   objectValue: createI18nObjectHelper(locale, coreConfig.localization.defaultLocale),
-      //   dictValue: createI18nDictHelper(locale, coreConfig.localization.defaultLocale, coreConfig.localization.fieldLocales),
-      // },
-      format: createFormatHelpers(locale),
-    }
-  };
-  
-  return context
+    localizer: createI18nHelpers(locale, coreConfig.localization.defaultLocale),
+    format: createFormatHelpers(locale),
+  }
+}
+
+function createContexts(
+  ctx: ITSLocaleContext,
+  translator: (namespace: string, locale: string) => ITSTranslator,
+) {
+  const createContext = (namespace: string): ITSContext => ({
+    ...ctx,
+    t: translator(namespace, ctx.locale),
+  })
+
+  return {
+    schemaContext: createContext('schema'),
+    structureContext: createContext('structure'),
+  }
 }

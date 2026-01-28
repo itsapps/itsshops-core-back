@@ -1,7 +1,8 @@
+import {OrderStatus, OrderPaymentStatus} from '../types'
+
 import {ErrorOutlineIcon} from '@sanity/icons'
 import { styled } from 'styled-components'
 import {ArrowUDownLeft, Circle, Warning, Clock, Truck, Check, Question} from 'phosphor-react'
-import {OrderStatus, OrderPaymentStatus} from '@typings/models'
 
 const StyledSpan = styled.span<{ $color: string }>`
   > svg {

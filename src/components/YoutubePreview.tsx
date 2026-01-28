@@ -1,6 +1,6 @@
 import type {PreviewProps} from 'sanity'
 import {Flex, Text, Box} from '@sanity/ui'
-import {extractYouTubeId} from '@helpers/helpers'
+import {extractYouTubeId} from '../utils'
 // import ReactPlayer from 'react-player'
 
 export default function YoutubePreview(props: PreviewProps) {

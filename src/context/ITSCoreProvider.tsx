@@ -1,4 +1,4 @@
-import { ITSContext, ITSProviderContext } from '../types'
+import { ITSLocaleContext, ITSProviderContext } from '../types'
 import { createContext, useContext, useMemo } from 'react'
 import { useTranslation } from 'sanity'
 import { createFrontendClient } from '../external/frontend'
@@ -8,22 +8,9 @@ import { createFrontendClient } from '../external/frontend'
 
 const ITSCoreContext = createContext<ITSProviderContext | null>(null)
 
-export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, ctx: ITSContext }) => {
+export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, ctx: ITSLocaleContext }) => {
   const { t } = useTranslation('itsapps')
-  // const locale = useCurrentLocale().id.substring(0, 2)
-
-  // Memoize the Netlify client so it doesn't recreate on every render
-  // const netlify = useMemo(() => NetlifyClient({
-  //   accessToken: config.netlify.token,
-  //   siteId: config.netlify.siteId
-  // }), [config.netlify])
-
-  // const value = useMemo(() => ({
-  //   config,
-  //   // locale,
-  //   t,
-  //   // netlify
-  // }), [config, t])
+  
   const frontendClient = useMemo(() => {
     const { endpoint, secret } = ctx.config.integrations.netlify;
     return createFrontendClient(ctx.locale, endpoint, secret);

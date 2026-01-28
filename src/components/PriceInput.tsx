@@ -1,7 +1,8 @@
+import { useITSContext } from '../context/ITSCoreProvider'
+
 import React, { useState, useEffect } from "react";
 import { TextInput } from "@sanity/ui";
-import { useCurrentLocale, set, unset, NumberInputProps } from "sanity";
-import {formatCurrency} from '../utils'
+import { set, unset, NumberInputProps } from "sanity";
 
 function getSeparators(locale: string) {
   const parts = Intl.NumberFormat(locale).formatToParts(1234.5);
@@ -11,13 +12,13 @@ function getSeparators(locale: string) {
 }
 
 export const PriceInput = ({ value, onChange, ...props }: NumberInputProps) => {
-  const locale = useCurrentLocale().id.substring(0, 2)
+  const { format, locale } = useITSContext()
   const { decimal: decimalSep, group: groupSep } = getSeparators(locale);
 
   // Internal state for raw input (for a smooth editing experience)
   const [editValue, setEditValue] = useState<string>(() => {
     if (typeof value === "number") {
-      return formatCurrency(locale, value/100);
+      return format.currency(value/100);
     }
     return "";
   });
@@ -27,12 +28,12 @@ export const PriceInput = ({ value, onChange, ...props }: NumberInputProps) => {
   useEffect(() => {
     if (!focused) {
       if (typeof value === "number") {
-        setEditValue(formatCurrency(locale, value/100));
+        setEditValue(format.currency(value/100));
       } else {
         setEditValue("");
       }
     }
-  }, [value, locale, focused]);
+  }, [value, locale, focused, format]);
 
   // Helper: parse input string to cents
   function parseRawToCents(raw: string): number | undefined {
@@ -63,7 +64,7 @@ export const PriceInput = ({ value, onChange, ...props }: NumberInputProps) => {
   function handleBlur() {
     setFocused(false);
     if (typeof value === "number") {
-      setEditValue(formatCurrency(locale, value/100));
+      setEditValue(format.currency(value/100));
     } else {
       setEditValue("");
     }

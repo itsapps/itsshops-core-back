@@ -18,7 +18,7 @@ type Props = Omit<ArrayOfObjectsInputProps, 'value'> & {
 }
 
 export const EditGroupOptions = (props: Props) => {
-  const { t, helpers, apiVersion } = useITSContext();
+  const { t, localizer, config: { apiVersion } } = useITSContext();
   const client = useClient({apiVersion})
 
   const { value, onChange } = props;
@@ -143,7 +143,7 @@ export const EditGroupOptions = (props: Props) => {
                         lineHeight: '1.4',
                       }}>
                       <Stack space={1}>
-                        <div>{option ? helpers.localizer.stringValue(option.title) : ''}</div>
+                        <div>{option ? localizer.stringValue(option.title) : ''}</div>
                       </Stack>
                     </Button>
                     <ConfirmButton

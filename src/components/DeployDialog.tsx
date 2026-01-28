@@ -1,4 +1,6 @@
+import { useITSContext } from '../context/ITSCoreProvider'
 import { NetlifyBuild } from "../types"
+
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import {
   Button,
@@ -14,7 +16,6 @@ import {
 import {RocketLaunch} from 'phosphor-react'
 
 import { createNetlifyClient } from '../external/netlify'
-import { useITSContext } from '../context/ITSCoreProvider'
 
 
 const getStatus = (build: NetlifyBuild | null): "building" | "ready" | "error" | "none" => {
@@ -143,7 +144,7 @@ export function DeployDialog() {
 
                   <Text size={1} muted>
                     {t('deployments.startedOn')} {build.created_at ?
-                      coreContext.helpers.format.date(
+                      coreContext.format.date(
                         build.created_at,
                         { dateStyle: 'medium', timeStyle: 'medium' }
                       ) : "–"

@@ -5,11 +5,21 @@ export * from './frontend';
 export * from './orders';
 export * from './schema';
 
-import { I18nValidationOptions, ITSTranslationHelpers, Language } from './localization';
+import {
+  I18nValidationOptions,
+  Language,
+  ITSTranslator,
+  ITSLocalizer,
+  ITSFormatter,
+} from './localization';
 import { ITSFrontendClient } from './frontend';
 
 import { ComponentType } from 'react';
-import { 
+import {
+  ArrayOfType,
+  ReferenceTo,
+  SchemaTypeDefinition,
+  ObjectDefinition,
   FieldDefinition,
   FieldGroupDefinition,
   FieldsetDefinition,
@@ -21,10 +31,12 @@ import {
 
 export type SanityDefinedAction = NonNullable<DocumentActionComponent['action']>
 
-export type CoreFieldOptions = Omit<Partial<FieldDefinition>, 'validation'> & {
+export type CoreFieldOptions = Omit<Partial<FieldDefinition>, 'validation' | 'to' | 'of' > & {
   i18n?: I18nValidationOptions;
   validation?: (rule: Rule) => any;
   tKey?: string;
+  to?: ReferenceTo[];
+  of?: ArrayOfType[];
   [key: string]: any;
 };
 
@@ -36,24 +48,31 @@ export type FieldFactory = (
 
 export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'blog' | 'users';
 export type ITSFeatureRegistry = {
-  all: CoreDocument[];
-  get: (name: string) => CoreDocument | undefined;
   isFeatureEnabled: (name: ITSFeatureKey) => boolean;
-  getEnabled: () => CoreDocument[];
-  isEnabled: (name: string) => boolean;
+  allDocs: CoreDocument[];
+  getDoc: (name: string) => CoreDocument | undefined;
+  getEnabledDocs: () => CoreDocument[];
+  isDocEnabled: (name: string) => boolean;
+  allObjects: CoreObject[];
+  getObject: (name: string) => CoreObject | undefined;
+  getEnabledObjects: () => CoreObject[];
+  isObjectEnabled: (name: string) => boolean;
 }
 
-export interface ITSContext {
+export interface ITSLocaleContext {
   config: CoreBackConfig;
   featureRegistry: ITSFeatureRegistry;
   locale: string;
-  helpers: ITSTranslationHelpers;
-  apiVersion: string;
+  localizer: ITSLocalizer;
+  format: ITSFormatter;
+}
+export interface ITSContext extends ITSLocaleContext {
+  t: ITSTranslator;
 }
 
-export interface ITSProviderContext extends ITSContext {
-  t: TFunction
-  frontendClient: ITSFrontendClient
+export interface ITSProviderContext extends ITSLocaleContext {
+  t: TFunction;
+  frontendClient: ITSFrontendClient;
 }
 
 export interface FieldContext extends ITSContext {
@@ -75,16 +94,6 @@ export interface SchemaExtension {
   order?: string[];
 }
 
-export interface CoreObject {
-  name: string;
-  // We keep 'type' optional because most of the time it's 'object'
-  type?: 'object' | 'block' | 'image' | 'file' | 'string' | 'number'; 
-  build: (ctx: FieldContext) => {
-    // We allow the build function to return ANY valid Sanity property
-    [key: string]: any; 
-  };
-}
-
 export interface ITSStructureItem {
   type: 'document' | 'singleton' | 'group' | 'divider' | 'custom';
   id: string;
@@ -98,6 +107,25 @@ export interface ITSStructureItem {
     anchor?: 'top' | 'bottom' | string; // 'string' would be the ID of another item
     placement?: 'before' | 'after';
   };
+}
+
+// export interface CoreObject {
+//   name: string;
+//   // We keep 'type' optional because most of the time it's 'object'
+//   type?: 'object' | 'block' | 'image' | 'file' | 'string' | 'number'; 
+//   feature?: ITSFeatureKey;
+//   build: (ctx: FieldContext) => Partial<ObjectDefinition | ImageDefinition | BlockDefinition | ArrayDefinition>;
+//   // build: (ctx: FieldContext) => {
+//   //   // We allow the build function to return ANY valid Sanity property
+//   //   [key: string]: any; 
+//   // };
+// }
+export interface CoreObject<T extends SchemaTypeDefinition = ObjectDefinition> {
+  name: string;
+  type?: T['type']; 
+  feature?: ITSFeatureKey;
+  // Build now returns the specific type T
+  build: (ctx: FieldContext) => Partial<T>;
 }
 
 export interface CoreDocument {
@@ -128,6 +156,7 @@ export interface ItsshopsConfig {
     translationOverrides?: Record<string, any>;
     localizedFieldTypes?: string[]
   };
+  defaultCountryCode?: string;
   features?: {
     shop?: {
       enabled: boolean;
@@ -146,7 +175,7 @@ export interface ItsshopsConfig {
 }
 
 /** Internal version of the config used by the engine **/
-export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features'> {
+export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features' | 'defaultCountryCode'> {
   localization: {
     uiLanguages: Language[];
     fieldLanguages: Language[];
@@ -159,6 +188,15 @@ export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features'> {
       structure: Record<string, any>;
       general: Record<string, any>;
     };
+    countries: Array<{ title: Record<string, string>, value: string, isDefault?: boolean }>;
+  };
+  defaultCountryCode: string;
+  shop: {
+    productTypes: {
+      product: number;
+      variant: number;
+      bundle: number;
+    }
   };
   features: {
     shop: {
@@ -168,4 +206,5 @@ export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features'> {
     blog: boolean;
     users: boolean;
   };
+  apiVersion: string;
 }

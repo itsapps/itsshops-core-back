@@ -35,8 +35,8 @@ export function shapeSchema(
       // 3. Translation key based on global groups.groupName
       // 4. Fallback to the name itself
       title: group.title || 
-        ctx.helpers.t.default(`${docName}.groups.${group.name}`, 
-        ctx.helpers.t.default(`groups.${group.name}`, group.name))
+        ctx.t.default(`${docName}.groups.${group.name}`, 
+        ctx.t.default(`groups.${group.name}`, group.name))
     });
   });
   const mergedGroups = Array.from(groupMap.values());

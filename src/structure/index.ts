@@ -74,13 +74,13 @@ export const localizedStructure = (ctx: ITSContext) => {
 
     return S.list()
       .id('root')
-      .title(ctx.helpers.t.default('content'))
+      .title(ctx.t.default('content'))
       .items(items);
   };
 };
 
 const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
-  const doc = ctx.featureRegistry.get(id);
+  const doc = ctx.featureRegistry.getDoc(id);
 
   if (!doc) {
     // Fallback for custom items not in registry
@@ -143,9 +143,9 @@ const resolveItem = (
 ): ListItemBuilder | any | null => {
   /// 1. Feature Guard
   if (item.feature && !ctx.featureRegistry.isFeatureEnabled(item.feature)) return null;
-  if (item.type === 'document' && !ctx.featureRegistry.isEnabled(item.id)) return null;
+  if (item.type === 'document' && !ctx.featureRegistry.isDocEnabled(item.id)) return null;
 
-  const t = ctx.helpers.t.default;
+  const t = ctx.t.default;
   const title = item.title ? t(item.title) : t(item.id);
 
   switch (item.type) {

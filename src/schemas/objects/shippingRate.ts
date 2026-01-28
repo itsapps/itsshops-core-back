@@ -4,6 +4,7 @@ import { PriceInput } from '../../components/PriceInput';
 export const shippingRate: CoreObject = {
   name: 'shippingRate',
   type: 'object',
+  feature: 'shop',
   build: (ctx: FieldContext) => {
     const { f } = ctx;
     return {
@@ -22,7 +23,7 @@ export const shippingRate: CoreObject = {
         prepare(s: any) {
           const { title } = s
           return {
-            title: ctx.helpers.localizer.value(title),
+            title: ctx.localizer.value(title),
           }
         },
       }

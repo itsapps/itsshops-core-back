@@ -1,23 +1,20 @@
+import { OrderVoucher } from '../types'
+import { useITSContext } from '../context/ITSCoreProvider'
 
 import React, { useState } from 'react'
-import { Card, Stack, Flex, Button } from '@sanity/ui'
+import { Card, Stack, Flex, Button, useToast } from '@sanity/ui'
 import { usePaneRouter } from 'sanity/structure'
-import { useClient, useCurrentLocale, useTranslation } from 'sanity'
+import { useClient } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {apiVersion} from '@helpers/globals'
-import {localizedValue} from '@helpers/utils'
-import { OrderVoucher } from '@typings/models'
-import {useToast} from '@sanity/ui'
 
 
 export default function OrderVoucherPreview(props: OrderVoucher) {
+  const {t, localizer, config: { apiVersion } } = useITSContext()
   const client = useClient({ apiVersion })
-  const locale = useCurrentLocale().id.substring(0, 2)
   const { voucherId, title } = props || {}
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
   const [loading, setLoading] = useState(false)
   const toast = useToast()
-  const {t} = useTranslation('itsapps')
 
   const handleClick = async () => {
     setLoading(true)
@@ -49,7 +46,7 @@ export default function OrderVoucherPreview(props: OrderVoucher) {
   const buttonContent = (
     <Flex align={'center'} gap={2}>
       <span style={{whiteSpace: 'normal', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-        {localizedValue(title, locale) || 'No title'}
+        {localizer.stringValue(title) || 'No title'}
       </span>
     </Flex>
   )

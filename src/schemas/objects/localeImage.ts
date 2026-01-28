@@ -1,9 +1,9 @@
-import { CoreObject, FieldContext } from '../../types';
+import { CoreObject } from '../../types';
 
 export const localeImage: CoreObject = {
   name: 'localeImage',
   type: 'object',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
     return {
       fields: [
@@ -22,9 +22,9 @@ export const localeImage: CoreObject = {
             // We use our new array-based helper here
             // title,
             // subtitle: alt,
-            title: ctx.helpers.localizer.value(title) || 'No title',
-            subtitle: ctx.helpers.localizer.value(alt) || 'No alt',
-            media: ctx.helpers.localizer.value(media),
+            title: ctx.localizer.value(title) || 'No title',
+            subtitle: ctx.localizer.value(alt) || 'No alt',
+            media: ctx.localizer.value(media),
           };
         },
       },

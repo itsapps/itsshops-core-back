@@ -1,3 +1,4 @@
+import { ITSi18nArray } from './localization';
 import { SendMailType } from './mail';
 
 export type Address = {
@@ -62,7 +63,7 @@ export type OrderTotals = {
 
 export type OrderFreeProduct = {
   _key: string;
-  title: Record<string, string>;
+  title: ITSi18nArray;
   productId: string;
   productNumber?: string;
   quantity: number;

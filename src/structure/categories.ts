@@ -3,8 +3,8 @@ import { SchemaIcon, EditIcon } from '@sanity/icons'
 import type { ITSContext } from '../types';
 
 export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContext) => {
-  const t = ctx.helpers.t.default
-  const apiVersion = ctx.apiVersion
+  const { config: { apiVersion } } = ctx
+  const t = ctx.t.default
   const client = context.getClient({ apiVersion });
 
   const getCategoryMenuItems = (id: string) => {

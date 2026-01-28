@@ -50,8 +50,8 @@ export const productVariant: CoreDocument = {
       prepare(s: any) {
         const { title, options0, options1, options2, image } = s
         return {
-          title: ctx.helpers.localizer.value(title),
-          subtitle: [options0, options1, options2].map(o => ctx.helpers.localizer.value(o)).filter(Boolean).join(", "),
+          title: ctx.localizer.value(title),
+          subtitle: [options0, options1, options2].map(o => ctx.localizer.value(o)).filter(Boolean).join(", "),
           media: image,
         }
       },

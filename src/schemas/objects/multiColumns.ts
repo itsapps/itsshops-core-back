@@ -1,10 +1,10 @@
 // packages/core-back/src/schemas/objects/multiColumns.ts
-import { CoreObject, FieldContext } from '../../types';
+import { CoreObject } from '../../types';
 
 export const multiColumns: CoreObject = {
   name: 'multiColumns',
   type: 'object',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
     return {
       fields: [
@@ -26,12 +26,12 @@ export const multiColumns: CoreObject = {
           columns: 'columns'
         },
         prepare({ headline, columns }: any) {
-          const title = ctx.helpers.localizer.value(headline) || 
-            `${(columns || []).length} ${ctx.helpers.t.default('multiColumns.preview.columns', 'Columns')}`;
+          const title = ctx.localizer.stringValue(headline) || 
+            `${(columns || []).length} ${ctx.t.default('multiColumns.preview.columns', 'Columns')}`;
           
           return {
             title,
-            subtitle: ctx.helpers.t.default('multiColumns.schemaTitle', 'Multi Columns'),
+            subtitle: ctx.t.default('multiColumns.schemaTitle', 'Multi Columns'),
           };
         }
       }

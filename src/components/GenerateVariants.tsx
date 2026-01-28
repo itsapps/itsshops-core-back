@@ -36,7 +36,7 @@ type VariantReferences = {
 }
 
 export function GenerateVariants(props: VariantsInputProps) {
-  const { t, helpers, apiVersion } = useITSContext();
+  const { t, localizer, config: { apiVersion } } = useITSContext();
   const client = useClient({apiVersion})
 
 
@@ -474,7 +474,7 @@ export function GenerateVariants(props: VariantsInputProps) {
                   >
                     <Details title={(
                       <Text weight="bold" size={2} style={{ cursor: 'pointer' }}>
-                        {helpers.localizer.stringValue(group.title)} ({groupOptionsSelected(group._id)}/{group.options.length})
+                        {localizer.stringValue(group.title)} ({groupOptionsSelected(group._id)}/{group.options.length})
                       </Text>
                     )}>{(
                       <Stack space={3} padding={3}>
@@ -484,11 +484,11 @@ export function GenerateVariants(props: VariantsInputProps) {
                               id={option._id}
                               checked={(selectedOptions[group._id] || []).includes(option._id)}
                               onChange={() => toggleOption(group._id, option._id)}
-                              label={helpers.localizer.stringValue(option.title)}
+                              label={localizer.stringValue(option.title)}
                             />
                             <Box flex={1} paddingLeft={3}>
                               <Text>
-                                <label htmlFor={option._id}>{helpers.localizer.stringValue(option.title)}</label>
+                                <label htmlFor={option._id}>{localizer.stringValue(option.title)}</label>
                               </Text>
                             </Box>
                           </Flex>

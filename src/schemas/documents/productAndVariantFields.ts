@@ -68,15 +68,15 @@ export const createSharedProductFields = (ctx: FieldContext) => {
         sortable: false,
       },
     }),
-    // f('manufacturers', 'array', {
-    //   validation: (rule) => rule.unique(),
-    //   of: [
-    //     {
-    //       type: 'reference',
-    //       to: [{type: 'manufacturer'}]
-    //     }
-    //   ],
-    // }),
+    f('manufacturers', 'array', {
+      validation: (rule) => rule.unique(),
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'manufacturer'}]
+        }
+      ],
+    }),
   ];
 
   return fields;

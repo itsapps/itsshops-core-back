@@ -8,11 +8,11 @@ export const complexPortableText: CoreObject = {
   build: (ctx: FieldContext) => ({
     marks: {
       decorators: [
-        { title: ctx.helpers.t.default('complexPortableText.decorators.strong'), value: 'strong' },
-        { title: ctx.helpers.t.default('complexPortableText.decorators.emphasis'), value: 'em' },
-        { title: ctx.helpers.t.default('complexPortableText.decorators.left'), value: 'left', icon: TextAlignLeft },
-        { title: ctx.helpers.t.default('complexPortableText.decorators.center'), value: 'center', icon: TextAlignCenter },
-        { title: ctx.helpers.t.default('complexPortableText.decorators.right'), value: 'right', icon: TextAlignRight },
+        { title: ctx.t.default('complexPortableText.decorators.strong'), value: 'strong' },
+        { title: ctx.t.default('complexPortableText.decorators.emphasis'), value: 'em' },
+        { title: ctx.t.default('complexPortableText.decorators.left'), value: 'left', icon: TextAlignLeft },
+        { title: ctx.t.default('complexPortableText.decorators.center'), value: 'center', icon: TextAlignCenter },
+        { title: ctx.t.default('complexPortableText.decorators.right'), value: 'right', icon: TextAlignRight },
       ],
       // annotations: [
       //   {
