@@ -52,12 +52,12 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
         optionTitle: localizedValue(option.title, locale)
       }
     })
-    // sort optionsTitles by group sort_order
+    // sort optionsTitles by group sortOrder
     optionTitles.sort((a, b) => {
       const aGroup = optionGroups.find((group) => group._id === a.group);
       const bGroup = optionGroups.find((group) => group._id === b.group);
       if (aGroup && bGroup) {
-        return aGroup.sort_order - bGroup.sort_order
+        return aGroup.sortOrder - bGroup.sortOrder
       }
       return 0
     })

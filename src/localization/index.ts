@@ -5,6 +5,7 @@ import structure_de from './resources/structure_de'
 import structure_en from './resources/structure_en'
 import { deDELocale } from '@sanity/locale-de-de'
 import { flattenAndMerge, deepMerge } from '../utils'
+import { ITSTranslator } from '../types'
 import i18next from 'i18next'
 
 import studio_de from './resources/de'
@@ -116,29 +117,30 @@ export function getStructureOverrideBundles(languages: Language[]) {
   )
 }
 
-export const createCoreTranslator = (
+export const createTranslator = (
   config: CoreBackConfig,
-  locale: string
 ) => {
   // const { defaultLocale, fieldLocales } = config.localization;
   const resources: Record<string, any> = {
-    de: () => ({
+    de: {
       schema: flattenAndMerge(fields_de, config.localization.overrides.fields?.de || {}),
       structure: flattenAndMerge(structure_de, config.localization.overrides.structure?.de || {}),
-    }),
-    en: () => ({
+    },
+    en: {
       schema: flattenAndMerge(fields_en, config.localization.overrides.fields?.en || {}),
       structure: flattenAndMerge(structure_en, config.localization.overrides.structure?.en || {}),
-    }),
+    },
   }
 
   const instance = i18next.createInstance();
   instance.init({
     saveMissing: config.isDev,
-    lng: locale,
+    fallbackLng: config.localization.defaultLocale,
+    supportedLngs: config.localization.uiLocales,
+    // lng: config.localization.defaultLocale,
     // fallbackLng: defaultLocale,
     // supportedLngs: fieldLocales,
-    resources: {[locale]: resources?.[locale]() || {}},
+    resources,
     ns: ['schema', 'structure'],
     defaultNS: 'schema',
     interpolation: { escapeValue: false },
@@ -148,12 +150,15 @@ export const createCoreTranslator = (
     parseMissingKeyHandler: () => null,
   });
 
-  return {
-    t: (key: string, fallback?: string, params = {}) => {
-      return instance.t(key, params) || (fallback || key)
-    },
-    tStrict: (key: string, params = {}) => {
-      return instance.t(key, params);
-    }
-  };
+  return (namespace: string, locale: string): ITSTranslator => {
+    return {
+      default: (key: string, fallback?: string, params = {}) => {
+        return instance.t(key, {lng: locale, ns: namespace, ...params}) || (fallback || key)
+      },
+      strict: (key: string, params = {}) => {
+        return instance.t(key, params);
+      }
+    };  
+  }
+  
 };

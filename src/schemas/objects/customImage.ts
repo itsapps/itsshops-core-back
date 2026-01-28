@@ -20,8 +20,8 @@ export const customImage: CoreObject = {
         prepare: ({ image, title, alt }: any) => {
           return {
             // We use our new array-based helper here
-            title: ctx.getLocalizedValue(title) || 'No title',
-            subtitle: ctx.getLocalizedValue(alt) || 'No alt',
+            title: ctx.helpers.localizer.value(title) || 'No title',
+            subtitle: ctx.helpers.localizer.value(alt) || 'No alt',
             media: image?.asset,
             // media: ctx.getLocalizedValue(image)?.asset,
           };

@@ -95,9 +95,9 @@ export function GenerateVariants(props: VariantsInputProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const query = `*[_type == "variantOptionGroup" && options != null] | order(sort_order asc, title asc) {
+        const query = `*[_type == "variantOptionGroup" && options != null] | order(sortOrder asc, title asc) {
           _id,
-          sort_order,
+          sortOrder,
           title,
           options[]->{_id, title}
         }`

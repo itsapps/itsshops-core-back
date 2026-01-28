@@ -1,23 +1,45 @@
 import { FieldDefinition, FieldGroupDefinition, FieldsetDefinition } from 'sanity';
-import { FieldContext, SchemaContext } from '../types';
+import { FieldContext, ITSContext, SchemaExtension } from '../types';
 
 export function shapeSchema(
   docName: string,
-  coreFields: FieldDefinition[],
   ctx: FieldContext,
+  coreGroups: FieldGroupDefinition[] = [],
+  coreFieldsets: FieldsetDefinition[] = [],
+  coreFields: FieldDefinition[],
+  extension?: SchemaExtension
 ) {
-  const extension = ctx.config.schemaExtensions?.[docName];
-  if (!extension) return { fields: coreFields, groups: [], fieldsets: [] };
+  if (!extension) return { fields: coreFields, groups: coreGroups, fieldsets: coreFieldsets };
 
   // const resolve = (val: any) => (typeof val === 'function' ? val(ctx) : val);
   const resolveWithFieldCtx = (val: any) => (typeof val === 'function' ? val(ctx) : val);
-  const resolveWithSchemaCtx = (val: any) => (typeof val === 'function' ? val(ctx as SchemaContext) : val);
+  const resolveWithSchemaCtx = (val: any) => (typeof val === 'function' ? val(ctx as ITSContext) : val);
 
   const groups: FieldGroupDefinition[] = resolveWithSchemaCtx(extension.groups) || [];
   const fieldsets: FieldsetDefinition[] = resolveWithSchemaCtx(extension.fieldsets) || [];
   const customFields: FieldDefinition[] = resolveWithFieldCtx(extension.fields) || [];
   const fieldOverrides = resolveWithFieldCtx(extension.fieldOverrides) || {};
   const order = extension.order || [];
+
+  const groupMap = new Map<string, FieldGroupDefinition>();
+  // Combine core and extension groups
+  [...coreGroups, ...groups].forEach(group => {
+    // ignore removed groups
+    if (extension.removeGroups?.includes(group.name)) return;
+
+    groupMap.set(group.name, {
+      ...group,
+      // Priority: 
+      // 1. Existing title in the object (if manually set)
+      // 2. Translation key based on docName.groups.groupName
+      // 3. Translation key based on global groups.groupName
+      // 4. Fallback to the name itself
+      title: group.title || 
+        ctx.helpers.t.default(`${docName}.groups.${group.name}`, 
+        ctx.helpers.t.default(`groups.${group.name}`, group.name))
+    });
+  });
+  const mergedGroups = Array.from(groupMap.values());
 
   // 2. Combine Core + Custom
   let allFields = [...coreFields, ...customFields];
@@ -43,7 +65,7 @@ export function shapeSchema(
 
   return {
     fields: allFields,
-    groups,
+    groups: mergedGroups,
     fieldsets
   };
 }

@@ -57,6 +57,25 @@ export function getI18nValue<T>(items: any, locale: string, baseLocale: string):
   return undefined;
 }
 
+export function getI18nDictValue<T>(item: any, locale: string, baseLocale: string, supportedLocales: string[]): T | undefined {
+  if (! item) {
+    return undefined;
+  }
+  if (locale in item) {
+    return item[locale];
+  } else if (baseLocale in item) {
+    return item[baseLocale];
+  } else {
+    // find in other locales
+    for (const key of supportedLocales) {
+      if (key !== locale && key !== baseLocale && item[key]) {
+        return item[key];
+      }
+    }
+  }
+  return undefined;
+}
+
 /**
  * Requirement: Get a value from the new internationalized array structure.
  * Fallback: Requested Locale -> Base Locale -> First available locale -> null
@@ -104,4 +123,8 @@ export const getLocalizedAttr = (
 
 export const createI18nHelper = (locale: string, baseLocale: string) => {
   return <T>(data: any): T | undefined => getI18nValue<T>(data, locale, baseLocale);
+};
+
+export const createI18nDictHelper = (locale: string, baseLocale: string, supportedLocales: string[]) => {
+  return <T>(data: any): T | undefined => getI18nDictValue<T>(data, locale, baseLocale, supportedLocales);
 };

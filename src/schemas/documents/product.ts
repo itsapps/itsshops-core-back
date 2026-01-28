@@ -1,11 +1,17 @@
-import { SchemaContext, FieldContext, CoreDocument } from "../../types";
-import { createSharedProductFields } from "../productAndVariantFields";
+import { PackageIcon } from '@sanity/icons'
+import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { createSharedProductFields, createProductGroups } from "../productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
 import { GenerateVariants } from "../../components/GenerateVariants";
 
 
 export const product: CoreDocument = {
   name: 'product',
+  icon: PackageIcon,
+  feature: 'shop',
+  disallowedActions: ['delete', 'duplicate'],
+  groups: (ctx: ITSContext) => createProductGroups((ctx)),
+  fieldsets: [],
   baseFields: (ctx: FieldContext) => {
     const { f } = ctx;
     return [
@@ -18,11 +24,11 @@ export const product: CoreDocument = {
       //   }
       // }),
       // f('multiple', 'multiColumns'),
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-      // f('title', 'i18nString', { i18n: 'atLeastOne', group: 'product', }),
+      // f('link', 'internalLink', { group: 'product' }),
+      f('title', 'i18nString', { i18n: 'atLeastOne', group: 'product' }),
       f('price', 'number', {
         validation: (Rule) => Rule.positive().required(),
-        // group: 'pricing',
+        group: 'pricing',
         components: {
           input: PriceInput,
         },
@@ -34,7 +40,7 @@ export const product: CoreDocument = {
             to: [{type: 'productVariant'}]
           }
         ],
-        // group: 'variants',
+        group: 'variants',
         // components: {
         //   input: GenerateVariants
         // },
@@ -48,7 +54,7 @@ export const product: CoreDocument = {
       // f('n18nRequiredTitel', 'string', { validation: (Rule) => Rule.required() }),
     ]
   },
-  preview: (ctx: SchemaContext) => {
+  preview: (ctx: ITSContext) => {
     return {
       select: {
         title: 'title',
@@ -58,10 +64,10 @@ export const product: CoreDocument = {
       prepare(s: any) {
         const { title, image, variants } = s
         const count = (variants && variants.length > 0) ? variants.length : 0
-        const variantInfo = count > 0 ? ctx.t('product.preview.variants', undefined, { count }) : undefined
+        const variantInfo = count > 0 ? ctx.helpers.t.default('product.preview.variants', undefined, { count }) : undefined
         // const subtitle = [variantInfo].filter(Boolean).join(", ")
         return {
-          title: ctx.getLocalizedValue(title),
+          title: ctx.helpers.localizer.value(title),
           ...variantInfo && {subtitle: variantInfo},
           media: image,
         }

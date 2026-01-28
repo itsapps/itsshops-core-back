@@ -106,7 +106,7 @@ export const EditGroupOptions = (props: Props) => {
       _id: uuidv4().replaceAll("-", ""),
       _type: 'variantOption',
       title: {de: 'Neue Option'},
-      sort_order: value ? value.length : 0
+      sortOrder: value ? value.length : 0
     });
 
     // Add the new reference to the array

@@ -36,22 +36,31 @@ const productAndVariantFields = {
   description: {
     title: 'Beschreibung',
   },
+  modules: {
+    title: 'Module',
+  },
+}
+
+const productAndVariantGroups = {
+  product: 'Produkt',
+  description: 'Beschreibung',
+  stock: 'Lagerbestand',
+  pricing: 'Preise',
+  media: 'Medien',
+  seo: 'SEO',
+  variants: 'Varianten',
 }
 
 export default {
-  productGroups: {
-    product: 'Produkt',
-    description: 'Beschreibung',
-    pricing: 'Preise',
-    media: 'Medien',
-    seo: 'SEO',
-    variants: 'Varianten'
-  },
   productFieldsets: {
     states: 'Stati',
   },
   product: {
     title: 'Produkt',
+    groups: {
+      ...productAndVariantGroups,
+      variants: 'Varianten',
+    },
     fields: {
       variants: {
         title: 'Produktvarianten',
@@ -66,6 +75,7 @@ export default {
   },
   productVariant: {
     title: 'Produktvariante',
+    groups: productAndVariantGroups,
     fields: {
       ...productAndVariantFields,
       coverImage: {
@@ -603,103 +613,101 @@ export default {
     },
   },
   settings: {
-    general: {
-      title: 'Allgemeine Einstellungen',
-      groups: {
-        siteDetails: 'Beschreibungen',
-        company: 'Firma',
-        bank: 'Bankdaten',
-        displays: 'Anzeigen',
-        advanced: 'Erweitert',
+    title: 'Allgemeine Einstellungen',
+    groups: {
+      siteDetails: 'Beschreibungen',
+      company: 'Firma',
+      bank: 'Bankdaten',
+      displays: 'Anzeigen',
+      advanced: 'Erweitert',
+    },
+    fields: {
+      siteTitle: {
+        title: 'Seitentitel',
+        description: 'Name deiner Seite, normalerweise dein Brand- oder Firmenname',
       },
-      fields: {
-        siteTitle: {
-          title: 'Seitentitel',
-          description: 'Name deiner Seite, normalerweise dein Brand- oder Firmenname',
-        },
-        siteDescription: {
-          title: 'Beschreibung',
-          description: 'Beschreibung deiner Seite.',
-        },
-        siteShortDescription: {
-          title: 'Kurzbeschreibung',
-          description: 'Kurzbeschreibung deiner Seite.',
-        },
-        companyName: {
-          title: 'Firmenname',
-        },
-        companyOwner: {
-          title: 'Firmenbesitzer',
-        },
-        companyPhone: {
-          title: 'Telefonnummer',
-        },
-        companyStreet: {
-          title: 'Straße',
-        },
-        companyZip: {
-          title: 'Postleitzahl',
-        },
-        companyCity: {
-          title: 'Ort',
-        },
-        companyCountry: {
-          title: 'Land',
-        },
-        companyState: {
-          title: 'Bundesland',
-        },
-        companyEmail: {
-          title: 'Email',
-        },
-        companyUID: {
-          title: 'UID',
-        },
-        bankName: {
-          title: 'Bankname',
-        },
-        bankIBAN: {
-          title: 'IBAN',
-        },
-        bankBIC: {
-          title: 'BIC',
-        },
-        orderNumberPrefix: {
-          title: 'Bestellnummer-Präfix',
-          description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-20250315-123456',
-        },
-        invoiceNumberPrefix: {
-          title: 'Rechnungsnummer-Präfix',
-          description: 'Benutzt als Präfix der Rechnungsnummer, z.B. "INV-20250315-123456',
-        },
-        home: {
-          title: 'Startseite',
-          description: 'Diese Seite wird als Startseite angezeigt',
-        },
-        privacy: {
-          title: 'Datenschutzerklärung',
-          description: 'Diese Seite beschreibt die Datenschutzerklärung',
-        },
-        mainMenus: {
-          title: 'Hauptmenüs',
-          description: 'Diese Menüs werden in der Hauptnavigation angezeigt',
-        },
-        footerMenus: {
-          title: 'Fußzeilenmenüs',
-          description: 'Diese Menüs werden in der Fußzeile angezeigt',
-        },
-        gtmID: {
-          title: 'Google Tag Manager (GTM)',
-          description: 'Um GTM zu aktivieren, gib deine Container-ID ein',
-        },
-        stockThreshold: {
-          title: 'Allgemeines unteres Limit für Benachrichtigungen über Lagerbestände',
-          description: 'Erhalte eine Benachrichtigung, wenn ein Produkt unter diesem Limit liegt.',
-        },
-        lastInvoiceNumber: {
-          title: 'Letzte Rechnungsnummer',
-          description: 'Achtung! Dieser Wert wird automatisch erhöht und sollte nicht manuell geändert werden.',
-        },
+      siteDescription: {
+        title: 'Beschreibung',
+        description: 'Beschreibung deiner Seite.',
+      },
+      siteShortDescription: {
+        title: 'Kurzbeschreibung',
+        description: 'Kurzbeschreibung deiner Seite.',
+      },
+      companyName: {
+        title: 'Firmenname',
+      },
+      companyOwner: {
+        title: 'Firmenbesitzer',
+      },
+      companyPhone: {
+        title: 'Telefonnummer',
+      },
+      companyStreet: {
+        title: 'Straße',
+      },
+      companyZip: {
+        title: 'Postleitzahl',
+      },
+      companyCity: {
+        title: 'Ort',
+      },
+      companyCountry: {
+        title: 'Land',
+      },
+      companyState: {
+        title: 'Bundesland',
+      },
+      companyEmail: {
+        title: 'Email',
+      },
+      companyUID: {
+        title: 'UID',
+      },
+      bankName: {
+        title: 'Bankname',
+      },
+      bankIBAN: {
+        title: 'IBAN',
+      },
+      bankBIC: {
+        title: 'BIC',
+      },
+      orderNumberPrefix: {
+        title: 'Bestellnummer-Präfix',
+        description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-20250315-123456',
+      },
+      invoiceNumberPrefix: {
+        title: 'Rechnungsnummer-Präfix',
+        description: 'Benutzt als Präfix der Rechnungsnummer, z.B. "INV-20250315-123456',
+      },
+      home: {
+        title: 'Startseite',
+        description: 'Diese Seite wird als Startseite angezeigt',
+      },
+      privacy: {
+        title: 'Datenschutzerklärung',
+        description: 'Diese Seite beschreibt die Datenschutzerklärung',
+      },
+      mainMenus: {
+        title: 'Hauptmenüs',
+        description: 'Diese Menüs werden in der Hauptnavigation angezeigt',
+      },
+      footerMenus: {
+        title: 'Fußzeilenmenüs',
+        description: 'Diese Menüs werden in der Fußzeile angezeigt',
+      },
+      gtmID: {
+        title: 'Google Tag Manager (GTM)',
+        description: 'Um GTM zu aktivieren, gib deine Container-ID ein',
+      },
+      stockThreshold: {
+        title: 'Allgemeines unteres Limit für Benachrichtigungen über Lagerbestände',
+        description: 'Erhalte eine Benachrichtigung, wenn ein Produkt unter diesem Limit liegt.',
+      },
+      lastInvoiceNumber: {
+        title: 'Letzte Rechnungsnummer',
+        description: 'Achtung! Dieser Wert wird automatisch erhöht und sollte nicht manuell geändert werden.',
       },
     },
   },
@@ -959,7 +967,8 @@ export default {
   carousel: {
     title: 'Karussell',
     preview: {
-      slides: 'Slide(s)',
+      slides_one: '{{count}} Slide',
+      slides_other: '{{count}} Slides',
     },
     fields: {
       slides: {
@@ -999,6 +1008,9 @@ export default {
   localeImage: {
     title: 'Lokalisiertes Bild',
     fields: {
+      image: {
+        title: 'Bild',
+      },
       title: {
         title: 'Titel',
       },

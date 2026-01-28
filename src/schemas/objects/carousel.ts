@@ -10,13 +10,14 @@ export const carousel: CoreObject = {
       fields: [
         f('slides', 'array', { 
           of: [ { type: "localeImage" } ],
+          // options: {
+          //   layout: 'grid'
+          // }
         }),
         f('autoplay', 'boolean', { initialValue: false }),
         f('autoplayDelay', 'number', { initialValue: 5 }),
         f('loop', 'boolean', { initialValue: false }),
         f('fade', 'boolean', { initialValue: false }),
-        f('start', 'string'),
-        f('url', 'string', { validation: (Rule) => Rule.required() }),
       ],
       preview: {
         select: {
@@ -24,8 +25,9 @@ export const carousel: CoreObject = {
         },
         prepare: ({slides}: any) => {
           return {
-            title: ctx.t('carousel.schemaTitle'),
-            subtitle: `${slides?.length || 0} ${ctx.t('carousel.preview.slides')}`,
+            title: ctx.helpers.t.default('carousel.title'),
+            subtitle: ctx.helpers.t.default('carousel.preview.slides', undefined, { count: slides?.length || 0 }),
+            // subtitle: `${slides?.length || 0} ${ctx.t('carousel.preview.slides')}`,
           }
         }
       }

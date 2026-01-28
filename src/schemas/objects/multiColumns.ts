@@ -26,12 +26,12 @@ export const multiColumns: CoreObject = {
           columns: 'columns'
         },
         prepare({ headline, columns }: any) {
-          const title = ctx.getLocalizedValue(headline) || 
-            `${(columns || []).length} ${ctx.t('multiColumns.preview.columns', 'Columns')}`;
+          const title = ctx.helpers.localizer.value(headline) || 
+            `${(columns || []).length} ${ctx.helpers.t.default('multiColumns.preview.columns', 'Columns')}`;
           
           return {
             title,
-            subtitle: ctx.t('multiColumns.schemaTitle', 'Multi Columns'),
+            subtitle: ctx.helpers.t.default('multiColumns.schemaTitle', 'Multi Columns'),
           };
         }
       }

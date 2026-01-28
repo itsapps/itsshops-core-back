@@ -1,12 +1,14 @@
-// packages/core-back/src/types/index.ts
+import { ComponentType } from 'react';
 import { 
   FieldDefinition,
   FieldGroupDefinition,
   FieldsetDefinition,
   Rule, 
   PreviewConfig,
-  ObjectDefinition as SanityObjectDefinition
+  DocumentActionComponent,
 } from 'sanity';
+
+export type SanityDefinedAction = NonNullable<DocumentActionComponent['action']>
 
 /** 1. Localization Types **/
 export interface Language {
@@ -28,6 +30,26 @@ export type StrictTranslatorFunction = (
   key: string, 
   params?: TranslatorParams
 ) => string | undefined;
+
+export interface ITSTranslator {
+  default: TranslatorFunction;
+  strict: StrictTranslatorFunction;
+}
+export interface ITSLocalizer {
+  value: <T>(localizedField: any) => T | undefined;
+  dictValue: <T>(localizedField: any) => T | undefined;
+}
+export interface ITSFormatter {
+  date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string;
+  number: (num: number, options?: Intl.NumberFormatOptions) => string;
+  currency: (num: number, currency?: string) => string;
+}
+
+export interface ITSTranslationHelpers {
+  t: ITSTranslator;
+  localizer: ITSLocalizer;
+  format: ITSFormatter;
+}
 
 /** 2. Field Factory Types **/
 export type I18nRuleShortcut = 
@@ -53,69 +75,78 @@ export type FieldFactory = (
   overrides?: CoreFieldOptions
 ) => FieldDefinition;
 
-/** 3. Context Types (The "Toolbox") **/
-export interface SchemaContext {
-  t: TranslatorFunction;
-  tStrict: StrictTranslatorFunction;
-  getLocalizedValue: <T>(localizedField: any) => T | undefined;
-  format: {
-    date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string;
-    number: (num: number, options?: Intl.NumberFormatOptions) => string;
-    currency: (num: number, currency?: string) => string;
-  };
-  config: CoreBackConfig;
-  locale: string;
+export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'blog' | 'users';
+export type ITSFeatureRegistry = {
+  all: CoreDocument[];
+  get: (name: string) => CoreDocument | undefined;
+  isFeatureEnabled: (name: ITSFeatureKey) => boolean;
+  getEnabled: () => CoreDocument[];
+  isEnabled: (name: string) => boolean;
 }
 
-export interface FieldContext extends SchemaContext {
+export interface ITSContext {
+  config: CoreBackConfig;
+  featureRegistry: ITSFeatureRegistry;
+  locale: string;
+  helpers: ITSTranslationHelpers;
+}
+
+export interface FieldContext extends ITSContext {
   f: FieldFactory;
 }
 
 /** 4. Configuration & Extensions **/
 export interface SchemaExtension {
-  groups?: FieldGroupDefinition[] | ((ctx: SchemaContext) => FieldGroupDefinition[]);
-  fieldsets?: FieldsetDefinition[] | ((ctx: SchemaContext) => FieldsetDefinition[]);
+  icon?: ComponentType;
+  groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+  removeGroups?: string[];
+  fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
   fields?: (ctx: FieldContext) => FieldDefinition[];
   // fieldOverrides?: Record<string, CoreFieldOptions> | ((ctx: FieldContext) => Record<string, CoreFieldOptions>);
   fieldOverrides?: 
     | Record<string, Partial<FieldDefinition>> 
     | ((ctx: FieldContext) => Record<string, Partial<FieldDefinition>>);
-  preview?: (ctx: SchemaContext) => PreviewConfig;
+  preview?: (ctx: ITSContext) => PreviewConfig;
   order?: string[];
 }
 
-// export interface DocumentDefinition {
-//   name: string;
-//   baseFields: (ctx: FieldContext) => FieldDefinition[],
-//   preview: (ctx: SchemaContext) => any
-// }
-
-// export interface ObjectDefinition {
-//   name: string;
-//   type?: string;
-//   // build: (ctx: FieldContext) => Omit<Partial<SanityObjectDefinition>, 'title'>;
-//   build: (ctx: FieldContext) => Omit<SanityObjectDefinition, 'name' | 'type'>;
-//   // baseFields: (ctx: FieldContext) => FieldDefinition[],
-//   // baseFieldsets?: (ctx: FieldContext) => FieldsetDefinition[],
-//   // [key: string]: any;
-// }
-
 export interface CoreObject {
   name: string;
-  type?: 'object' | 'image' | 'file'; // Restricted to container types
+  // We keep 'type' optional because most of the time it's 'object'
+  type?: 'object' | 'block' | 'image' | 'file' | 'string' | 'number'; 
   build: (ctx: FieldContext) => {
-    options?: Record<string, any>;
-    fields?: FieldDefinition[];
-    preview?: any;
-    // We allow any other valid Sanity property here
+    // We allow the build function to return ANY valid Sanity property
     [key: string]: any; 
+  };
+}
+
+export interface ITSStructureItem {
+  type: 'document' | 'singleton' | 'group' | 'divider' | 'custom';
+  id: string;
+  title?: string;
+  icon?: any;
+  feature?: ITSFeatureKey;
+  children?: ITSStructureItem[];
+  component?: (S: any, context: any, ctx: ITSContext) => any;
+  // Positioning logic:
+  position?: {
+    anchor?: 'top' | 'bottom' | string; // 'string' would be the ID of another item
+    placement?: 'before' | 'after';
   };
 }
 
 export interface CoreDocument {
   name: string;
+  icon?: ComponentType;
+  groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+  fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
   baseFields: (ctx: FieldContext) => FieldDefinition[];
-  preview: (ctx: SchemaContext) => any;
+  preview?: (ctx: ITSContext) => PreviewConfig;
+  feature?: ITSFeatureKey;
+  isSingleton?: boolean;
+  allowCreate?: boolean;
+  disallowedActions?: SanityDefinedAction[];
+  initialValue?: Record<string, any> | ((ctx: ITSContext) => Record<string, any>);
 }
 
 export interface ItsshopsConfig {
@@ -133,7 +164,10 @@ export interface ItsshopsConfig {
     localizedFieldTypes?: string[]
   };
   features?: {
-    shop?: boolean;
+    shop?: {
+      enabled: boolean;
+      manufacturer?: boolean;
+    };
     blog?: boolean;
     users?: boolean;
   };
@@ -141,6 +175,9 @@ export interface ItsshopsConfig {
     netlify: { accessToken: string; siteId: string };
   };
   schemaExtensions?: Record<string, SchemaExtension>;
+  documents?: CoreDocument[];
+  objects?: CoreObject[];
+  structure?: ITSStructureItem[];
 }
 
 /** Internal version of the config used by the engine **/
@@ -159,38 +196,11 @@ export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features'> {
     };
   };
   features: {
-    shop: boolean;
+    shop: {
+      enabled: boolean;
+      manufacturer: boolean;
+    };
     blog: boolean;
     users: boolean;
   };
 }
-
-
-// // Re-export everything from the sub-files
-// export * from './config';
-// export * from './localization';
-// export * from './schema';
-
-// // Define the "Toolbox" type to clean up factory signatures
-// import { TranslatorFunction, StrictTranslatorFunction } from './localization';
-// import { CoreBackConfig } from './config';
-// import { FieldFactory } from './schema';
-
-// /** The standard bundle of tools passed to every schema and extension */
-// export interface SchemaContext {
-//   t: TranslatorFunction;
-//   tStrict: StrictTranslatorFunction;
-//   config: CoreBackConfig;
-//   locale: string;
-// }
-
-// export interface LocalSchemaContext extends SchemaContext {
-//   f: FieldFactory;
-// }
-
-// export interface StructureContext {
-//   t: TranslatorFunction;
-//   tStrict: StrictTranslatorFunction;
-//   config: CoreBackConfig;
-//   locale: string;
-// }

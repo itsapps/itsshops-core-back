@@ -1,29 +1,41 @@
-import { defineConfig, WorkspaceOptions } from 'sanity'
+import { ItsshopsConfig, ITSContext, ITSTranslator, CoreBackConfig, ITSFeatureRegistry } from './types';
+export type { 
+  CoreDocument,
+  CoreObject,
+  SanityDefinedAction,
+  ITSStructureItem,
+} from './types';
+export type { Rule } from 'sanity'
+
+import { defineConfig, WorkspaceOptions, Template } from 'sanity'
 import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
 import { media } from 'sanity-plugin-media'
 // import { documentListWidget } from 'sanity-plugin-dashboard-widget-document-list'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 
-import { ItsshopsConfig, SchemaContext } from './types';
 // import { setCoreConfig } from './config';
 import { mapConfig } from './config/mapper';
-
 import { localizedStructure } from './structure'
 import {
-  // createFieldTranslator,
-  // createStructureTranslator,
-  createCoreTranslator,
+  createTranslator,
   getTranslationBundles,
   getStructureOverrideBundles,
   getTranslationPackage,
 } from './localization'
-import { buildSchemas } from './schemas'
+import { createI18nHelper, createI18nDictHelper, createFormatHelpers } from './utils/localization';
+
+import { buildSchemas, createFeatureRegistry } from './schemas'
 import { CustomToolbar } from './components/CustomToolbar'
-import { createI18nHelper, createFormatHelpers } from './utils/localization';
+import { actionResolver } from './config/actions'
 
 export function createCoreBack(config: ItsshopsConfig) {
   const coreConfig = mapConfig(config);
+  const translator = createTranslator(coreConfig)
+  const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.overrides.general)
+  const structureOverrideBundles = getStructureOverrideBundles(coreConfig.localization.uiLanguages)
+  const featureRegistry = createFeatureRegistry(coreConfig)
+  const enabledDocuments = featureRegistry.getEnabled();
   
   const { projectId, dataset, workspaceName } = config
   
@@ -47,28 +59,24 @@ export function createCoreBack(config: ItsshopsConfig) {
       ]
     },
     ...config.i18n?.localizedFieldTypes || []]
-  const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.overrides.general)
-  const structureOverrideBundles = getStructureOverrideBundles(coreConfig.localization.uiLanguages)
+  
   
   const workspace = defineConfig(coreConfig.localization.uiLanguages.map(language => {
-    const coreTranslator = createCoreTranslator(coreConfig, language.id)
-    const getLocalizedValue = createI18nHelper(language.id, coreConfig.localization.defaultLocale);
-    const format = createFormatHelpers(language.id);
-
-    // const fieldTranslator = createFieldTranslator(coreConfig.localization.uiLanguages, language, coreConfig.localization.fieldTranslationOverrides)
-    const schemaContext: SchemaContext = { config: coreConfig, t: coreTranslator.t, tStrict: coreTranslator.tStrict, locale: language.id, getLocalizedValue, format };
-    const structureContext: SchemaContext = { config: coreConfig, t: coreTranslator.t, tStrict: coreTranslator.tStrict, locale: language.id, getLocalizedValue, format };
-
-    // const structureTranslator = createStructureTranslator(coreConfig.localization.uiLanguages, language, coreConfig.localization.structureTranslationOverrides)
-    const structure = localizedStructure(structureContext)
-
-    const schemaTypes = buildSchemas(schemaContext)
-    const internalizedArrayPlugin = internationalizedArray({
-      languages: coreConfig.localization.uiLanguages,
-      fieldTypes: localizedFieldTypes,
-      buttonAddAll: false,
-      languageDisplay: 'titleOnly',
-    })
+    const schemaContext = createContext(
+      'schema',
+      language.id,
+      coreConfig,
+      featureRegistry,
+      translator,
+    );
+    
+    const structureContext = createContext(
+      'structure',
+      language.id,
+      coreConfig,
+      featureRegistry,
+      translator,
+    )
 
     const config: WorkspaceOptions = {
       name: language.id,
@@ -77,16 +85,51 @@ export function createCoreBack(config: ItsshopsConfig) {
       projectId,
       dataset,
       plugins: [
-        internalizedArrayPlugin,
-        structureTool({structure}),
+        internationalizedArray({
+          languages: coreConfig.localization.uiLanguages,
+          fieldTypes: localizedFieldTypes,
+          buttonAddAll: false,
+          languageDisplay: 'titleOnly',
+        }),
+        structureTool({structure: localizedStructure(structureContext)}),
         visionTool(),
         media(),
         ...getTranslationPackage(language.id),
       ],
       schema: {
-        types: schemaTypes,
-        // types: [...customerSchemas],
-        // types: [...coreSchemas, ...customerSchemas],
+        types: buildSchemas(enabledDocuments, schemaContext),
+        templates: (prev) => {
+          const templates = []
+          if (featureRegistry.isEnabled('category')) {
+            const category2Child: Template = {
+              id: 'subCategory',
+              title: 'Sub-category',
+              schemaType: 'category',
+              parameters: [{name: `parentCategoryId`, title: `Parent Category ID`, type: `string`}],
+              value: (parameters: {parentCategoryId: string}) => ({
+                parent: {
+                  _type: `reference`,
+                  _ref: parameters.parentCategoryId
+                }
+              })
+            }
+            templates.push(category2Child)
+          }
+          const allowedDocs = featureRegistry.getEnabled()
+            .filter(doc => {
+              return !doc.isSingleton && doc.allowCreate !== false;
+            })
+
+          const allowedDocIds = allowedDocs.map(doc => doc.name)
+          return [
+            ...prev.filter((template) => allowedDocIds.includes(template.schemaType)),
+            ...templates,
+          ]
+        },
+        // templates: (prev) => {
+        //   const singletons = enabledDocs.filter(d => d.isSingleton).map(d => d.name);
+        //   return prev.filter(template => !singletons.includes(template.schemaType));
+        // }
       },
       studio: {
         components: {
@@ -97,6 +140,7 @@ export function createCoreBack(config: ItsshopsConfig) {
         comments: {
           enabled: false,
         },
+        actions:  (prev, context) => actionResolver(prev, context, featureRegistry),
         unstable_fieldActions: () => [],
       },
       i18n: {
@@ -107,4 +151,28 @@ export function createCoreBack(config: ItsshopsConfig) {
   }))
 
   return workspace
+}
+
+function createContext(
+  ns: string,
+  locale: string,
+  coreConfig: CoreBackConfig,
+  featureRegistry: ITSFeatureRegistry,
+  translator: (namespace: string, locale: string) => ITSTranslator,
+) { 
+  const context: ITSContext = {
+    config: coreConfig,
+    featureRegistry,
+    locale,
+    helpers: {
+      t: translator(ns, locale),
+      localizer: {
+        value: createI18nHelper(locale, coreConfig.localization.defaultLocale),
+        dictValue: createI18nDictHelper(locale, coreConfig.localization.defaultLocale, coreConfig.localization.fieldLocales),
+      },
+      format: createFormatHelpers(locale),
+    }
+  };
+  
+  return context
 }

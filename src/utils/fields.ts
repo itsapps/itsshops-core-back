@@ -1,6 +1,6 @@
 import { Rule, FieldDefinition } from 'sanity';
 import { i18nValidators } from './validation';
-import { SchemaContext, FieldFactory, I18nRuleShortcut } from "../types";
+import { ITSContext, FieldFactory, I18nRuleShortcut } from "../types";
 
 // Map simple types to your internationalized plugin types
 const typeMap: Record<string, string> = {
@@ -21,8 +21,10 @@ const typeMap: Record<string, string> = {
   // content: 'internationalizedArrayBlockContent', // Assuming you named your block type this
 };
 
-export const createFieldFactory = (namespace: string, ctx: SchemaContext): FieldFactory => {
-  const { t, tStrict, config } = ctx;
+export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFactory => {
+  const { config } = ctx;
+  const t = ctx.helpers.t.default;
+  const tStrict = ctx.helpers.t.strict;
   const defaultLocale = config.localization.defaultLocale;
   const allLocales = config.localization.fieldLocales;
 
@@ -57,7 +59,7 @@ export const createFieldFactory = (namespace: string, ctx: SchemaContext): Field
       name: fieldName,
       type: typeMap[type] || type,
       title: t(`${translationPath}.title`),
-      description: tStrict(`${translationPath}.description`),
+      description: tStrict(`${translationPath}.description`, {defaultValue: "shit huhu haha"}),
       validation: (Rule: Rule) => {
         const rules: any[] = [];
         if (i18n) {
@@ -76,7 +78,7 @@ export const createFieldFactory = (namespace: string, ctx: SchemaContext): Field
   };
 };
 
-// export const createFieldFactory = (docName: string, ctx: SchemaContext): FieldFactory => {
+// export const createFieldFactory = (docName: string, ctx: ITSContext): FieldFactory => {
 //   const { t } = ctx;
   
 //   /**

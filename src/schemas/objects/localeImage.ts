@@ -22,9 +22,9 @@ export const localeImage: CoreObject = {
             // We use our new array-based helper here
             // title,
             // subtitle: alt,
-            title: ctx.getLocalizedValue(title) || 'No title',
-            subtitle: ctx.getLocalizedValue(alt) || 'No alt',
-            media: ctx.getLocalizedValue(media),
+            title: ctx.helpers.localizer.value(title) || 'No title',
+            subtitle: ctx.helpers.localizer.value(alt) || 'No alt',
+            media: ctx.helpers.localizer.value(media),
           };
         },
       },

@@ -1,9 +1,16 @@
-import { SchemaContext, FieldContext, CoreDocument } from "../../types";
-import { createSharedProductFields } from "../productAndVariantFields";
+import {PackageIcon} from '@sanity/icons'
+import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { createSharedProductFields, createProductVariantGroups } from "../productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
 
 export const productVariant: CoreDocument = {
   name: 'productVariant',
+  icon: PackageIcon,
+  feature: 'shop',
+  disallowedActions: ['delete', 'duplicate' ],
+  allowCreate: false,
+  groups: (ctx: ITSContext) => createProductVariantGroups((ctx)),
+  fieldsets: [],
   baseFields: (ctx: FieldContext) => {
     const { f } = ctx;
     return [
@@ -31,7 +38,7 @@ export const productVariant: CoreDocument = {
       f('coverImage', 'string', { hidden: true }),
     ]
   },
-  preview: (ctx: SchemaContext) => {
+  preview: (ctx: ITSContext) => {
     return {
       select: {
         title: 'title',
@@ -43,8 +50,8 @@ export const productVariant: CoreDocument = {
       prepare(s: any) {
         const { title, options0, options1, options2, image } = s
         return {
-          title: ctx.getLocalizedValue(title),
-          subtitle: [options0, options1, options2].map(o => ctx.getLocalizedValue(o)).filter(Boolean).join(", "),
+          title: ctx.helpers.localizer.value(title),
+          subtitle: [options0, options1, options2].map(o => ctx.helpers.localizer.value(o)).filter(Boolean).join(", "),
           media: image,
         }
       },

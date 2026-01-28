@@ -6,11 +6,13 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   const { uiLanguages, fieldLanguages, uiLocales, fieldLocales } = getLanguages(config.i18n);
 
   const features = {
-    shop: false,
-    blog: false,
-    users: false,
-    ...config.features && config.features
-  }
+    shop: {
+      enabled: config.features?.shop?.enabled ?? false,
+      manufacturer: config.features?.shop?.manufacturer ?? false
+    },
+    blog: config.features?.blog ?? false,
+    users: config.features?.users ?? false,
+  };
 
   return {
     ...config,

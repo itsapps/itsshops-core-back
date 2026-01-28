@@ -13,7 +13,7 @@ export const localeComplexPortable: CoreObject = {
           block: 'content',
         },
         prepare({ block }: any) {
-          const l = ctx.getLocalizedValue(block);
+          const l = ctx.helpers.localizer.value(block) as Array<any> | undefined;
           const title = l?.[0]?.children?.[0]?.text
           return {
             title: title || "nix",
