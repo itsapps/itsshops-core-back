@@ -1,6 +1,6 @@
 import {PackageIcon} from '@sanity/icons'
 import { ITSContext, FieldContext, CoreDocument } from "../../types";
-import { createSharedProductFields, createProductVariantGroups } from "../productAndVariantFields";
+import { createSharedProductFields, createProductVariantGroups } from "./productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
 
 export const productVariant: CoreDocument = {
@@ -17,23 +17,23 @@ export const productVariant: CoreDocument = {
       f('title', 'i18nString'),
       f('price', 'number', {
         validation: (Rule) => Rule.positive(),
-        // group: 'pricing',
+        group: 'pricing',
         components: {
           input: PriceInput,
         },
       }),
       ...createSharedProductFields(ctx),
       f('active', 'boolean', { initialValue: true }),
-      // f('options', 'array', { 
-      //   of: [
-      //     {
-      //       type: 'reference',
-      //       to: [{type: 'variantOption'}]
-      //     }
-      //   ],
-      //   readOnly: true
-    
-      // }),
+      f('options', 'array', { 
+        group: 'product',
+        of: [
+          {
+            type: 'reference',
+            to: [{type: 'variantOption'}]
+          }
+        ],
+        readOnly: true
+      }),
       f('featured', 'boolean', { initialValue: false }),
       f('coverImage', 'string', { hidden: true }),
     ]

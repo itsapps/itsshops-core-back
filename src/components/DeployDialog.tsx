@@ -1,3 +1,4 @@
+import { NetlifyBuild } from "../types"
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import {
   Button,
@@ -12,7 +13,7 @@ import {
 } from "@sanity/ui"
 import {RocketLaunch} from 'phosphor-react'
 
-import { createNetlifyClient, NetlifyBuild } from '../external/netlify'
+import { createNetlifyClient } from '../external/netlify'
 import { useITSContext } from '../context/ITSCoreProvider'
 
 
@@ -33,7 +34,7 @@ export function DeployDialog() {
   const [actionLoading, setActionLoading] = useState(false)
   const [title, setTitle] = useState('')
   const client = useMemo(() => {
-    return createNetlifyClient({accessToken, siteId});
+    return createNetlifyClient(accessToken, siteId);
   }, [accessToken, siteId]);
 
   const fetchBuild = useCallback(async (isSilent = false) => {

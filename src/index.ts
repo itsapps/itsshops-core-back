@@ -7,6 +7,8 @@ export type {
 } from './types';
 export type { Rule } from 'sanity'
 
+import { sanityApiVersion } from './utils/constants'
+
 import { defineConfig, WorkspaceOptions, Template } from 'sanity'
 import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
@@ -25,7 +27,7 @@ import {
   getStructureOverrideBundles,
   getTranslationPackage,
 } from './localization'
-import { createI18nHelper, createI18nDictHelper, createFormatHelpers } from './utils/localization';
+import { createI18nHelpers, createFormatHelpers } from './utils/localization';
 
 import { buildSchemas, createFeatureRegistry } from './schemas'
 import { CustomToolbar } from './components/CustomToolbar'
@@ -175,14 +177,17 @@ function createContext(
 ) { 
   const context: ITSContext = {
     config: coreConfig,
+    apiVersion: sanityApiVersion,
     featureRegistry,
     locale,
     helpers: {
       t: translator(ns, locale),
-      localizer: {
-        value: createI18nHelper(locale, coreConfig.localization.defaultLocale),
-        dictValue: createI18nDictHelper(locale, coreConfig.localization.defaultLocale, coreConfig.localization.fieldLocales),
-      },
+      localizer: createI18nHelpers(locale, coreConfig.localization.defaultLocale),
+      // localizer: {
+      //   value: createI18nHelper(locale, coreConfig.localization.defaultLocale),
+      //   objectValue: createI18nObjectHelper(locale, coreConfig.localization.defaultLocale),
+      //   dictValue: createI18nDictHelper(locale, coreConfig.localization.defaultLocale, coreConfig.localization.fieldLocales),
+      // },
       format: createFormatHelpers(locale),
     }
   };

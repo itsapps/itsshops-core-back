@@ -1,13 +1,15 @@
+import { ITSi18nImage } from '../types'
+import { useITSContext } from '../context/ITSCoreProvider'
 import React from 'react';
 import {Box, Button, Flex, Dialog, Spinner, Card} from '@sanity/ui'
 import { TrashIcon } from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
-import {useTranslation, useClient} from 'sanity'
-import {sanityApiVersion} from '../utils/constants'
+import {useClient} from 'sanity'
+
 // import {LocaleImage} from '@typings/models'
 
 type Props = {
-  images: LocaleImage[]
+  images: ITSi18nImage[]
   value: string
   onSubmit: (image: string) => void
   onRemove: () => void
@@ -16,9 +18,9 @@ type Props = {
 }
 
 export const CoverImageDialog = ({ images, value, onSubmit, onRemove, onCancel, loading }: Props) => {
-  const client = useClient({apiVersion: sanityApiVersion})
+  const { t, helpers, apiVersion } = useITSContext();
+  const client = useClient({apiVersion})
   const imageBuilder = imageUrlBuilder(client)
-  const {t} = useTranslation('itsapps')
 
   if (images.length == 0) {
     return <p>No images uploaded yet.</p>;

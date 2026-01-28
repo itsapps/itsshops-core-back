@@ -1,7 +1,5 @@
 import { SchemaIcon } from '@sanity/icons'
 import { ITSContext, FieldContext, CoreDocument } from "../../types";
-import { sanityApiVersion } from '../../utils/constants';
-
 
 export const category: CoreDocument = {
   name: 'category',
@@ -9,7 +7,7 @@ export const category: CoreDocument = {
   feature: 'shop',
   disallowedActions: ['delete' ],
   baseFields: (ctx: FieldContext) => {
-    const { f } = ctx;
+    const { f, apiVersion } = ctx;
     return [
       f('title', 'i18nString', { i18n: 'atLeastOne' }),
       // f('description', 'i18nString', { i18n: 'atLeastOne' }),
@@ -31,7 +29,7 @@ export const category: CoreDocument = {
 
             // Count how many categories have no parent
             return context
-              .getClient({ apiVersion: sanityApiVersion })
+              .getClient({ apiVersion })
               .fetch('count(*[_type == "category" && !defined(parent) && _id != $id])', {
                 id: context.document?._id,
               })

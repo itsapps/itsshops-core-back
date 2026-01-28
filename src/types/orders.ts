@@ -1,0 +1,118 @@
+import { SendMailType } from './mail';
+
+export type Address = {
+  city: string;
+  country: string;
+  zip: string;
+  state?: string;
+  name: string;
+  prename: string;
+  lastname: string;
+  phone?: string;
+  line1: string;
+  line2?: string;
+};
+
+export type Shipping = {
+  address: Address;
+  rateTitle: string;
+  rateId: string;
+  rateCost: number;
+}
+
+export type OrderItemOption = {
+  title?: Record<string, string>,
+  group?: Record<string, string>
+}
+
+export type BaseOrderItem = {
+  _key: string
+  type: number
+  productId: string
+  parentId?: string
+  productNumber?: string
+  price: number
+  quantity: number
+  title: Record<string, string>
+  packed: boolean
+  orderId: string
+}
+export type OrderItem = BaseOrderItem & {
+  options?: OrderItemOption[]
+}
+export type OrderItemBundleItem = {
+  type: number;
+  parentId: string;
+  productId: string;
+  count: number;
+  title: Record<string, string>
+}
+export type OrderBundleItem = BaseOrderItem & {
+  items: OrderItemBundleItem[]
+}
+
+export type OrderTotals = {
+  subtotal: number;
+  total: number;
+  vat: number;
+  vatRate: number;
+  currency: string;
+  discount?: number;
+}
+
+export type OrderFreeProduct = {
+  _key: string;
+  title: Record<string, string>;
+  productId: string;
+  productNumber?: string;
+  quantity: number;
+  packed: boolean;
+}
+
+export type OrderVoucher = {
+  voucherId: string
+  title: Record<string, string>
+}
+
+export type OrderPaymentStatus = 'succeeded' | 'refunded' | 'partiallyRefunded'
+export type OrderStatus = 'created' | 'processing' | 'shipped' | 'delivered' | 'returned' | 'canceled'
+
+export type StatusHistoryEntry =
+  | {
+      type: 'payment';
+      state: OrderPaymentStatus;
+      timestamp: string;
+      source?: string;
+      note?: string;
+    }
+  | {
+      type: 'fulfillment';
+      state: OrderStatus;
+      timestamp: string;
+      source?: string;
+      note?: string;
+    };
+
+export type StatusAction =
+  | { type: 'fulfillment'; newState: OrderStatus; label: string, mailType?: SendMailType }
+  | { type: 'payment'; newState: OrderPaymentStatus; label: string, mailType?: SendMailType };
+
+
+export type Order = {
+  _id: string;
+  orderNumber: string;
+  invoiceNumber: string;
+  status: OrderStatus;
+  paymentStatus: OrderPaymentStatus;
+  paymentIntentId: string;
+  items: (OrderItem | OrderBundleItem)[];
+  contactEmail: string;
+  shipping: Shipping;
+  billingAddress?: Address;
+  totals: OrderTotals;
+  freeProducts?: OrderFreeProduct[];
+  vouchers?: OrderVoucher[];
+  trackingNumber?: string;
+  locale: string;
+  statusHistory: StatusHistoryEntry[];
+}

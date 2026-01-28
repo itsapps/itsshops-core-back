@@ -16,11 +16,16 @@ export const variantOptionGroup: CoreDocument = {
         initialValue: 0,
         validation: (rule) => rule.required().positive(),
       }),
-      f('options', 'reference', {
-        to: [{ type: 'variantOption' }],
-        // components: {
-        //   input:  EditGroupOptions
-        // }
+      f('options', 'array', {
+        of: [{
+          type: 'reference',
+          to: [{
+            type: 'variantOption',
+          }],
+        }],
+        components: {
+          input:  EditGroupOptions
+        }
       }),
     ]
   },

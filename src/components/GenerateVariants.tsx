@@ -1,24 +1,26 @@
-import { useToast, Grid, Flex, Button, Dialog, Stack, Box, Card, Text, Checkbox, Inline, Spinner } from '@sanity/ui'
-import { SparklesIcon, TrashIcon } from '@sanity/icons'
-import {fromString as pathFromString} from '@sanity/util/paths'
-import React, { useCallback, useState, useEffect } from 'react'
-import { ArrayOfObjectsInputProps, set, useFormValue, useClient, useTranslation, useCurrentLocale } from 'sanity'
-import { usePaneRouter } from 'sanity/structure'
-import { v4 as uuidv4 } from 'uuid';
-import {nanoid} from 'nanoid'
-import {apiVersion} from '@helpers/globals'
-import {localizedValue} from '@helpers/utils'
-import {ConfirmButton} from '@components/ConfirmButton';
-import {Details} from '@components/Details';
-import {LoadingBox} from '@components/LoadingBox';
-import {CoverImageDialog} from '@components/CoverImageDialog';
-import {ProductVariantItem} from '@components/ProductVariantItem'
 import {
   DocumentReference,
   Product,
   VariantContainer,
   VariantOptionGroup,
-} from '@typings/models'
+} from '../types'
+import { useITSContext } from '../context/ITSCoreProvider'
+
+import { useToast, Grid, Flex, Button, Dialog, Stack, Box, Card, Text, Checkbox, Inline, Spinner } from '@sanity/ui'
+import { SparklesIcon, TrashIcon } from '@sanity/icons'
+import {fromString as pathFromString} from '@sanity/util/paths'
+import React, { useCallback, useState, useEffect } from 'react'
+import { ArrayOfObjectsInputProps, set, useFormValue, useClient } from 'sanity'
+import { usePaneRouter } from 'sanity/structure'
+import { v4 as uuidv4 } from 'uuid';
+import {nanoid} from 'nanoid'
+
+import {ConfirmButton} from './ConfirmButton';
+import {Details} from './Details';
+import {LoadingBox} from './LoadingBox';
+import {CoverImageDialog} from './CoverImageDialog';
+import {ProductVariantItem} from './ProductVariantItem'
+
 
 type VariantsInputProps = Omit<ArrayOfObjectsInputProps, 'value'> & {
   value: DocumentReference[]
@@ -34,8 +36,10 @@ type VariantReferences = {
 }
 
 export function GenerateVariants(props: VariantsInputProps) {
-  const {t} = useTranslation('itsapps')
-  const locale = useCurrentLocale().id.substring(0, 2)
+  const { t, helpers, apiVersion } = useITSContext();
+  const client = useClient({apiVersion})
+
+
   const toast = useToast()
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [coverImageDialogVariant, setCoverImageDialogVariant] = useState<string | undefined>(undefined);
@@ -50,8 +54,6 @@ export function GenerateVariants(props: VariantsInputProps) {
   const originalDocument = useFormValue([]) as Product;
   const productImages = originalDocument.images ?? [];
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
-
-  const client = useClient({apiVersion: apiVersion})
 
   const fetchVariants = async () => {
     if (!value) return
@@ -472,7 +474,7 @@ export function GenerateVariants(props: VariantsInputProps) {
                   >
                     <Details title={(
                       <Text weight="bold" size={2} style={{ cursor: 'pointer' }}>
-                        {localizedValue(group.title, locale)} ({groupOptionsSelected(group._id)}/{group.options.length})
+                        {helpers.localizer.stringValue(group.title)} ({groupOptionsSelected(group._id)}/{group.options.length})
                       </Text>
                     )}>{(
                       <Stack space={3} padding={3}>
@@ -482,11 +484,11 @@ export function GenerateVariants(props: VariantsInputProps) {
                               id={option._id}
                               checked={(selectedOptions[group._id] || []).includes(option._id)}
                               onChange={() => toggleOption(group._id, option._id)}
-                              label={localizedValue(option.title, locale)}
+                              label={helpers.localizer.stringValue(option.title)}
                             />
                             <Box flex={1} paddingLeft={3}>
                               <Text>
-                                <label htmlFor={option._id}>{localizedValue(option.title, locale)}</label>
+                                <label htmlFor={option._id}>{helpers.localizer.stringValue(option.title)}</label>
                               </Text>
                             </Box>
                           </Flex>

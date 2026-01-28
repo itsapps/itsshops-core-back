@@ -1,14 +1,6 @@
+import { NetlifyClient } from "../types"
 
-export type NetlifyBuild = {
-  id?: string;
-  deploy_id?: string;
-  sha?: string;
-  done?: boolean;
-  error?: string;
-  created_at?: string;
-}
-
-export const createNetlifyClient = (config: { accessToken: string; siteId: string }) => {
+export const createNetlifyClient = (accessToken: string, siteId: string): NetlifyClient => {
   const url = 'https://api.netlify.com/api/v1'
 
   const requestData = async (
@@ -20,7 +12,7 @@ export const createNetlifyClient = (config: { accessToken: string; siteId: strin
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       ...payload && { body: JSON.stringify(payload) },
     })
@@ -32,8 +24,8 @@ export const createNetlifyClient = (config: { accessToken: string; siteId: strin
     // getLatestBuilds: () => get(`/sites/${config.siteId}/builds?page=1&per_page=1`) as Promise<NetlifyBuild[]>,
     // cancelDeploy: (deployId: string) => post(`/deploys/${deployId}/cancel`),
     // triggerDeploy: (title: string) => post(`/sites/${config.siteId}/builds`, {title}),
-    getLatestBuilds: () => requestData('GET', `/sites/${config.siteId}/builds?page=1&per_page=1`),
+    getLatestBuilds: () => requestData('GET', `/sites/${siteId}/builds?page=1&per_page=1`),
     cancelDeploy: (deployId: string) => requestData('POST', `/deploys/${deployId}/cancel`),
-    triggerBuild: (title: string) => requestData('POST', `/sites/${config.siteId}/builds`, {title}),
+    triggerBuild: (title: string) => requestData('POST', `/sites/${siteId}/builds`, {title}),
   }
 }

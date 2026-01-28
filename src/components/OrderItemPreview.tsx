@@ -1,19 +1,18 @@
+import { OrderItem, OrderBundleItem, ITSi18nArray } from '../types'
+import { useITSContext } from '../context/ITSCoreProvider'
 
 import React, { useEffect, useState } from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import { Inline, Card, Stack, Flex, Button, Text, Checkbox } from '@sanity/ui'
 import { usePaneRouter } from 'sanity/structure'
-import { useClient, useCurrentLocale } from 'sanity'
+import { useClient } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {apiVersion} from '@helpers/globals'
-import {localizedObjectValue, localizedValue, localizeMoney} from '@helpers/utils'
-import {ProductTypes} from '@helpers/globals'
-import { OrderItem, OrderBundleItem, LocaleString } from '@typings/models'
+import { ProductTypes } from '../utils/constants'
 
 type ProductData = {
   _id: string
   productNumber: string
-  title?: LocaleString
+  title?: ITSi18nArray
   images?: any[]
 }
 type VariantData = {
@@ -23,8 +22,11 @@ type ProductVariantData = ProductData & VariantData
 
 
 export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleItem), orderId: string}) {
+  const { helpers, apiVersion } = useITSContext();
   const client = useClient({ apiVersion })
-  const locale = useCurrentLocale().id.substring(0, 2)
+  
+  const localizers = helpers.localizer
+
   const imageBuilder = imageUrlBuilder(client)
   const { type, productId, parentId, quantity, price, title } = props.item || {}
   const [packed, setPacked] = useState(props.item.packed || false)
@@ -93,9 +95,9 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
     })
   }
 
-  const displayTitle = (localizedObjectValue(variant, 'title', locale) ||
-    localizedObjectValue(product, 'title', locale) ||
-    localizedValue(title, locale) || 'No title')
+  const displayTitle = (localizers.objectStringValue(variant, 'title') ||
+    localizers.objectStringValue(product, 'title') ||
+    localizers.stringValue(title) || 'No title')
 
   const getImage = () => {
     if (!product && !variant) {
@@ -119,8 +121,8 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
   if (!isBundleProduct) {
     const variantProps = props.item as OrderItem
     optionGroups = isBundleProduct ? [] : (variantProps.options || []).map((option) => {
-      const groupTitle = localizedObjectValue(option, 'group', locale)
-      const optionTitle = localizedObjectValue(option, 'title', locale)
+      const groupTitle = localizers.objectStringValue(option, 'group') || 'No group'
+      const optionTitle = localizers.objectStringValue(option, 'title') || 'No title'
       return {group: groupTitle, title: optionTitle}
     })
   }
@@ -128,7 +130,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
   if (isBundleProduct) {
     const bundleProps = props.item as OrderBundleItem
     bundleItems = !isBundleProduct ? [] : (bundleProps.items || []).map((item) => {
-      return {count: item.count, title: localizedObjectValue(item, 'title', locale)}
+      return {count: item.count, title: localizers.objectStringValue(item, 'title') || 'No title'}
     })
   }
 
@@ -202,7 +204,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
             )}
             
           </Stack>    
-          <Text align={'right'}>{localizeMoney(price*quantity/100, locale)}</Text>
+          <Text align={'right'}>{helpers.format.currency(price*quantity/100)}</Text>
         </Flex>
     </Card>
   )

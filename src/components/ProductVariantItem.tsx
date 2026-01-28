@@ -1,15 +1,13 @@
-
+import { useITSContext } from '../context/ITSCoreProvider'
 import React from 'react'
-import {useTranslation, useCurrentLocale, useClient} from 'sanity'
+import { useClient } from 'sanity'
 import {Heading, Container, Text, Box, Button, Grid, Stack, Flex, Card} from '@sanity/ui'
 import { ImageIcon, TrashIcon } from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 
-import {apiVersion} from '@helpers/globals'
-import {localizedValue} from '@helpers/utils'
-import { Product, VariantContainer, VariantOption, VariantOptionGroup } from "@typings/models";
-import {ConfirmButton} from '@components/ConfirmButton';
-import {LoadingBox} from '@components/LoadingBox';
+import { Product, VariantContainer, VariantOption, VariantOptionGroup } from "../types";
+import {ConfirmButton} from './ConfirmButton';
+import {LoadingBox} from './LoadingBox';
 
 type Props = {
   variant: VariantContainer
@@ -22,8 +20,9 @@ type Props = {
 }
 
 export const ProductVariantItem = ({variant, variantOptionGroups, product, onClick, onCoverImageClick, onDelete, loading}: Props) => {
-  const {t} = useTranslation('itsapps')
-  const locale = useCurrentLocale().id.substring(0, 2)
+  const { t, helpers, apiVersion } = useITSContext();
+  const stringValue = helpers.localizer.stringValue
+
   const client = useClient({apiVersion})
   const imageBuilder = imageUrlBuilder(client)
 
@@ -34,7 +33,7 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
   const productImages = product.images || []
   const image = coverImageAssetRef && productImages.find(image => image.asset?._ref === coverImageAssetRef)
 
-  const getVariantTitles = (variantOptions: VariantOption[], optionGroups: VariantOptionGroup[], locale: string) => {
+  const getVariantTitles = (variantOptions: VariantOption[], optionGroups: VariantOptionGroup[]) => {
     if (variantOptions == null) return []
   
     const optionTitles = variantOptions.map((option) => {
@@ -43,13 +42,13 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
         return {
           group: null,
           groupTitle: null,
-          optionTitle: localizedValue(option.title, locale)
+          optionTitle: stringValue(option.title)
         }
       }
       return {
         group: optionGroup?._id,
-        groupTitle: localizedValue(optionGroup?.title, locale),
-        optionTitle: localizedValue(option.title, locale)
+        groupTitle: stringValue(optionGroup?.title),
+        optionTitle: stringValue(option.title)
       }
     })
     // sort optionsTitles by group sortOrder
@@ -76,11 +75,11 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
           <Flex gap={1} direction={['column', 'column', 'row']} justify={'space-between'}>
             <Stack space={1} flex={1}>
               <Flex flex={[1, 2, 3]} gap={1} direction={'column'}>
-                <Heading as="h3" onClick={() => onClick(item._id)} style={{ cursor: 'pointer' }}>{localizedValue(item.title, locale)}</Heading>
+                <Heading as="h3" onClick={() => onClick(item._id)} style={{ cursor: 'pointer' }}>{stringValue(item.title)}</Heading>
                 {item.productNumber && <Text size={0}>{item.productNumber}</Text>}
                 <Container paddingTop={3}>
                   <ul style={{ margin: 0, marginLeft: "10px", padding: 0 }}>
-                    {getVariantTitles(item.options, variantOptionGroups, locale)
+                    {getVariantTitles(item.options, variantOptionGroups)
                       .map((entry, i) => (
                         <li key={i}>
                           <strong style={{ fontWeight: 'bold' }}>{entry.group}</strong>: {entry.option}

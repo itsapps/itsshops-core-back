@@ -1,3 +1,13 @@
+export * from './localization';
+export * from './mail';
+export * from './netlify';
+export * from './frontend';
+export * from './orders';
+export * from './schema';
+
+import { I18nValidationOptions, ITSTranslationHelpers, Language } from './localization';
+import { ITSFrontendClient } from './frontend';
+
 import { ComponentType } from 'react';
 import { 
   FieldDefinition,
@@ -10,58 +20,6 @@ import {
 } from 'sanity';
 
 export type SanityDefinedAction = NonNullable<DocumentActionComponent['action']>
-
-/** 1. Localization Types **/
-export interface Language {
-  id: string;
-  title: string;
-  locale: string;
-  weekInfo: {firstDay: number, weekend: number[], minimalDays: number}
-}
-
-export type TranslatorParams = Record<string, string | number | boolean>;
-
-export type TranslatorFunction = (
-  key: string, 
-  fallback?: string, 
-  params?: TranslatorParams
-) => string;
-
-export type StrictTranslatorFunction = (
-  key: string, 
-  params?: TranslatorParams
-) => string | undefined;
-
-export interface ITSTranslator {
-  default: TranslatorFunction;
-  strict: StrictTranslatorFunction;
-}
-export interface ITSLocalizer {
-  value: <T>(localizedField: any) => T | undefined;
-  dictValue: <T>(localizedField: any) => T | undefined;
-}
-export interface ITSFormatter {
-  date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string;
-  number: (num: number, options?: Intl.NumberFormatOptions) => string;
-  currency: (num: number, currency?: string) => string;
-}
-
-export interface ITSTranslationHelpers {
-  t: ITSTranslator;
-  localizer: ITSLocalizer;
-  format: ITSFormatter;
-}
-
-/** 2. Field Factory Types **/
-export type I18nRuleShortcut = 
-  | 'requiredDefault' 
-  | 'requiredDefaultWarning'
-  | 'requiredAll'
-  | 'atLeastOne'
-  | 'atLeastOneWarning'
-  | { min?: number; max?: number; warning?: boolean };
-
-export type I18nValidationOptions = I18nRuleShortcut | I18nRuleShortcut[];
 
 export type CoreFieldOptions = Omit<Partial<FieldDefinition>, 'validation'> & {
   i18n?: I18nValidationOptions;
@@ -90,10 +48,12 @@ export interface ITSContext {
   featureRegistry: ITSFeatureRegistry;
   locale: string;
   helpers: ITSTranslationHelpers;
+  apiVersion: string;
 }
 
 export interface ITSProviderContext extends ITSContext {
   t: TFunction
+  frontendClient: ITSFrontendClient
 }
 
 export interface FieldContext extends ITSContext {
@@ -177,7 +137,7 @@ export interface ItsshopsConfig {
     users?: boolean;
   };
   integrations: {
-    netlify: { accessToken: string; siteId: string, projectName: string };
+    netlify: { accessToken: string; siteId: string, projectName: string, endpoint: string, secret: string };
   };
   schemaExtensions?: Record<string, SchemaExtension>;
   documents?: CoreDocument[];

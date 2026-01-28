@@ -1,5 +1,5 @@
-import type { FieldContext, ITSContext } from "../types";
-import { PriceInput } from "../components/PriceInput";
+import type { FieldContext, ITSContext } from "../../types";
+import { PriceInput } from "../../components/PriceInput";
 
 export const createSharedProductFields = (ctx: FieldContext) => {
   const { f } = ctx;

@@ -1,6 +1,6 @@
 import { PackageIcon } from '@sanity/icons'
 import { ITSContext, FieldContext, CoreDocument } from "../../types";
-import { createSharedProductFields, createProductGroups } from "../productAndVariantFields";
+import { createSharedProductFields, createProductGroups } from "./productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
 import { GenerateVariants } from "../../components/GenerateVariants";
 
@@ -41,9 +41,9 @@ export const product: CoreDocument = {
           }
         ],
         group: 'variants',
-        // components: {
-        //   input: GenerateVariants
-        // },
+        components: {
+          input: GenerateVariants
+        },
       }),
       // f('i18nTitel', 'number', { validation: (Rule) => Rule.required().min(3) }),
       // f('i18nTitel', 'i18nString', { i18n: ['atLeastOne', { min: 3, warning: false }] }),

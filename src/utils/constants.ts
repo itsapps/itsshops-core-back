@@ -19,3 +19,9 @@ export const countryOptions = [
   { title: { en: 'Sweden', de: 'Schweden' }, value: 'SE' },
 ]
 export const defaultCountry = countryOptions.find(c => c.isDefault) || countryOptions[0]
+
+export const ProductTypes = Object.freeze({
+  SANITY_PRODUCT: 1,
+  SANITY_PRODUCT_VARIANT: 2,
+  SANITY_PRODUCT_BUNDLE: 3,
+});

@@ -1,18 +1,7 @@
-import React from 'react'
 import { v4 as uuidv4 } from 'uuid';
-import { SendMailType } from '@typings/models'
+import { SendMailType, ITSFrontendClient } from '../types'
 
-export function useFrontendClient(locale: string) {
-  const client = React.useMemo(() => {
-    return FrontendClient(locale)
-  }, [locale])
-  return client
-}
-
-export const FrontendClient = (locale: string) => {
-  const url = process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_ENDPOINT! + '/api'
-  const secret = process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_SECRET!
-
+export const createFrontendClient = (locale: string, endpoint: string, secret: string): ITSFrontendClient => {
   const requestData = async (accept: string, path: string, payload?: Record<string, any>) => {
     const requestId = uuidv4().replaceAll("-", "")
     const merged = {
@@ -22,7 +11,7 @@ export const FrontendClient = (locale: string) => {
     }
 
     try {
-      const response = await fetch(url + path, {
+      const response = await fetch(endpoint + path, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",

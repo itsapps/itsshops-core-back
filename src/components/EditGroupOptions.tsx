@@ -1,28 +1,30 @@
+import { useITSContext } from '../context/ITSCoreProvider'
+import {DocumentReference, VariantOption} from '../types'
+
 import React, { useState, useEffect, useCallback } from 'react'
 import { useToast, Grid, Flex, Button, Stack, Card, Spinner } from '@sanity/ui'
 import { SparklesIcon, TrashIcon } from '@sanity/icons'
-import { ArrayOfObjectsInputProps, useFormValue, set, useClient, useTranslation, useCurrentLocale, SanityDocument } from 'sanity'
+import { ArrayOfObjectsInputProps, useFormValue, set, useClient, SanityDocument } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import { usePaneRouter } from 'sanity/structure'
 import {nanoid} from 'nanoid'
 import { v4 as uuidv4 } from 'uuid';
-import {apiVersion} from '@helpers/globals'
-import {localizedValue} from '@helpers/utils'
-import {ConfirmButton} from '@components/ConfirmButton';
-import {DocumentReference, VariantOption} from '@typings/models'
+
+import {ConfirmButton} from './ConfirmButton';
+
 
 type Props = Omit<ArrayOfObjectsInputProps, 'value'> & {
   value?: DocumentReference[]
 }
 
 export const EditGroupOptions = (props: Props) => {
+  const { t, helpers, apiVersion } = useITSContext();
+  const client = useClient({apiVersion})
+
   const { value, onChange } = props;
   const toast = useToast()
-  const {t} = useTranslation('itsapps')
-  const locale = useCurrentLocale().id.substring(0, 2)
   const [options, setOptions] = useState<VariantOption[]>([]);
   const [loading, setLoading] = useState(false);
-  const client = useClient({apiVersion})
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
   const originalDocument = useFormValue([]) as SanityDocument;
   
@@ -105,7 +107,9 @@ export const EditGroupOptions = (props: Props) => {
     const newOption = await client.create({
       _id: uuidv4().replaceAll("-", ""),
       _type: 'variantOption',
-      title: {de: 'Neue Option'},
+      title: [
+        { _key: 'de', value: 'Neue Option' }
+      ],
       sortOrder: value ? value.length : 0
     });
 
@@ -139,7 +143,7 @@ export const EditGroupOptions = (props: Props) => {
                         lineHeight: '1.4',
                       }}>
                       <Stack space={1}>
-                        <div>{option ? localizedValue(option.title, locale) : ''}</div>
+                        <div>{option ? helpers.localizer.stringValue(option.title) : ''}</div>
                       </Stack>
                     </Button>
                     <ConfirmButton

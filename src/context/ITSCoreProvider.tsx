@@ -1,8 +1,8 @@
-// EngineContext.tsx
+import { ITSContext, ITSProviderContext } from '../types'
 import { createContext, useContext, useMemo } from 'react'
 import { useTranslation } from 'sanity'
+import { createFrontendClient } from '../external/frontend'
 
-import { ITSContext, ITSProviderContext } from '../types'
 // import { useCurrentLocale } from './your-locale-hook' // Replace with your actual hook
 
 
@@ -24,8 +24,18 @@ export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, 
   //   t,
   //   // netlify
   // }), [config, t])
+  const frontendClient = useMemo(() => {
+    const { endpoint, secret } = ctx.config.integrations.netlify;
+    return createFrontendClient(ctx.locale, endpoint, secret);
+  }, [ctx.locale, ctx.config.integrations.netlify]);
 
-  return <ITSCoreContext.Provider value={{...ctx, t}}>{children}</ITSCoreContext.Provider>
+  const value = useMemo(() => ({
+    ...ctx,
+    t,
+    frontendClient
+  }), [ctx, t, frontendClient]);
+
+  return <ITSCoreContext.Provider value={value}>{children}</ITSCoreContext.Provider>
 }
 
 // 2. Create the "God Hook"

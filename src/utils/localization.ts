@@ -57,6 +57,18 @@ export function getI18nValue<T>(items: any, locale: string, baseLocale: string):
   return undefined;
 }
 
+export function getI18nObjectValue<T>(obj: any, key: string, locale: string, baseLocale: string): T | undefined {
+  if (! obj) {
+    return undefined;
+  }
+
+  const value = obj[key]
+  if (!value) {
+    return undefined;
+  }
+  return getI18nValue(value, locale, baseLocale);
+}
+
 export function getI18nDictValue<T>(item: any, locale: string, baseLocale: string, supportedLocales: string[]): T | undefined {
   if (! item) {
     return undefined;
@@ -121,10 +133,23 @@ export const getLocalizedAttr = (
   return getI18nValue(i18nArray, locale, baseLocale);
 };
 
-export const createI18nHelper = (locale: string, baseLocale: string) => {
-  return <T>(data: any): T | undefined => getI18nValue<T>(data, locale, baseLocale);
-};
+export const createI18nHelpers = (locale: string, baseLocale: string) => ({
+  value: <T>(data: any): T | undefined => getI18nValue<T>(data, locale, baseLocale),
+  dictValue: <T>(data: any): T | undefined => getI18nDictValue<T>(data, locale, baseLocale, [locale, baseLocale]),
+  objectValue: <T>(obj: any, key: string): T | undefined => getI18nObjectValue<T>(obj, key, locale, baseLocale),
 
-export const createI18nDictHelper = (locale: string, baseLocale: string, supportedLocales: string[]) => {
-  return <T>(data: any): T | undefined => getI18nDictValue<T>(data, locale, baseLocale, supportedLocales);
-};
+  stringValue: (data: any): string | undefined => getI18nValue<string>(data, locale, baseLocale),
+  objectStringValue: (obj: any, key: string): string | undefined => getI18nObjectValue<string>(obj, key, locale, baseLocale),
+  dictStringValue: (data: any): string | undefined => getI18nDictValue<string>(data, locale, baseLocale, [locale, baseLocale]),
+})
+// export const createI18nHelper = (locale: string, baseLocale: string) => {
+//   return <T>(data: any): T | undefined => getI18nValue<T>(data, locale, baseLocale);
+// };
+
+// export const createI18nDictHelper = (locale: string, baseLocale: string, supportedLocales: string[]) => {
+//   return <T>(data: any): T | undefined => getI18nDictValue<T>(data, locale, baseLocale, supportedLocales);
+// };
+
+// export const createI18nObjectHelper = (locale: string, baseLocale: string) => {
+//   return <T>(data: any, key: string): T | undefined => getI18nObjectValue<T>(data, key, locale, baseLocale);
+// };

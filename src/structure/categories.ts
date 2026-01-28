@@ -1,11 +1,11 @@
 import type { StructureBuilder } from 'sanity/structure'
-import { sanityApiVersion } from '../utils/constants'
 import { SchemaIcon, EditIcon } from '@sanity/icons'
 import type { ITSContext } from '../types';
 
 export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContext) => {
-  const client = context.getClient({ apiVersion: sanityApiVersion });
   const t = ctx.helpers.t.default
+  const apiVersion = ctx.apiVersion
+  const client = context.getClient({ apiVersion });
 
   const getCategoryMenuItems = (id: string) => {
     const customEditButton = S.menuItem()
@@ -28,7 +28,7 @@ export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContex
 
     return S.documentTypeList('category')
       .title(category.name)
-      .apiVersion(sanityApiVersion)
+      .apiVersion(apiVersion)
       .defaultOrdering([{field: 'sortOrder', direction: 'asc'}])
       .filter('parent._ref == $categoryId')
       .params({ categoryId })
@@ -49,7 +49,7 @@ export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContex
     .child(
       S.documentTypeList('category')
         .title(t('categories'))
-        .apiVersion(sanityApiVersion)
+        .apiVersion(apiVersion)
         .defaultOrdering([{field: 'sortOrder', direction: 'asc'}])
         .filter('_type == "category" && !defined(parent)')
         .canHandleIntent(() => false)
