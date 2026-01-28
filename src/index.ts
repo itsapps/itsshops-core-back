@@ -11,6 +11,7 @@ import { defineConfig, WorkspaceOptions, Template } from 'sanity'
 import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
 import { media } from 'sanity-plugin-media'
+import { presentationTool } from 'sanity/presentation'
 // import { documentListWidget } from 'sanity-plugin-dashboard-widget-document-list'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 
@@ -29,6 +30,7 @@ import { createI18nHelper, createI18nDictHelper, createFormatHelpers } from './u
 import { buildSchemas, createFeatureRegistry } from './schemas'
 import { CustomToolbar } from './components/CustomToolbar'
 import { actionResolver } from './config/actions'
+import { ITSStudioWrapper } from './context/ITSStudioWrapper'
 
 export function createCoreBack(config: ItsshopsConfig) {
   const coreConfig = mapConfig(config);
@@ -98,6 +100,12 @@ export function createCoreBack(config: ItsshopsConfig) {
         }),
         visionTool(),
         media(),
+        // presentationTool({
+        //   resolve: {locations: locations(language.id, structureTanslator('liveEditor')), mainDocuments},
+        //   previewUrl: {
+        //     initial: `${process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_ENDPOINT}/${language.id}/preview`,
+        //   },
+        // }),
         ...getTranslationPackage(language.id),
       ],
       schema: {
@@ -137,6 +145,7 @@ export function createCoreBack(config: ItsshopsConfig) {
       },
       studio: {
         components: {
+          layout: ITSStudioWrapper(structureContext),
           toolMenu: (props) => CustomToolbar({...props}),
         },
       },

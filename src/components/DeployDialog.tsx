@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import {
   Button,
   Dialog,
@@ -10,14 +10,11 @@ import {
   Badge,
   TextArea,
 } from "@sanity/ui"
-import {
-  useTranslation,
-  useCurrentLocale,
-} from 'sanity'
 import {RocketLaunch} from 'phosphor-react'
 
-import { useNetlifyClient, NetlifyBuild } from '../hooks/useNetlifyClient'
-import { formatDate } from '../utils'
+import { createNetlifyClient, NetlifyBuild } from '../external/netlify'
+import { useITSContext } from '../context/ITSCoreProvider'
+
 
 const getStatus = (build: NetlifyBuild | null): "building" | "ready" | "error" | "none" => {
   if (!build) return "none"
@@ -27,17 +24,20 @@ const getStatus = (build: NetlifyBuild | null): "building" | "ready" | "error" |
 }
 
 export function DeployDialog() {
-  const {t} = useTranslation('itsapps')
-  const locale = useCurrentLocale().id.substring(0, 2)
+  const coreContext = useITSContext()
+  const { t, config } = coreContext
+  const { accessToken, siteId, projectName } = config.integrations.netlify;
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [build, setBuild] = useState<NetlifyBuild | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
-  const client = useNetlifyClient()
   const [title, setTitle] = useState('')
+  const client = useMemo(() => {
+    return createNetlifyClient({accessToken, siteId});
+  }, [accessToken, siteId]);
 
-  const fetchBuild = async () => {
-    setLoading(true)
+  const fetchBuild = useCallback(async (isSilent = false) => {
+    if (!isSilent) setLoading(true)
     try {
       const latestBuilds = await client.getLatestBuilds()
       const latest = latestBuilds?.[0] || null
@@ -45,14 +45,15 @@ export function DeployDialog() {
     } catch (err) {
       console.error(err)
     } finally {
-      setLoading(false)
+      if (!isSilent) setLoading(false)
     }
-  }
+  }, [client]); // Only changes if siteId/accessToken changes
 
   const handleTrigger = async () => {
     setActionLoading(true)
     try {
       await client.triggerBuild(title ? title : t('deployments.dialog.defaultDeploymentTitle'))
+      setTitle('')
       await fetchBuild()
     } catch (err) {
       console.error(err)
@@ -75,12 +76,18 @@ export function DeployDialog() {
   }
 
   useEffect(() => {
-    if (open) {
-      fetchBuild()
-      const interval = setInterval(fetchBuild, 10000) // poll while dialog is open
-      return () => clearInterval(interval)
-    }
-  }, [open])
+    if (!open) return
+
+    // Initial explicit load
+    fetchBuild()
+
+    const interval = setInterval(() => {
+      // Pass true for "silent" so the user doesn't see a spinner every 10s
+      fetchBuild(true)
+    }, 10000)
+
+    return () => clearInterval(interval)
+  }, [open, fetchBuild])
 
   const status = getStatus(build)
 
@@ -90,7 +97,6 @@ export function DeployDialog() {
         icon={RocketLaunch}
         title={t('deployments.title')}
         onClick={() => setOpen(true)}
-        style={{ cursor: 'pointer' }}
       />
 
       {open && (
@@ -102,14 +108,14 @@ export function DeployDialog() {
         >
           <Card padding={4}>
             <Stack space={4}>
-              {loading ? (
-                <Flex align="center" justify="center">
+              {loading && !build ? ( // Only show main spinner if we have no data yet
+                <Flex align="center" justify="center" padding={4}>
                   <Spinner muted />
                 </Flex>
               ) : build ? (
                 <>
                   <Flex align="center" gap={3}>
-                    <Text size={2}>{t('deployments.status.title')}</Text>
+                    <Text size={2} weight="bold">{t('deployments.status.title')}</Text>
                     <Badge
                       padding={2}
                       tone={
@@ -122,23 +128,43 @@ export function DeployDialog() {
                           : "default"
                       }
                     >
+                      {/* Note: status === 'building' logic works well here */}
                       {t(`deployments.status.options.${status}`)}
                     </Badge>
-                    {build.error && (
-                      <Text>({build.error})</Text>
-                    )}
+                    {status === "building" && <Spinner muted />}
                   </Flex>
-                  <Text size={1} muted>{t('deployments.startedOn')} {build.created_at ? formatDate(locale, build.created_at, { dateStyle: 'medium', timeStyle: 'medium' }) : "–"}</Text>
-                    {status !== "building" && (
-                      <TextArea
-                        onChange={e => setTitle(e.currentTarget.value)}
-                        padding={[2]}
-                        rows={3}
-                        placeholder={t('ui.actions.optionalNote')}
-                        value={title}
-                      />
-                    )}
+                  
+                  {build.error && (
+                    <Card tone="critical" padding={3} radius={2} border>
+                      <Text size={1}>{build.error}</Text>
+                    </Card>
+                  )}
+
+                  <Text size={1} muted>
+                    {t('deployments.startedOn')} {build.created_at ?
+                      coreContext.helpers.format.date(
+                        build.created_at,
+                        { dateStyle: 'medium', timeStyle: 'medium' }
+                      ) : "–"
+                    }
+                  </Text>
+
+                  {status !== "building" && (
+                    <TextArea
+                      onChange={e => setTitle(e.currentTarget.value)}
+                      padding={3}
+                      rows={3}
+                      placeholder={t('ui.actions.optionalNote')}
+                      value={title}
+                    />
+                  )}
+
                   <Flex gap={3} justify="flex-end">
+                     <Button
+                      text={t('deployments.dialog.actions.close')}
+                      mode="ghost"
+                      onClick={() => setOpen(false)}
+                    />
                     {status === "building" ? (
                       <Button
                         text={t('deployments.dialog.actions.cancel')}
@@ -152,19 +178,27 @@ export function DeployDialog() {
                         tone="primary"
                         onClick={handleTrigger}
                         loading={actionLoading}
+                        disabled={loading} // Prevent double clicks while silent fetching
                       />
                     )}
-                    <Button
-                      text={t('deployments.dialog.actions.close')}
-                      mode="ghost"
-                      onClick={() => setOpen(false)}
-                    />
                   </Flex>
                 </>
               ) : (
-                <Text>{t('deployments.dialog.noInfos')}</Text>
+                <Text size={1} muted>{t('deployments.dialog.noInfos')}</Text>
               )}
-              <a target="_blank" rel="noopener noreferrer" href={`https://app.netlify.com/projects/${process.env.SANITY_STUDIO_NETLIFY_PROJECT_NAME}/deploys`}>{t('deployments.dialog.actions.goToNetlify')}</a>
+              
+              <Flex justify="center" paddingTop={2}>
+                <Text size={1}>
+                  <a 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    href={`https://app.netlify.com/projects/${projectName}/deploys`}
+                    style={{ color: 'inherit' }}
+                  >
+                    {t('deployments.dialog.actions.goToNetlify', { projectName })}
+                  </a>
+                </Text>
+              </Flex>
             </Stack>
           </Card>
         </Dialog>

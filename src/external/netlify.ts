@@ -1,7 +1,3 @@
-// studio/hooks/useNetlifyClient.ts
-import React from 'react'
-// import { useCoreBackConfig } from '../context/CoreBackConfigContext'
-// import { getCoreConfig } from '../config';
 
 export type NetlifyBuild = {
   id?: string;
@@ -12,7 +8,7 @@ export type NetlifyBuild = {
   created_at?: string;
 }
 
-export const NetlifyClient = (config: { accessToken: string; siteId: string }) => {
+export const createNetlifyClient = (config: { accessToken: string; siteId: string }) => {
   const url = 'https://api.netlify.com/api/v1'
 
   const requestData = async (
@@ -40,15 +36,4 @@ export const NetlifyClient = (config: { accessToken: string; siteId: string }) =
     cancelDeploy: (deployId: string) => requestData('POST', `/deploys/${deployId}/cancel`),
     triggerBuild: (title: string) => requestData('POST', `/sites/${config.siteId}/builds`, {title}),
   }
-}
-
-export function useNetlifyClient() {
-  // const config = getCoreConfig();
-  // const { integrations } = config
-  // const netlify = integrations.netlify
-  const netlify = {
-    accessToken: "sdfsd",
-    siteId: "sdfsd"
-  }
-  return React.useMemo(() => NetlifyClient(netlify), [netlify])
 }

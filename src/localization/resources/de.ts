@@ -146,7 +146,7 @@ export default {
         cancel: 'Abbrechen',
         deploy: 'Veröffentlichen',
         close: 'Schließen',
-        goToNetlify: 'Auf Netlify gehen',
+        goToNetlify: '"{{projectName}}" auf Netlify',
       },
       noInfos: 'Keine Informationen verfügbar',
       defaultDeploymentTitle: 'Von Sanity initiiert',

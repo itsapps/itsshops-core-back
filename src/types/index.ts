@@ -6,6 +6,7 @@ import {
   Rule, 
   PreviewConfig,
   DocumentActionComponent,
+  TFunction,
 } from 'sanity';
 
 export type SanityDefinedAction = NonNullable<DocumentActionComponent['action']>
@@ -91,6 +92,10 @@ export interface ITSContext {
   helpers: ITSTranslationHelpers;
 }
 
+export interface ITSProviderContext extends ITSContext {
+  t: TFunction
+}
+
 export interface FieldContext extends ITSContext {
   f: FieldFactory;
 }
@@ -172,7 +177,7 @@ export interface ItsshopsConfig {
     users?: boolean;
   };
   integrations: {
-    netlify: { accessToken: string; siteId: string };
+    netlify: { accessToken: string; siteId: string, projectName: string };
   };
   schemaExtensions?: Record<string, SchemaExtension>;
   documents?: CoreDocument[];
