@@ -55,8 +55,8 @@ export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'blog' | 'users';
 export type ITSFeatureRegistry = {
   isFeatureEnabled: (name: ITSFeatureKey) => boolean;
   allDocs: ITSSchemaDefinition[];
-  getDoc: (name: string) => ITSSchemaDefinition | undefined;
-  getEnabledDocs: () => ITSSchemaDefinition[];
+  getDoc: (name: string) => ITSDocumentDefinition | undefined;
+  getEnabledDocs: () => ITSDocumentDefinition[];
   isDocEnabled: (name: string) => boolean;
   allObjects: ITSSchemaDefinition[];
   getObject: (name: string) => ITSSchemaDefinition | undefined;

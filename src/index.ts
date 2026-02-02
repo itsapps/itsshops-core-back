@@ -52,6 +52,7 @@ export function createCoreBack(config: ItsshopsConfig) {
   const localizedFieldTypes = [
     'string',
     'text',
+    'slug',
     // 'cropImage',
     // 'localeImage',
     'baseImage',

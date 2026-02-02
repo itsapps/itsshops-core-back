@@ -1,18 +1,19 @@
-import { CoreBackConfig, ITSFeatureRegistry, ITSFeatureKey } from '../types'
+import { CoreBackConfig, ITSFeatureRegistry, ITSFeatureKey, ITSDocumentDefinition } from '../types'
 
 import { getCoreObjects } from '../schemas/objects'
 import { getCoreDocuments } from '../schemas/documents'
 
 export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistry => {
-  const docs = getCoreDocuments(config.documents);
+  const docs = getCoreDocuments(config.documents) as ITSDocumentDefinition[];
 
   const enabledDocs = docs
     .filter(doc => {
-       if (!doc.feature) return true;
-       if (doc.feature === 'shop') return !!config.features.shop.enabled;
-       if (doc.feature === 'shop.manufacturer') 
-           return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
-       return true;
+      if (doc.type !== 'document') return false;
+      if (!doc.feature) return true;
+      if (doc.feature === 'shop') return !!config.features.shop.enabled;
+      if (doc.feature === 'shop.manufacturer') 
+          return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
+      return true;
     })
   const enabledDocNames = enabledDocs.map(d => d.name);
 

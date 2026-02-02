@@ -92,10 +92,9 @@ const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
 
   const extension = ctx.config.schemaExtensions?.[id];
   const icon = extension?.icon ?? doc.icon;
-  const isSingleton = doc.type === 'document' && doc.isSingleton;
 
   return {
-    type: isSingleton ? 'singleton' : 'document',
+    type: doc.isSingleton ? 'singleton' : 'document',
     id: doc.name,
     icon,
     feature: doc.feature, // Automatically pulls 'blog', 'shop', etc.

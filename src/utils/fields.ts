@@ -6,6 +6,7 @@ import { ITSContext, FieldFactory, I18nRuleShortcut } from "../types";
 const typeMap: Record<string, string> = {
   // Your custom internationalized shorthand
   'i18nString': 'internationalizedArrayString',
+  'i18nSlug': 'internationalizedArraySlug',
   'i18nImage': 'internationalizedArrayBaseImage',
   'i18nBaseImage': 'internationalizedArrayBaseImage',
   'i18nTextImage': 'internationalizedArrayLocaleTextsImage',

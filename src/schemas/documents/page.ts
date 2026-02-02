@@ -1,7 +1,6 @@
 import { DocumentIcon } from '@sanity/icons'
 import { ITSSchemaDefinition } from "../../types";
 
-
 export const page: ITSSchemaDefinition = {
   name: 'page',
   type: 'document',
@@ -9,9 +8,30 @@ export const page: ITSSchemaDefinition = {
   build: (ctx) => {
     const { f } = ctx;
     return {
-      fields: [
-        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+      groups: [
+        { name: 'page', default: true },
+        { name: 'seo' },
+        { name: 'content' },
       ],
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne', group: 'page' }),
+        f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
+        // TODO: modules f('modules', 'array', { i18n: 'atLeastOne', group: 'page' }),
+        f('seo', 'seo', { tKey: 'seo', group: 'seo' }),
+      ],
+      preview: {
+        select: {
+          title: 'title',
+          slug: 'slug',
+        },
+        prepare({ title, slug }) {
+          const s = ctx.localizer.value<any>(slug)
+          return {
+            title: ctx.localizer.value(title),
+            subtitle: s?.current,
+          }
+        },
+      }
     }
   },
   // preview: (ctx: ITSContext) => {
