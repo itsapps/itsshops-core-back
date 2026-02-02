@@ -76,8 +76,8 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
   }
 
   const displayTitle = 
-    localizer.objectStringValue(product, 'title') ||
-    localizer.stringValue(title) ||
+    localizer.objectValue(product, 'title') ||
+    localizer.value(title) ||
     'No title'
 
   const getImage = () => {

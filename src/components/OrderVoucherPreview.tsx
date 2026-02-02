@@ -46,7 +46,7 @@ export default function OrderVoucherPreview(props: OrderVoucher) {
   const buttonContent = (
     <Flex align={'center'} gap={2}>
       <span style={{whiteSpace: 'normal', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-        {localizer.stringValue(title) || 'No title'}
+        {localizer.value(title) || 'No title'}
       </span>
     </Flex>
   )

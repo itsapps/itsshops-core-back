@@ -143,7 +143,7 @@ export const EditGroupOptions = (props: Props) => {
                         lineHeight: '1.4',
                       }}>
                       <Stack space={1}>
-                        <div>{option ? localizer.stringValue(option.title) : ''}</div>
+                        <div>{option ? localizer.value(option.title) : ''}</div>
                       </Stack>
                     </Button>
                     <ConfirmButton

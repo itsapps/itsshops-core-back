@@ -30,7 +30,8 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
   const isInactive = item.active == false
   const coverImageAssetRef = item.coverImage
   const productImages = product.images || []
-  const image = coverImageAssetRef && productImages.find(image => image.asset?._ref === coverImageAssetRef)
+  const image = coverImageAssetRef && productImages.find(l => l.image?.asset?._ref === coverImageAssetRef)
+  // const image = coverImageAssetRef && productImages.find(image => image.asset?._ref === coverImageAssetRef)
 
   const getVariantTitles = (variantOptions: VariantOption[], optionGroups: VariantOptionGroup[]) => {
     if (variantOptions == null) return []
@@ -41,13 +42,13 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
         return {
           group: null,
           groupTitle: null,
-          optionTitle: localizer.stringValue(option.title)
+          optionTitle: localizer.value(option.title)
         }
       }
       return {
         group: optionGroup?._id,
-        groupTitle: localizer.stringValue(optionGroup?.title),
-        optionTitle: localizer.stringValue(option.title)
+        groupTitle: localizer.value(optionGroup?.title),
+        optionTitle: localizer.value(option.title)
       }
     })
     // sort optionsTitles by group sortOrder
@@ -74,7 +75,7 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
           <Flex gap={1} direction={['column', 'column', 'row']} justify={'space-between'}>
             <Stack space={1} flex={1}>
               <Flex flex={[1, 2, 3]} gap={1} direction={'column'}>
-                <Heading as="h3" onClick={() => onClick(item._id)} style={{ cursor: 'pointer' }}>{localizer.stringValue(item.title)}</Heading>
+                <Heading as="h3" onClick={() => onClick(item._id)} style={{ cursor: 'pointer' }}>{localizer.value(item.title)}</Heading>
                 {item.productNumber && <Text size={0}>{item.productNumber}</Text>}
                 <Container paddingTop={3}>
                   <ul style={{ margin: 0, marginLeft: "10px", padding: 0 }}>

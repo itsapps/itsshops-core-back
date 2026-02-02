@@ -91,9 +91,9 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
     })
   }
 
-  const displayTitle = (localizer.objectStringValue(variant, 'title') ||
-    localizer.objectStringValue(product, 'title') ||
-    localizer.stringValue(title) || 'No title')
+  const displayTitle = (localizer.objectValue(variant, 'title') ||
+    localizer.objectValue(product, 'title') ||
+    localizer.value(title) || 'No title')
 
   const getImage = () => {
     if (!product && !variant) {
@@ -117,8 +117,8 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
   if (!isBundleProduct) {
     const variantProps = props.item as OrderItem
     optionGroups = isBundleProduct ? [] : (variantProps.options || []).map((option) => {
-      const groupTitle = localizer.objectStringValue(option, 'group') || 'No group'
-      const optionTitle = localizer.objectStringValue(option, 'title') || 'No title'
+      const groupTitle = localizer.objectValue(option, 'group') || 'No group'
+      const optionTitle = localizer.objectValue(option, 'title') || 'No title'
       return {group: groupTitle, title: optionTitle}
     })
   }
@@ -126,7 +126,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
   if (isBundleProduct) {
     const bundleProps = props.item as OrderBundleItem
     bundleItems = !isBundleProduct ? [] : (bundleProps.items || []).map((item) => {
-      return {count: item.count, title: localizer.objectStringValue(item, 'title') || 'No title'}
+      return {count: item.count, title: localizer.objectValue(item, 'title') || 'No title'}
     })
   }
 
