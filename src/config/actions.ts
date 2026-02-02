@@ -19,17 +19,21 @@ export function actionResolver (
     return prev
   }
 
-  if (doc.isSingleton) {
+  const isSingleton = doc.type === 'document' && doc.isSingleton;
+
+  if (isSingleton) {
     return prev.filter(({ action }) => action && singletonAllowedActions.includes(action))
   }
+
+  const disallowedActions = doc.type === 'document' && doc.disallowedActions;
 
   const actions = prev.filter((obj) => {
     const action = obj.action;
     if (action === undefined) {
       return true
     }
-    if (doc.disallowedActions) {
-      return !doc.disallowedActions.includes(action)
+    if (disallowedActions) {
+      return !disallowedActions.includes(action)
     }
     return !globallyDisallowedActions.includes(action)
   })

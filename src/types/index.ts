@@ -19,8 +19,6 @@ import { ComponentType, ReactNode } from 'react';
 import {
   ArrayOfType,
   ReferenceTo,
-  ImageOptions,
-  SchemaTypeDefinition,
   DocumentDefinition,
   ArrayDefinition,
   ReferenceDefinition,
@@ -34,8 +32,6 @@ import {
   PreviewConfig,
   DocumentActionComponent,
   TFunction,
-  ObjectField,
-  BaseSchemaDefinition,
 } from 'sanity';
 
 export type SanityDefinedAction = NonNullable<DocumentActionComponent['action']>
@@ -114,22 +110,22 @@ export interface ITSStructureItem {
 //   //   [key: string]: any; 
 //   // };
 // }
-export interface CoreObject {
-  name: string;
-  feature?: ITSFeatureKey;
-  // Build now returns the specific type T
-  build: (ctx: FieldContext) => Partial<
-    ObjectDefinition
-    // ObjectDefinition | ImageDefinition | BlockDefinition | ArrayDefinition | ReferenceDefinition
-  >;
-}
+// export interface CoreObject {
+//   name: string;
+//   feature?: ITSFeatureKey;
+//   // Build now returns the specific type T
+//   build: (ctx: FieldContext) => Partial<
+//     ObjectDefinition
+//     // ObjectDefinition | ImageDefinition | BlockDefinition | ArrayDefinition | ReferenceDefinition
+//   >;
+// }
 
-export interface ITSObject {
-  name: string;
-  feature?: ITSFeatureKey;
-  // Build now returns the specific type T
-  fields: (ctx: FieldContext) => FieldDefinition[];
-}
+// export interface ITSObject {
+//   name: string;
+//   feature?: ITSFeatureKey;
+//   // Build now returns the specific type T
+//   fields: (ctx: FieldContext) => FieldDefinition[];
+// }
 
 
 
@@ -168,7 +164,7 @@ export interface ITSDocumentDefinition extends ITSBaseDefinition {
   type: 'document';
   isSingleton?: boolean;
   allowCreate?: boolean;
-  disallowedActions?: string[];
+  disallowedActions?: SanityDefinedAction[];
   build: (ctx: FieldContext) => Omit<DocumentDefinition, 'name' | 'type' | 'title' | 'icon'>;
 }
 export interface ITSObjectDefinition extends ITSBaseDefinition {
@@ -230,69 +226,69 @@ export type ITSSchemaDefinition =
 //   feature?: ITSFeatureKey;
 // }
 
-interface ITSFieldsBuilder {
-  fields: (ctx: FieldContext) => FieldDefinition[];
-}
-interface ITSGroupsBuilder {
-  groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
-}
-interface ITSFieldsetsBuilder {
-  fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
-}
-interface ITSPreviewBuilder {
-  preview?: (ctx: ITSContext) => PreviewConfig;
-}
-interface ITSObjectBuilder extends 
-  Omit<ObjectDefinition, 'groups' | 'fieldsets' | 'fields' | 'preview'>,
-  ITSGroupsBuilder,
-  ITSFieldsetsBuilder,
-  ITSFieldsBuilder,
-  ITSPreviewBuilder {}
+// interface ITSFieldsBuilder {
+//   fields: (ctx: FieldContext) => FieldDefinition[];
+// }
+// interface ITSGroupsBuilder {
+//   groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+// }
+// interface ITSFieldsetsBuilder {
+//   fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
+// }
+// interface ITSPreviewBuilder {
+//   preview?: (ctx: ITSContext) => PreviewConfig;
+// }
+// interface ITSObjectBuilder extends 
+//   Omit<ObjectDefinition, 'groups' | 'fieldsets' | 'fields' | 'preview'>,
+//   ITSGroupsBuilder,
+//   ITSFieldsetsBuilder,
+//   ITSFieldsBuilder,
+//   ITSPreviewBuilder {}
 
-export interface ITSObjectDefinition2 extends ITSObjectBuilder {
-  feature?: ITSFeatureKey;
-  // groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
-  // fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
-  // fields: (ctx: FieldContext) => FieldDefinition[];
-  // preview?: (ctx: ITSContext) => PreviewConfig;
-}
-export type ITSCusObjectDefinition = Omit<ITSObjectBuilder, 'feature'>;
+// export interface ITSObjectDefinition2 extends ITSObjectBuilder {
+//   feature?: ITSFeatureKey;
+//   // groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+//   // fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
+//   // fields: (ctx: FieldContext) => FieldDefinition[];
+//   // preview?: (ctx: ITSContext) => PreviewConfig;
+// }
+// export type ITSCusObjectDefinition = Omit<ITSObjectBuilder, 'feature'>;
 
-interface ITSImageBuilder extends 
-  Omit<ImageDefinition, 'fields' | 'preview'>,
-  ITSFieldsBuilder,
-  ITSPreviewBuilder {}
+// interface ITSImageBuilder extends 
+//   Omit<ImageDefinition, 'fields' | 'preview'>,
+//   ITSFieldsBuilder,
+//   ITSPreviewBuilder {}
 
-export interface ITSImageDefinition2 extends ITSImageBuilder {
-  feature?: ITSFeatureKey;
-  // fields: (ctx: FieldContext) => FieldDefinition[];
-}
-export type ITSCusImageDefinition = Omit<ITSImageBuilder, 'feature'>;
+// export interface ITSImageDefinition2 extends ITSImageBuilder {
+//   feature?: ITSFeatureKey;
+//   // fields: (ctx: FieldContext) => FieldDefinition[];
+// }
+// export type ITSCusImageDefinition = Omit<ITSImageBuilder, 'feature'>;
 
 // export interface ITSImageDefinition extends Omit<ImageDefinition, 'type' | 'fields'> {
 //   feature?: ITSFeatureKey;
 //   // fields: (ctx: FieldContext) => FieldDefinition[];
 // }
 
-export interface ITSDocumentDefinition2 extends ITSObjectDefinition {
-  isSingleton?: boolean;
-  allowCreate?: boolean;
-  disallowedActions?: SanityDefinedAction[];
-}
+// export interface ITSDocumentDefinition2 extends ITSObjectDefinition {
+//   isSingleton?: boolean;
+//   allowCreate?: boolean;
+//   disallowedActions?: SanityDefinedAction[];
+// }
 
-export interface CoreDocument {
-  name: string;
-  icon?: ComponentType;
-  groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
-  fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
-  baseFields: (ctx: FieldContext) => FieldDefinition[];
-  preview?: (ctx: ITSContext) => PreviewConfig;
-  feature?: ITSFeatureKey;
-  isSingleton?: boolean;
-  allowCreate?: boolean;
-  disallowedActions?: SanityDefinedAction[];
-  initialValue?: Record<string, any> | ((ctx: ITSContext) => Record<string, any>);
-}
+// export interface CoreDocument {
+//   name: string;
+//   icon?: ComponentType;
+//   groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+//   fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
+//   baseFields: (ctx: FieldContext) => FieldDefinition[];
+//   preview?: (ctx: ITSContext) => PreviewConfig;
+//   feature?: ITSFeatureKey;
+//   isSingleton?: boolean;
+//   allowCreate?: boolean;
+//   disallowedActions?: SanityDefinedAction[];
+//   initialValue?: Record<string, any> | ((ctx: ITSContext) => Record<string, any>);
+// }
 
 export interface ItsshopsConfig {
   isDev: boolean;
