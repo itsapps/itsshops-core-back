@@ -22,8 +22,8 @@ export type Shipping = {
 }
 
 export type OrderItemOption = {
-  title?: Record<string, string>,
-  group?: Record<string, string>
+  title?: ITSi18nArray,
+  group?: ITSi18nArray
 }
 
 export type BaseOrderItem = {

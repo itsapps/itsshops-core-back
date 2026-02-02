@@ -2,11 +2,11 @@ import { CoreObject, FieldContext } from '../../types';
 
 export const localeComplexPortable: CoreObject = {
   name: 'localeComplexPortable',
-  type: 'object',
   build: (ctx: FieldContext) => {
     return {
+      type: 'object',
       fields: [
-        ctx.f('content', 'i18nBlock')
+        ctx.f('content', 'string')
       ],
       preview: {
         select: {

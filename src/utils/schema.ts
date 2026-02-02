@@ -9,23 +9,30 @@ export function shapeSchema(
   coreFields: FieldDefinition[],
   extension?: SchemaExtension
 ) {
-  if (!extension) return { fields: coreFields, groups: coreGroups, fieldsets: coreFieldsets };
+  // if (!extension) return { fields: coreFields, groups: coreGroups, fieldsets: coreFieldsets };
 
   // const resolve = (val: any) => (typeof val === 'function' ? val(ctx) : val);
-  const resolveWithFieldCtx = (val: any) => (typeof val === 'function' ? val(ctx) : val);
-  const resolveWithSchemaCtx = (val: any) => (typeof val === 'function' ? val(ctx as ITSContext) : val);
+  // const resolveWithFieldCtx = (val: any) => (typeof val === 'function' ? val(ctx) : val);
+  // const resolveWithSchemaCtx = (val: any) => (typeof val === 'function' ? val(ctx as ITSContext) : val);
 
-  const groups: FieldGroupDefinition[] = resolveWithSchemaCtx(extension.groups) || [];
-  const fieldsets: FieldsetDefinition[] = resolveWithSchemaCtx(extension.fieldsets) || [];
-  const customFields: FieldDefinition[] = resolveWithFieldCtx(extension.fields) || [];
-  const fieldOverrides = resolveWithFieldCtx(extension.fieldOverrides) || {};
-  const order = extension.order || [];
+  // const groups: FieldGroupDefinition[] = resolveWithSchemaCtx(extension.groups) || [];
+  // const fieldsets: FieldsetDefinition[] = resolveWithSchemaCtx(extension.fieldsets) || [];
+  // const customFields: FieldDefinition[] = resolveWithFieldCtx(extension.fields) || [];
+  // const fieldOverrides = resolveWithFieldCtx(extension.fieldOverrides) || {};
+  // const order = extension.order || [];
+
+  const customGroups = extension ? (typeof extension.groups === 'function' ? extension.groups(ctx) : extension.groups) || [] : [];
+  const customFieldsets = extension ? (typeof extension.fieldsets === 'function' ? extension.fieldsets(ctx) : extension.fieldsets) || [] : [];
+  const customFields = extension ? (typeof extension.fields === 'function' ? extension.fields(ctx) : extension.fields) || [] : [];
+  const fieldOverrides = extension ? (typeof extension.fieldOverrides === 'function' ? extension.fieldOverrides(ctx) : extension.fieldOverrides) || {} : {};
+  const order = extension?.order || [];
+  const removeGroups = extension?.removeGroups || [];
 
   const groupMap = new Map<string, FieldGroupDefinition>();
   // Combine core and extension groups
-  [...coreGroups, ...groups].forEach(group => {
+  [...coreGroups, ...customGroups].forEach(group => {
     // ignore removed groups
-    if (extension.removeGroups?.includes(group.name)) return;
+    if (removeGroups.includes(group.name)) return;
 
     groupMap.set(group.name, {
       ...group,
@@ -39,7 +46,7 @@ export function shapeSchema(
         ctx.t.default(`groups.${group.name}`, group.name))
     });
   });
-  const mergedGroups = Array.from(groupMap.values());
+  // const mergedGroups = Array.from(groupMap.values());
 
   // 2. Combine Core + Custom
   let allFields = [...coreFields, ...customFields];
@@ -63,9 +70,23 @@ export function shapeSchema(
     });
   }
 
+  const allFieldsets = [...coreFieldsets, ...customFieldsets].map(fieldset => {
+    const title = fieldset.title || 
+      ctx.t.default(`${docName}.fieldsets.${fieldset.name}`) ||  
+      ctx.t.default(`fieldsets.${fieldset.name}`) ||
+      fieldset.name
+    return { ...fieldset, title }
+  })
+
+  // return {
+  //   fields: allFields,
+  //   groups: mergedGroups,
+  //   fieldsets
+  // };
+  
   return {
     fields: allFields,
-    groups: mergedGroups,
-    fieldsets
+    groups: Array.from(groupMap.values()),
+    fieldsets: allFieldsets
   };
 }

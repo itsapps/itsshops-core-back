@@ -1,17 +1,16 @@
-import { CoreObject, FieldContext } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 import { PriceInput } from '../../components/PriceInput';
 
-export const shipping: CoreObject = {
+export const shipping: ITSSchemaDefinition = {
   name: 'shipping',
   type: 'object',
   feature: 'shop',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
     return {
       fieldsets: [
         {
           name: 'shippingRate',
-          title: ctx.t.default('shipping.fieldsets.rate'),
           options: { collapsed: true, collapsible: true },
           // Instead of global useAdminUI, use your config features
           // hidden: config.features.shippingDetailsHidden, 
@@ -23,6 +22,7 @@ export const shipping: CoreObject = {
             collapse: true,
             collapsible: true,
           },
+          tKey: 'address',
           validation: (Rule: any) => Rule.required()
         }),
         f('shippingCountry', 'reference', {

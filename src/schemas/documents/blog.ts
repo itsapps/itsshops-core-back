@@ -1,34 +1,44 @@
 import { Note } from 'phosphor-react'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { ITSSchemaDefinition } from "../../types";
 
 
-export const blog: CoreDocument = {
+export const blog: ITSSchemaDefinition = {
   name: 'blog',
+  type: 'document',
   icon: Note,
   feature: 'blog',
   isSingleton: true,
-  baseFields: (ctx: FieldContext) => {
+  // validation: (Rule) => Rule.required(),
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-    ]
-  },
-  // preview: (ctx: ITSContext) => {
-  //   return {
-  //     select: {
-  //       title: 'title',
-  //       subtitle: 'parent.title',
-  //       media: 'image',
-  //     },
-  //     prepare(s: any) {
-  //       const { title, subtitle, media } = s
-  //       const sub = ctx.getLocalizedValue(subtitle)
-  //       return {
-  //         title: ctx.getLocalizedValue(title),
-  //         subtitle: sub ? `– ${sub}` : ``,
-  //         media: media,
-  //       }
-  //     },
-  //   }
-  // }
+    return {
+      // validation: (Rule) => Rule.required(),
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne', group: 'blog' }),
+        f('description', 'i18nString', { i18n: 'atLeastOne', group: 'blog' }),
+        f('seo', 'seo', { group: 'seo' }),
+        // f('image', 'baseImage', { validation: (Rule) => Rule.required().assetRequired() }),
+        // f('imagearray', 'imageArray'),
+        f('postsPerPage', 'number', { group: 'settings', validation: (Rule) => Rule.min(1).max(100), initialValue: 10 }),
+      ],
+      groups: [
+        { name: 'blog', default: true },
+        { name: 'seo' },
+        { name: 'settings' },
+      ],
+      preview: {
+        select: {
+          title: 'title',
+          description: 'description',
+        },
+        prepare: ({title, description}) => {
+          return {
+            title: ctx.localizer.value(title),
+            subtitle: ctx.localizer.value(description),
+            // media: PackageIcon,
+          }
+        }
+      }
+    }
+  }
 };

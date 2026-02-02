@@ -1,32 +1,32 @@
-import {OlistIcon} from '@sanity/icons'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { OlistIcon } from '@sanity/icons'
+import { ITSSchemaDefinition } from "../../types";
 
 
-export const menu: CoreDocument = {
+export const menu: ITSSchemaDefinition = {
   name: 'menu',
+  type: 'document',
   icon: OlistIcon,
-  baseFields: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-    ]
-  },
-  // preview: (ctx: ITSContext) => {
-  //   return {
-  //     select: {
-  //       title: 'title',
-  //       subtitle: 'parent.title',
-  //       media: 'image',
-  //     },
-  //     prepare(s: any) {
-  //       const { title, subtitle, media } = s
-  //       const sub = ctx.getLocalizedValue(subtitle)
-  //       return {
-  //         title: ctx.getLocalizedValue(title),
-  //         subtitle: sub ? `– ${sub}` : ``,
-  //         media: media,
-  //       }
-  //     },
-  //   }
-  // }
+    return {
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+        // f('items', 'array', { of: [{ type: 'navPage' }, { type: 'navLink' }] }),
+      ],
+      preview: {
+        select: {
+          title: 'title',
+          // items: 'items',
+        },
+        prepare({ title }) {
+
+          return {
+            title: ctx.localizer.value(title),
+            // subtitle: sub ? `– ${sub}` : ``,
+            // media: media,
+          }
+        }
+      }
+    }
+  }
 };

@@ -1,9 +1,9 @@
-import { CoreObject, FieldContext } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 
-export const seo: CoreObject = {
+export const seo: ITSSchemaDefinition = {
   name: 'seo',
   type: 'object',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
     return {
       fields: [

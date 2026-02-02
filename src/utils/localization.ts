@@ -1,3 +1,4 @@
+import type { ITSLocalizer } from '../types/localization';
 
 export const createFormatHelpers = (locale: string) => ({
   date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => formatDate(locale, date, options),
@@ -32,13 +33,7 @@ export function formatCurrency(locale: string, num: number | undefined, currency
   })
 }
 
-// Define the shape of your internationalized array items
-interface I18nArrayItem {
-  _key: string;
-  value?: string | any;
-}
-
-export function getI18nValue<T>(items: any, locale: string, baseLocale: string): T | undefined {
+export function getI18nArrayValue<T>(items: any, locale: string, baseLocale: string): T | undefined {
   if (!items || !Array.isArray(items) || items.length === 0) return undefined;
   // const match = data.find(item => item._key === locale) || data[0];
   // return match?.value;
@@ -55,18 +50,6 @@ export function getI18nValue<T>(items: any, locale: string, baseLocale: string):
   if (anyValue?.value) return anyValue.value;
 
   return undefined;
-}
-
-export function getI18nObjectValue<T>(obj: any, key: string, locale: string, baseLocale: string): T | undefined {
-  if (! obj) {
-    return undefined;
-  }
-
-  const value = obj[key]
-  if (!value) {
-    return undefined;
-  }
-  return getI18nValue(value, locale, baseLocale);
 }
 
 export function getI18nDictValue<T>(item: any, locale: string, baseLocale: string, supportedLocales: string[]): T | undefined {
@@ -88,68 +71,9 @@ export function getI18nDictValue<T>(item: any, locale: string, baseLocale: strin
   return undefined;
 }
 
-/**
- * Requirement: Get a value from the new internationalized array structure.
- * Fallback: Requested Locale -> Base Locale -> First available locale -> null
- */
-export const getI18nValueOld = (
-  items: I18nArrayItem[] | undefined, 
-  locale: string, 
-  baseLocale: string = 'en'
-) => {
-  if (!items || !Array.isArray(items) || items.length === 0) {
-    return null;
-  }
-
-  // 1. Try to find the requested locale
-  const requested = items.find((item) => item._key === locale);
-  if (requested?.value) return requested.value;
-
-  // 2. Fallback to base language
-  const base = items.find((item) => item._key === baseLocale);
-  if (base?.value) return base.value;
-
-  // 3. Find the first non-empty value available (Any other locale)
-  const anyValue = items.find((item) => !!item.value);
-  if (anyValue?.value) return anyValue.value;
-
-  return null;
-};
-
-/**
- * Requirement: Extract a specific attribute from a document and localize it.
- */
-export const getLocalizedAttr = (
-  obj: any, 
-  attribute: string, 
-  locale: string, 
-  baseLocale: string = 'en'
-) => {
-  if (!obj || !obj[attribute]) {
-    return null;
-  }
-  
-  const i18nArray = obj[attribute] as I18nArrayItem[];
-  return getI18nValue(i18nArray, locale, baseLocale);
-};
-
-export const createI18nHelpers = (locale: string, baseLocale: string) => ({
-  value: <T>(data: any): T | undefined => getI18nValue<T>(data, locale, baseLocale),
-  dictValue: <T>(data: any): T | undefined => getI18nDictValue<T>(data, locale, baseLocale, [locale, baseLocale]),
-  objectValue: <T>(obj: any, key: string): T | undefined => getI18nObjectValue<T>(obj, key, locale, baseLocale),
-
-  stringValue: (data: any): string | undefined => getI18nValue<string>(data, locale, baseLocale),
-  objectStringValue: (obj: any, key: string): string | undefined => getI18nObjectValue<string>(obj, key, locale, baseLocale),
-  dictStringValue: (data: any): string | undefined => getI18nDictValue<string>(data, locale, baseLocale, [locale, baseLocale]),
+export const createI18nHelpers = (locale: string, baseLocale: string): ITSLocalizer => ({
+  value: (data) => getI18nArrayValue(data, locale, baseLocale),
+  objectValue: (data, key) => getI18nArrayValue(data?.[key], locale, baseLocale),
+  dictValue: (data) => getI18nDictValue(data, locale, baseLocale, [locale, baseLocale]),
+  dictObjectValue: (data, key) => getI18nDictValue(data?.[key], locale, baseLocale, [locale, baseLocale]),
 })
-// export const createI18nHelper = (locale: string, baseLocale: string) => {
-//   return <T>(data: any): T | undefined => getI18nValue<T>(data, locale, baseLocale);
-// };
-
-// export const createI18nDictHelper = (locale: string, baseLocale: string, supportedLocales: string[]) => {
-//   return <T>(data: any): T | undefined => getI18nDictValue<T>(data, locale, baseLocale, supportedLocales);
-// };
-
-// export const createI18nObjectHelper = (locale: string, baseLocale: string) => {
-//   return <T>(data: any, key: string): T | undefined => getI18nObjectValue<T>(data, key, locale, baseLocale);
-// };

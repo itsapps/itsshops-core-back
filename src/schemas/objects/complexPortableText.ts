@@ -4,8 +4,8 @@ import { TextAlignLeft, TextAlignRight, TextAlignCenter, Code, Link } from 'phos
 
 export const complexPortableText: CoreObject = {
   name: 'complexPortableText',
-  type: 'block', // Blocks are wrapped in objects or used in arrays
   build: (ctx: FieldContext) => ({
+    type: 'block',
     marks: {
       decorators: [
         { title: ctx.t.default('complexPortableText.decorators.strong'), value: 'strong' },

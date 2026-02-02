@@ -1,9 +1,9 @@
-import { CoreObject, FieldContext } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 
-export const internalLink: CoreObject = {
+export const internalLink: ITSSchemaDefinition = {
   name: 'internalLink',
   type: 'object',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
     const t = ctx.t.default
     return {
@@ -36,17 +36,13 @@ export const internalLink: CoreObject = {
       ],
       preview: {
         select: {
-          image: 'image',
-          title: 'title',
-          alt: 'alt',
+          title: 'reference._type',
+          subtitle: 'reference.title'
         },
-        prepare: ({ image, title, alt }: any) => {
+        prepare: ({ title, subtitle }: any) => {
           return {
-            // We use our new array-based helper here
-            title: ctx.localizer.value(title) || 'No title',
-            subtitle: ctx.localizer.value(alt) || 'No alt',
-            media: image?.asset,
-            // media: ctx.getLocalizedValue(image)?.asset,
+            title: title ? ctx.t.default(`${title}.title`) : ctx.t.default('title'),
+            subtitle: ctx.localizer.value(subtitle),
           };
         },
       },

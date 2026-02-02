@@ -5,7 +5,7 @@ const productAndVariantFields = {
   productNumber: {
     title: 'Produktnummer',
   },
-  manufacturer: {
+  manufacturers: {
     title: 'Hersteller',
   },
   categories: {
@@ -66,7 +66,10 @@ export default {
         title: 'Produktvarianten',
         description: 'Alle Varianten generiert durch Produktoptionen',
       },
-      ...productAndVariantFields
+      blablas: {
+        title: 'viele bilder',
+      },
+      ...productAndVariantFields,
     },
     preview: {
       variants_one: "{{count}} Variante",
@@ -137,6 +140,7 @@ export default {
   },
   address: {
     title: 'Adresse',
+    description: "some address beschre",
     fields: {
       name: {
         title: 'Name',
@@ -173,9 +177,6 @@ export default {
   shipping: {
     title: 'Versand',
     fields: {
-      fieldsets: {
-        rate: 'Versandart',
-      },
       rateId: {
         title: 'Versand-ID',
       },
@@ -185,6 +186,9 @@ export default {
       rateCost: {
         title: 'Versandkosten',
       },
+    },
+    fieldsets: {
+      shippingRate: 'Versandart',
     },
   },
   orderTotals: {
@@ -451,6 +455,9 @@ export default {
       },
       description: {
         title: 'Beschreibung',
+      },
+      seo: {
+        title: 'SEO',
       },
       postsPerPage: {
         title: 'Einträge pro Seite',

@@ -1,35 +1,36 @@
-import {TrolleyIcon} from '@sanity/icons'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { TrolleyIcon } from '@sanity/icons'
+import { ITSSchemaDefinition } from "../../types";
 
 
-export const order: CoreDocument = {
+export const order: ITSSchemaDefinition = {
   name: 'order',
+  type: 'document',
   icon: TrolleyIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate' ],
-  allowCreate: false,
-  baseFields: (ctx: FieldContext) => {
+  allowCreate: true,
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-    ]
-  },
-  // preview: (ctx: ITSContext) => {
-  //   return {
-  //     select: {
-  //       title: 'title',
-  //       subtitle: 'parent.title',
-  //       media: 'image',
-  //     },
-  //     prepare(s: any) {
-  //       const { title, subtitle, media } = s
-  //       const sub = ctx.getLocalizedValue(subtitle)
-  //       return {
-  //         title: ctx.getLocalizedValue(title),
-  //         subtitle: sub ? `– ${sub}` : ``,
-  //         media: media,
-  //       }
-  //     },
-  //   }
-  // }
+    return {
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+      ],
+      // preview: {
+      //   select: {
+      //     title: 'title',
+      //     subtitle: 'parent.title',
+      //     media: 'image',
+      //   },
+      //   prepare(s: any) {
+      //     const { title, subtitle, media } = s
+      //     const sub = ctx.getLocalizedValue(subtitle)
+      //     return {
+      //       title: ctx.getLocalizedValue(title),
+      //       subtitle: sub ? `– ${sub}` : ``,
+      //       media: media,
+      //     }
+      //   }
+      // }
+    }
+  }
 };

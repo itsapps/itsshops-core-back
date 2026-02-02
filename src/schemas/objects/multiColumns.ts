@@ -3,17 +3,16 @@ import { CoreObject } from '../../types';
 
 export const multiColumns: CoreObject = {
   name: 'multiColumns',
-  type: 'object',
   build: (ctx) => {
     const { f } = ctx;
     return {
+      type: 'object',
       fields: [
         f('headline', 'i18nString'),
         f('backgroundImage', 'i18nImage'),
         f('columns', 'array', {
           of: [
-            // Using the i18n version of your complex portable text
-            { type: 'localeComplexPortable' }, 
+            // { type: 'i18nBlock' }, 
             { type: 'youtube' }, 
             { type: 'seo' }, 
             // { type: 'youtube' },
@@ -26,7 +25,7 @@ export const multiColumns: CoreObject = {
           columns: 'columns'
         },
         prepare({ headline, columns }: any) {
-          const title = ctx.localizer.stringValue(headline) || 
+          const title = ctx.localizer.value(headline) || 
             `${(columns || []).length} ${ctx.t.default('multiColumns.preview.columns', 'Columns')}`;
           
           return {

@@ -1,23 +1,35 @@
 import type { FieldContext, ITSContext } from "../../types";
+
+import {PackageIcon} from '@sanity/icons'
+
 import { PriceInput } from "../../components/PriceInput";
 
 export const createSharedProductFields = (ctx: FieldContext) => {
   const { f } = ctx;
   const fields = [
     f('productNumber', 'string', { group: 'product' }),
-    // f('info', 'internationalizedArrayInformation'),
     f('stock', 'number', { initialValue: 0, validation: (Rule) => Rule.positive(), group: 'stock' }),
     f('stockThreshold', 'number', { validation: (Rule) => Rule.min(0), group: 'stock' }),
     // TODO: descirption and stuff f('description', 'localeComplexPortable'),
-    f('modules', 'array', {
-      of: [
-        { type: 'multiColumns' },
-        { type: 'youtube' },
-        { type: 'carousel' },
-      ],
-    }),
+    f('description', 'i18nString'),
+    // { name: 'modules', type: 'array',
+    //   of: [
+    //     { type: 'multiColumns' },
+    //     { type: 'carousel' },
+    //     { type: 'youtube' },
+    //   ],
+    //   group: 'media',
+    // },
+    // f('modules', 'array', {
+    //   of: [
+    //     { type: 'multiColumns' },
+    //     { type: 'youtube' },
+    //     { type: 'carousel', icon: PackageIcon },
+    //   ],
+    //   group: 'media',
+    // }),
     f('images', 'array', { 
-      of: [ { type: "localeImage" } ],
+      of: [ { type: "localeTextsImage" } ],
       group: 'media',
       // options: { layout: 'grid' },
       // options: {

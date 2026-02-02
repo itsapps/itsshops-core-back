@@ -25,7 +25,7 @@ export const localizedStructure = (ctx: ITSContext) => {
         icon: BasketIcon,
         feature: 'shop',
         children: [
-          ...mapItems(['order', 'product', 'variantOptionGroup']),
+          ...mapItems(['order', 'product', 'productVariant', 'variantOptionGroup']),
           { type: 'custom', id: 'categories', component: categoriesMenu },
           ...mapItems(['manufacturer']),
         ]
@@ -75,7 +75,10 @@ export const localizedStructure = (ctx: ITSContext) => {
     return S.list()
       .id('root')
       .title(ctx.t.default('content'))
-      .items(items);
+      .items([
+        ...items,
+        // S.documentTypeListItem('bla').title('pages'),
+      ]);
   };
 };
 
@@ -87,10 +90,14 @@ const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
     return { type: 'document', id };
   }
 
+  const extension = ctx.config.schemaExtensions?.[id];
+  const icon = extension?.icon ?? doc.icon;
+  const isSingleton = doc.type === 'document' && doc.isSingleton;
+
   return {
-    type: doc.isSingleton ? 'singleton' : 'document',
+    type: isSingleton ? 'singleton' : 'document',
     id: doc.name,
-    icon: doc.icon,
+    icon,
     feature: doc.feature, // Automatically pulls 'blog', 'shop', etc.
   };
 };

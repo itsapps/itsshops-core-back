@@ -1,16 +1,18 @@
 import { Note } from 'phosphor-react'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { ITSSchemaDefinition } from "../../types";
 
-
-export const post: CoreDocument = {
+export const post: ITSSchemaDefinition = {
   name: 'post',
+  type: 'document',
   icon: Note,
   feature: 'blog',
-  baseFields: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-    ]
+    return {
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+      ]
+    }
   },
   // preview: (ctx: ITSContext) => {
   //   return {

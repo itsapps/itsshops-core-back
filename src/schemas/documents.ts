@@ -1,4 +1,4 @@
-import { CoreDocument } from '../types'
+import { ITSSchemaDefinition } from '../types'
 
 import { blog } from './documents/blog'
 import { category } from './documents/category'
@@ -18,10 +18,16 @@ import { variantOption } from './documents/variantOption'
 import { variantOptionGroup } from './documents/variantOptionGroup'
 import { voucher } from './documents/voucher';
 
-export const getCoreDocuments = (extensions: CoreDocument[] | undefined): CoreDocument[] => {
+export const getCoreDocuments = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
+  // remove feature from extensions, if accidently added, because it makes no sense here
+  const extensionsWithoutFeature = extensions?.map(d => {
+    const { feature, ...rest } = d;
+    return rest;
+  }) || [];
+
   return [
     blog, category, customerGroup, manufacturer, menu, order, orderMeta, page, post, product, productVariant,
     settings, shippingCountry, user, variantOption, variantOptionGroup, voucher,
-    ...extensions ? extensions : [],
+    ...extensionsWithoutFeature,
   ]
 }

@@ -6,7 +6,11 @@ import { ITSContext, FieldFactory, I18nRuleShortcut } from "../types";
 const typeMap: Record<string, string> = {
   // Your custom internationalized shorthand
   'i18nString': 'internationalizedArrayString',
-  'i18nImage': 'internationalizedArrayCropImage',
+  'i18nImage': 'internationalizedArrayBaseImage',
+  'i18nBaseImage': 'internationalizedArrayBaseImage',
+  'i18nTextImage': 'internationalizedArrayLocaleTextsImage',
+  'i18nDictImage': 'i18nDictImage',
+  'i18nImage2': 'internationalizedArrayCustomImage',
   'i18nText':   'internationalizedArrayText',
   'i18nBlock':  'internationalizedArrayComplexPortableText',
   
@@ -28,6 +32,9 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
   const defaultLocale = config.localization.defaultLocale;
   const allLocales = config.localization.fieldLocales;
 
+  // const bla: FieldDefinition = {
+  //   type: 'image'
+  // }
   const runShortcut = (shortcut: I18nRuleShortcut, Rule: Rule, fieldName: string) => {
     const vCtx = { t, fieldName };
     
@@ -104,11 +111,12 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
       ? tKey 
       : `${namespace}.fields.${fieldName}`;
 
+    const description = tStrict(`${translationPath}.description`)
     const field: FieldDefinition = {
       name: fieldName,
       type: typeMap[type] || type,
       title: t(`${translationPath}.title`),
-      description: tStrict(`${translationPath}.description`, {defaultValue: "shit huhu haha"}),
+      ...description && { description },
       validation: (Rule: Rule) => {
         const rules: any[] = [];
         if (i18n) {

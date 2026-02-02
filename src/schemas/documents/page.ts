@@ -1,15 +1,18 @@
 import { DocumentIcon } from '@sanity/icons'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { ITSSchemaDefinition } from "../../types";
 
 
-export const page: CoreDocument = {
+export const page: ITSSchemaDefinition = {
   name: 'page',
+  type: 'document',
   icon: DocumentIcon,
-  baseFields: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-    ]
+    return {
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+      ],
+    }
   },
   // preview: (ctx: ITSContext) => {
   //   return {

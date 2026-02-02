@@ -1,10 +1,10 @@
 // packages/core-back/src/schemas/objects/multiColumns.ts
-import { CoreObject, FieldContext } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 
-export const youtube: CoreObject = {
+export const youtube: ITSSchemaDefinition = {
   name: 'youtube',
   type: 'object',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
     return {
       fields: [

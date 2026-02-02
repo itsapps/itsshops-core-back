@@ -1,19 +1,19 @@
-// packages/core-back/src/schemas/objects/multiColumns.ts
-import { CoreObject, FieldContext } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 
-export const carousel: CoreObject = {
+import {PackageIcon} from '@sanity/icons'
+
+export const carousel: ITSSchemaDefinition = {
   name: 'carousel',
   type: 'object',
-  build: (ctx: FieldContext) => {
+  icon: PackageIcon,
+  build: (ctx) => {
     const { f } = ctx;
     return {
+      options: { collapsible: true, collapsed: false },
       fields: [
-        f('slides', 'array', { 
-          of: [ { type: "localeImage" } ],
-          // options: {
-          //   layout: 'grid'
-          // }
-        }),
+        // f('slides', 'array', { 
+        //   of: [ { type: "localeImage" } ],
+        // }),
         f('autoplay', 'boolean', { initialValue: false }),
         f('autoplayDelay', 'number', { initialValue: 5 }),
         f('loop', 'boolean', { initialValue: false }),
@@ -23,14 +23,17 @@ export const carousel: CoreObject = {
         select: {
           slides: 'slides',
         },
-        prepare: ({slides}: any) => {
+        prepare: ({slides}) => {
           return {
+            // title: 'carousel.title',
+            // subtitle: 'carousel.preview.slides',
+            // media: "asdf"
             title: ctx.t.default('carousel.title'),
             subtitle: ctx.t.default('carousel.preview.slides', undefined, { count: slides?.length || 0 }),
-            // subtitle: `${slides?.length || 0} ${ctx.t('carousel.preview.slides')}`,
+            media: PackageIcon,
           }
         }
       }
-    };
-  }
+    }
+  },
 };

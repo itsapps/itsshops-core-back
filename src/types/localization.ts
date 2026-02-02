@@ -56,14 +56,14 @@ export interface LocaleImage {
 
 export type ITSi18nImage = ITSi18nArray<LocaleImage>;
 
-export interface ITSLocalizer {
-  value: <T>(localizedField: any) => T | undefined;
-  dictValue: <T>(localizedField: any) => T | undefined;
-  objectValue: <T>(obj: any, key: string) => T | undefined;
+export type ITSi18nLocalizerValue = <T = string>(data: any) => T | undefined;
+export type ITSi18nLocalizerObjectValue = <T = string>(data: any, key: string) => T | undefined;
 
-  stringValue: (localizedField: any) => string | undefined;
-  objectStringValue: (obj: any, key: string) => string | undefined;
-  dictStringValue: (localizedField: any) => string | undefined;
+export interface ITSLocalizer {
+  value: ITSi18nLocalizerValue;
+  objectValue: ITSi18nLocalizerObjectValue;
+  dictValue: ITSi18nLocalizerValue;
+  dictObjectValue: ITSi18nLocalizerObjectValue;
 }
 export interface ITSFormatter {
   date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string;

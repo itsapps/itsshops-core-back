@@ -27,6 +27,7 @@ export function templateResolver (prev: Template[], registry: ITSFeatureRegistry
   const allowedDocIds = allowedDocs.map(doc => doc.name)
   return [
     ...prev.filter((template) => allowedDocIds.includes(template.schemaType)),
+    // ...prev.filter((template) => true),
     ...templates,
   ]
 }

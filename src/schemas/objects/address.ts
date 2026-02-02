@@ -1,11 +1,11 @@
 // packages/core-back/src/schemas/objects/multiColumns.ts
-import { CoreObject, FieldContext } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 
-export const address: CoreObject = {
+export const address: ITSSchemaDefinition = {
   name: 'address',
   type: 'object',
   feature: 'shop',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f, config } = ctx;
 
     return {
@@ -27,6 +27,6 @@ export const address: CoreObject = {
         }),
         f('state', 'string'),
       ],
-    };
+    }
   }
 };

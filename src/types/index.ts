@@ -1,3 +1,4 @@
+
 export * from './localization';
 export * from './mail';
 export * from './netlify';
@@ -14,11 +15,17 @@ import {
 } from './localization';
 import { ITSFrontendClient } from './frontend';
 
-import { ComponentType } from 'react';
+import { ComponentType, ReactNode } from 'react';
 import {
   ArrayOfType,
   ReferenceTo,
+  ImageOptions,
   SchemaTypeDefinition,
+  DocumentDefinition,
+  ArrayDefinition,
+  ReferenceDefinition,
+  BlockDefinition,
+  ImageDefinition,
   ObjectDefinition,
   FieldDefinition,
   FieldGroupDefinition,
@@ -27,6 +34,8 @@ import {
   PreviewConfig,
   DocumentActionComponent,
   TFunction,
+  ObjectField,
+  BaseSchemaDefinition,
 } from 'sanity';
 
 export type SanityDefinedAction = NonNullable<DocumentActionComponent['action']>
@@ -49,13 +58,13 @@ export type FieldFactory = (
 export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'blog' | 'users';
 export type ITSFeatureRegistry = {
   isFeatureEnabled: (name: ITSFeatureKey) => boolean;
-  allDocs: CoreDocument[];
-  getDoc: (name: string) => CoreDocument | undefined;
-  getEnabledDocs: () => CoreDocument[];
+  allDocs: ITSSchemaDefinition[];
+  getDoc: (name: string) => ITSSchemaDefinition | undefined;
+  getEnabledDocs: () => ITSSchemaDefinition[];
   isDocEnabled: (name: string) => boolean;
-  allObjects: CoreObject[];
-  getObject: (name: string) => CoreObject | undefined;
-  getEnabledObjects: () => CoreObject[];
+  allObjects: ITSSchemaDefinition[];
+  getObject: (name: string) => ITSSchemaDefinition | undefined;
+  getEnabledObjects: () => ITSSchemaDefinition[];
   isObjectEnabled: (name: string) => boolean;
 }
 
@@ -77,21 +86,6 @@ export interface ITSProviderContext extends ITSLocaleContext {
 
 export interface FieldContext extends ITSContext {
   f: FieldFactory;
-}
-
-/** 4. Configuration & Extensions **/
-export interface SchemaExtension {
-  icon?: ComponentType;
-  groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
-  removeGroups?: string[];
-  fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
-  fields?: (ctx: FieldContext) => FieldDefinition[];
-  // fieldOverrides?: Record<string, CoreFieldOptions> | ((ctx: FieldContext) => Record<string, CoreFieldOptions>);
-  fieldOverrides?: 
-    | Record<string, Partial<FieldDefinition>> 
-    | ((ctx: FieldContext) => Record<string, Partial<FieldDefinition>>);
-  preview?: (ctx: ITSContext) => PreviewConfig;
-  order?: string[];
 }
 
 export interface ITSStructureItem {
@@ -120,12 +114,170 @@ export interface ITSStructureItem {
 //   //   [key: string]: any; 
 //   // };
 // }
-export interface CoreObject<T extends SchemaTypeDefinition = ObjectDefinition> {
+export interface CoreObject {
   name: string;
-  type?: T['type']; 
   feature?: ITSFeatureKey;
   // Build now returns the specific type T
-  build: (ctx: FieldContext) => Partial<T>;
+  build: (ctx: FieldContext) => Partial<
+    ObjectDefinition
+    // ObjectDefinition | ImageDefinition | BlockDefinition | ArrayDefinition | ReferenceDefinition
+  >;
+}
+
+export interface ITSObject {
+  name: string;
+  feature?: ITSFeatureKey;
+  // Build now returns the specific type T
+  fields: (ctx: FieldContext) => FieldDefinition[];
+}
+
+
+
+// interface ITSEngineMeta {
+//   feature?: ITSFeatureKey;
+//   // We keep 'type' here as the discriminant
+//   type: 'document' | 'object' | 'array' | 'image';
+// }
+// 2. Create the "Shared Root"
+// We Omit 'type' from BaseSchemaDefinition because we want to control 
+// it strictly as a string literal ('document', etc.)
+// interface ITSBaseDefinition extends Omit<BaseSchemaDefinition, 'type'>, ITSEngineMeta {}
+
+export interface SchemaExtension {
+  icon?: ComponentType;
+  groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+  removeGroups?: string[];
+  fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
+  fields?: (ctx: FieldContext) => FieldDefinition[];
+  // fieldOverrides?: Record<string, CoreFieldOptions> | ((ctx: FieldContext) => Record<string, CoreFieldOptions>);
+  fieldOverrides?: 
+    | Record<string, Partial<FieldDefinition>> 
+    | ((ctx: FieldContext) => Record<string, Partial<FieldDefinition>>);
+  preview?: (ctx: ITSContext) => PreviewConfig;
+  order?: string[];
+}
+
+interface ITSBaseDefinition {
+  name: string;
+  feature?: ITSFeatureKey;
+  title?: string;
+  description?: string;
+  icon?: ComponentType | ReactNode
+}
+export interface ITSDocumentDefinition extends ITSBaseDefinition {
+  type: 'document';
+  isSingleton?: boolean;
+  allowCreate?: boolean;
+  disallowedActions?: string[];
+  build: (ctx: FieldContext) => Omit<DocumentDefinition, 'name' | 'type' | 'title' | 'icon'>;
+}
+export interface ITSObjectDefinition extends ITSBaseDefinition {
+  type: 'object';
+  build: (ctx: FieldContext) => Omit<ObjectDefinition, 'name' | 'type' | 'title' | 'icon'>;
+}
+
+export interface ITSArrayDefinition extends ITSBaseDefinition {
+  type: 'array';
+  build: (ctx: FieldContext) => Omit<ArrayDefinition, 'name' | 'type' | 'title' | 'icon'>;
+}
+
+export interface ITSImageDefinition extends ITSBaseDefinition {
+  type: 'image';
+  build: (ctx: FieldContext) => Omit<ImageDefinition, 'name' | 'type' | 'title' | 'icon'>;
+}
+
+export type ITSSchemaDefinition = 
+  | ITSDocumentDefinition 
+  | ITSObjectDefinition 
+  | ITSArrayDefinition 
+  | ITSImageDefinition;
+
+// type SanityBaseProps = 'name' | 'title' | 'type';
+// interface ITSBaseDefinition {
+//   name: string;
+//   feature?: ITSFeatureKey;
+//   title?: string; // Optional: falls back to translation key
+// }
+// export interface ITSDocumentDefinition extends ITSBaseDefinition {
+//   type: 'document'; // The Discriminant
+//   isSingleton?: boolean;
+//   allowCreate?: boolean;
+//   disallowedActions?: SanityDefinedAction[];
+//   build: (ctx: FieldContext) => Omit<DocumentDefinition, SanityBaseProps>;
+// }
+// export interface ITSObjectDefinition extends ITSBaseDefinition {
+//   type: 'object';
+//   build: (ctx: FieldContext) => Omit<ObjectDefinition, SanityBaseProps>; // Must return 'fields'
+// }
+// export interface ITSArrayDefinition extends ITSBaseDefinition {
+//   type: 'array';
+//   build: (ctx: FieldContext) => Omit<ArrayDefinition, SanityBaseProps>; // Must return 'of'
+// }
+// export interface ITSImageDefinition extends ITSBaseDefinition {
+//   type: 'image';
+//   build: (ctx: FieldContext) => Omit<ImageDefinition, SanityBaseProps>; // Must return 'fields'
+// }
+// export type ITSSchemaDefinition = 
+//   | ITSObjectDefinition 
+//   | ITSArrayDefinition
+//   | ITSImageDefinition
+//   | ITSDocumentDefinition;
+
+
+
+
+// export interface ITSBaseSchemaDefinition extends BaseSchemaDefinition {
+//   feature?: ITSFeatureKey;
+// }
+
+interface ITSFieldsBuilder {
+  fields: (ctx: FieldContext) => FieldDefinition[];
+}
+interface ITSGroupsBuilder {
+  groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+}
+interface ITSFieldsetsBuilder {
+  fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
+}
+interface ITSPreviewBuilder {
+  preview?: (ctx: ITSContext) => PreviewConfig;
+}
+interface ITSObjectBuilder extends 
+  Omit<ObjectDefinition, 'groups' | 'fieldsets' | 'fields' | 'preview'>,
+  ITSGroupsBuilder,
+  ITSFieldsetsBuilder,
+  ITSFieldsBuilder,
+  ITSPreviewBuilder {}
+
+export interface ITSObjectDefinition2 extends ITSObjectBuilder {
+  feature?: ITSFeatureKey;
+  // groups?: FieldGroupDefinition[] | ((ctx: ITSContext) => FieldGroupDefinition[]);
+  // fieldsets?: FieldsetDefinition[] | ((ctx: ITSContext) => FieldsetDefinition[]);
+  // fields: (ctx: FieldContext) => FieldDefinition[];
+  // preview?: (ctx: ITSContext) => PreviewConfig;
+}
+export type ITSCusObjectDefinition = Omit<ITSObjectBuilder, 'feature'>;
+
+interface ITSImageBuilder extends 
+  Omit<ImageDefinition, 'fields' | 'preview'>,
+  ITSFieldsBuilder,
+  ITSPreviewBuilder {}
+
+export interface ITSImageDefinition2 extends ITSImageBuilder {
+  feature?: ITSFeatureKey;
+  // fields: (ctx: FieldContext) => FieldDefinition[];
+}
+export type ITSCusImageDefinition = Omit<ITSImageBuilder, 'feature'>;
+
+// export interface ITSImageDefinition extends Omit<ImageDefinition, 'type' | 'fields'> {
+//   feature?: ITSFeatureKey;
+//   // fields: (ctx: FieldContext) => FieldDefinition[];
+// }
+
+export interface ITSDocumentDefinition2 extends ITSObjectDefinition {
+  isSingleton?: boolean;
+  allowCreate?: boolean;
+  disallowedActions?: SanityDefinedAction[];
 }
 
 export interface CoreDocument {
@@ -169,8 +321,8 @@ export interface ItsshopsConfig {
     netlify: { accessToken: string; siteId: string, projectName: string, endpoint: string, secret: string };
   };
   schemaExtensions?: Record<string, SchemaExtension>;
-  documents?: CoreDocument[];
-  objects?: CoreObject[];
+  documents?: ITSSchemaDefinition[];
+  objects?: ITSSchemaDefinition[];
   structure?: ITSStructureItem[];
 }
 

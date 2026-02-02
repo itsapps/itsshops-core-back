@@ -1,15 +1,15 @@
-import { CoreObject, FieldContext } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 
-export const customImage: CoreObject = {
+export const customImage: ITSSchemaDefinition = {
   name: 'customImage',
   type: 'object',
-  build: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
     return {
       fields: [
-        // f('image', 'i18nImage', { options: { hotspot: true } }),
-        f('title', 'i18nString'),
-        f('alt', 'i18nString'),
+        f('image', 'image', { options: { hotspot: true } }),
+        f('title', 'string'),
+        f('alt', 'string'),
       ],
       preview: {
         select: {
@@ -20,8 +20,8 @@ export const customImage: CoreObject = {
         prepare: ({ image, title, alt }: any) => {
           return {
             // We use our new array-based helper here
-            title: ctx.localizer.value(title) || 'No title',
-            subtitle: ctx.localizer.value(alt) || 'No alt',
+            title,
+            subtitle: alt,
             media: image?.asset,
             // media: ctx.getLocalizedValue(image)?.asset,
           };

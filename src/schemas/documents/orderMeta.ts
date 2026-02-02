@@ -1,18 +1,21 @@
-import {TrolleyIcon} from '@sanity/icons'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { TrolleyIcon } from '@sanity/icons'
+import { ITSSchemaDefinition } from "../../types";
 
 
-export const orderMeta: CoreDocument = {
+export const orderMeta: ITSSchemaDefinition = {
   name: 'orderMeta',
+  type: 'document',
   icon: TrolleyIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate' ],
   allowCreate: false,
-  baseFields: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-    ]
+    return {
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+      ],
+    }
   },
   // preview: (ctx: ITSContext) => {
   //   return {

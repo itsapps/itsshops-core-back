@@ -2,14 +2,18 @@ import { CoreObject } from '../../types';
 
 export const localeImage: CoreObject = {
   name: 'localeImage',
-  type: 'object',
   build: (ctx) => {
     const { f } = ctx;
     return {
+      type: 'object',
+      groups: [
+        { name: 'image', title: 'Image', default: true },
+        { name: 'texts', title: 'Texts' },
+      ],
       fields: [
-        f('image', 'i18nImage' ),
-        f('title', 'i18nString'),
-        f('alt', 'i18nString'),
+        f('image', 'i18nImage', { group: 'image'} ),
+        f('title', 'i18nString', { group: 'texts' }),
+        f('alt', 'i18nString', { group: 'texts' }),
       ],
       preview: {
         select: {
@@ -18,13 +22,14 @@ export const localeImage: CoreObject = {
           media: 'image',
         },
         prepare: ({ title, alt, media }: any) => {
+          const image = ctx.localizer.value<any>(media)
           return {
             // We use our new array-based helper here
             // title,
             // subtitle: alt,
-            title: ctx.localizer.value(title) || 'No title',
-            subtitle: ctx.localizer.value(alt) || 'No alt',
-            media: ctx.localizer.value(media),
+            title: ctx.localizer.value(title) || '',
+            subtitle: ctx.localizer.value(alt) || '',
+            media: image?.asset,
           };
         },
       },

@@ -1,16 +1,19 @@
 import { CogIcon } from '@sanity/icons'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { ITSSchemaDefinition } from "../../types";
 
 
-export const settings: CoreDocument = {
+export const settings: ITSSchemaDefinition = {
   name: 'settings',
+  type: 'document',
   icon: CogIcon,
   isSingleton: true,
-  baseFields: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-    ]
+    return {
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+      ],
+    }
   },
   // preview: (ctx: ITSContext) => {
   //   return {

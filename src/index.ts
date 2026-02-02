@@ -6,13 +6,12 @@ import {
   CoreBackConfig,
   ITSFeatureRegistry
 } from './types';
-export type { 
-  CoreDocument,
-  CoreObject,
-  SanityDefinedAction,
+export type {
+  ItsshopsConfig,
+  ITSSchemaDefinition,
   ITSStructureItem,
 } from './types';
-export type { Rule } from 'sanity'
+export { PriceInput } from './components/PriceInput';
 
 import { defineConfig, WorkspaceOptions } from 'sanity'
 import { visionTool } from '@sanity/vision'
@@ -52,7 +51,14 @@ export function createCoreBack(config: ItsshopsConfig) {
   
   const localizedFieldTypes = [
     'string',
-    'cropImage',
+    'text',
+    // 'cropImage',
+    // 'localeImage',
+    'baseImage',
+    'localeTextsImage',
+    // 'image',
+    // 'array',
+    // 'customImage',
     // 'complexPortableText',
     // {
     //   name: 'cropImage', // This is the base type
@@ -62,13 +68,20 @@ export function createCoreBack(config: ItsshopsConfig) {
     //   //   { type: 'localeImage' }, 
     //   // ]
     // },
-    {
-      name: 'complexPortableText', // This is the base type
-      type: 'array',
-      of: [
-        { type: 'block' }, 
-      ]
-    },
+    // {
+    //   name: 'customImages', // This is the base type
+    //   type: 'array',
+    //   of: [
+    //     { type: 'customImage' }, 
+    //   ]
+    // },
+    // {
+    //   name: 'porti', // This is the base type
+    //   type: 'array',
+    //   of: [
+    //     { type: 'complexPortableText' }, 
+    //   ]
+    // },
     ...config.i18n?.localizedFieldTypes || []]
   
   
@@ -104,7 +117,29 @@ export function createCoreBack(config: ItsshopsConfig) {
         ...getTranslationPackage(language.id),
       ],
       schema: {
-        types: buildSchemas(schemaContext),
+        types: [
+          // {
+          //   type: 'document',
+          //   name: 'bla',
+          //   fields: [
+          //     {
+          //       name: 'title',
+          //       title: 'Title',
+          //       type: 'string',
+          //     },
+          //     {
+          //       name: 'title2',
+          //       title: 'Title',
+          //       type: 'array',
+          //       of: [
+          //         { type: 'string' },
+          //       ]
+          //     },
+          //   ]
+          // },
+          ...buildSchemas(schemaContext)
+        ],
+        // types: buildSchemas(schemaContext),
         templates: (prev) => templateResolver(prev, featureRegistry),
       },
       studio: {

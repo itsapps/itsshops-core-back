@@ -1,34 +1,37 @@
 import { SparklesIcon } from '@sanity/icons'
-import { ITSContext, FieldContext, CoreDocument } from "../../types";
+import { ITSSchemaDefinition } from "../../types";
 
-export const variantOption: CoreDocument = {
+export const variantOption: ITSSchemaDefinition = {
   name: 'variantOption',
+  type: 'document',
   icon: SparklesIcon,
   feature: 'shop',
   disallowedActions: [ 'duplicate' ],
   allowCreate: false,
-  baseFields: (ctx: FieldContext) => {
+  build: (ctx) => {
     const { f } = ctx;
-    return [
-      f('title', 'i18nString', { i18n: 'atLeastOne' }),
-      f('sortOrder', 'number', {
-        initialValue: 0,
-        validation: (rule) => rule.required().positive(),
-      }),
-      f('image', 'localeImage'),
-    ]
-  },
-  preview: (ctx: ITSContext) => {
     return {
-      select: {
-        title: 'title',
-      },
-      prepare(s: any) {
-        const { title } = s
-        return {
-          title: ctx.localizer.value(title),
+      fields: [
+        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+        f('sortOrder', 'number', {
+          initialValue: 0,
+          validation: (rule) => rule.required().positive(),
+        }),
+        f('image', 'i18nTextImage'),
+      ],
+      preview: {
+        select: {
+          title: 'title',
+          media: 'image',
+        },
+        prepare({ title, media }) {
+          const image = ctx.localizer.value<any>(media)
+          return {
+            title: ctx.localizer.value(title),
+            media: image?.asset,
+          }
         }
-      },
+      }
     }
   }
 };
