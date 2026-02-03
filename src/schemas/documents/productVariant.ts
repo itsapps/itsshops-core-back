@@ -44,13 +44,13 @@ export const productVariant: ITSSchemaDefinition = {
           options0: 'options.0.title',
           options1: 'options.1.title',
           options2: 'options.2.title',
-          // image: 'images.0.asset',
+          image: 'images.0.asset',
         },
         prepare({ title, options0, options1, options2, image }) {
           return {
             title: ctx.localizer.value(title),
             subtitle: [options0, options1, options2].map(o => ctx.localizer.value(o)).filter(Boolean).join(", "),
-            media: image,
+            media: image || PackageIcon,
           }
         },
       }

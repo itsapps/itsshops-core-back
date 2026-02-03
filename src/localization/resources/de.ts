@@ -21,7 +21,10 @@ export default {
     },
     errors: {
       failedToLoad: "Fehler beim Laden der Daten: {{errorMessage}}",
-    }
+    },
+    defaults: {
+      noTitle: 'Ohne Titel',
+    },
   },
   product: {
     deleteNotAllowedVariantsExist: "Produkt kann nicht gelöscht werden, weil es mit Varianten verknüpft ist.",
@@ -53,6 +56,9 @@ export default {
     deleteErrorMessage: "Option kann nicht gelöscht werden, weil sie in einer oder mehreren Produktvarianten verwendet wird.",
     groupDeleteNotAllowedOptionsExist: "Optionengruppe kann nicht gelöscht werden, weil sie Optionen enthält.",
     couldNotDeleteOption: "Option konnte nicht gelöscht werden, weil sie in einer oder mehreren Produktvarianten verwendet wird.",
+    defaults: {
+      title: 'Neue Option',
+    },
   },
   categories: {
     deleteNotAllowedSubcategoriesExist: "Kategorie kann nicht gelöscht werden, weil sie Unterkategorien enthält.",

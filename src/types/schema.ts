@@ -28,7 +28,8 @@ export interface SanityImageWithHotspot {
 
 export type VariantOption = {
   _id: string
-  title: ITSi18nImage
+  title: ITSi18nImage,
+  sortOrder?: number
 }
 
 export type VariantOptionGroup = {

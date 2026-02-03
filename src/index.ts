@@ -11,6 +11,7 @@ export type {
   ITSSchemaDefinition,
   ITSStructureItem,
 } from './types';
+export { useITSContext } from './context/ITSCoreProvider'
 export { PriceInput } from './components/PriceInput';
 
 import { defineConfig, WorkspaceOptions } from 'sanity'
@@ -23,8 +24,7 @@ import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 
 // import { setCoreConfig } from './config';
 import { mapConfig } from './config/mapper';
-import { localizedStructure } from './structure'
-import { localizedDefaultDocumentNode } from './structure/defaultDocumentNode'
+import { createStructureTool } from './config/structure';
 import {
   createTranslator,
   getTranslationBundles,
@@ -83,7 +83,8 @@ export function createCoreBack(config: ItsshopsConfig) {
     //     { type: 'complexPortableText' }, 
     //   ]
     // },
-    ...config.i18n?.localizedFieldTypes || []]
+    ...config.i18n?.localizedFieldTypes || []
+  ]
   
   
   const workspace = defineConfig(coreConfig.localization.uiLanguages.map(language => {
@@ -103,10 +104,7 @@ export function createCoreBack(config: ItsshopsConfig) {
           buttonAddAll: false,
           languageDisplay: 'titleOnly',
         }),
-        structureTool({
-          structure: localizedStructure(structureContext),
-          defaultDocumentNode: localizedDefaultDocumentNode(structureContext),
-        }),
+        structureTool(createStructureTool(structureContext)),
         visionTool(),
         media(),
         // presentationTool({
@@ -118,29 +116,7 @@ export function createCoreBack(config: ItsshopsConfig) {
         ...getTranslationPackage(language.id),
       ],
       schema: {
-        types: [
-          // {
-          //   type: 'document',
-          //   name: 'bla',
-          //   fields: [
-          //     {
-          //       name: 'title',
-          //       title: 'Title',
-          //       type: 'string',
-          //     },
-          //     {
-          //       name: 'title2',
-          //       title: 'Title',
-          //       type: 'array',
-          //       of: [
-          //         { type: 'string' },
-          //       ]
-          //     },
-          //   ]
-          // },
-          ...buildSchemas(schemaContext)
-        ],
-        // types: buildSchemas(schemaContext),
+        types: buildSchemas(schemaContext),
         templates: (prev) => templateResolver(prev, featureRegistry),
       },
       studio: {

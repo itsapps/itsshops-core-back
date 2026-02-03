@@ -4,62 +4,9 @@ import {
   StructureResolverContext 
 } from 'sanity/structure';
 import type { ITSContext, ITSStructureItem } from '../types';
-import {BasketIcon, CogIcon, HomeIcon, UserIcon, ConfettiIcon} from '@sanity/icons'
-import { categoriesMenu } from './categories';
 
-export const localizedStructure = (ctx: ITSContext) => {
+export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureItem[]) => {
   return (S: StructureBuilder, context: StructureResolverContext) => {
-    // Helper to map an array of IDs to registry-aware items
-    const mapItems = (ids: string[]) => ids.map(id => fromRegistry(ctx, id));
-
-    const coreManifest: ITSStructureItem[] = [
-      {
-        type: 'group',
-        id: 'website',
-        icon: HomeIcon,
-        children: mapItems(['page', 'post', 'menu'])
-      },
-      {
-        type: 'group',
-        id: 'shop',
-        icon: BasketIcon,
-        feature: 'shop',
-        children: [
-          ...mapItems(['order', 'product', 'productVariant', 'variantOptionGroup']),
-          { type: 'custom', id: 'categories', component: categoriesMenu },
-          ...mapItems(['manufacturer']),
-        ]
-      },
-      {
-        type: 'group',
-        id: 'marketing',
-        icon: ConfettiIcon,
-        feature: 'shop',
-        children: mapItems(['voucher'])
-      },
-      {
-        type: 'divider',
-        id: 'divider1',
-      },
-      {
-        type: 'group',
-        id: 'users',
-        icon: UserIcon,
-        feature: 'shop',
-        children: mapItems(['user', 'customerGroup'])
-      },
-      {
-        type: 'group',
-        id: 'settingsGroup',
-        icon: CogIcon,
-        children: mapItems(['settings', 'blog', 'shippingCountry'])
-        // children: [
-        //   { type: 'singleton', id: 'settings', title: 'settings.general', icon: CogIcon },
-        //   { type: 'singleton', id: 'blog', title: 'blog', icon: Note, feature: 'blog' },
-        //   { type: 'document', id: 'shippingCountry', title: 'shippingCountries', feature: 'shop' },
-        // ]
-      },
-    ];
 
     // 2. Combine and Sort
     const customerManifest = ctx.config.structure || [];
@@ -82,7 +29,7 @@ export const localizedStructure = (ctx: ITSContext) => {
   };
 };
 
-const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
+export const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
   const doc = ctx.featureRegistry.getDoc(id);
 
   if (!doc) {

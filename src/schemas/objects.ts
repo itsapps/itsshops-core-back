@@ -17,6 +17,7 @@ import { shipping } from './objects/shipping';
 import { shippingRate } from './objects/shippingRate';
 import { address } from './objects/address';
 import { internalLink } from './objects/internalLink';
+import { menuItem } from './objects/menuItem';
 import { imageArray } from './objects/imageArray';
 
 export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
@@ -33,6 +34,7 @@ export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): I
     // localeComplexPortable,
     // multiColumns,
     youtube,
+    menuItem,
     carousel,
     internalLink,
     shipping,

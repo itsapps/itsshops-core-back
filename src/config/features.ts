@@ -1,32 +1,30 @@
-import { CoreBackConfig, ITSFeatureRegistry, ITSFeatureKey, ITSDocumentDefinition } from '../types'
+import { CoreBackConfig, ITSFeatureRegistry, ITSFeatureKey, ITSDocumentDefinition, ITSSchemaDefinition } from '../types'
 
 import { getCoreObjects } from '../schemas/objects'
 import { getCoreDocuments } from '../schemas/documents'
 
 export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistry => {
-  const docs = getCoreDocuments(config.documents) as ITSDocumentDefinition[];
+  const docs = getCoreDocuments(config.documents);
+  const allDocs: ITSDocumentDefinition[] = docs.filter(doc => doc.type === 'document');
+  const objects = getCoreObjects(config.objects);
+  const schemas = [...allDocs, ...objects];
+  // const allObjs: ITSObjectDefinition[] = objects.filter(obj => obj.type === 'object');
 
-  const enabledDocs = docs
-    .filter(doc => {
-      if (doc.type !== 'document') return false;
-      if (!doc.feature) return true;
-      if (doc.feature === 'shop') return !!config.features.shop.enabled;
-      if (doc.feature === 'shop.manufacturer') 
-          return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
-      return true;
-    })
+  const featureFilter = (definition: ITSSchemaDefinition) => {
+    if (!definition.feature) return true;
+    if (definition.feature === 'shop') return !!config.features.shop.enabled;
+    if (definition.feature === 'shop.manufacturer') 
+        return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
+    return true;
+  }
+
+  const enabledDocs = allDocs.filter(featureFilter)
   const enabledDocNames = enabledDocs.map(d => d.name);
 
-  const objects = getCoreObjects(config.objects);
-  const enabledObjects = objects
-    .filter(object => {
-       if (!object.feature) return true;
-       if (object.feature === 'shop') return !!config.features.shop.enabled;
-       if (object.feature === 'shop.manufacturer') 
-           return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
-       return true;
-    })
+  const enabledObjects = objects.filter(featureFilter)
   const enabledObjectNames = enabledObjects.map(o => o.name);
+
+  const enabledSchemaNames = [...enabledDocNames, ...enabledObjectNames];
 
   return {
     isFeatureEnabled: (feature: ITSFeatureKey) => {
@@ -41,14 +39,14 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
       return false;
     },
 
-    allDocs: docs,
-    getDoc: (name: string) => docs.find(d => d.name === name),
+    // allDocs: docs,
+    allSchemas: schemas,
+    getSchema: (name: string) => schemas.find(d => d.name === name),
+    isSchemaEnabled: (name: string) => enabledSchemaNames.includes(name),
+    getDoc: (name: string) => allDocs.find(d => d.name === name),
     isDocEnabled: (name: string) => enabledDocNames.includes(name),
     getEnabledDocs: () => enabledDocs,
     
-    allObjects: objects,
-    getObject: (name: string) => objects.find(o => o.name === name),
-    isObjectEnabled: (name: string) => enabledObjectNames.includes(name),
     getEnabledObjects: () => enabledObjects
   };
 };

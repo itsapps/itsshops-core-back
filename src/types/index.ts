@@ -54,14 +54,16 @@ export type FieldFactory = (
 export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'blog' | 'users';
 export type ITSFeatureRegistry = {
   isFeatureEnabled: (name: ITSFeatureKey) => boolean;
-  allDocs: ITSSchemaDefinition[];
+  allSchemas: ITSSchemaDefinition[];
+  getSchema: (name: string) => ITSSchemaDefinition | undefined;
+  isSchemaEnabled: (name: string) => boolean;
   getDoc: (name: string) => ITSDocumentDefinition | undefined;
   getEnabledDocs: () => ITSDocumentDefinition[];
   isDocEnabled: (name: string) => boolean;
-  allObjects: ITSSchemaDefinition[];
-  getObject: (name: string) => ITSSchemaDefinition | undefined;
+  // allObjects: ITSSchemaDefinition[];
+  // getObject: (name: string) => ITSSchemaDefinition | undefined;
+  // isObjectEnabled: (name: string) => boolean;
   getEnabledObjects: () => ITSSchemaDefinition[];
-  isObjectEnabled: (name: string) => boolean;
 }
 
 export interface ITSLocaleContext {

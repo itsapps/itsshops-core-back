@@ -11,6 +11,9 @@ export const menu: ITSSchemaDefinition = {
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
+        ctx.f('items', 'array', {
+          of: [{ type: 'menuItem' }]
+        })
         // f('items', 'array', { of: [{ type: 'navPage' }, { type: 'navLink' }] }),
       ],
       preview: {

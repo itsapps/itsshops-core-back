@@ -67,7 +67,7 @@ export const product: ITSSchemaDefinition = {
           return {
             title: ctx.localizer.value(title),
             ...variantInfo && {subtitle: variantInfo},
-            media: image,
+            media: image || PackageIcon,
           }
         },
       }

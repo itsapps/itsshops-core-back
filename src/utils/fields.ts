@@ -60,12 +60,7 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
     if (type === 'reference' && Array.isArray(to)) {
       to = to.filter((t) => {
         const target = t as TypeReference;
-        const docDef = ctx.featureRegistry.getDoc(target.type);
-        if (!docDef) {
-          console.warn(`Structure Error: Schema type "${target.type}" not found for reference.`);
-          return false;
-        }
-        return ctx.featureRegistry.isDocEnabled(target.type);
+        return isValidRef(ctx, namespace, target.type, fieldName);
       });
     }
     if (type === 'array' && Array.isArray(of)) {
@@ -79,19 +74,23 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
         // 2. Handle References inside the array
         if (itemDef.type === 'reference' && Array.isArray(itemDef.to)) {
           // 'target' was implicitly 'any', so we type it here
-          return itemDef.to.every((target: { type: string }) => 
-            ctx.featureRegistry.isDocEnabled(target.type)
-          );
+          return itemDef.to.every((target: { type: string }) => {
+            return isValidRef(ctx, namespace, target.type, fieldName);
+            // if (!docDef) {
+            //   console.warn(`Structure Error: Schema type "${target.type}" not found for reference in "${namespace}.${fieldName}".`);
+            //   return false;
+            // } else if (!ctx.featureRegistry.isDocEnabled(target.type)) {
+            //   console.warn(`Structure Error: Schema type "${target.type}" is disabled for reference in "${namespace}.${fieldName}".`);
+            //   return false;
+            // }
+            // return ctx.featureRegistry.isDocEnabled(target.type);
+          });
         }
 
         // 3. Handle Custom Objects or Named Types inside the array
         // e.g. of: [{ type: 'product' }]
         if (itemDef.type && typeof itemDef.type === 'string') {
-          // If the type name itself is a registered document, check if it's enabled
-          const docDef = ctx.featureRegistry.getDoc(itemDef.type);
-          if (docDef) {
-            return ctx.featureRegistry.isDocEnabled(itemDef.type);
-          }
+          return isValidRef(ctx, namespace, itemDef.type, fieldName);
         }
 
         return true; // Keep standard types like 'string', 'number', etc.
@@ -136,6 +135,18 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
     };
     return field;
   };
+};
+
+const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName: string) => {
+  const docDef = ctx.featureRegistry.getSchema(type);
+  if (!docDef) {
+    console.warn(`Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`);
+    return false;
+  } else if (!ctx.featureRegistry.isSchemaEnabled(type)) {
+    console.warn(`Structure Error: Schema type "${type}" is disabled for reference in "${namespace}.${fieldName}".`);
+    return false;
+  }
+  return true;
 };
 
 // export const createFieldFactory = (docName: string, ctx: ITSContext): FieldFactory => {

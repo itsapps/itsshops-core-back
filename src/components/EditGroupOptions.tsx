@@ -2,7 +2,7 @@ import { useITSContext } from '../context/ITSCoreProvider'
 import {DocumentReference, VariantOption} from '../types'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { useToast, Grid, Flex, Button, Stack, Card, Spinner } from '@sanity/ui'
+import { useToast, Grid, Flex, Button, Stack, Card, Spinner, Text } from '@sanity/ui'
 import { SparklesIcon, TrashIcon } from '@sanity/icons'
 import { ArrayOfObjectsInputProps, useFormValue, set, useClient, SanityDocument } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
@@ -18,8 +18,9 @@ type Props = Omit<ArrayOfObjectsInputProps, 'value'> & {
 }
 
 export const EditGroupOptions = (props: Props) => {
-  const { t, localizer, config: { apiVersion } } = useITSContext();
-  const client = useClient({apiVersion})
+  const { t, localizer, config } = useITSContext();
+  
+  const client = useClient({apiVersion: config.apiVersion})
 
   const { value, onChange } = props;
   const toast = useToast()
@@ -28,31 +29,66 @@ export const EditGroupOptions = (props: Props) => {
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
   const originalDocument = useFormValue([]) as SanityDocument;
   
-  useEffect(() => {
+  // useEffect(() => {
     const fetchData = async () => {
-      if (!value) return
+      if (!value || value.length === 0) {
+        setOptions([]);
+        return;
+      }
 
-      setLoading(true);
       try {
         if (value.length > 0) {
-          const query = `*[_type == "variantOption" && _id in $ids]{
+          const ids = value.map((ref) => ref._ref);
+          // 1. Fetch both published and draft versions
+          // 2. We use a GROQ trick to group them by their "base ID"
+          const query = `*[_type == "variantOption" && (_id in $ids || _id in $draftIds)] {
             _id,
-            title
-          }`
-          const data = await client.fetch(query, {ids: value.map((ref) => ref._ref)});
-          setOptions(data);
-        } else {
-          setOptions([]);
+            title,
+            sortOrder
+          }`;
+
+          const draftIds = ids.map(id => `drafts.${id}`);
+          const data: VariantOption[] = await client.fetch(query, { ids, draftIds });
+
+          // 3. De-duplicate: If both draft and published exist, pick the draft.
+          const merged = ids.map(baseId => {
+            const draft = data.find(d => d._id === `drafts.${baseId}`);
+            const published = data.find(d => d._id === baseId);
+            return draft || published;
+          }).filter(Boolean) as VariantOption[];
+          const sorted = merged.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+          setOptions(sorted);
         }
       } catch (error) {
         console.error('Error fetching product groups:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
+  //   fetchData();
+  // }, [client, value]);
+
+  useEffect(() => {
+    if (!value || value.length === 0) return;
+
+
+    setLoading(true);
     fetchData();
-  }, [client, value]);
+    setLoading(false);
+
+    const ids = value.map(ref => ref._ref);
+    const draftIds = ids.map(id => `drafts.${id}`);
+
+    // One listener for all related options
+    const sub = client
+      .listen(
+        `*[_type == "variantOption" && (_id in $ids || _id in $draftIds)]`,
+        { ids, draftIds },
+        { visibility: 'query' }
+      )
+      .subscribe(() => fetchData());
+
+    return () => sub.unsubscribe();
+  }, [value, client])
 
   const deleteOption = useCallback(async (optionId: string) => {
     if (!value) return
@@ -92,9 +128,10 @@ export const EditGroupOptions = (props: Props) => {
   const handleOptionClick = async (optionValueId: string) => {
     const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
     const {parentRefPath} = childParams
+    const cleanId = optionValueId.replace('drafts.', '');
 
     handleEditReference({
-      id: optionValueId,
+      id: cleanId,
       type: "variantOption",
       // Uncertain that this works as intended
       parentRefPath: parentRefPath ? pathFromString(parentRefPath) : [``],
@@ -104,13 +141,15 @@ export const EditGroupOptions = (props: Props) => {
   
   const handleAddOption = async () => {
     setLoading(true);
+
+    const maxSort = options.reduce((max, opt) => Math.max(max, opt.sortOrder ?? 0), 0);
     const newOption = await client.create({
       _id: uuidv4().replaceAll("-", ""),
       _type: 'variantOption',
       title: [
-        { _key: 'de', value: 'Neue Option' }
+        { _key: config.localization.defaultLocale, value: t('optionsGroups.defaults.title') }
       ],
-      sortOrder: value ? value.length : 0
+      sortOrder: maxSort + 1
     });
 
     // Add the new reference to the array
@@ -120,48 +159,42 @@ export const EditGroupOptions = (props: Props) => {
     setLoading(false);
   };
 
-  return (
-
-      <Stack space={3}>
-        {loading ? <Spinner muted /> : (
-          <>
-        <Grid columns={1}>
-          <Stack space={3}>
-            {value && value.map((item, index) => {
-              const option = options.find(o => o._id === item._ref)
-              return (
-                <Card key={index} padding={3} radius={2} shadow={1}>
-                  <Flex justify="space-between" align="center" gap={2}>
-                    <Button
-                      mode='ghost'
-                      onClick={() => handleOptionClick(item._ref)}
-                      style={{
-                        whiteSpace: 'normal',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        textAlign: 'left',
-                        lineHeight: '1.4',
-                      }}>
-                      <Stack space={1}>
-                        <div>{option ? localizer.value(option.title) : ''}</div>
-                      </Stack>
-                    </Button>
-                    <ConfirmButton
-                      onConfirm={() => handleRemove(item._ref)}
-                      confirmText={t("optionsGroups.confirmDelete")}
-                      icon={TrashIcon}
-                      tone="critical"
-                    />
-                  </Flex>
-                </Card>
-              )
-            })}
-          </Stack>
-        </Grid>
-        <Button icon={SparklesIcon} text={t('optionsGroups.addOption')} tone='positive' onClick={handleAddOption} />
-        </>
-      )}
-      </Stack>
-
+  return loading ? <Spinner muted /> : (
+    <Stack space={3}>
+      {options.map((option, index) => {
+        const baseId = option._id.replace('drafts.', '');
+        const isDraft = option._id.startsWith('drafts.')
+        const tone = isDraft ? 'caution' : 'positive'
+        return (
+          <Card key={index} padding={3} radius={2} shadow={1}>
+            <Flex justify="space-between" align="center" gap={2}>
+              <Button
+                mode='ghost'
+                tone={tone}
+                // tone={tone}
+                onClick={() => handleOptionClick(baseId)}
+                style={{
+                  whiteSpace: 'normal',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  textAlign: 'left',
+                  lineHeight: '1.4',
+                }}>
+                <Stack space={1}>
+                  <Text>{localizer.value(option.title) || t('optionsGroups.defaults.title')}</Text>
+                </Stack>
+              </Button>
+              <ConfirmButton
+                onConfirm={() => handleRemove(baseId)}
+                confirmText={t("optionsGroups.confirmDelete")}
+                icon={TrashIcon}
+                tone="critical"
+              />
+            </Flex>
+          </Card>
+        )
+      })}
+      <Button icon={SparklesIcon} text={t('optionsGroups.addOption')} tone='positive' onClick={handleAddOption} />
+    </Stack>
   );
 }
