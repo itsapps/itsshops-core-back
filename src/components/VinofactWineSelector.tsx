@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Autocomplete, Card, Stack, Text, Flex, Badge, Box, Inline, Button, Menu, MenuItem, MenuButton, MenuDivider } from '@sanity/ui'
-import { CalendarIcon, EllipsisHorizontalIcon, TrashIcon, SyncIcon, LaunchIcon, WarningOutlineIcon } from '@sanity/icons'
+import { EllipsisHorizontalIcon, TrashIcon, SyncIcon, LaunchIcon, WarningOutlineIcon } from '@sanity/icons'
 import { Wine } from 'phosphor-react'
 import { set, unset, useTranslation } from 'sanity'
 import { useITSContext } from '../context/ITSCoreProvider'
@@ -141,7 +141,7 @@ const WinePreview = ({ wine }: { wine: VinofactWine }) => (
       <Inline space={2}>
         <Badge>
           <Flex align="center" gap={1}>
-            <CalendarIcon /> {wine.year || 'N/V'}
+            {wine.year || 'N/V'}
           </Flex>
         </Badge>
         <Text size={1} muted>
