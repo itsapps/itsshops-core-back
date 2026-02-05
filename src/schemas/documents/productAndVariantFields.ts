@@ -1,12 +1,20 @@
 import type { FieldContext, ITSContext } from "../../types";
 
-import {PackageIcon} from '@sanity/icons'
-
 import { PriceInput } from "../../components/PriceInput";
+import { VinofactWineSelector } from "../../components/VinofactWineSelector";
 
 export const createSharedProductFields = (ctx: FieldContext) => {
   const { f } = ctx;
+  const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact');
+  const vinofactConfig = ctx.config.features.shop.vinofact?.integration;
+
   const fields = [
+    ...vinofactEnabled && vinofactConfig ? [
+      ctx.f('externalWineId', 'string', {
+        components: { input: VinofactWineSelector },
+        group: 'vinofact'
+      })
+    ] : [],
     f('productNumber', 'string', { group: 'product' }),
     f('stock', 'number', { initialValue: 0, validation: (Rule) => Rule.positive(), group: 'stock' }),
     f('stockThreshold', 'number', { validation: (Rule) => Rule.min(0), group: 'stock' }),
@@ -94,7 +102,10 @@ export const createSharedProductFields = (ctx: FieldContext) => {
   return fields;
 };
 
-export const createSharedProductGroups = (name: string, ctx: ITSContext) => {
+export const createSharedProductGroups = (ctx: ITSContext) => {
+  const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact');
+  // const vinofactConfig = ctx.config.features.shop.vinofact?.integration;
+
   // const path = `${name}.groups`;
   // return [
   //   { name: 'product', title: ctx.t(`${path}.product`), default: true},
@@ -110,15 +121,16 @@ export const createSharedProductGroups = (name: string, ctx: ITSContext) => {
     { name: 'pricing'},
     { name: 'media'},
     { name: 'seo'},
+    ...(vinofactEnabled ? [{ name: 'vinofact' }] : [])
   ];
 }
 
 export const createProductGroups = (ctx: ITSContext) => {
   return [
-    ...createSharedProductGroups('product', ctx),
+    ...createSharedProductGroups(ctx),
     { name: 'variants'},
   ];
 }
 export const createProductVariantGroups = (ctx: ITSContext) => {
-  return createSharedProductGroups('productVariant', ctx)
+  return createSharedProductGroups(ctx)
 }

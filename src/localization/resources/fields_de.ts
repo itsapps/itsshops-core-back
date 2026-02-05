@@ -466,20 +466,38 @@ export default {
   },
   hero: {
     title: 'Hero',
+    preview: {
+      actions_one: '{{count}} Verlinkung',
+      actions_other: '{{count}} Verlinkungen',
+    },
     fields: {
-      headline: {
+      title: {
         title: 'Überschrift',
       },
       image: {
         title: 'Bild',
       },
-      backgroundImage: {
+      bgImage: {
         title: 'Hintergrundbild',
       },
       actions: {
         title: 'Interne Verlinkungen',
       },
+      actionTitle: {
+        title: 'Titel',
+      },
+      actionReference: {
+        title: 'Referenz',
+      },
+      actionDisplayType: {
+        title: 'Anzeigetyp',
+      },
     },
+    groups: {
+      content: 'Inhalt',
+      media: 'Bilder',
+      settings: 'Einstellungen',
+    }
   },
   link: {
     title: 'Link',
@@ -1018,6 +1036,20 @@ export default {
       image: {
         title: 'Bild',
       },
+      title: {
+        title: 'Titel',
+      },
+      alt: {
+        title: 'Alternativer Text',
+      },
+    },
+    validation: {
+      assetRequired: 'Bild ist erforderlich',
+    },
+  },
+  baseImage: {
+    title: 'Bild',
+    fields: {
       title: {
         title: 'Titel',
       },

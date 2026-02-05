@@ -1,8 +1,10 @@
-// packages/core-back/src/config/mapper.ts
-import { ItsshopsConfig, CoreBackConfig } from '../types';
+import { ItsshopsConfig, CoreBackConfig, ITSCoreSchemaSettings, FeatureConfig, ITSFeatureConfig } from '../types';
 import { getLanguages } from '../localization'; // Assuming this helper exists
+import { deepMerge } from '../utils';
 
 const sanityApiVersion = 'v2025-05-25';
+const allowedDocumentReferenceTypes = ['product', 'productVariant', 'page', 'post', 'category', 'blog'];
+const localizedFieldTypes = [ 'string', 'text', 'slug', 'baseImage', 'localeTextsImage', 'textBlock' ];
 
 const countryOptions = [
   { title: { en: 'Austria', de: 'Österreich' }, value: 'AT' },
@@ -26,14 +28,13 @@ const countryOptions = [
 export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   const { uiLanguages, fieldLanguages, uiLocales, fieldLocales } = getLanguages(config.i18n);
 
-  const features = {
-    shop: {
-      enabled: config.features?.shop?.enabled ?? false,
-      manufacturer: config.features?.shop?.manufacturer ?? false
-    },
-    blog: config.features?.blog ?? false,
-    users: config.features?.users ?? false,
+  const features = normalizeFeatures(config.features)
+  
+  const coreSchemaSettings: ITSCoreSchemaSettings = {
+    links: { allowedReferences: allowedDocumentReferenceTypes },
+    menus: { disableSubmenus: false, allowedReferences: allowedDocumentReferenceTypes }
   };
+  const schemaSettings = deepMerge(coreSchemaSettings, config.schemaSettings || {});
 
   const defaultCountryCode = config.defaultCountryCode || 'AT'
   const defaultCountry = countryOptions.find(c => c.value === defaultCountryCode)
@@ -49,7 +50,7 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
       uiLocales,
       fieldLocales,
       defaultLocale: config.i18n?.defaultLocale || uiLocales?.[0] || 'en',
-      localizedFieldTypes: config.i18n?.localizedFieldTypes || [],
+      localizedFieldTypes: [...localizedFieldTypes, ...config.i18n?.localizedFieldTypes || []],
       overrides: {
         fields: config.i18n?.fieldTranslationOverrides || {},
         structure: config.i18n?.structureTranslationOverrides || {},
@@ -66,7 +67,58 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     },
     defaultCountryCode,
     features,
+    schemaSettings,
     schemaExtensions: config.schemaExtensions || {},
     apiVersion: sanityApiVersion,
   };
 };
+
+function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
+  return {
+    shop: {
+      enabled: input?.shop?.enabled ?? false,
+      manufacturer: input?.shop?.manufacturer ?? false,
+      vinofact: input?.shop?.vinofact ?? {
+        enabled: false,
+      },
+    },
+    blog: input?.blog ?? false,
+    users: input?.users ?? false,
+  }
+}
+
+// const localizedFieldTypes = [
+//     'string',
+//     'text',
+//     'slug',
+//     // 'cropImage',
+//     // 'localeImage',
+//     'baseImage',
+//     'localeTextsImage',
+//     // 'image',
+//     // 'array',
+//     // 'customImage',
+//     // 'complexPortableText',
+//     // {
+//     //   name: 'cropImage', // This is the base type
+//     //   type: 'image',
+//     //   options: { layout: 'grid' },
+//     //   // of: [
+//     //   //   { type: 'localeImage' }, 
+//     //   // ]
+//     // },
+//     // {
+//     //   name: 'customImages', // This is the base type
+//     //   type: 'array',
+//     //   of: [
+//     //     { type: 'customImage' }, 
+//     //   ]
+//     // },
+//     // {
+//     //   name: 'porti', // This is the base type
+//     //   type: 'array',
+//     //   of: [
+//     //     { type: 'complexPortableText' }, 
+//     //   ]
+//     // },
+//   ]

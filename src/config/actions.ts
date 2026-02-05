@@ -1,12 +1,12 @@
 import { DocumentActionComponent, DocumentActionsContext } from 'sanity'
-import { ITSFeatureRegistry, SanityDefinedAction } from '../types'
+import { ITSFeatureRegistry, ITSSanityDefinedAction } from '../types'
 
 import { OrderDocumentActions } from '../components/actions/OrderActions'
 import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import { createCustomDocumentAction, type CustomDocumentAction } from '../components/actions/CustomDocumentAction'
 
-const globallyDisallowedActions: SanityDefinedAction[] = ['schedule']
-const singletonAllowedActions: SanityDefinedAction[] = ["publish", "discardChanges", "restore"]
+const globallyDisallowedActions: ITSSanityDefinedAction[] = ['schedule']
+const singletonAllowedActions: ITSSanityDefinedAction[] = ["publish", "discardChanges", "restore"]
 
 export function actionResolver (
   prev: DocumentActionComponent[],

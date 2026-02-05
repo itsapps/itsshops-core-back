@@ -1,6 +1,7 @@
 import { SchemaTypeDefinition } from 'sanity';
 import { ITSObjectDefinition, ITSImageDefinition, ITSArrayDefinition, ITSSchemaDefinition, ITSDocumentDefinition, ITSContext, FieldContext } from '../types'
 import { createFieldFactory, shapeSchema } from "../utils";
+import { createBuilders } from './builders';
 
 export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
   const objectBuilders = ctx.featureRegistry.getEnabledObjects();
@@ -14,7 +15,8 @@ export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinitio
   const name = definition.name
 
   const f = createFieldFactory(name, ctx);
-  const fieldCtx: FieldContext = { ...ctx, f };
+  const builders = createBuilders(f, ctx);
+  const fieldCtx: FieldContext = { ...ctx, f, builders };
   
   const icon = extension?.icon ?? definition.icon
   const title = definition.title ?? ctx.t.default(`${name}.title`)
@@ -57,7 +59,7 @@ export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinitio
   
   else if (definition.type === 'array') {
     const def = definition as ITSArrayDefinition
-    const built = def.build({ ...ctx, f });
+    const built = def.build(fieldCtx);
     
     return {
       ...built,
@@ -69,7 +71,7 @@ export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinitio
     } as SchemaTypeDefinition
   } else if (definition.type === 'image') {
     const def = definition as ITSImageDefinition
-    const built = def.build({ ...ctx, f });
+    const built = def.build(fieldCtx);
 
     const { fields, fieldsets } = shapeSchema(
       name,

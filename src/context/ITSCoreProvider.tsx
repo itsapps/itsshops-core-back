@@ -2,6 +2,7 @@ import { ITSLocaleContext, ITSProviderContext } from '../types'
 import { createContext, useContext, useMemo } from 'react'
 import { useTranslation } from 'sanity'
 import { createFrontendClient } from '../external/frontend'
+import { createVinofactClient } from '../external/vinofact'
 
 // import { useCurrentLocale } from './your-locale-hook' // Replace with your actual hook
 
@@ -16,11 +17,20 @@ export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, 
     return createFrontendClient(ctx.locale, endpoint, secret);
   }, [ctx.locale, ctx.config.integrations.netlify]);
 
+  const vinofactClient = useMemo(() => {
+    const vinofact = ctx.config.features.shop.vinofact
+    if (!vinofact?.integration?.endpoint || !vinofact?.integration?.accessToken) return undefined;
+    
+    // This helper would handle the fetch logic and headers
+    return createVinofactClient(ctx.locale, vinofact.integration.endpoint, vinofact.integration.accessToken, vinofact.integration.profileSlug);
+  }, [ctx.config.features.shop.vinofact, ctx.locale]);
+
   const value = useMemo(() => ({
     ...ctx,
     t,
-    frontendClient
-  }), [ctx, t, frontendClient]);
+    frontendClient,
+    vinofactClient,
+  }), [ctx, t, frontendClient, vinofactClient]);
 
   return <ITSCoreContext.Provider value={value}>{children}</ITSCoreContext.Provider>
 }

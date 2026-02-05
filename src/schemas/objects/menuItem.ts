@@ -1,6 +1,5 @@
 import { ITSSchemaDefinition } from '../../types';
 import { Link } from 'phosphor-react'
-import { getInternalLinkFields } from './internalLink';
 
 export const menuItem: ITSSchemaDefinition = {
   name: 'menuItem',
@@ -28,11 +27,10 @@ export const menuItem: ITSSchemaDefinition = {
         }),
 
         // Internal Reference (Page, Post, etc.)
-        // We use our helper here!
-        ...getInternalLinkFields(ctx, { 
-          to: ['page', 'post', 'category'],
-          includeTitle: false,
-          includeDisplayType: false 
+        ...ctx.builders.internalLink({ 
+          includeTitle: true,
+          includeDisplayType: false,
+          to: ctx.config.schemaSettings.menus.allowedReferences
         }).map(field => ({
           ...field,
           hidden: ({ parent }: any) => parent?.linkType !== 'internal'
@@ -48,13 +46,15 @@ export const menuItem: ITSSchemaDefinition = {
         // f('images', 'menuItemImage'),
 
         // The Recursive Part: Children
-        f('children', 'array', {
-          title: 'Sub-Menu Items',
-          of: [{ type: 'menuItem' }],
-          // Don't allow infinite nesting if you don't want to
-          hidden: ({ parent }: any) => parent?.linkType !== 'none',
-          // hidden: ({ parent }: any) => !!parent?.url || !!parent?.reference
-        }),
+        ...!ctx.config.schemaSettings.menus.disableSubmenus ? [
+          f('children', 'array', {
+            title: 'Sub-Menu Items',
+            of: [{ type: 'menuItem' }],
+            // Don't allow infinite nesting if you don't want to
+            hidden: ({ parent }: any) => parent?.linkType !== 'none',
+            // hidden: ({ parent }: any) => !!parent?.url || !!parent?.reference
+          }),
+        ] : [],
       ],
       preview: {
         select: {

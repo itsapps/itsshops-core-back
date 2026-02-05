@@ -16,8 +16,24 @@ export const page: ITSSchemaDefinition = {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne', group: 'page' }),
         f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
-        // TODO: modules f('modules', 'array', { i18n: 'atLeastOne', group: 'page' }),
+        // f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
         f('seo', 'seo', { tKey: 'seo', group: 'seo' }),
+        // f('textili', 'portableText'),
+        f('textili2', 'internationalizedArrayTextBlock'),
+        f('modules', 'array', {
+          of: [
+            { type: 'hero' },
+            // { type: 'portableText' },
+            { type: 'textBlock' },
+            // { type: 'textModule' },
+            // Conditionally add shop modules based on features config
+            // ...(features.shop.enabled ? [{ type: 'productGridModule' }] : []),
+            // ...(features.blog ? [{ type: 'latestPostsModule' }] : []),
+          ],
+          // Sanity UI hint to make it look better
+          // options: { layout: 'grid' },
+          group: 'content',
+        }),
       ],
       preview: {
         select: {

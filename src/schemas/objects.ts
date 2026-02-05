@@ -20,6 +20,10 @@ import { internalLink } from './objects/internalLink';
 import { menuItem } from './objects/menuItem';
 import { imageArray } from './objects/imageArray';
 
+import { hero } from './modules/hero';
+import { portableText } from './modules/portableText';
+import { textBlock } from './objects/textBlock';
+
 export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
   return [
     seo,
@@ -41,6 +45,11 @@ export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): I
     shippingRate,
     address,
     imageArray,
+
+    hero,
+    portableText,
+    textBlock,
+
     ...extensions ? extensions : [],
   ]
 }

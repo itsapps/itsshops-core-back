@@ -54,7 +54,7 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
   };
 
   return (fieldName, type = 'string', overrides = {}) => {
-    let { to, of, i18n, validation, tKey, ...rest } = overrides;
+    let { to, input, of, i18n, validation, tKey, ...rest } = overrides;
 
     // remove references to disabled docs
     if (type === 'reference' && Array.isArray(to)) {
@@ -90,6 +90,7 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
         // 3. Handle Custom Objects or Named Types inside the array
         // e.g. of: [{ type: 'product' }]
         if (itemDef.type && typeof itemDef.type === 'string') {
+          if (itemDef.type === 'object') return true;
           return isValidRef(ctx, namespace, itemDef.type, fieldName);
         }
 
@@ -131,13 +132,16 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
       },
       ...(to && { to }),
       ...(of && { of }),
+      ...(input && { ...input }),
       ...rest,
     };
     return field;
   };
 };
 
+const SANITY_INTERNAL_TYPES = ['block', 'string', 'number', 'boolean', 'image', 'file', 'date'];
 const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName: string) => {
+  
   const docDef = ctx.featureRegistry.getSchema(type);
   if (!docDef) {
     console.warn(`Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`);
@@ -148,54 +152,3 @@ const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName:
   }
   return true;
 };
-
-// export const createFieldFactory = (docName: string, ctx: ITSContext): FieldFactory => {
-//   const { t } = ctx;
-  
-//   /**
-//    * @param fieldName - The key in your JSON and the name in Sanity
-//    * @param type - 'string', 'text', 'content', or any native Sanity type like 'image' or 'reference'
-//    * @param overrides - Manual Sanity properties (validation, hidden, etc.)
-//    */
-
-//   return (fieldName: string, type: string = 'string', overrides = {}) => {
-//     const path = `${docName}.fields.${fieldName}`;
-//     const { i18n, validation, ...rest } = overrides;
-    
-//     // 1. Resolve the actual Sanity type
-//     // If it's in our map, use the internationalized version. Otherwise, use raw type.
-//     const finalType = typeMap[type] || type;
-    
-//     return {
-//       name: fieldName,
-//       type: finalType,
-//       title: t(`${path}.title`),
-//       description: t(`${path}.description`),
-//       validation: (Rule: Rule) => {
-//         let rules = [];
-
-//         // Handle your 'atLeastOne' logic via the shortcut
-//         if (i18n === 'atLeastOne' || i18n === 'atLeastOneWarning') {
-//           const isRequired = i18n === 'atLeastOne';
-//           rules.push(i18nValidators.atLeastOneExists({ t, fieldName, docName, isRequired })(Rule));
-//         }
-//         if (typeof i18n === 'object' && 'max' in i18n) {
-//           rules.push(i18nValidators.maxLength(i18n.max, {
-//             t, fieldName, docName, isRequired: !i18n.warning
-//           })(Rule));
-//         }
-
-//         // Allow adding standard sanity rules (e.g. .min(5))
-//         if (typeof validation === 'function') {
-//           rules.push(validation(Rule));
-//         } else if (validation) {
-//           // If validation was already a Rule or an array, just push it
-//           rules.push(validation);
-//         }
-        
-//         return rules;
-//       },
-//       ...rest,
-//     };
-//   };
-// };

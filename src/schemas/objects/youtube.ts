@@ -1,9 +1,10 @@
-// packages/core-back/src/schemas/objects/multiColumns.ts
 import { ITSSchemaDefinition } from '../../types';
+import { YoutubeLogo } from 'phosphor-react'
 
 export const youtube: ITSSchemaDefinition = {
   name: 'youtube',
   type: 'object',
+  icon: YoutubeLogo,
   build: (ctx) => {
     const { f } = ctx;
     return {
@@ -17,7 +18,7 @@ export const youtube: ITSSchemaDefinition = {
       preview: {
         select: {
           title: 'url',
-          columns: 'columns'
+          subtitle: 'start'
         },
       }
     };

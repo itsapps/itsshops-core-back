@@ -4,7 +4,6 @@ import { createSharedProductFields, createProductGroups } from "./productAndVari
 import { PriceInput } from "../../components/PriceInput";
 import { GenerateVariants } from "../../components/GenerateVariants";
 
-
 export const product: ITSSchemaDefinition = {
   name: 'product',
   type: 'document',
@@ -17,6 +16,14 @@ export const product: ITSSchemaDefinition = {
       groups: createProductGroups(ctx),
       fieldsets: [],
       fields: [
+        // ...getInternalLinkFields(ctx, { 
+        //   to: ['page', 'post'],
+        //   includeTitle: false,
+        //   includeDisplayType: false 
+        // }).map(field => ({
+        //   ...field,
+        //   // hidden: ({ parent }: any) => parent?.linkType !== 'internal'
+        // })),
         // f('content', 'i18nBlock', {
         //   options: {
         //     // These 'of' types are what go inside each localized block array

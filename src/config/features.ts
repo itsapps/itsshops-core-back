@@ -33,6 +33,7 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
       // Logic to handle nested keys like 'shop.manufacturer'
       if (feature === 'shop') return !!features.shop.enabled;
       if (feature === 'shop.manufacturer') return !!features.shop.enabled && !!features.shop.manufacturer;
+      if (feature === 'shop.vinofact') return !!features.shop.vinofact.enabled;
       if (feature === 'blog') return !!features.blog;
       if (feature === 'users') return !!features.users;
 

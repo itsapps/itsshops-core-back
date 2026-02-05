@@ -1,11 +1,5 @@
-import {
-  ItsshopsConfig,
-  ITSLocaleContext,
-  ITSContext,
-  ITSTranslator,
-  CoreBackConfig,
-  ITSFeatureRegistry
-} from './types';
+import { ItsshopsConfig } from './types';
+
 export type {
   ItsshopsConfig,
   ITSSchemaDefinition,
@@ -19,12 +13,8 @@ import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
 import { media } from 'sanity-plugin-media'
 import { presentationTool } from 'sanity/presentation'
-// import { documentListWidget } from 'sanity-plugin-dashboard-widget-document-list'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 
-// import { setCoreConfig } from './config';
-import { mapConfig } from './config/mapper';
-import { createStructureTool } from './config/structure';
 import {
   createTranslator,
   getTranslationBundles,
@@ -33,11 +23,16 @@ import {
 } from './localization'
 import { createI18nHelpers, createFormatHelpers } from './utils/localization';
 
-import { buildSchemas } from './schemas'
-import { CustomToolbar } from './components/CustomToolbar'
+
+import { mapConfig } from './config/mapper';
+import { createStructureTool } from './config/structure';
 import { createFeatureRegistry } from './config/features'
 import { actionResolver } from './config/actions'
 import { templateResolver } from './config/templates'
+// import { defaultTheme } from './config/theme'
+import { buildSchemas } from './schemas'
+
+import { CustomToolbar } from './components/CustomToolbar'
 import { ITSStudioWrapper } from './context/ITSStudioWrapper'
 
 export function createCoreBack(config: ItsshopsConfig) {
@@ -49,58 +44,28 @@ export function createCoreBack(config: ItsshopsConfig) {
   
   const { projectId, dataset, workspaceName } = config
   
-  const localizedFieldTypes = [
-    'string',
-    'text',
-    'slug',
-    // 'cropImage',
-    // 'localeImage',
-    'baseImage',
-    'localeTextsImage',
-    // 'image',
-    // 'array',
-    // 'customImage',
-    // 'complexPortableText',
-    // {
-    //   name: 'cropImage', // This is the base type
-    //   type: 'image',
-    //   options: { layout: 'grid' },
-    //   // of: [
-    //   //   { type: 'localeImage' }, 
-    //   // ]
-    // },
-    // {
-    //   name: 'customImages', // This is the base type
-    //   type: 'array',
-    //   of: [
-    //     { type: 'customImage' }, 
-    //   ]
-    // },
-    // {
-    //   name: 'porti', // This is the base type
-    //   type: 'array',
-    //   of: [
-    //     { type: 'complexPortableText' }, 
-    //   ]
-    // },
-    ...config.i18n?.localizedFieldTypes || []
-  ]
-  
-  
   const workspace = defineConfig(coreConfig.localization.uiLanguages.map(language => {
-    const localeContext = createBaseContext(language.id, coreConfig, featureRegistry);
-    const { schemaContext, structureContext } = createContexts(localeContext, translator);
+    const localeContext = {
+      config: coreConfig,
+      featureRegistry,
+      locale: language.id,
+      localizer: createI18nHelpers(language.id, coreConfig.localization.defaultLocale),
+      format: createFormatHelpers(language.id),
+    }
+    const schemaContext = {...localeContext, t: translator('schema', localeContext.locale)}
+    const structureContext = {...localeContext, t: translator('structure', localeContext.locale)}
 
     const config: WorkspaceOptions = {
       name: language.id,
       basePath: `/${language.id}`,
       title: `${workspaceName} (${language.title})`,
+      // theme: defaultTheme,
       projectId,
       dataset,
       plugins: [
         internationalizedArray({
           languages: coreConfig.localization.uiLanguages,
-          fieldTypes: localizedFieldTypes,
+          fieldTypes: coreConfig.localization.localizedFieldTypes,
           buttonAddAll: false,
           languageDisplay: 'titleOnly',
         }),
@@ -140,33 +105,4 @@ export function createCoreBack(config: ItsshopsConfig) {
   }))
 
   return workspace
-}
-
-function createBaseContext(
-  locale: string,
-  coreConfig: CoreBackConfig,
-  featureRegistry: ITSFeatureRegistry
-): ITSLocaleContext {
-  return {
-    config: coreConfig,
-    featureRegistry,
-    locale,
-    localizer: createI18nHelpers(locale, coreConfig.localization.defaultLocale),
-    format: createFormatHelpers(locale),
-  }
-}
-
-function createContexts(
-  ctx: ITSLocaleContext,
-  translator: (namespace: string, locale: string) => ITSTranslator,
-) {
-  const createContext = (namespace: string): ITSContext => ({
-    ...ctx,
-    t: translator(namespace, ctx.locale),
-  })
-
-  return {
-    schemaContext: createContext('schema'),
-    structureContext: createContext('structure'),
-  }
 }
