@@ -58,7 +58,9 @@ export function createCoreBack(config: ItsshopsConfig) {
     const config: WorkspaceOptions = {
       name: language.id,
       basePath: `/${language.id}`,
-      title: `${workspaceName} (${language.title})`,
+      title: `${language.locale.split('-')[0].toUpperCase()}`,
+      // title: `${workspaceName} (${language.title})`,
+      icon: coreConfig.workspaceIcon,
       // theme: defaultTheme,
       projectId,
       dataset,

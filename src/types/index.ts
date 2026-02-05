@@ -278,6 +278,7 @@ export interface ItsshopsConfig {
   projectId: string;
   dataset: string;
   workspaceName: string;
+  workspaceIcon?: ComponentType;
   i18n?: I18nConfig;
   defaultCountryCode?: string;
   features?: FeatureConfig;

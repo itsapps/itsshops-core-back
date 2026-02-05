@@ -10,7 +10,7 @@ export const createSharedProductFields = (ctx: FieldContext) => {
 
   const fields = [
     ...vinofactEnabled && vinofactConfig ? [
-      ctx.f('externalWineId', 'string', {
+      ctx.f('vinofactWineId', 'string', {
         components: { input: VinofactWineSelector },
         group: 'vinofact'
       })

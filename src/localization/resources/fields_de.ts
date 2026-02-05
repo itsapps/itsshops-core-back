@@ -39,6 +39,10 @@ const productAndVariantFields = {
   modules: {
     title: 'Module',
   },
+  vinofactWineId: {
+    title: 'Vinofact Wein',
+    description: 'Verbindet dieses Produkt mit einem Vinofact Wein',
+  },
 }
 
 const productAndVariantGroups = {
@@ -49,6 +53,7 @@ const productAndVariantGroups = {
   media: 'Medien',
   seo: 'SEO',
   variants: 'Varianten',
+  vinofact: 'Vinofact',
 }
 
 export default {
