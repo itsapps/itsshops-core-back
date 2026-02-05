@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Autocomplete, Card, Stack, Text, Flex, Badge, Box, Inline, Button, Menu, MenuItem, MenuButton, MenuDivider } from '@sanity/ui'
-import { CalendarIcon, EllipsisHorizontalIcon, TrashIcon, SyncIcon, LaunchIcon } from '@sanity/icons'
+import { CalendarIcon, EllipsisHorizontalIcon, TrashIcon, SyncIcon, LaunchIcon, WarningOutlineIcon } from '@sanity/icons'
 import { Wine } from 'phosphor-react'
 import { set, unset, useTranslation } from 'sanity'
 import { useITSContext } from '../context/ITSCoreProvider'
@@ -14,10 +14,17 @@ export function VinofactWineSelector(props: any) {
   const [wines, setWines] = useState<VinofactWine[]>([])
   const [loading, setLoading] = useState(false)
   const [isReplacing, setIsReplacing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!vinofactClient) return
+    if (!vinofactClient) {
+      setError('Vinofact client not initialized.')
+      return
+    }
+
     setLoading(true)
+    setError(null)
+    
     vinofactClient.getWines().then((data) => {
       const sorted = [...data.wines].sort((a, b) => {
         const titleComp = a.title.localeCompare(b.title) // Z-A
@@ -25,7 +32,11 @@ export function VinofactWineSelector(props: any) {
         return (Number(b.year) || 0) - (Number(a.year) || 0)
       })
       setWines(sorted)
-    }).finally(() => setLoading(false))
+    })
+    .catch((err) => {
+      setError(err.message || 'Failed to fetch wines from Vinofact.')
+    })
+    .finally(() => setLoading(false))
   }, [vinofactClient])
 
   const options = useMemo(() => 
@@ -43,6 +54,20 @@ export function VinofactWineSelector(props: any) {
 
   const openEditUrl = () => {
     if (selectedWine?.editUrl) window.open(selectedWine.editUrl, '_blank')
+  }
+
+  if (error) {
+    return (
+      <Card padding={3} radius={2} tone="caution" border>
+        <Flex align="center" gap={3}>
+          <Text size={2}><WarningOutlineIcon /></Text>
+          <Stack space={2}>
+            <Text size={1} weight="semibold">Vinofact Configuration Issue</Text>
+            <Text size={1} muted>{error}</Text>
+          </Stack>
+        </Flex>
+      </Card>
+    )
   }
 
   // --- UI SWITCH ---

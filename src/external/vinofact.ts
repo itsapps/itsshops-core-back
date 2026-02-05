@@ -20,10 +20,18 @@ export const createVinofactClient = (locale: string, endpoint: string, token: st
         })
       });
 
-      const { data, errors } = await response.json();
+      if (!response.ok) {
+        if (response.status === 401) throw new Error("Invalid or missing Vinofact API Token.");
+        throw new Error(`Vinofact API responded with status ${response.status}`);
+      }
+
+      const json = await response.json();
+      const { data, errors } = json;
+
+      // 2. Check for GraphQL logic errors
       if (errors) {
         console.error("Vinofact GraphQL Errors:", errors);
-        throw new Error("Vinofact GraphQL query failed");
+        throw new Error(errors[0]?.message || "Vinofact GraphQL query failed");
       }
 
       return data;
@@ -33,7 +41,7 @@ export const createVinofactClient = (locale: string, endpoint: string, token: st
       // Network error or thrown above
       console.error("Vinofact API call failed:", err)
       // throw err
-      return {error: error.message}
+      throw error
     }
   }
   

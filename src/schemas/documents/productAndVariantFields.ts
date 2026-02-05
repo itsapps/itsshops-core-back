@@ -6,10 +6,9 @@ import { VinofactWineSelector } from "../../components/VinofactWineSelector";
 export const createSharedProductFields = (ctx: FieldContext) => {
   const { f } = ctx;
   const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact');
-  const vinofactConfig = ctx.config.features.shop.vinofact?.integration;
 
   const fields = [
-    ...vinofactEnabled && vinofactConfig ? [
+    ...vinofactEnabled ? [
       ctx.f('vinofactWineId', 'string', {
         components: { input: VinofactWineSelector },
         group: 'vinofact'

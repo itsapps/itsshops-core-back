@@ -7,8 +7,8 @@ export type VinofactWine = {
 }
 
 export type VinofactWinesResponse = {
-    wines: VinofactWine[]
-  }
+  wines: VinofactWine[]
+}
 
 export type ITSVinofactClient = {
   getWines: () => Promise<VinofactWinesResponse>;
