@@ -1,17 +1,17 @@
 
-type FrontendClientFunctionReturnType = {
+type Response = Promise<{
   error: any;
   data?: undefined;
 } | {
   data: any;
   error?: undefined;
-}
+}>
 
 export type ITSFrontendClient = {
-  sendMail: (mailType: string, orderId: string) => Promise<FrontendClientFunctionReturnType>;
+  sendMail: (mailType: string, orderId: string) => Response;
   sendRefund: (paymentIntentId: string, options?: {
       amount?: number | undefined;
-  }) => Promise<FrontendClientFunctionReturnType>;
-  getOrderInvoicePdf: (orderId: string) => Promise<FrontendClientFunctionReturnType>;
-  getExportXlsx: (kind: string) => Promise<FrontendClientFunctionReturnType>;
+  }) => Response;
+  getOrderInvoicePdf: (orderId: string) => Response;
+  getExportXlsx: (kind: string) => Response;
 }

@@ -1,80 +1,126 @@
-const productAndVariantFields = {
-  title: {
-    title: 'Titel',
-  },
-  productNumber: {
-    title: 'Produktnummer',
-  },
-  manufacturers: {
-    title: 'Hersteller',
-  },
-  categories: {
-    title: 'Kategorien',
-  },
-  tags: {
-    title: 'Tags',
-  },
-  seo: {
-    title: 'SEO',
-  },
-  stock: {
-    title: 'Lagerstand',
-  },
-  stockThreshold: {
-    title: 'Unteres Limit für Benachrichtigungen über den Lagerbestand',
-    description: 'Erhalte eine Benachrichtigung, wenn der Lagerbestand des Produktes unter diesem Limit liegt.',
-  },
-  compareAtPrice: {
-    title: 'Vergleichspreis',
-  },
-  price: {
-    title: 'Preis',
-  },
-  images: {
-    title: 'Bilder',
-  },
-  description: {
-    title: 'Beschreibung',
-  },
-  modules: {
-    title: 'Module',
-  },
-  vinofactWineId: {
-    title: 'Vinofact Wein',
-    description: 'Verbindet dieses Produkt mit einem Vinofact Wein',
-  },
-}
-
-const productAndVariantGroups = {
-  product: 'Produkt',
-  description: 'Beschreibung',
-  stock: 'Lagerbestand',
-  pricing: 'Preise',
-  media: 'Medien',
-  seo: 'SEO',
-  variants: 'Varianten',
-  vinofact: 'Vinofact',
-}
-
 export default {
+  groups: {
+    product: 'Produkt',
+    description: 'Beschreibung',
+    stock: 'Lagerbestand',
+    pricing: 'Preise',
+    media: 'Medien',
+    seo: 'SEO',
+    variants: 'Varianten',
+    vinofact: 'Vinofact',
+    content: 'Inhalt',
+    images: 'Bilder',
+    settings: 'Einstellungen',
+    vat: 'Steuer',
+  },
+  fieldsets: {
+
+  },
+  fields: {
+    countries: {
+      title: 'Länder'
+    },
+    enabled: {
+      title: 'Aktiviert'
+    },
+    countryCode: {
+      title: 'Land',
+    },
+    freeShippingThreshold: {
+      title: 'Gratisversand',
+      description: 'Für Bestellungen mit einem Wert oberhalb dieses Brutto-Betrags ist der Versand gratis.',
+    },
+    freeShippingCalculation: {
+      title: 'Gratis-Versand Berechnung',
+      description: 'Soll der Gratis Versand vor oder nach der Rabattierung berechnet werden?',
+    },
+    title: {
+      title: 'Titel',
+    },
+    description: {
+      title: 'Beschreibung',
+    },
+    image: {
+      title: 'Bild',
+    },
+    alt: {
+      title: 'Alternativer Text',
+    },
+    slug: {
+      title: 'URL-Name',
+      validation: 'Erlaubte Zeichen: "a-z" "A-Z" "0-9" "-" "_"',
+    },
+    modules: {
+      title: 'Inhalte',
+    },
+    sku: {
+      title: 'SKU',
+    },
+    weight: {
+      title: 'Gewicht (kg)',
+      description: 'Standard 0.75L Flasche hat ca. 1,3kg',
+    },
+    taxCategory: {
+      title: 'Steuerklasse',
+    },
+    manufacturers: {
+      title: 'Hersteller',
+    },
+    categories: {
+      title: 'Kategorien',
+    },
+    tags: {
+      title: 'Tags',
+    },
+    seo: {
+      title: 'SEO',
+    },
+    stock: {
+      title: 'Lagerstand',
+    },
+    stockThreshold: {
+      title: 'Unteres Limit für Benachrichtigungen über den Lagerbestand',
+      description: 'Erhalte eine Benachrichtigung, wenn der Lagerbestand des Produktes unter diesem Limit liegt.',
+    },
+    compareAtPrice: {
+      title: 'Vergleichspreis',
+    },
+    price: {
+      title: 'Preis',
+    },
+    images: {
+      title: 'Bilder',
+    },
+    vinofactWineId: {
+      title: 'Wein',
+      description: 'Verbindet dieses Produkt mit einem Vinofact Wein',
+    },
+    content: {
+      title: 'Inhalt',
+    },
+  },
+  orderings: {
+    asc: "Aufsteigend",
+    desc: "Absteigend",
+  },
+  validation: {
+    assetRequired: 'Bild ist erforderlich',
+    maxLength: 'Wert darf nicht mehr als {{max}} Zeichen enthalten',
+    minLength: 'Wert muss mindestens {{min}} Zeichen enthalten',
+    oneFieldMustExist: 'Mindestens eines erforderlich',
+    requiredField: 'Erforderlich',
+  },
+
   productFieldsets: {
     states: 'Stati',
   },
   product: {
     title: 'Produkt',
-    groups: {
-      ...productAndVariantGroups,
-      variants: 'Varianten',
-    },
     fields: {
       variants: {
         title: 'Produktvarianten',
         description: 'Alle Varianten generiert durch Produktoptionen',
       },
-      blablas: {
-        title: 'viele bilder',
-      },
-      ...productAndVariantFields,
     },
     preview: {
       variants_one: "{{count}} Variante",
@@ -83,9 +129,7 @@ export default {
   },
   productVariant: {
     title: 'Produktvariante',
-    groups: productAndVariantGroups,
     fields: {
-      ...productAndVariantFields,
       coverImage: {
         title: 'Cover-Bild',
         description: 'Cover-Bild für diese Variant auswählen. Hat keinen Effekt, wenn die Variante eigene Bilder verwendet.'
@@ -105,15 +149,38 @@ export default {
       variants: "Varianten",
     },
   },
+  productBundle: {
+    title: 'Produktpaket',
+    fields: {
+      items: {
+        title: 'Produkte',
+      },
+    },
+    preview: {
+      items_zero: "Keine Produkte",
+      items_one: "{{count}} Produkt",
+      items_other: "{{count}} Produkte",
+    }
+  },
+  productBundleItem: {
+    title: 'Produkt',
+    fields: {
+      quantity: {
+        title: 'Anzahl',
+      },
+      product: {
+        title: 'Produkt',
+      },
+    },
+    preview: {
+      quantity_zero: "Keine Produkte",
+      quantity_one: "{{count}} Produkt",
+      items_other: "{{count}} Produkte",
+    }
+  },
   category: {
     title: 'Kategorie',
     fields: {
-      title: {
-        title: 'Titel',
-      },
-      description: {
-        title: 'Beschreibung',
-      },
       parent: {
         title: 'Übergeordnete Kategorie',
       },
@@ -121,31 +188,132 @@ export default {
         title: 'Reihenfolge',
         description: 'Umso niedriger die Zahl, desto höher die Kategorie in der Navigation',
       },
-      image: {
-        title: 'Bild',
-      },
     },
   },
   manufacturer: {
     title: 'Hersteller',
     fields: {
-      title: {
-        title: 'Titel',
-      },
-      description: {
-        title: 'Beschreibung',
-      },
-      image: {
-        title: 'Bild',
-      },
       link: {
         title: 'Link',
       },
     }
   },
+  shippingMethod: {
+    title: 'Versandart',
+    fields: {
+      rates: {
+        title: 'Preistabelle',
+      },
+      methodType: {
+        title: 'Typ',
+        options: {
+          delivery: 'Versand',
+          pickup: 'Abholung',
+        },
+      },
+      pickupFee: {
+        title: 'Kosten für die Abholung',
+        description: 'Auf 0 setzen, um die Abholung kostenlos zu machen.',
+      },
+      eligibleCountries: {
+        title: 'Länder',
+      },
+    },
+    preview: {
+      countries_zero: "Keine Länder ausgewählt",
+      countries_one: "{{count}} Land",
+      countries_other: "{{count}} Länder",
+    }
+  },
+  shippingRate: {
+    title: 'Kosten',
+    fields: {
+      price: {
+        description: 'Brutto-Preis'
+      },
+      maxWeight: {
+        title: 'Maximales Gewicht',
+        description: 'Bis zu Gewicht (kg)'
+      },
+      // title: {
+      //   description: 'Name der Klasse (z.b. "Standard, Alkohol, ...")',
+      // },
+      // code: {
+      //   title: 'Code',
+      //   description: 'Der Code wird verwendet, um die Steuerklasse zu identifizieren und kann nur einmalig gesetzt werden.',
+      //   // description: 'The code used by the system. Locked after publishing to prevent breaking the shop.',
+      // },
+    },
+  },
+  taxCountry: {
+    title: 'Steuereinstellungen',
+    fields: {
+      rules: {
+        title: 'Regeln',
+      },
+      freeShippingCalculation: {
+        options: {
+          beforeDiscount: 'Vor Rabatt',
+          afterDiscount: 'Nach Rabatt',
+        },
+      }
+    },
+    preview: {
+      rules_zero: "Keine Regeln ausgewählt",
+      rules_one: "{{count}} Regel",
+      rules_other: "{{count}} Regeln",
+    }
+  },
+  shopSettings: {
+    title: 'Allgemeine Shop-Einstellungen',
+    fields: {
+      defaultCountry: {
+        title: 'Standard-Land',
+        description: 'Welches Land soll beim Checkout standardmäßig verwendet werden?',
+      },
+      freeShippingCalculation: {
+        options: {
+          beforeDiscount: 'Vor Rabatt',
+          afterDiscount: 'Nach Rabatt',
+        },
+      }
+    },
+    preview: {
+      
+    }
+  },
+  taxRule: {
+    title: 'Regel',
+    fields: {
+      rate: {
+        title: 'Steuersatz in %',
+      },
+      exciseDuty: {
+        title: 'Verbrauchssteuer in %',
+      },
+    },
+    preview: {
+      
+    }
+  },
+  taxCategory: {
+    title: 'Steuerklasse',
+    fields: {
+      title: {
+        description: 'Name der Klasse (z.b. "Standard, Alkohol, ...")',
+      },
+      code: {
+        title: 'Code',
+        description: 'Der Code wird verwendet, um die Steuerklasse zu identifizieren und kann nur einmalig gesetzt werden.',
+        // description: 'The code used by the system. Locked after publishing to prevent breaking the shop.',
+      },
+    },
+    preview: {
+
+    }
+  },
   address: {
     title: 'Adresse',
-    description: "some address beschre",
     fields: {
       name: {
         title: 'Name',
@@ -307,11 +475,6 @@ export default {
   },
   tag: {
     title: 'Tag',
-    fields: {
-      title: {
-        title: 'Titel',
-      },
-    },
   },
   user: {
     title: 'Kunde',
@@ -371,12 +534,6 @@ export default {
   variantOptionGroup: {
     title: 'Optionengruppe',
     fields: {
-      title: {
-        title: 'Titel',
-      },
-      description: {
-        title: 'Beschreibung',
-      },
       options: {
         title: 'Optionen',
       },
@@ -385,16 +542,15 @@ export default {
         description: 'Je kleiner die Zahl, desto früher wird die Option angezeigt.',
       },
     },
+    preview: {
+      options_zero: "Keine Optionen",
+      options_one: "{{count}} Option",
+      options_other: "{{count}} Optionen",
+    }
   },
   variantOption: {
     title: 'Option',
     fields: {
-      title: {
-        title: 'Titel',
-      },
-      image: {
-        title: 'Bild',
-      },
       sortOrder: {
         title: 'Sortierung',
         description: 'Je kleiner die Zahl, desto früher wird die Option angezeigt.',
@@ -405,45 +561,16 @@ export default {
     title: 'Seite',
     groups: {
       page: 'Allgemeines',
-      seo: 'SEO',
-      content: 'Inhalt',
-    },
-    fields: {
-      title: {
-        title: 'Titel',
-      },
-      slug: {
-        title: 'URL-Name',
-        validation: 'Erlaubte Zeichen: "a-z" "A-Z" "0-9" "-" "_"',
-      },
-      modules: {
-        title: 'Inhalte',
-      },
     },
   },
   post: {
     title: 'Blog Eintrag',
     groups: {
       post: 'Allgemeines',
-      seo: 'SEO',
-      content: 'Inhalt',
     },
     fields: {
-      title: {
-        title: 'Titel',
-      },
       preview: {
         title: 'Vorschau',
-      },
-      slug: {
-        title: 'URL-Name',
-        validation: 'Erlaubte Zeichen: "a-z" "A-Z" "0-9" "-" "_"',
-      },
-      image: {
-        title: 'Bild',
-      },
-      modules: {
-        title: 'Inhalte',
       },
     },
   },
@@ -451,19 +578,8 @@ export default {
     title: 'Blog',
     groups: {
       blog: 'Allgemeines',
-      seo: 'SEO',
-      settings: 'Einstellungen',
     },
     fields: {
-      title: {
-        title: 'Titel',
-      },
-      description: {
-        title: 'Beschreibung',
-      },
-      seo: {
-        title: 'SEO',
-      },
       postsPerPage: {
         title: 'Einträge pro Seite',
       },
@@ -478,9 +594,6 @@ export default {
     fields: {
       title: {
         title: 'Überschrift',
-      },
-      image: {
-        title: 'Bild',
       },
       bgImage: {
         title: 'Hintergrundbild',
@@ -498,11 +611,6 @@ export default {
         title: 'Anzeigetyp',
       },
     },
-    groups: {
-      content: 'Inhalt',
-      media: 'Bilder',
-      settings: 'Einstellungen',
-    }
   },
   link: {
     title: 'Link',
@@ -601,9 +709,6 @@ export default {
   customImage: {
     title: 'Bild',
     fields: {
-      title: {
-        title: 'Titel',
-      },
       altText: {
         title: 'Alternativer Text',
       },
@@ -612,9 +717,6 @@ export default {
   menu: {
     title: 'Menü',
     fields: {
-      title: {
-        title: 'Titel',
-      },
       items: {
         title: 'Einträge',
       },
@@ -623,9 +725,6 @@ export default {
   navPage: {
     title: 'Seite',
     fields: {
-      title: {
-        title: 'Titel',
-      },
       page: {
         title: 'Seite',
       },
@@ -634,9 +733,6 @@ export default {
   navLink: {
     title: 'Link',
     fields: {
-      title: {
-        title: 'Titel',
-      },
       url: {
         title: 'Url',
       },
@@ -743,11 +839,6 @@ export default {
   },
   customerGroup: {
     title: 'Kundengruppe',
-    fields: {
-      title: {
-        title: 'Titel',
-      },
-    },
   },
   voucher: {
     title: 'Gutschein',
@@ -755,12 +846,6 @@ export default {
       mustHaveDiscountOrReward: 'Gutscheine müssen einen Rabatt oder eine Belohnung enthalten.',
     },
     fields: {
-      title: {
-        title: 'Titel',
-      },
-      description: {
-        title: 'Beschreibung',
-      },
       active: {
         title: 'Aktiv',
       },
@@ -869,9 +954,6 @@ export default {
       isDefault: {
         title: 'Standard',
       },
-      title: {
-        title: 'Titel',
-      },
       code: {
         title: 'Länderkürzel',
       },
@@ -880,21 +962,6 @@ export default {
       },
       rates: {
         title: 'Versandarten',
-      },
-    },
-  },
-  shippingRate: {
-    title: 'Versandart',
-    fields: {
-      title: {
-        title: 'Titel',
-      },
-      amount: {
-        title: 'Preis',
-      },
-      trackingUrl: {
-        title: 'Sendungsverfolgung',
-        description: 'URL zur Sendungsverfolgung',
       },
     },
   },
@@ -1024,11 +1091,6 @@ export default {
     },
   },
 
-  orderings: {
-    asc: "Aufsteigend",
-    desc: "Absteigend",
-  },
-
   localeBlock: {
     title: 'Lokalisierter Block',
     translations: {
@@ -1037,34 +1099,9 @@ export default {
   },
   localeImage: {
     title: 'Lokalisiertes Bild',
-    fields: {
-      image: {
-        title: 'Bild',
-      },
-      title: {
-        title: 'Titel',
-      },
-      alt: {
-        title: 'Alternativer Text',
-      },
-    },
-    validation: {
-      assetRequired: 'Bild ist erforderlich',
-    },
   },
   baseImage: {
     title: 'Bild',
-    fields: {
-      title: {
-        title: 'Titel',
-      },
-      alt: {
-        title: 'Alternativer Text',
-      },
-    },
-    validation: {
-      assetRequired: 'Bild ist erforderlich',
-    },
   },
   localeString: {
     title: 'Lokalisierter Text',
@@ -1081,10 +1118,4 @@ export default {
       title: 'Übersetzungen',
     },
   },
-  validation: {
-    maxLength: 'Wert darf nicht mehr als {{max}} Zeichen enthalten',
-    minLength: 'Wert muss mindestens {{min}} Zeichen enthalten',
-    oneFieldMustExist: 'Mindestens eines erforderlich',
-    requiredField: 'Erforderlich',
-  }
 }

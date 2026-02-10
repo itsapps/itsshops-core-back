@@ -1,3 +1,5 @@
+import { taxCategory } from "../../schemas/documents/taxCategory";
+
 export default {
   shop: "Shop",
   website: "Webseite",
@@ -5,6 +7,12 @@ export default {
   // products: "Produkte",
   product: "Produkte",
   productVariant: "Produktvarianten",
+  productBundle: "Produktpakete",
+  shippingMethod: "Versandarten",
+  taxCountry: "Länder",
+  taxCategory: "Steuerklassen",
+  shopSettings: "Allgemeines",
+  shopSettingsGroup: "Shop-Einstellungen",
   order: "Bestellungen",
   user: "Kunden",
   users: "Kunden",
@@ -27,8 +35,8 @@ export default {
   marketing: "Marketing",
   voucher: "Gutscheine",
   shippingCountry: "Versand",
-  settings: "Einstellungen",
-  settingsGroup: "Allgemeines",
+  settings: "Allgemeines",
+  settingsGroup: "Einstellungen",
   settingsasdf: {
     title: "Einstellungen",
     homePage: "Startseite",

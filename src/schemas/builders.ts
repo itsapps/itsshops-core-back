@@ -1,7 +1,12 @@
-import { ITSContext, FieldFactory, ITSBuilders } from '../types';
+import { ITSContext, CoreFactory, ITSBuilders } from '../types';
+import { PriceInput } from '../components/PriceInput';
 
-export const createBuilders = (f: FieldFactory, ctx: ITSContext): ITSBuilders => {
-  const { config, t: { default: t } } = ctx;
+import { defineField } from 'sanity'
+
+export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilders => {
+  const { config, t: { default: t }, localizer, format } = ctx;
+  const f = factory.fields;
+  const apiVersion = config.apiVersion
   
   return {
     internalLink: (options = { required: true }) => {
@@ -103,7 +108,7 @@ export const createBuilders = (f: FieldFactory, ctx: ITSContext): ITSBuilders =>
                   type: 'object',
                   title: 'Internal Link',
                   // Recursively call the link builder!
-                  fields: createBuilders(f, ctx).internalLink({ 
+                  fields: createBuilders(factory, ctx).internalLink({ 
                     includeDisplayType: true 
                   })
                 }
@@ -126,7 +131,7 @@ export const createBuilders = (f: FieldFactory, ctx: ITSContext): ITSBuilders =>
             // We use the internalLink builder INSIDE the array item
             fields: [
               // f('label', 'i18nString', { i18n: 'requiredDefault' }),
-              ...createBuilders(f, ctx).internalLink({ includeDisplayType: true })
+              ...createBuilders(factory, ctx).internalLink({ includeDisplayType: true })
             ],
             // Preview so the editor sees the label in the list
             preview: {
@@ -139,6 +144,90 @@ export const createBuilders = (f: FieldFactory, ctx: ITSContext): ITSBuilders =>
         ],
         validation: (Rule: any) => options.max ? Rule.max(options.max) : Rule
       });
-    }
+    },
+    countryCodeField: (options) => {
+      return f(options.name || 'countryCode', 'string', {
+        options: {
+          list: ctx.countryOptions
+        },
+        // validation: (Rule) => Rule.required()
+        validation: (Rule) => Rule.required().custom(async (value, context) => {
+          const { document, getClient } = context;
+          const client = getClient({ apiVersion });
+          
+          // Look for other documents with the same code that aren't this one
+          const id = document?._id.replace('drafts.', '');
+          const params = {
+            type: options.documentType,
+            code: value,
+            id
+          };
+          
+          const query = `*[_type == $type && countryCode == $code && _id != $id && !(_id in path("drafts.**"))][0]`;
+          const alreadyExists = await client.fetch(query, params);
+
+          return alreadyExists 
+            ? `A configuration for ${value} already exists.` 
+            : true;
+        }),
+      })
+    },
+    countryCodesField: (options) => {
+      return f(options.name || 'countryCodes', 'array', {
+        of: [{ type: 'string' }],
+        options: {
+          list: ctx.countryOptions
+        },
+      })
+      // return {
+      //   name: 'countries',
+      //   type: 'array',
+      //   of: [{ type: 'string' }],
+      //   options: {
+      //     list: config.localization.countries.map(country => ({ title: `${country.value} (${localizer.dictValue(country.title)})`, value: country.value }))
+      //   },
+      // }
+    },
+    // priceField: (ctx, options) => {
+    //   ctx.f(options.name || 'price', 'number', {
+    //     validation: (Rule) => Rule.positive(),
+    //     ...options.group && { group: 'pricing'},
+    //     components: {
+    //       input: PriceInput,
+    //     },
+    //   }),
+    // },
+    priceField: (options) => {
+      const { name, validation, ...rest } = options
+
+      const field = f(name || 'price', 'number', {
+        ...rest,
+        validation: (Rule) => {
+          const base = Rule.positive()
+          const custom = validation ? validation(Rule) : [];
+          return [
+            base,
+            ...(Array.isArray(custom) ? custom : [custom])
+          ].filter(Boolean);
+        },
+        components: {
+          input: PriceInput,
+        },
+      })
+      return field
+      // return f(name || 'price', 'number', {
+      //   ...rest,
+      //   validation: (Rule) => {
+      //     const base = Rule.min(0)
+      //     if (validation) {
+      //       return [base, validation(Rule)]
+      //     }
+      //     return base
+      //   },
+      //   components: {
+      //     input: PriceInput,
+      //   },
+      // })
+    },
   };
 };

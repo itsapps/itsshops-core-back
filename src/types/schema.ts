@@ -1,4 +1,4 @@
-import { ITSi18nImage, ITSi18nArray } from "./localization";
+import { LocaleImage, ITSi18nArray } from "./localization";
 import type { SanityDocument, SanityDocumentLike, Reference } from 'sanity'
 
 export type DocumentReference = {
@@ -28,7 +28,7 @@ export interface SanityImageWithHotspot {
 
 export type VariantOption = {
   _id: string
-  title: ITSi18nImage,
+  title: ITSi18nArray,
   sortOrder?: number
 }
 
@@ -47,7 +47,7 @@ export type Variant = SanityDocument & {
   featured: boolean;
   price?: number;
   coverImage: string;
-  productNumber?: string;
+  sku?: string;
   active: boolean;
 }
 
@@ -55,7 +55,7 @@ export type NewVariant = SanityDocumentLike & {
   _id: string;
   _type: string;
   title: ITSi18nArray;
-  productNumber?: string;
+  sku?: string;
   options: Reference[];
   featured: boolean;
   active: boolean;
@@ -63,9 +63,9 @@ export type NewVariant = SanityDocumentLike & {
 }
 
 export type Product = SanityDocument & {
-  images?: ITSi18nImage[],
+  images?: LocaleImage[],
   price?: number,
-  productNumber?: string,
+  sku?: string,
   title: ITSi18nArray,
 }
 

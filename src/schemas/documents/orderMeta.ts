@@ -9,6 +9,7 @@ export const orderMeta: ITSSchemaDefinition = {
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate' ],
   allowCreate: false,
+  hideInStructure: true,
   build: (ctx) => {
     const { f } = ctx;
     return {

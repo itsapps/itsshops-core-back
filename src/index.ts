@@ -1,9 +1,10 @@
-import { ItsshopsConfig } from './types';
+import { CountryOption, ItsshopsConfig } from './types';
 
 export type {
   ItsshopsConfig,
   ITSSchemaDefinition,
   ITSStructureItem,
+  CountryOption,
 } from './types';
 export { useITSContext } from './context/ITSCoreProvider'
 export { PriceInput } from './components/PriceInput';
@@ -45,20 +46,25 @@ export function createCoreBack(config: ItsshopsConfig) {
   const { projectId, dataset, workspaceName } = config
   
   const workspace = defineConfig(coreConfig.localization.uiLanguages.map(language => {
+    const localizer = createI18nHelpers(language.id, coreConfig.localization.defaultLocale)
+    const countryOptions: CountryOption[] = coreConfig.localization.countries.map(country => ({ title: `${country.code} (${localizer.dictValue(country.title)})`, value: country.code }))
+
     const localeContext = {
       config: coreConfig,
       featureRegistry,
       locale: language.id,
-      localizer: createI18nHelpers(language.id, coreConfig.localization.defaultLocale),
+      localizer,
       format: createFormatHelpers(language.id),
+      countryOptions
     }
+    
     const schemaContext = {...localeContext, t: translator('schema', localeContext.locale)}
     const structureContext = {...localeContext, t: translator('structure', localeContext.locale)}
 
     const config: WorkspaceOptions = {
       name: language.id,
       basePath: `/${language.id}`,
-      title: `${language.locale.split('-')[0].toUpperCase()}`,
+      title: `${language.locale.split('-')[0].toUpperCase()} - ${workspaceName}`,
       // title: `${workspaceName} (${language.title})`,
       icon: coreConfig.workspaceIcon,
       // theme: defaultTheme,
@@ -96,7 +102,7 @@ export function createCoreBack(config: ItsshopsConfig) {
         comments: {
           enabled: false,
         },
-        actions: (prev, context) => actionResolver(prev, context, featureRegistry, coreConfig.apiVersion),
+        actions: (prev, context) => actionResolver(prev, context, featureRegistry),
         unstable_fieldActions: () => [],
       },
       i18n: {

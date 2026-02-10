@@ -1,21 +1,22 @@
-import {PackageIcon} from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
-import { createSharedProductFields, createProductVariantGroups } from "./productAndVariantFields";
+import { SlidersHorizontal } from 'phosphor-react';
+import { ITSSchemaDefinition, ProductType } from "../../types";
+import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
 
 export const productVariant: ITSSchemaDefinition = {
   name: 'productVariant',
   type: 'document',
-  icon: PackageIcon,
+  icon: SlidersHorizontal,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate' ],
   allowCreate: false,
+  hideInStructure: true,
   build: (ctx) => {
     const { f } = ctx;
     return {
-      groups: createProductVariantGroups(ctx),
+      groups: createSharedProductGroups(ctx, ProductType.Variant),
       fields: [
-        f('title', 'i18nString'),
+        f('title', 'i18nString', { group: 'product' }),
         f('price', 'number', {
           validation: (Rule) => Rule.positive(),
           group: 'pricing',
@@ -23,7 +24,7 @@ export const productVariant: ITSSchemaDefinition = {
             input: PriceInput,
           },
         }),
-        ...createSharedProductFields(ctx),
+        ...createSharedProductFields(ctx, ProductType.Variant),
         f('active', 'boolean', { initialValue: true, group: 'product', }),
         f('options', 'array', { 
           group: 'product',
@@ -44,13 +45,13 @@ export const productVariant: ITSSchemaDefinition = {
           options0: 'options.0.title',
           options1: 'options.1.title',
           options2: 'options.2.title',
-          image: 'images.0.asset',
+          image: 'images.0.image',
         },
         prepare({ title, options0, options1, options2, image }) {
           return {
             title: ctx.localizer.value(title),
             subtitle: [options0, options1, options2].map(o => ctx.localizer.value(o)).filter(Boolean).join(", "),
-            media: image || PackageIcon,
+            media: ctx.localizer.value<any>(image) || SlidersHorizontal,
           }
         },
       }

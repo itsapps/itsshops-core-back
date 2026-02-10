@@ -4,9 +4,8 @@ import { EditIcon, BasketIcon, CogIcon, HomeIcon, UserIcon, ConfettiIcon } from 
 import type {DefaultDocumentNodeResolver} from 'sanity/structure'
 import DocumentsPane from 'sanity-plugin-documents-pane'
 import { categoriesMenu } from '../structure/categories';
-import { fromRegistry, localizedStructure } from '../utils/structure';
+import { fromRegistry, isDocHidden, localizedStructure } from '../utils/structure';
 import { OrderView } from '../components/OrderView';
-
 
 export const createStructureTool = (ctx: ITSContext): StructureToolOptions => {
   return {
@@ -18,6 +17,7 @@ export const createStructureTool = (ctx: ITSContext): StructureToolOptions => {
 
 export const createStructure = (ctx: ITSContext) => {
   const mapItems = (ids: string[]) => ids.map(id => fromRegistry(ctx, id));
+
 
   const coreManifest: ITSStructureItem[] = [
     {
@@ -32,21 +32,21 @@ export const createStructure = (ctx: ITSContext) => {
       icon: BasketIcon,
       feature: 'shop',
       children: [
-        ...mapItems(['order', 'product', 'productVariant', 'variantOptionGroup']),
-        { type: 'custom', id: 'categories', component: categoriesMenu },
+        ...mapItems(['order', 'orderMeta', 'product', 'productBundle', 'productVariant', 'variantOptionGroup', 'variantOption']),
+        { type: 'custom', id: 'categories', feature: 'shop.category', component: categoriesMenu, hidden: isDocHidden(ctx, 'category') },
         ...mapItems(['manufacturer']),
       ]
     },
-    {
-      type: 'group',
-      id: 'marketing',
-      icon: ConfettiIcon,
-      feature: 'shop',
-      children: mapItems(['voucher'])
-    },
+    // {
+    //   type: 'group',
+    //   id: 'marketing',
+    //   icon: ConfettiIcon,
+    //   feature: 'shop',
+    //   children: mapItems(['voucher'])
+    // },
     {
       type: 'divider',
-      id: 'divider1',
+      id: 'mainDivider',
     },
     {
       type: 'group',
@@ -59,12 +59,15 @@ export const createStructure = (ctx: ITSContext) => {
       type: 'group',
       id: 'settingsGroup',
       icon: CogIcon,
-      children: mapItems(['settings', 'blog', 'shippingCountry'])
-      // children: [
-      //   { type: 'singleton', id: 'settings', title: 'settings.general', icon: CogIcon },
-      //   { type: 'singleton', id: 'blog', title: 'blog', icon: Note, feature: 'blog' },
-      //   { type: 'document', id: 'shippingCountry', title: 'shippingCountries', feature: 'shop' },
-      // ]
+      children: [
+        ...mapItems(['settings']),
+        {
+          type: 'group',
+          id: 'shopSettingsGroup',
+          icon: CogIcon,
+          children: mapItems(['shopSettings', 'taxCountry', 'taxCategory'])
+        },
+      ]
     },
   ];
   return localizedStructure(ctx, coreManifest);

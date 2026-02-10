@@ -1,4 +1,4 @@
-import { OrderItem, OrderBundleItem, ITSi18nArray } from '../types'
+import { OrderItem, OrderBundleItem, ITSi18nArray, ProductType } from '../types'
 import { useITSContext } from '../context/ITSCoreProvider'
 
 import React, { useEffect, useState } from 'react'
@@ -10,17 +10,15 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 
 type ProductData = {
   _id: string
-  productNumber: string
+  sku: string
   title?: ITSi18nArray
   images?: any[]
 }
-type ProductVariantData = ProductData & {
-  coverImage: string
-}
+type ProductVariantData = ProductData
 
 
 export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleItem), orderId: string}) {
-  const { localizer, format, config: { apiVersion, shop } } = useITSContext();
+  const { localizer, format, config: { apiVersion, features: {shop} } } = useITSContext();
   const client = useClient({ apiVersion })
 
   const imageBuilder = imageUrlBuilder(client)
@@ -42,8 +40,8 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
       if (isVariant) {
         const data = await client.fetch(
           `{
-            "variant": *[_type == "productVariant" && _id == $variantId][0]{_id, productNumber, title, images, coverImage},
-            "product": *[_type == "product" && _id == $productId][0]{_id, productNumber, title, images}
+            "variant": *[_type == "productVariant" && _id == $variantId][0]{_id, sku, title, images, coverImage},
+            "product": *[_type == "product" && _id == $productId][0]{_id, sku, title, images}
           }`,
           {
             variantId: productId,
@@ -56,7 +54,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
       }
       else {
         const data = await client.fetch(
-          `*[_type == "product" && _id == $productId][0]{_id, productNumber, title, images}`,
+          `*[_type == "product" && _id == $productId][0]{_id, sku, title, images}`,
           {
             productId: productId,
           }
@@ -142,7 +140,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
       )}
       <Flex direction={'column'} gap={2}>
         <Text size={1}>{displayTitle}</Text>
-        {((product && product.productNumber) || (variant && variant.productNumber) || props.item.productNumber) && <Text size={3} weight='bold'>{props.item.productNumber || variant?.productNumber || product?.productNumber}</Text>}
+        {((product && product.sku) || (variant && variant.sku) || props.item.sku) && <Text size={3} weight='bold'>{props.item.sku || variant?.sku || product?.sku}</Text>}
       </Flex>
     </Flex>
   )

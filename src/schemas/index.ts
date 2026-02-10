@@ -1,6 +1,6 @@
-import { SchemaTypeDefinition } from 'sanity';
-import { ITSObjectDefinition, ITSImageDefinition, ITSArrayDefinition, ITSSchemaDefinition, ITSDocumentDefinition, ITSContext, FieldContext } from '../types'
-import { createFieldFactory, shapeSchema } from "../utils";
+import { SchemaTypeDefinition, defineType } from 'sanity';
+import { ITSSchemaDefinition, ITSContext, FieldContext } from '../types'
+import { createFactory, shapeSchema } from "../utils";
 import { createBuilders } from './builders';
 
 export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
@@ -10,26 +10,27 @@ export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
   return [...objectBuilders, ...documentBuilders].map(b => createDefinition(ctx, b));
 }
 
-export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): SchemaTypeDefinition {
+export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition) {
   const extension = ctx.config.schemaExtensions?.[definition.name];
   const name = definition.name
 
-  const f = createFieldFactory(name, ctx);
-  const builders = createBuilders(f, ctx);
-  const fieldCtx: FieldContext = { ...ctx, f, builders };
+  // const factory = createFieldFactory(name, ctx);
+  const factory = createFactory(name, ctx);
+  const builders = createBuilders(factory, ctx);
+  const fieldCtx: FieldContext = { ...ctx, f: factory.fields, factory, builders };
   
   const icon = extension?.icon ?? definition.icon
   const title = definition.title ?? ctx.t.default(`${name}.title`)
   const description = definition.description ?? ctx.t.strict(`${name}.description`)
 
+  const base = {
+    name,
+    title,
+    ...description && { description },
+    ...icon && { icon },
+  }
   if (definition.type === 'document' || definition.type === 'object') {
-    const def = definition as ITSObjectDefinition | ITSDocumentDefinition
-    const built = def.build(fieldCtx);
-
-    // const ext = extension as DocumentSchemaExtension | ObjectSchemaExtension;
-    // const groups = builtt.groups;
-    // const fieldsets = builtt.fieldsets;
-
+    const built = definition.build(fieldCtx);
     const { fields, groups, fieldsets } = shapeSchema(
       name,
       fieldCtx,
@@ -42,36 +43,35 @@ export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinitio
     const preview = extension?.preview ?
       extension.preview(ctx) :
       built.preview
-    
-    return {
+
+    const d = defineType({
       ...built,
+      ...base,
       type: definition.type,
-      description,
-      name,
-      title,
-      ...icon && { icon },
       fields,
       ...groups && { groups },
       ...fieldsets && { fieldsets },
-      preview,
-    } as SchemaTypeDefinition
+      preview: preview ?? (
+        definition.type === 'document' ? {
+          prepare: () => ({
+            title
+          })
+        } : undefined
+      ),
+    })
+    return d
   }
   
   else if (definition.type === 'array') {
-    const def = definition as ITSArrayDefinition
-    const built = def.build(fieldCtx);
+    const built = definition.build(fieldCtx);
     
-    return {
+    return defineType({
       ...built,
+      ...base,
       type: definition.type,
-      description,
-      name,
-      title,
-      ...icon && { icon },
-    } as SchemaTypeDefinition
+    })
   } else if (definition.type === 'image') {
-    const def = definition as ITSImageDefinition
-    const built = def.build(fieldCtx);
+    const built = definition.build(fieldCtx);
 
     const { fields, fieldsets } = shapeSchema(
       name,
@@ -86,17 +86,14 @@ export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinitio
       extension.preview(ctx) :
       built.preview
 
-    return {
+    return defineType({
       ...built,
+      ...base,
       type: definition.type,
-      description,
-      name,
-      title,
-      ...icon && { icon },
       ...fields && { fields },
       ...fieldsets && { fieldsets },
       preview,
-    } as SchemaTypeDefinition
+    })
   }
   else {
     throw new Error(`Unknown schema type for schema named "${name}"`)

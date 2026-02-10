@@ -1,17 +1,17 @@
-import { CoreObject } from '../../types';
+import { ITSSchemaDefinition } from '../../types';
 
-export const localeImage: CoreObject = {
+export const localeImage: ITSSchemaDefinition = {
   name: 'localeImage',
+  type: 'object',
   build: (ctx) => {
     const { f } = ctx;
     return {
-      type: 'object',
       groups: [
         { name: 'image', title: 'Image', default: true },
         { name: 'texts', title: 'Texts' },
       ],
       fields: [
-        f('image', 'i18nImage', { group: 'image'} ),
+        f('image', 'i18nCropImage', { group: 'image'} ),
         f('title', 'i18nString', { group: 'texts' }),
         f('alt', 'i18nString', { group: 'texts' }),
       ],
@@ -21,7 +21,7 @@ export const localeImage: CoreObject = {
           alt: 'alt',
           media: 'image',
         },
-        prepare: ({ title, alt, media }: any) => {
+        prepare: ({ title, alt, media }) => {
           const image = ctx.localizer.value<any>(media)
           return {
             // We use our new array-based helper here

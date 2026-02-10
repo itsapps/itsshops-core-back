@@ -11,7 +11,7 @@ export const settings: ITSSchemaDefinition = {
     const { f } = ctx;
     return {
       fields: [
-        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+        f('gta', 'number'),
       ],
     }
   },

@@ -5,16 +5,20 @@ import { baseImage } from './objects/baseImage';
 import { localeTextsImage } from './objects/localeTextsImage';
 
 // import { customImage } from './objects/customImage';
-// import { cropImage } from './objects/cropImage';
-// import { localeImage } from './objects/localeImage';
+import { cropImage } from './objects/cropImage';
+import { localeImage } from './objects/localeImage';
 // import { titleImage } from './objects/titleImage';
 // import { complexPortableText } from './objects/complexPortableText';
 // import { multiColumns } from './objects/multiColumns';
+import { productBundleItem } from './objects/productBundleItem';
 import { youtube } from './objects/youtube';
 // import { localeComplexPortable } from './objects/localeComplexPortable';
 import { carousel } from './objects/carousel';
-import { shipping } from './objects/shipping';
+// import { shipping } from './objects/shipping';
+// import { shippingRate } from './objects/shippingRate';
+// import { taxCountrySettings } from './objects/taxCountrySettings';
 import { shippingRate } from './objects/shippingRate';
+import { taxRule } from './objects/taxRule';
 import { address } from './objects/address';
 import { internalLink } from './objects/internalLink';
 import { menuItem } from './objects/menuItem';
@@ -26,14 +30,15 @@ import { textBlock } from './objects/textBlock';
 
 export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
   return [
+    productBundleItem,
     seo,
     // customImage,
-    // localeImage,
+    localeImage,
     baseImage,
     localeTextsImage,
     // titleImage,
     // // localeImages,
-    // cropImage,
+    cropImage,
     // complexPortableText,
     // localeComplexPortable,
     // multiColumns,
@@ -41,7 +46,10 @@ export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): I
     menuItem,
     carousel,
     internalLink,
-    shipping,
+    // shipping,
+    // shippingRate,
+    // taxCountrySettings,
+    taxRule,
     shippingRate,
     address,
     imageArray,

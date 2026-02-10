@@ -21,7 +21,7 @@ export function formatDate(
 }
 
 export function formatNumber(locale: string, num: number | undefined, options?: Intl.NumberFormatOptions) {
-  if (!num) return '';
+  if (typeof num !== 'number') return '';
   // return (number).toLocaleString(locale, options);
   return new Intl.NumberFormat(locale, options).format(num);
 }

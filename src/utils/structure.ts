@@ -3,6 +3,8 @@ import {
   StructureBuilder, 
   StructureResolverContext 
 } from 'sanity/structure';
+import { isDev } from 'sanity';
+
 import type { ITSContext, ITSStructureItem } from '../types';
 
 export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureItem[]) => {
@@ -34,7 +36,7 @@ export const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
 
   if (!doc) {
     // Fallback for custom items not in registry
-    return { type: 'document', id };
+    return { type: 'document', id, hidden: false };
   }
 
   const extension = ctx.config.schemaExtensions?.[id];
@@ -44,8 +46,18 @@ export const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
     type: doc.isSingleton ? 'singleton' : 'document',
     id: doc.name,
     icon,
-    feature: doc.feature, // Automatically pulls 'blog', 'shop', etc.
+    feature: doc.feature,
+    hidden: doc.hideInStructure,
   };
+};
+export const isDocHidden = (ctx: ITSContext, id: string): boolean => {
+  const doc = ctx.featureRegistry.getDoc(id);
+
+  if (!doc) {
+    return false;
+  }
+
+  return doc.hideInStructure || false;
 };
 
 const sortItems = (items: ITSStructureItem[]): ITSStructureItem[] => {
@@ -97,6 +109,8 @@ const resolveItem = (
   /// 1. Feature Guard
   if (item.feature && !ctx.featureRegistry.isFeatureEnabled(item.feature)) return null;
   if (item.type === 'document' && !ctx.featureRegistry.isDocEnabled(item.id)) return null;
+  // if (item.hidden) return null;
+  if (item.hidden && !isDev) return null;
 
   const t = ctx.t.default;
   const title = item.title ? t(item.title) : t(item.id);

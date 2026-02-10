@@ -8,30 +8,24 @@ import imageUrlBuilder from '@sanity/image-url'
 import { Product, VariantContainer, VariantOption, VariantOptionGroup } from "../types";
 import {ConfirmButton} from './ConfirmButton';
 import {LoadingBox} from './LoadingBox';
+import { LocaleImageView } from './LocaleImageView';
 
 type Props = {
   variant: VariantContainer
   variantOptionGroups: any[]
   product: Product
   onClick: (variantId: string) => void
-  onCoverImageClick: (variantId: string) => void
   onDelete: (variantId: string) => void
   loading: boolean
 }
 
-export const ProductVariantItem = ({variant, variantOptionGroups, product, onClick, onCoverImageClick, onDelete, loading}: Props) => {
-  const { t, localizer, config: { apiVersion } } = useITSContext();
-
-  const client = useClient({apiVersion})
-  const imageBuilder = imageUrlBuilder(client)
+export const ProductVariantItem = ({variant, variantOptionGroups, product, onClick, onDelete, loading}: Props) => {
+  const { t, localizer } = useITSContext();
 
   const item = variant.draft ?? variant.published
   const isDraft = item._id.startsWith('drafts.')
   const isInactive = item.active == false
-  const coverImageAssetRef = item.coverImage
-  const productImages = product.images || []
-  const image = coverImageAssetRef && productImages.find(l => l.image?.asset?._ref === coverImageAssetRef)
-  // const image = coverImageAssetRef && productImages.find(image => image.asset?._ref === coverImageAssetRef)
+  const image = product.images?.[0]
 
   const getVariantTitles = (variantOptions: VariantOption[], optionGroups: VariantOptionGroup[]) => {
     if (variantOptions == null) return []
@@ -76,7 +70,7 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
             <Stack space={1} flex={1}>
               <Flex flex={[1, 2, 3]} gap={1} direction={'column'}>
                 <Heading as="h3" onClick={() => onClick(item._id)} style={{ cursor: 'pointer' }}>{localizer.value(item.title)}</Heading>
-                {item.productNumber && <Text size={0}>{item.productNumber}</Text>}
+                {item.sku && <Text size={0}>{item.sku}</Text>}
                 <Container paddingTop={3}>
                   <ul style={{ margin: 0, marginLeft: "10px", padding: 0 }}>
                     {getVariantTitles(item.options, variantOptionGroups)
@@ -93,30 +87,7 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
             <Flex gap={1} align={"center"} justify={"center"}>
               <Grid columns={1} gap={1} padding={4}>
                 <Box>
-                  {(image && image.asset) ? (
-                    <Button
-                      style={{ cursor: 'pointer' }}
-                      tone="primary"
-                      onClick={() => onCoverImageClick(variant._id)}
-                      padding={0}
-                      icon={
-                        <img
-                          title={t('variants.coverImage.select')}
-                          alt={`${image.asset._ref}`}
-                          src={imageBuilder.image(image).width(34).height(34).url()}
-                        />
-                      }
-                    >
-                    </Button>
-                  ) : (
-                    <Button
-                      style={{ cursor: 'pointer' }}
-                      tone="primary"
-                      icon={ImageIcon}
-                      title={t('variants.coverImage.select')}
-                      onClick={() => onCoverImageClick(variant._id)}
-                    />
-                  )}
+                  <LocaleImageView image={image} />
                   </Box>
               </Grid>
               <ConfirmButton

@@ -5,6 +5,11 @@ import { OrderDocumentActions } from '../components/actions/OrderActions'
 import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import { createCustomDocumentAction, type CustomDocumentAction } from '../components/actions/CustomDocumentAction'
 
+type ProductVariantReferenceDoc = {
+  _type: string
+  variants?: { _ref: string }[]
+}
+
 const globallyDisallowedActions: ITSSanityDefinedAction[] = ['schedule']
 const singletonAllowedActions: ITSSanityDefinedAction[] = ["publish", "discardChanges", "restore"]
 
@@ -12,7 +17,6 @@ export function actionResolver (
   prev: DocumentActionComponent[],
   context: DocumentActionsContext,
   registry: ITSFeatureRegistry,
-  apiVersion: string,
 ) {
   const doc = registry.getDoc(context.schemaType)
   if (!doc) {
@@ -35,10 +39,10 @@ export function actionResolver (
   })
 
   // other actions
-  const createCustomAction = (customAction: Omit<CustomDocumentAction, 'client'>) => {
+  const createCustomAction = <T>(customAction: Omit<CustomDocumentAction<T>, 'context'>) => {
     return createCustomDocumentAction({
       ...customAction,
-      client: context.getClient({apiVersion}),
+      context,
     })
   }
   if (context.schemaType === 'order') {
@@ -49,7 +53,7 @@ export function actionResolver (
     const action = prev.find(({ action }) => action === 'delete')
     if (action) {
       const query = `count(*[_type == "variantOptionGroup" && _id == $id && defined(options) && count(options) > 0]) > 0`
-      actions.push(createCustomAction({
+      actions.push(createCustomAction<boolean>({
         action,
         query,
         validateFn: (result) => result == true ? 'optionsGroups.groupDeleteNotAllowedOptionsExist' : true,
@@ -60,7 +64,7 @@ export function actionResolver (
     const action = prev.find(({ action }) => action === 'delete')
     if (action) {
       const query = `count(*[_type == "category" && parent._ref == $id]) > 0`
-      actions.push(createCustomAction({
+      actions.push(createCustomAction<boolean>({
         action,
         query,
         validateFn: (result) => result == true ? 'categories.deleteNotAllowedSubcategoriesExist' : true,
@@ -71,7 +75,7 @@ export function actionResolver (
     const action = prev.find(({ action }) => action === 'delete')
     if (action) {
       const query = `count(*[_type == "product" && _id == $id && defined(variants) && count(variants) > 0]) > 0`
-      actions.push(createCustomAction({
+      actions.push(createCustomAction<boolean>({
         action,
         query,
         validateFn: (result) => result == true ? 'product.deleteNotAllowedVariantsExist' : true,
@@ -82,25 +86,27 @@ export function actionResolver (
     const action = prev.find(({ action }) => action === 'publish')
     if (action) {
       // disallow publishing if variant.active will change to false, but is referenced by documents (except product.variants)
-      const query = `*[references($id)]`
-      const publish = createCustomAction({
+      // const query = `*[references($id)]`
+      const query = `*[references($id) && !(_type == "product" && references($id))]`
+      const publish = createCustomAction<ProductVariantReferenceDoc[]>({
         action,
         query,
-        validateFn: (result, variantId) => {
-          const filtered = result.filter(doc => {
-            if (doc._type !== 'product') return true
-
-            // product references variant ONLY via variants[]
-            const variantRefs = doc.variants?.some(v => v._ref === variantId)
-            return !variantRefs
-          })
-          return filtered.length > 0 ? 'productVariant.setInactiveNotAllowedReferencesExist' : true
+        validateFn: (result) => {
+          // If the query returns anything, it means there are "illegal" 
+        // references (docs that aren't the parent product)
+        return result.length > 0 
+          ? 'productVariant.setInactiveNotAllowedReferencesExist' 
+          : true
         },
         shouldValidateFn: (props) => props.draft?.active === false,
-        allowActionFn: (props) => props.published === null ? 'productVariant.publishNotAllowedButByGenerating' : true,
+        // allowActionFn: (props) => props.published === null ? 'productVariant.publishNotAllowedButByGenerating' : true,
+        allowActionFn: (props) => 
+        !props.published 
+          ? 'productVariant.publishNotAllowedButByGenerating' 
+          : true,
       })
       // put action at first position in actions array
-      actions.splice(0, 0, publish)
+      actions.unshift(publish)
     }
   }
   

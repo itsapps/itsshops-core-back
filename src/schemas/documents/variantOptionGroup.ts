@@ -13,7 +13,7 @@ export const variantOptionGroup: ITSSchemaDefinition = {
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
-        f('description', 'i18nString'),
+        // f('description', 'i18nString'),
         f('sortOrder', 'number', {
           initialValue: 0,
           validation: (rule) => rule.required().positive(),
@@ -33,10 +33,14 @@ export const variantOptionGroup: ITSSchemaDefinition = {
       preview: {
         select: {
           title: 'title',
+          options: 'options'
         },
-        prepare( { title }) {
+        prepare( { title, options } ) {
+          const count = options?.length || 0
           return {
             title: ctx.localizer.value(title),
+            subtitle: ctx.t.default('variantOptionGroup.preview.options', 'options', { count }),
+            media: SparklesIcon
           }
         },
       }

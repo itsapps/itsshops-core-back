@@ -2,39 +2,32 @@ import { useITSContext } from '../../context/ITSCoreProvider'
 
 import {
   DocumentActionComponent,
+  DocumentActionsContext,
   DocumentActionProps,
-  SanityClient,
 } from 'sanity'
 import {useToast} from '@sanity/ui'
 
-export type CustomDocumentAction = {
+export type CustomDocumentAction<T> = {
   action: DocumentActionComponent,
-  client: SanityClient,
+  context: DocumentActionsContext,
   query: string,
-  validateFn: (queryResult: any, id: string) => string | true,
+  validateFn: (queryResult: T, id: string) => string | true,
   allowActionFn?: (props: DocumentActionProps) => string | true,
   shouldValidateFn?: (props: DocumentActionProps) => boolean,
 }
-export function createCustomDocumentAction({
-  action,
-  client,
-  query,
-  validateFn,
-  allowActionFn,
-  shouldValidateFn,
-}: CustomDocumentAction) {
+export function createCustomDocumentAction<T>(customAction: CustomDocumentAction<T>) {
   const DocumentAction = (props: DocumentActionProps) => {
-    const originalResult = action(props)
+    const originalResult = customAction.action(props)
     const toast = useToast()
-    const {t} = useITSContext()
+    const {t, sanityClient} = useITSContext()
 
     return {
       ...originalResult,
       label: originalResult?.label || t('actions.delete'),
       onHandle: async () => {
         // optionally check if action is allowed in callback fn
-        if (allowActionFn) {
-          const allow = allowActionFn(props)
+        if (customAction.allowActionFn) {
+          const allow = customAction.allowActionFn(props)
           if (typeof allow === 'string') {
             toast.push({
               status: 'error',
@@ -45,14 +38,14 @@ export function createCustomDocumentAction({
         }
 
         // optionally check if action should be validated
-        if (shouldValidateFn && !shouldValidateFn(props)) {
+        if (customAction.shouldValidateFn && !customAction.shouldValidateFn(props)) {
           originalResult?.onHandle?.()
           return
         }
 
         // validate
-        const response = await client.fetch(query, {id: props.id})
-        const validate = validateFn(response, props.id)
+        const response = await sanityClient.fetch<T>(customAction.query, {id: props.id})
+        const validate = customAction.validateFn(response, props.id)
         if (typeof validate === 'string') {
           toast.push({
             status: 'error',

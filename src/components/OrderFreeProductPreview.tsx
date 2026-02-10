@@ -12,7 +12,7 @@ import { OrderFreeProduct } from '../types'
 type ProductData = {
   _id: string
   _type: string
-  productNumber: string
+  sku: string
   title?: ITSi18nArray
   images?: any[]
 }
@@ -39,7 +39,7 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
           _id,
           _type,
           title,
-          productNumber,
+          sku,
           "images": coalesce(
             images,
             *[_type == "product" && references(^._id)][0].images
@@ -99,7 +99,7 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
       )}
       <Flex direction={'column'} gap={2}>
         <Text size={1}>{displayTitle}</Text>
-        {(product && (product.productNumber || props.item.productNumber)) && <Text size={3} weight='bold'>{props.item.productNumber || product.productNumber}</Text>}
+        {(product && (product.sku || props.item.sku)) && <Text size={3} weight='bold'>{props.item.sku || product.sku}</Text>}
       </Flex>
     </Flex>
   )

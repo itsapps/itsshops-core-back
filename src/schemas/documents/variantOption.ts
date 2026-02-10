@@ -8,6 +8,7 @@ export const variantOption: ITSSchemaDefinition = {
   feature: 'shop',
   disallowedActions: [ 'duplicate' ],
   allowCreate: false,
+  hideInStructure: true,
   build: (ctx) => {
     const { f } = ctx;
     return {
@@ -17,18 +18,23 @@ export const variantOption: ITSSchemaDefinition = {
           initialValue: 0,
           validation: (rule) => rule.required().positive(),
         }),
-        f('image', 'i18nTextImage'),
+        // f('image', 'localeImage'),
+        f('images', 'array', {
+          of: [{ type: 'localeImage' }],
+          // validation: (rule) => rule.required(),
+        }),
       ],
       preview: {
         select: {
           title: 'title',
-          media: 'image',
+          // media: 'image',
         },
-        prepare({ title, media }) {
-          const image = ctx.localizer.value<any>(media)
+        prepare({ title }) {
+          // const image = ctx.localizer.value<any>(media)
           return {
             title: ctx.localizer.value(title),
-            media: image?.asset,
+            media: SparklesIcon,
+            // media: image?.asset,
           }
         }
       }

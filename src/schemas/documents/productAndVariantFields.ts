@@ -1,24 +1,29 @@
 import type { FieldContext, ITSContext } from "../../types";
+import { ProductType } from "../../types";
+
+import { FieldGroupDefinition } from "sanity";
+import { Cube } from 'phosphor-react';
 
 import { PriceInput } from "../../components/PriceInput";
 import { VinofactWineSelector } from "../../components/VinofactWineSelector";
 
-export const createSharedProductFields = (ctx: FieldContext) => {
+export const createSharedProductFields = (ctx: FieldContext, type: ProductType) => {
   const { f } = ctx;
   const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact');
 
   const fields = [
-    ...vinofactEnabled ? [
+    // vinofact wines only in products and variants
+    ...(vinofactEnabled && type !== ProductType.Bundle) ? [
       ctx.f('vinofactWineId', 'string', {
         components: { input: VinofactWineSelector },
         group: 'vinofact'
       })
     ] : [],
-    f('productNumber', 'string', { group: 'product' }),
+    f('sku', 'string', { group: 'product' }),
     f('stock', 'number', { initialValue: 0, validation: (Rule) => Rule.positive(), group: 'stock' }),
     f('stockThreshold', 'number', { validation: (Rule) => Rule.min(0), group: 'stock' }),
-    // TODO: descirption and stuff f('description', 'localeComplexPortable'),
-    f('description', 'i18nString'),
+    f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
+
     // { name: 'modules', type: 'array',
     //   of: [
     //     { type: 'multiColumns' },
@@ -36,7 +41,7 @@ export const createSharedProductFields = (ctx: FieldContext) => {
     //   group: 'media',
     // }),
     f('images', 'array', { 
-      of: [ { type: "localeTextsImage" } ],
+      of: [ { type: "localeImage" } ],
       group: 'media',
       // options: { layout: 'grid' },
       // options: {
@@ -55,12 +60,14 @@ export const createSharedProductFields = (ctx: FieldContext) => {
     // f('slideshow', 'internationalizedArrayLocaleImage', {
     //   options: { layout: 'grid' },
     // }),
-    f('compareAtPrice', 'number', {
+    ctx.builders.priceField({
+      name: 'compareAtPrice',
       validation: (Rule) => Rule.positive(),
       group: 'pricing',
-      components: {
-        input: PriceInput,
-      },
+    }),
+    f('weight', 'number', {
+      validation: Rule => Rule.positive(),
+      group: 'pricing',
     }),
     f('seo', 'seo', { group: 'seo' }),
     // f('tags', 'array', {
@@ -72,7 +79,8 @@ export const createSharedProductFields = (ctx: FieldContext) => {
     //     }
     //   ],
     // }),
-    f('categories', 'array', {
+    ...ctx.featureRegistry.isDocEnabled('category') ? [f('categories', 'array', {
+      group: 'product',
       validation: (rule) => rule.unique(),
       of: [
         {
@@ -81,13 +89,13 @@ export const createSharedProductFields = (ctx: FieldContext) => {
           to: [{type: 'category'}]
         }
       ],
-      group: 'product',
       options: {
         disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
         sortable: false,
       },
-    }),
-    f('manufacturers', 'array', {
+    })] : [],
+    ...ctx.featureRegistry.isDocEnabled('manufacturer') ? [f('manufacturers', 'array', {
+      group: 'product',
       validation: (rule) => rule.unique(),
       of: [
         {
@@ -95,24 +103,15 @@ export const createSharedProductFields = (ctx: FieldContext) => {
           to: [{type: 'manufacturer'}]
         }
       ],
-    }),
+    })] : [],
   ];
 
   return fields;
 };
 
-export const createSharedProductGroups = (ctx: ITSContext) => {
+export const createSharedProductGroups = (ctx: ITSContext, type: ProductType): FieldGroupDefinition[] => {
   const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact');
-  // const vinofactConfig = ctx.config.features.shop.vinofact?.integration;
-
-  // const path = `${name}.groups`;
-  // return [
-  //   { name: 'product', title: ctx.t(`${path}.product`), default: true},
-  //   { name: 'description', title: ctx.t(`${path}.description`)},
-  //   { name: 'pricing', title: ctx.t(`${path}.pricing`)},
-  //   { name: 'media', title: ctx.t(`${path}.media`)},
-  //   { name: 'seo', title: ctx.t(`${path}.seo`)},
-  // ];
+  
   return [
     { name: 'product', default: true},
     { name: 'stock'},
@@ -120,16 +119,8 @@ export const createSharedProductGroups = (ctx: ITSContext) => {
     { name: 'pricing'},
     { name: 'media'},
     { name: 'seo'},
-    ...(vinofactEnabled ? [{ name: 'vinofact' }] : [])
+    { name: 'vat'},
+    ...(type === ProductType.Product ? [{ name: 'variants' }] : []),
+    ...(vinofactEnabled ? [{ name: 'vinofact' }] : []),
   ];
-}
-
-export const createProductGroups = (ctx: ITSContext) => {
-  return [
-    ...createSharedProductGroups(ctx),
-    { name: 'variants'},
-  ];
-}
-export const createProductVariantGroups = (ctx: ITSContext) => {
-  return createSharedProductGroups(ctx)
 }

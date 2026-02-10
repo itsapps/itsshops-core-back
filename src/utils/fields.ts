@@ -1,13 +1,15 @@
-import { Rule, FieldDefinition, type TypeReference } from 'sanity';
+import { Rule, FieldDefinition, defineField, type TypeReference, ReferenceTo } from 'sanity';
 import { i18nValidators } from './validation';
-import { ITSContext, FieldFactory, I18nRuleShortcut } from "../types";
+import { ITSContext, CoreFactory, FieldFactory, I18nRuleShortcut } from "../types";
 
 // Map simple types to your internationalized plugin types
 const typeMap: Record<string, string> = {
   // Your custom internationalized shorthand
   'i18nString': 'internationalizedArrayString',
   'i18nSlug': 'internationalizedArraySlug',
+  'i18nCropImage': 'internationalizedArrayCropImage',
   'i18nImage': 'internationalizedArrayBaseImage',
+  'i18nLocaleImage': 'internationalizedArrayLocaleImage',
   'i18nBaseImage': 'internationalizedArrayBaseImage',
   'i18nTextImage': 'internationalizedArrayLocaleTextsImage',
   'i18nDictImage': 'i18nDictImage',
@@ -27,9 +29,7 @@ const typeMap: Record<string, string> = {
 };
 
 export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFactory => {
-  const { config } = ctx;
-  const t = ctx.t.default;
-  const tStrict = ctx.t.strict;
+  const { config, t } = ctx;
   const defaultLocale = config.localization.defaultLocale;
   const allLocales = config.localization.fieldLocales;
 
@@ -37,7 +37,7 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
   //   type: 'image'
   // }
   const runShortcut = (shortcut: I18nRuleShortcut, Rule: Rule, fieldName: string) => {
-    const vCtx = { t, fieldName };
+    const vCtx = { t: t.default, fieldName };
     
     switch (shortcut) {
       case 'requiredDefault': return i18nValidators.requiredDefault(defaultLocale, true, vCtx)(Rule);
@@ -53,8 +53,32 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
     }
   };
 
+  const getTranslationKeypaths = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): {local: string, global: string} => {
+    // const groupPath = `${fieldGroup}.${fieldName}.${attribute}`
+    const groupPath = [fieldGroup, fieldName, attribute].filter(Boolean).join('.')
+    return {
+      local: `${namespace}.${groupPath}`,
+      global: groupPath
+    }
+  };
+
+  const findDefault = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string => {
+    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
+    return ctx.t.strict(translationPaths.local) || ctx.t.default(translationPaths.global, fieldName)
+  };
+  const findStrict = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string | undefined => {
+    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
+    return ctx.t.strict(translationPaths.local) || ctx.t.strict(translationPaths.global)
+  };
+  const findOption = ({namespace, fieldName, value }: {namespace: string, fieldName: string, value: string}): string | undefined => {
+    const local = `${namespace}.fields.${fieldName}.options.${value}`
+    const global = `${fieldName}.options.${value}`
+
+    return ctx.t.strict(local) || ctx.t.default(global, value)
+  };
+
   return (fieldName, type = 'string', overrides = {}) => {
-    let { to, input, of, i18n, validation, tKey, ...rest } = overrides;
+    let { to, input, of, i18n, validation, ...rest } = overrides;
 
     // remove references to disabled docs
     if (type === 'reference' && Array.isArray(to)) {
@@ -90,7 +114,7 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
         // 3. Handle Custom Objects or Named Types inside the array
         // e.g. of: [{ type: 'product' }]
         if (itemDef.type && typeof itemDef.type === 'string') {
-          if (itemDef.type === 'object') return true;
+          if (itemDef.type === 'object' || itemDef.type === 'string') return true;
           return isValidRef(ctx, namespace, itemDef.type, fieldName);
         }
 
@@ -105,18 +129,23 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
       });
     }
 
-    // 1. Resolve the path. 
-    // If tKey is provided: use it directly.
-    // If not: use namespace.fields.fieldName
-    const translationPath = tKey 
-      ? tKey 
-      : `${namespace}.fields.${fieldName}`;
+    if (type === 'string' && rest.options) {
+      const ops = rest.options as any;
+      if ( ops.list && Array.isArray(ops.list)) {
+        // find title if not already set
+        ops.list.forEach((option: { title?: string, value: string }) => {
+          option.title = option.title || findOption({namespace, fieldName, value: option.value })
+        })
+      }
+    }
 
-    const description = tStrict(`${translationPath}.description`)
-    const field: FieldDefinition = {
+    const title = rest.title || findDefault({namespace, fieldGroup: 'fields', fieldName, attribute: 'title' })
+    const description = rest.description || findStrict({namespace, fieldGroup: 'fields', fieldName, attribute: 'description' })
+
+    const field = defineField({
       name: fieldName,
       type: typeMap[type] || type,
-      title: t(`${translationPath}.title`),
+      title,
       ...description && { description },
       validation: (Rule: Rule) => {
         const rules: any[] = [];
@@ -130,20 +159,21 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
         if (typeof validation === 'function') rules.push(validation(Rule));
         return rules.length ? rules : undefined;
       },
+      // ...(options && { options }),
       ...(to && { to }),
       ...(of && { of }),
       ...(input && { ...input }),
       ...rest,
-    };
+    });
     return field;
   };
 };
 
 const SANITY_INTERNAL_TYPES = ['block', 'string', 'number', 'boolean', 'image', 'file', 'date'];
 const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName: string) => {
-  
-  const docDef = ctx.featureRegistry.getSchema(type);
-  if (!docDef) {
+  if (type in SANITY_INTERNAL_TYPES) return true
+  const schemaDef = ctx.featureRegistry.getSchema(type);
+  if (!schemaDef) {
     console.warn(`Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`);
     return false;
   } else if (!ctx.featureRegistry.isSchemaEnabled(type)) {
@@ -152,3 +182,72 @@ const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName:
   }
   return true;
 };
+
+
+export const createFactory = (namespace: string, ctx: ITSContext): CoreFactory => {
+  const f = createFieldFactory(namespace, ctx);
+
+  const getTranslationKeypaths = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): {local: string, global: string} => {
+    // const groupPath = `${fieldGroup}.${fieldName}.${attribute}`
+    const groupPath = [fieldGroup, fieldName, attribute].filter(Boolean).join('.')
+    return {
+      local: `${namespace}.${groupPath}`,
+      global: groupPath
+    }
+  };
+  const findDefault = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string => {
+    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
+    return ctx.t.strict(translationPaths.local) || ctx.t.default(translationPaths.global, fieldName)
+  };
+  const findStrict = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string | undefined => {
+    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
+    return ctx.t.strict(translationPaths.local) || ctx.t.strict(translationPaths.global)
+  };
+  const extendField = <T extends FieldDefinition>(field: T): T => {
+  // const extendField = (field: FieldDefinition) => {
+    const title = findDefault({namespace, fieldGroup: 'fields', fieldName: field.name, attribute: 'title' })
+    const description = findDefault({namespace, fieldGroup: 'fields', fieldName: field.name, attribute: 'description' })
+    return {
+      title,
+      ...description && { description },
+      ...field,
+    }
+  }
+  
+  return {
+    fields: f,
+    reference: (name, options) => {
+      const toArray = Array.isArray(options.to)
+        ? options.to
+        : [options.to];
+
+      const filteredTo = toArray.filter((t) => {
+        return isValidRef(ctx, namespace, t.type, name);
+      });
+
+      return extendField(defineField({
+        type: 'reference',
+        name,
+        ...options,
+        to: filteredTo,
+      }))
+    },
+    // array: (name, options) => {
+    //   const filteredOf = options.of.filter((item) => {
+    //     if (typeof item !== 'object' || item === null) return true;
+
+    //     // return isValidRef(ctx, namespace, t.type, name);
+    //     if (item.type === 'reference') {
+    //       const to = Array.isArray(item.to) ? item.to : [item.to];
+    //     }
+    //   });
+      
+    //   return extendField(defineField({
+    //     type: 'array',
+    //     name,
+    //     ...options,
+    //     // of: filteredOf,
+    //   }))
+    // }
+  }
+}

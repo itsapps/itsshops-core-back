@@ -18,7 +18,6 @@ import {nanoid} from 'nanoid'
 import {ConfirmButton} from './ConfirmButton';
 import {Details} from './Details';
 import {LoadingBox} from './LoadingBox';
-import {CoverImageDialog} from './CoverImageDialog';
 import {ProductVariantItem} from './ProductVariantItem'
 
 
@@ -42,7 +41,6 @@ export function GenerateVariants(props: VariantsInputProps) {
 
   const toast = useToast()
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [coverImageDialogVariant, setCoverImageDialogVariant] = useState<string | undefined>(undefined);
   const { onChange, value} = props
   
   const [loading, setLoading] = useState(true);
@@ -52,7 +50,6 @@ export function GenerateVariants(props: VariantsInputProps) {
   const [variants, setVariants] = useState<VariantContainer[]>([]);
   const [variantIdLoading, setVariantIdLoading] = useState<string | undefined>(undefined);
   const originalDocument = useFormValue([]) as Product;
-  const productImages = originalDocument.images ?? [];
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
 
   const fetchVariants = async () => {
@@ -71,8 +68,7 @@ export function GenerateVariants(props: VariantsInputProps) {
           featured,
           active,
           price,
-          coverImage,
-          productNumber
+          sku
         `
         const query = `*[_type == "productVariant" && _id in $ids] {
           _id,
@@ -174,7 +170,7 @@ export function GenerateVariants(props: VariantsInputProps) {
         _id: uuidv4().replaceAll("-", ""),
         _type: 'productVariant',
         title: originalDocument.title,
-        ...originalDocument.productNumber && {productNumber: originalDocument.productNumber + '-' + (variantIndex+1)},
+        ...originalDocument.sku && {sku: originalDocument.sku + '-' + (variantIndex+1)},
         options: optionRefs,
         featured: variantIndex === 0,
         active: true,
@@ -323,86 +319,6 @@ export function GenerateVariants(props: VariantsInputProps) {
     setVariantIdLoading(undefined)
   },[deleteVariants])
 
-  const getVariantDraftTransaction = async (variantId: string) => {
-    const variant = variants.find(v => v._id === variantId)
-    if (!variant) {
-      console.error(`Variant ${variantId} not found`)
-      return {transaction: null, draftId: null}
-    }
-    const hasDraft = variant.draft != null
-    const draftId = "drafts." + variant._id
-    const transaction = client.transaction();
-    if (!hasDraft) {
-      const variantDoc = await client.getDocument(variant._id)
-      if (variantDoc) {
-        transaction.createIfNotExists({...variantDoc, _id: draftId})
-      }
-    }
-    return {transaction, draftId}
-  }
-
-  const handleCoverImageDialogOpen = (variantId: string) => {
-    setCoverImageDialogVariant(variantId);
-  };
-
-  const handleCoverImageDialogSubmit = async (assetRef: string | undefined) => {
-    if (! coverImageDialogVariant) {
-      return
-    }
-
-    setVariantIdLoading(coverImageDialogVariant)
-    const {transaction, draftId} = await getVariantDraftTransaction(coverImageDialogVariant)
-    if (! transaction) {
-      return
-    }
-
-    if (assetRef) {
-      transaction.patch(draftId, (v) => v.set({coverImage: assetRef}))
-    } else  {
-      transaction.patch(draftId, (v) => v.unset(["coverImage"]))
-    }
-    
-    try {
-      await transaction.commit();
-      // fetchVariants();
-    } catch (error) {
-      console.error('Transaction failed:', error);
-    }
-    setVariantIdLoading(undefined)
-    // setCoverImageDialogVariant(null);
-  };
-
-  const handleCoverImageDialogRemove = () => {
-    handleCoverImageDialogSubmit(undefined);
-  };
-  const handleCoverImageDialogCancel = () => {
-    setCoverImageDialogVariant(undefined);
-  };
-
-  const renderCoverImageDialog = () => {
-    if (!coverImageDialogVariant || productImages.length == 0) {
-      return null
-    }
-    const variant = variants.find(v => v._id === coverImageDialogVariant)
-    if (!variant) {
-      return null
-    }
-    const item = variant.draft ?? variant.published
-    if (!item) {
-      return null
-    }
-    return (
-      <CoverImageDialog
-        images={productImages}
-        value={item.coverImage}
-        onSubmit={handleCoverImageDialogSubmit}
-        onRemove={handleCoverImageDialogRemove}
-        onCancel={handleCoverImageDialogCancel}
-        loading={variantIdLoading == coverImageDialogVariant}
-      />
-    )
-  }
-  
   return (
     loading ? <Spinner muted /> :
     <Stack space={3}>
@@ -424,7 +340,6 @@ export function GenerateVariants(props: VariantsInputProps) {
               variantOptionGroups={variantOptionGroups}
               product={originalDocument}
               onClick={handleVariantRefClick}
-              onCoverImageClick={handleCoverImageDialogOpen}
               onDelete={handleVariantDeleteClick}
               loading={variantIdLoading == variant._id}
             />))}
@@ -503,7 +418,6 @@ export function GenerateVariants(props: VariantsInputProps) {
           />
         </Dialog>
       )}
-      {renderCoverImageDialog()}
     </Stack>
   )
 }

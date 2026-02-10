@@ -10,13 +10,31 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
   const schemas = [...allDocs, ...objects];
   // const allObjs: ITSObjectDefinition[] = objects.filter(obj => obj.type === 'object');
 
+  const isFeatureEnabled = (feature: ITSFeatureKey) => {
+    const { features } = config;
+
+    // Logic to handle nested keys like 'shop.manufacturer'
+    if (feature === 'shop') return !!features.shop.enabled;
+    if (feature === 'shop.manufacturer') return !!features.shop.enabled && !!features.shop.manufacturer;
+    if (feature === 'shop.category') return !!features.shop.enabled && !!features.shop.category;
+    if (feature === 'shop.vinofact') return !!features.shop.vinofact.enabled;
+    if (feature === 'blog') return !!features.blog;
+    if (feature === 'users') return !!features.users;
+
+    return false;
+  }
+
   const featureFilter = (definition: ITSSchemaDefinition) => {
     if (!definition.feature) return true;
-    if (definition.feature === 'shop') return !!config.features.shop.enabled;
-    if (definition.feature === 'shop.manufacturer') 
-        return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
-    return true;
+    return isFeatureEnabled(definition.feature);
   }
+  // const featureFilter = (definition: ITSSchemaDefinition) => {
+  //   if (!definition.feature) return true;
+  //   if (definition.feature === 'shop') return !!config.features.shop.enabled;
+  //   if (definition.feature === 'shop.manufacturer') 
+  //       return !!config.features.shop.enabled && !!config.features.shop.manufacturer;
+  //   return true;
+  // }
 
   const enabledDocs = allDocs.filter(featureFilter)
   const enabledDocNames = enabledDocs.map(d => d.name);
@@ -27,18 +45,20 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
   const enabledSchemaNames = [...enabledDocNames, ...enabledObjectNames];
 
   return {
-    isFeatureEnabled: (feature: ITSFeatureKey) => {
-      const { features } = config;
+    isFeatureEnabled,
+    // isFeatureEnabled: (feature: ITSFeatureKey) => {
+    //   const { features } = config;
   
-      // Logic to handle nested keys like 'shop.manufacturer'
-      if (feature === 'shop') return !!features.shop.enabled;
-      if (feature === 'shop.manufacturer') return !!features.shop.enabled && !!features.shop.manufacturer;
-      if (feature === 'shop.vinofact') return !!features.shop.vinofact.enabled;
-      if (feature === 'blog') return !!features.blog;
-      if (feature === 'users') return !!features.users;
+    //   // Logic to handle nested keys like 'shop.manufacturer'
+    //   if (feature === 'shop') return !!features.shop.enabled;
+    //   if (feature === 'shop.manufacturer') return !!features.shop.enabled && !!features.shop.manufacturer;
+    //   if (feature === 'shop.category') return !!features.shop.enabled && !!features.shop.category;
+    //   if (feature === 'shop.vinofact') return !!features.shop.vinofact.enabled;
+    //   if (feature === 'blog') return !!features.blog;
+    //   if (feature === 'users') return !!features.users;
 
-      return false;
-    },
+    //   return false;
+    // },
 
     // allDocs: docs,
     allSchemas: schemas,

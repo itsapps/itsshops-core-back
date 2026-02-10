@@ -20,9 +20,8 @@ export const address: ITSSchemaDefinition = {
         f('city', 'string', { validation: (Rule) => Rule.required() }),
         f('country', 'string', {
           options: {
-            list: config.localization.countries.map(country => ({ title: `${country.value} (${ctx.localizer.dictValue(country.title)})`, value: country.value }))
+            list: ctx.countryOptions
           },
-          initialValue: config.defaultCountryCode,
           validation: (Rule) => Rule.required()
         }),
         f('state', 'string'),

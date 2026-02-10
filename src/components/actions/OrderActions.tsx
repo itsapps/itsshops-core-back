@@ -6,7 +6,6 @@ import { Dialog, Flex, Stack, Text, TextArea, Button, Checkbox, TextInput, Box }
 import {
   DocumentActionDescription,
   DocumentActionProps,
-  useClient,
 } from 'sanity'
 import { CheckCircle } from 'phosphor-react'
 
@@ -92,9 +91,8 @@ export function OrderActionContent(
     selectedFullfillmentStatusAction: StatusAction | undefined
   }
 ) {
-  const { t, frontendClient, config: { apiVersion } } = useITSContext();
-  const client = useClient({ apiVersion })
-
+  const { t, frontendClient, sanityClient } = useITSContext();
+  
   const [selectedAction, setSelectedAction] = useState<StatusAction | undefined>(selectedFullfillmentStatusAction)
   const [notifyCustomer, setNotifyCustomer] = useState(true)
   const [note, setNote] = useState('')
@@ -146,7 +144,7 @@ export function OrderActionContent(
       };
     }
 
-    await client
+    await sanityClient
       .patch(order._id)
       .set({
         [type === 'fulfillment' ? 'status' : 'paymentStatus']: newState,

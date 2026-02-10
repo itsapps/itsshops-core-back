@@ -1,4 +1,7 @@
 import { Language, CoreBackConfig } from '../types'
+
+import { isDev } from 'sanity'
+
 import fields_de from './resources/fields_de'
 import fields_en from './resources/fields_en'
 import structure_de from './resources/structure_de'
@@ -153,10 +156,25 @@ export const createTranslator = (
   return (namespace: string, locale: string): ITSTranslator => {
     return {
       default: (key: string, fallback?: string, params = {}) => {
-        return instance.t(key, {lng: locale, ns: namespace, ...params}) || (fallback || key)
+        const text = instance.t(key, {
+          lng: locale,
+          ns: namespace,
+          ...params
+        })
+        if (text) return text
+        if (fallback) {
+          const fb = !isDev ? fallback : `${fallback} [${key}]`
+          if (fb) return fb
+        }
+        
+        return key
       },
       strict: (key: string, params = {}) => {
-        return instance.t(key, params);
+        return instance.t(key, {
+          lng: locale,
+          ns: namespace,
+          ...params
+        });
       }
     };  
   }

@@ -42,8 +42,8 @@ export function shapeSchema(
       // 3. Translation key based on global groups.groupName
       // 4. Fallback to the name itself
       title: group.title || 
-        ctx.t.default(`${docName}.groups.${group.name}`, 
-        ctx.t.default(`groups.${group.name}`, group.name))
+        ctx.t.strict(`${docName}.groups.${group.name}`) || 
+        ctx.t.default(`groups.${group.name}`, group.name)
     });
   });
   // const mergedGroups = Array.from(groupMap.values());
@@ -72,9 +72,8 @@ export function shapeSchema(
 
   const allFieldsets = [...coreFieldsets, ...customFieldsets].map(fieldset => {
     const title = fieldset.title || 
-      ctx.t.default(`${docName}.fieldsets.${fieldset.name}`) ||  
-      ctx.t.default(`fieldsets.${fieldset.name}`) ||
-      fieldset.name
+      ctx.t.strict(`${docName}.fieldsets.${fieldset.name}`) ||  
+      ctx.t.default(`fieldsets.${fieldset.name}`, fieldset.name)
     return { ...fieldset, title }
   })
 

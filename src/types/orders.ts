@@ -31,7 +31,7 @@ export type BaseOrderItem = {
   type: number
   productId: string
   parentId?: string
-  productNumber?: string
+  sku?: string
   price: number
   quantity: number
   title: Record<string, string>
@@ -65,7 +65,7 @@ export type OrderFreeProduct = {
   _key: string;
   title: ITSi18nArray;
   productId: string;
-  productNumber?: string;
+  sku?: string;
   quantity: number;
   packed: boolean;
 }

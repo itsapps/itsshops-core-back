@@ -1,8 +1,11 @@
 
+export * from './components';
+export * from './country';
+export * from './fields';
+export * from './frontend';
 export * from './localization';
 export * from './mail';
 export * from './netlify';
-export * from './frontend';
 export * from './orders';
 export * from './schema';
 export * from './vinofact';
@@ -16,6 +19,8 @@ import {
 } from './localization';
 import { ITSFrontendClient } from './frontend';
 import { ITSVinofactClient } from './vinofact';
+import { PriceOptions } from './fields';
+import { Country, CountryOption } from './country';
 
 import { ComponentType, ReactNode } from 'react';
 import {
@@ -25,29 +30,61 @@ import {
   ArrayDefinition,
   ReferenceDefinition,
   BlockDefinition,
+  NumberDefinition,
   ImageDefinition,
   ObjectDefinition,
   FieldDefinition,
   FieldGroupDefinition,
   FieldsetDefinition,
-  Rule, 
+  Rule,
   PreviewConfig,
   DocumentActionComponent,
   TFunction,
   ReferenceOptions,
+  SanityClient,
 } from 'sanity';
 
+import { ImageUrlBuilder } from '@sanity/image-url/lib/types/builder'
+import { SanityImageSource } from '@sanity/image-url/lib/types/types'
+
+export type ITSImageBuilder = {
+  builder: ImageUrlBuilder
+  urlFor: (source: SanityImageSource) => ImageUrlBuilder
+  getUrl: (params: {
+    source: SanityImageSource,
+    width?: number, 
+    height?: number,
+    quality?: number
+  }) => string
+  getPreviewUrl: (source: SanityImageSource, size?: number) => string | undefined
+}
+
 export type ITSSanityDefinedAction = NonNullable<DocumentActionComponent['action']>
+
+export enum ProductType {
+  Product = 'product',
+  Variant = 'productVariant',
+  Bundle = 'productBundle'
+}
 
 export type CoreFieldOptions = Omit<Partial<FieldDefinition>, 'validation' | 'to' | 'of' > & {
   i18n?: I18nValidationOptions;
   validation?: (rule: Rule) => any;
-  tKey?: string;
   to?: ReferenceTo[];
   of?: ArrayOfType[];
   [key: string]: any;
 };
 
+export type ReferenceFieldBuilder = (
+  name: string,
+  options: Omit<ReferenceDefinition, 'name' | 'type'>
+) => FieldDefinition<'reference'>
+
+export type CoreFactory = {
+  fields: FieldFactory;
+  reference: (name: string, options: Omit<ReferenceDefinition, 'name' | 'type'>) => FieldDefinition<'reference'>;
+  // array: (name: string, options: Omit<ArrayDefinition, 'name' | 'type'>) => FieldDefinition<'array'>;
+}
 export type FieldFactory = (
   fieldName: string, 
   type?: string, 
@@ -79,6 +116,15 @@ export interface ITSActionGroupOptions {
   max?: number;
 }
 
+export interface ITSCountryCodeOptions {
+  name?: string;
+  documentType: string;
+}
+export interface ITSCountryCodesOptions {
+  name?: string;
+  documentType: string;
+}
+
 export interface ITSBuilders {
   internalLink: (options?: ITSInternalLinkOptions) => FieldDefinition[];
   module: (options: ITSModuleOptions) => any;
@@ -86,9 +132,12 @@ export interface ITSBuilders {
   // portableText: (options?: ITSPTOptions) => Partial<ArrayDefinition>;
   portableText: (options?: ITSPTOptions) => Pick<ArrayDefinition, 'of'>;
   actionGroup: (options: ITSActionGroupOptions) => any;
+  countryCodeField: (options: ITSCountryCodeOptions) => FieldDefinition;
+  countryCodesField: (options: ITSCountryCodesOptions) => FieldDefinition;
+  priceField: (options: PriceOptions) => FieldDefinition<'number'>;
 }
 
-export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'shop.vinofact' | 'blog' | 'users';
+export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'shop.category' | 'shop.vinofact' | 'blog' | 'users';
 export type ITSFeatureRegistry = {
   isFeatureEnabled: (name: ITSFeatureKey) => boolean;
   allSchemas: ITSSchemaDefinition[];
@@ -109,6 +158,7 @@ export interface ITSLocaleContext {
   locale: string;
   localizer: ITSLocalizer;
   format: ITSFormatter;
+  countryOptions: CountryOption[];
 }
 export interface ITSContext extends ITSLocaleContext {
   t: ITSTranslator;
@@ -116,6 +166,8 @@ export interface ITSContext extends ITSLocaleContext {
 
 export interface ITSProviderContext extends ITSLocaleContext {
   t: TFunction;
+  sanityClient: SanityClient;
+  imageBuilder: ITSImageBuilder;
   frontendClient: ITSFrontendClient;
   vinofactClient?: ITSVinofactClient;
 }
@@ -123,6 +175,7 @@ export interface ITSProviderContext extends ITSLocaleContext {
 export interface FieldContext extends ITSContext {
   f: FieldFactory;
   builders: ITSBuilders;
+  factory: CoreFactory;
 }
 
 export interface ITSStructureItem {
@@ -130,6 +183,7 @@ export interface ITSStructureItem {
   id: string;
   title?: string;
   icon?: any;
+  hidden?: boolean;
   feature?: ITSFeatureKey;
   children?: ITSStructureItem[];
   component?: (S: any, context: any, ctx: ITSContext) => any;
@@ -164,6 +218,7 @@ interface ITSBaseDefinition {
 export interface ITSDocumentDefinition extends ITSBaseDefinition {
   type: 'document';
   isSingleton?: boolean;
+  hideInStructure?: boolean;
   allowCreate?: boolean;
   disallowedActions?: ITSSanityDefinedAction[];
   build: (ctx: FieldContext) => Omit<DocumentDefinition, 'name' | 'type' | 'title' | 'icon'>;
@@ -208,6 +263,7 @@ export interface FeatureConfig {
   shop?: Partial<{
     enabled: boolean
     manufacturer?: boolean
+    category?: boolean
     vinofact?: VinofactConfig
   }>
   blog?: boolean
@@ -218,6 +274,7 @@ export interface ITSFeatureConfig {
   shop: {
     enabled: boolean
     manufacturer: boolean
+    category: boolean
     vinofact: VinofactConfig
   }
   blog: boolean
@@ -255,11 +312,7 @@ export interface ITSi18nConfig {
     structure: Record<string, any>
     general: Record<string, any>
   }
-  countries: Array<{
-    title: Record<string, string>,
-    value: string,
-    isDefault?: boolean
-  }>;
+  countries: Country[];
 }
 
 export interface NetlifyConfig {
@@ -280,7 +333,6 @@ export interface ItsshopsConfig {
   workspaceName: string;
   workspaceIcon?: ComponentType;
   i18n?: I18nConfig;
-  defaultCountryCode?: string;
   features?: FeatureConfig;
   integrations: IntegrationsConfig;
   schemaSettings?: SchemaSettingsInput;
@@ -291,16 +343,8 @@ export interface ItsshopsConfig {
 }
 
 /** Internal version of the config used by the engine **/
-export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features' | 'defaultCountryCode' | 'schemaSettings'> {
+export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features' | 'schemaSettings'> {
   localization: ITSi18nConfig;
-  defaultCountryCode: string;
-  shop: {
-    productTypes: {
-      product: number;
-      variant: number;
-      bundle: number;
-    }
-  };
   features: ITSFeatureConfig;
   schemaSettings: CoreSchemaSettings;
   apiVersion: string;

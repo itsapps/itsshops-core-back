@@ -1,3 +1,5 @@
+import { SanityImageSource, SanityImageObject } from '@sanity/image-url/lib/types/types'
+
 export interface Language {
   id: string;
   title: string;
@@ -23,6 +25,10 @@ export interface ITSTranslator {
   strict: StrictTranslatorFunction;
 }
 
+export interface ITSi18nDictValue<T = string> {
+  [key: string]: T | undefined;
+};
+
 export interface ITSi18nEntry<T = string> {
   _key: string; 
   value?: T;
@@ -45,16 +51,18 @@ export type ITSi18nArray<T = string> = ITSi18nEntry<T>[];
 //   alt?: ITSi18nArray;
 //   title?: ITSi18nArray;
 // }
-export interface LocaleImage {
+export interface CropImage {
   _type: 'cropImage';
-  asset: {
-    _ref: string;
-    _type: 'reference';
-  };
-  alt?: string;
+}
+export type I18nCropImage = ITSi18nArray<CropImage>;
+
+export interface LocaleImage {
+  _type: 'localeImage';
+  image: ITSi18nArray<SanityImageObject>;
+  title?: ITSi18nArray;
+  alt?: ITSi18nArray;
 }
 
-export type ITSi18nImage = ITSi18nArray<LocaleImage>;
 
 export type ITSi18nLocalizerValue = <T = string>(data: any) => T | undefined;
 export type ITSi18nLocalizerObjectValue = <T = string>(data: any, key: string) => T | undefined;

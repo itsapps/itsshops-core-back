@@ -10,9 +10,13 @@ import { orderMeta } from './documents/orderMeta'
 import { page } from './documents/page';
 import { post } from './documents/post';
 import { product } from './documents/product'
+import { productBundle } from './documents/productBundle'
 import { productVariant } from './documents/productVariant'
 import { settings } from './documents/settings';
-import { shippingCountry } from './documents/shippingCountry'
+import { shippingMethod } from './documents/shippingMethod'
+import { taxCategory } from './documents/taxCategory'
+import { shopSettings } from './documents/shopSettings'
+import { taxCountry } from './documents/taxCountry'
 import { user } from './documents/user'
 import { variantOption } from './documents/variantOption'
 import { variantOptionGroup } from './documents/variantOptionGroup'
@@ -26,8 +30,8 @@ export const getCoreDocuments = (extensions: ITSSchemaDefinition[] | undefined):
   }) || [];
 
   return [
-    blog, category, customerGroup, manufacturer, menu, order, orderMeta, page, post, product, productVariant,
-    settings, shippingCountry, user, variantOption, variantOptionGroup, voucher,
+    blog, category, customerGroup, manufacturer, menu, order, orderMeta, page, post, product, productBundle, productVariant,
+    settings, shippingMethod, shopSettings, taxCountry, taxCategory, user, variantOption, variantOptionGroup, voucher,
     ...extensionsWithoutFeature,
   ]
 }

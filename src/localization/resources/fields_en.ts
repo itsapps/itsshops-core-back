@@ -2,8 +2,8 @@ const productAndVariantFields = {
   title: {
     title: 'Title',
   },
-  productNumber: {
-    title: 'Product Number',
+  sku: {
+    title: 'SKU',
   },
   manufacturer: {
     title: 'Manufacturer',
@@ -13,6 +13,9 @@ const productAndVariantFields = {
   },
   tags: {
     title: 'Tags',
+  },
+  seo: {
+    title: 'SEO',
   },
   stock: {
     title: 'Stock',
@@ -32,6 +35,13 @@ const productAndVariantFields = {
   },
   description: {
     title: 'Description',
+  },
+  modules: {
+    title: 'Module',
+  },
+  vinofactWineId: {
+    title: 'Wein',
+    description: 'Verbindet dieses Produkt mit einem Vinofact Wein',
   },
 }
 
