@@ -4,25 +4,22 @@ import { ITSSchemaDefinition } from '../../types';
 export const address: ITSSchemaDefinition = {
   name: 'address',
   type: 'object',
-  feature: 'shop',
   build: (ctx) => {
-    const { f, config } = ctx;
+    const { f } = ctx;
 
     return {
       fields: [
-        f('name', 'string', { validation: (Rule) => Rule.required() }),
-        f('prename', 'string', { validation: (Rule) => Rule.required() }),
-        f('lastname', 'string', { validation: (Rule) => Rule.required() }),
+        f('prename', 'string'),
+        f('lastname', 'string'),
         f('phone', 'string'),
-        f('line1', 'string', { validation: (Rule) => Rule.required() }),
+        f('line1', 'string'),
         f('line2', 'string'),
-        f('zip', 'string', { validation: (Rule) => Rule.required() }),
-        f('city', 'string', { validation: (Rule) => Rule.required() }),
+        f('zip', 'string'),
+        f('city', 'i18nString'),
         f('country', 'string', {
           options: {
             list: ctx.countryOptions
           },
-          validation: (Rule) => Rule.required()
         }),
         f('state', 'string'),
       ],

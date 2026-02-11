@@ -1,5 +1,6 @@
 import { CogIcon } from '@sanity/icons'
 import { ITSSchemaDefinition } from "../../types";
+import { FieldDefinition } from 'sanity';
 
 
 export const settings: ITSSchemaDefinition = {
@@ -9,33 +10,45 @@ export const settings: ITSSchemaDefinition = {
   isSingleton: true,
   build: (ctx) => {
     const { f } = ctx;
-    return {
-      groups: [
-        { name: 'site', default: true},
-        { name: 'displays'},
-        { name: 'analytics'},
+
+    const groups = ['site', 'displays', 'analytics', 'company' ].map((name, index) => ({
+      name, ...index === 0 && { default: true }
+    }));
+
+    const fieldsMap: Record<string, FieldDefinition[]> = {
+      site: [
+        f('siteTitle', 'i18nString'),
+        f('siteShortDescription', 'i18nString'),
+        f('siteDescription', 'i18nText'),
       ],
-      fields: [
-        f('gta', 'number'),
+      displays: [
+        f('homePage', 'reference', {
+          to: [{ type: 'page' }],
+        }),
+        f('privacyPage', 'reference', {
+          to: [{ type: 'page' }],
+        }),
+        f('mainMenus', 'array', {
+          of: [{ type: 'reference', to: [{ type: 'menu', }]}],
+        }),
+        f('footerMenus', 'array', {
+          of: [{ type: 'reference', to: [{ type: 'menu', }]}],
+        }),
+      ],
+      analytics: [
+        f('gtmId', 'string')
+      ],
+      company: [
+        f('company', 'company')
       ],
     }
-  },
-  // preview: (ctx: ITSContext) => {
-  //   return {
-  //     select: {
-  //       title: 'title',
-  //       subtitle: 'parent.title',
-  //       media: 'image',
-  //     },
-  //     prepare(s: any) {
-  //       const { title, subtitle, media } = s
-  //       const sub = ctx.getLocalizedValue(subtitle)
-  //       return {
-  //         title: ctx.getLocalizedValue(title),
-  //         subtitle: sub ? `– ${sub}` : ``,
-  //         media: media,
-  //       }
-  //     },
-  //   }
-  // }
+    const fields = groups.map(({ name }) => ([
+      ...fieldsMap[name].map(field => ({ ...field, group: name }))
+    ])).flat();
+
+    return {
+      groups,
+      fields,
+    }
+  }
 };

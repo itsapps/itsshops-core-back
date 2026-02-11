@@ -74,7 +74,7 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
     const local = `${namespace}.fields.${fieldName}.options.${value}`
     const global = `${fieldName}.options.${value}`
 
-    return ctx.t.strict(local) || ctx.t.default(global, value)
+    return ctx.t.strict(local) || ctx.t.strict(global) || ctx.t.default(`options.${value}`, value)
   };
 
   return (fieldName, type = 'string', overrides = {}) => {

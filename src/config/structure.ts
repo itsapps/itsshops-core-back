@@ -34,7 +34,7 @@ export const createStructure = (ctx: ITSContext) => {
       children: [
         ...mapItems(['order', 'orderMeta', 'product', 'productBundle', 'productVariant', 'variantOptionGroup', 'variantOption']),
         { type: 'custom', id: 'categories', feature: 'shop.category', component: categoriesMenu, hidden: isDocHidden(ctx, 'category') },
-        ...mapItems(['manufacturer']),
+        ...mapItems(['manufacturer', 'voucher']),
       ]
     },
     // {

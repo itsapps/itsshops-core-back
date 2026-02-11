@@ -76,15 +76,15 @@ export const mailTypeForStatus = (status: OrderStatus | OrderPaymentStatus | und
 }
 
 export const stateTranslationMap: Record<OrderPaymentStatus | OrderStatus, string> = {
-  created: 'order.status.options.created',
-  processing: 'order.status.options.processing',
-  shipped: 'order.status.options.shipped',
-  delivered: 'order.status.options.delivered',
-  canceled: 'order.status.options.canceled',
-  returned: 'order.status.options.returned',
-  succeeded: 'order.paymentStatus.options.succeeded',
-  refunded: 'order.paymentStatus.options.refunded',
-  partiallyRefunded: 'order.paymentStatus.options.partiallyRefunded',
+  created: 'order.fields.status.options.created',
+  processing: 'order.fields.status.options.processing',
+  shipped: 'order.fields.status.options.shipped',
+  delivered: 'order.fields.status.options.delivered',
+  canceled: 'order.fields.status.options.canceled',
+  returned: 'order.fields.status.options.returned',
+  succeeded: 'order.fields.paymentStatus.options.succeeded',
+  refunded: 'order.fields.paymentStatus.options.refunded',
+  partiallyRefunded: 'order.fields.paymentStatus.options.partiallyRefunded',
 };
 
 export const getStateTranslationKey = (state: OrderPaymentStatus | OrderStatus) => {

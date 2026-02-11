@@ -20,13 +20,20 @@ import { carousel } from './objects/carousel';
 import { shippingRate } from './objects/shippingRate';
 import { taxRule } from './objects/taxRule';
 import { address } from './objects/address';
+import { addressStrict } from './objects/addressStrict';
 import { internalLink } from './objects/internalLink';
 import { menuItem } from './objects/menuItem';
+import { orderItem } from './objects/orders/orderItem';
+import { orderTotals } from './objects/orders/orderTotals';
+import { orderStatusHistory } from './objects/orders/orderStatusHistory';
+import { orderCustomer } from './objects/orders/orderCustomer';
 import { imageArray } from './objects/imageArray';
 
 import { hero } from './modules/hero';
 import { portableText } from './modules/portableText';
 import { textBlock } from './objects/textBlock';
+import { bankAccount } from './objects/bankAccount';
+import { company } from './objects/company';
 
 export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
   return [
@@ -52,7 +59,14 @@ export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): I
     taxRule,
     shippingRate,
     address,
+    addressStrict,
+    bankAccount,
+    company,
     imageArray,
+    orderItem,
+    orderTotals,
+    orderStatusHistory,
+    orderCustomer,
 
     hero,
     portableText,

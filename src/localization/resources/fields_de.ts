@@ -12,11 +12,46 @@ export default {
     images: 'Bilder',
     settings: 'Einstellungen',
     vat: 'Steuer',
+    order: 'Bestellung',
+    orderPayment: 'Zahlung',
+    orderItems: 'Produkte',
+    orderCustomer: 'Kundendaten',
+    orderTotals: 'Kosten',
+    orderVouchers: 'Gutscheine',
+    orderFreeProducts: 'Goodies',
+    infos: 'Informationen',
   },
   fieldsets: {
 
   },
   fields: {
+    prename: {
+      title: 'Vorname',
+    },
+    lastname: {
+      title: 'Nachname',
+    },
+    phone: {
+      title: 'Telefonnummer',
+    },
+    line1: {
+      title: 'Addresszeile 1',
+    },
+    line2: {
+      title: 'Addresszeile 2',
+    },
+    city: {
+      title: 'Stadt',
+    },
+    zip: {
+      title: 'Postleitzahl',
+    },
+    country: {
+      title: 'Land',
+    },
+    state: {
+      title: 'Bundesland',
+    },
     countries: {
       title: 'Länder'
     },
@@ -97,6 +132,30 @@ export default {
     },
     content: {
       title: 'Inhalt',
+    },
+    paymentIntentId: {
+      title: 'Stripe Payment Intent ID',
+    },
+    totals: {
+      title: 'Kostenübersicht',
+    },
+    customer: {
+      title: 'Kundendaten',
+    },
+    orderItems: {
+      title: 'Produkte',
+    },
+    billingAddress: {
+      title: 'Rechnungsadresse',
+    },
+    shippingAddress: {
+      title: 'Versandadresse',
+    },
+    vouchers: {
+      title: 'Gutscheine',
+    },
+    freeProducts: {
+      title: 'Geschenke',
     },
   },
   orderings: {
@@ -285,14 +344,60 @@ export default {
         title: 'Allgemeines unteres Limit für Benachrichtigungen über den Lagerbestand',
         description: 'Erhalte eine Benachrichtigung mit dem Lagerbestand eines Produktes unter diesem Limit.',
       },
+      bankAccount: {
+        title: 'Bankdaten',
+        description: 'Werden für Rechnungen verwendet',
+      },
+      orderNumberPrefix: {
+        title: 'Bestellnummer-Präfix',
+        description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-20250315-123456',
+      },
+      invoiceNumberPrefix: {
+        title: 'Rechnungsnummer-Präfix',
+        description: 'Benutzt als Präfix der Rechnungsnummer, z.B. "INV-20250315-123456',
+      },
+      lastInvoiceNumber: {
+        title: 'Letzte Rechnungsnummer',
+        description: 'Achtung! Dieser Wert wird automatisch erhöht und sollte nicht manuell geändert werden.',
+      },
     },
     groups: {
       shipping: 'Versand',
       stock: 'Lagerbestand',
       tax: 'Steuern',
+      orders: 'Bestellungen',
+      bankAccount: 'Bankdaten',
     },
     preview: {
       
+    }
+  },
+  bankAccount: {
+    title: 'Bank',
+    fields: {
+      name: {
+        title: 'Bankname',
+      },
+      iban: {
+        title: 'IBAN',
+      },
+      bic: {
+        title: 'BIC',
+      },
+    }
+  },
+  company: {
+    title: 'Organisation',
+    fields: {
+      name: {
+        title: 'Firmenname',
+      },
+      owner: {
+        title: 'Firmenbesitzer',
+      },
+      address: {
+        title: 'Adresse',
+      },
     }
   },
   taxRule: {
@@ -304,9 +409,6 @@ export default {
       exciseDuty: {
         title: 'Verbrauchssteuer in %',
       },
-    },
-    preview: {
-      
     }
   },
   taxCategory: {
@@ -328,53 +430,15 @@ export default {
   address: {
     title: 'Adresse',
     fields: {
-      name: {
-        title: 'Name',
-      },
-      prename: {
-        title: 'Vorname',
-      },
-      lastname: {
-        title: 'Nachname',
-      },
-      phone: {
-        title: 'Telefonnummer',
-      },
-      line1: {
-        title: 'Addresszeile 1',
-      },
-      line2: {
-        title: 'Addresszeile 2',
-      },
-      city: {
-        title: 'Stadt',
-      },
-      zip: {
-        title: 'Postleitzahl',
-      },
-      country: {
-        title: 'Land',
-      },
-      state: {
-        title: 'Bundesland',
-      },
+      
     },
   },
-  shipping: {
-    title: 'Versand',
+  addressStrict: {
+    title: 'Adresse',
     fields: {
-      rateId: {
-        title: 'Versand-ID',
-      },
-      rateTitle: {
-        title: 'Titel',
-      },
-      rateCost: {
-        title: 'Versandkosten',
-      },
-    },
-    fieldsets: {
-      shippingRate: 'Versandart',
+      name: {
+        title: 'Voller Name'
+      }
     },
   },
   orderTotals: {
@@ -383,24 +447,23 @@ export default {
       vat: 'Steuern',
     },
     fields: {
+      grandTotal: {
+        title: 'Gesamtsumme',
+      },
       subtotal: {
         title: 'Zwischensumme',
       },
-      total: {
-        title: 'Gesamtsumme',
-      },
-      vat: {
-        title: 'Inkludierte Steuern in der Zwischensumme',
-      },
-      vatRate: {
-        title: 'Angewendeter Prozentsatz',
-        placeholder: '20',
-      },
-      currency: {
-        title: 'Währung',
+      shipping: {
+        title: 'Versand',
       },
       discount: {
         title: 'Rabatt',
+      },
+      totalVat: {
+        title: 'Steuern Gesamt',
+      },
+      currency: {
+        title: 'Währung',
       },
     }
   },
@@ -408,13 +471,14 @@ export default {
     title: 'Bestellung',
     groups: {
       order: 'Bestellung',
-      customer: 'Kundendaten',
-      totals: 'Kosten',
-      vouchers: 'Gutscheine',
+      history: 'Statusverlauf',
     },
     fields: {
-      total: {
-        title: 'Gesamtsumme',
+      orderNumber: {
+        title: 'Bestellnummer',
+      },
+      invoiceNumber: {
+        title: 'Rechnungsnummer',
       },
       status: {
         title: 'Status',
@@ -436,32 +500,7 @@ export default {
         },
       },
       statusHistory: {
-        name: 'Statusverlauf',
-        type: {
-          title: 'Typ',
-          options: {
-            payment: 'Zahlung',
-            fulfillment: 'Versand',
-          }
-        },
-        state: {
-          title: 'Status',
-        },
-        timestamp: {
-          title: 'Zeitpunkt',
-        },
-        source: {
-          title: 'Quelle',
-        },
-        note: {
-          title: 'Notiz',
-        },
-      },
-      contactEmail: {
-        title: 'Kontakt-Email',
-      },
-      shipping: {
-        title: 'Versand',
+        title: 'Statusverlauf',
       },
       billingAddress: {
         title: 'Rechnungsadresse',
@@ -469,20 +508,48 @@ export default {
       trackingNumber: {
         title: 'Sendungsnummer',
       },
-      orderNumber: {
-        title: 'Bestellnummer',
-      },
-      invoiceNumber: {
-        title: 'Rechnungsnummer',
-      },
-      vouchers: {
-        title: 'Gutscheine',
-      },
-      freeProducts: {
-        title: 'Geschenke',
-      },
+    },
+  },
+  orderCustomer: {
+    title: 'Kundendaten',
+    fields: {
       locale: {
         title: 'Sprache',
+      },
+      contactEmail: {
+        title: 'Kontakt-Email',
+      },
+      supabaseId: {
+        title: 'Externe User-ID (Supabase)',
+      },
+    },
+    groups: {
+      general: 'Allgemeines',
+      billing: 'Rechnungsadresse',
+      shipping: 'Versandadresse',
+    }
+  },
+  orderStatusHistory: {
+    title: 'Statusverlauf',
+    fields: {
+      type: {
+        title: 'Typ',
+        options: {
+          payment: 'Zahlung',
+          fulfillment: 'Versand',
+        }
+      },
+      status: {
+        title: 'Status',
+      },
+      timestamp: {
+        title: 'Zeitpunkt',
+      },
+      source: {
+        title: 'Quelle',
+      },
+      note: {
+        title: 'Notiz',
       },
     },
   },
@@ -498,29 +565,11 @@ export default {
       customerGroups: {
         title: 'Kundengruppen',
       },
-      prename: {
-        title: 'Vorname',
-      },
-      lastname: {
-        title: 'Nachname',
+      adress: {
+        title: 'Adresse',
       },
       email: {
         title: 'Email',
-      },
-      street: {
-        title: 'Straße',
-      },
-      city: {
-        title: 'Stadt',
-      },
-      zip: {
-        title: 'Postleitzahl',
-      },
-      country: {
-        title: 'Land',
-      },
-      phone: {
-        title: 'Telefonnummer',
       },
       receiveNewsletter: {
         title: 'Newsletter',
@@ -754,11 +803,10 @@ export default {
   settings: {
     title: 'Allgemeine Einstellungen',
     groups: {
-      siteDetails: 'Beschreibungen',
-      company: 'Firma',
-      bank: 'Bankdaten',
+      site: 'Webseite',
       displays: 'Anzeigen',
-      advanced: 'Erweitert',
+      analytics: 'Statistiken',
+      company: 'Firma',
     },
     fields: {
       siteTitle: {
@@ -773,58 +821,11 @@ export default {
         title: 'Kurzbeschreibung',
         description: 'Kurzbeschreibung deiner Seite.',
       },
-      companyName: {
-        title: 'Firmenname',
-      },
-      companyOwner: {
-        title: 'Firmenbesitzer',
-      },
-      companyPhone: {
-        title: 'Telefonnummer',
-      },
-      companyStreet: {
-        title: 'Straße',
-      },
-      companyZip: {
-        title: 'Postleitzahl',
-      },
-      companyCity: {
-        title: 'Ort',
-      },
-      companyCountry: {
-        title: 'Land',
-      },
-      companyState: {
-        title: 'Bundesland',
-      },
-      companyEmail: {
-        title: 'Email',
-      },
-      companyUID: {
-        title: 'UID',
-      },
-      bankName: {
-        title: 'Bankname',
-      },
-      bankIBAN: {
-        title: 'IBAN',
-      },
-      bankBIC: {
-        title: 'BIC',
-      },
-      orderNumberPrefix: {
-        title: 'Bestellnummer-Präfix',
-        description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-20250315-123456',
-      },
-      invoiceNumberPrefix: {
-        title: 'Rechnungsnummer-Präfix',
-        description: 'Benutzt als Präfix der Rechnungsnummer, z.B. "INV-20250315-123456',
-      },
-      home: {
+      homePage: {
         title: 'Startseite',
         description: 'Diese Seite wird als Startseite angezeigt',
       },
-      privacy: {
+      privacyPage: {
         title: 'Datenschutzerklärung',
         description: 'Diese Seite beschreibt die Datenschutzerklärung',
       },
@@ -836,13 +837,12 @@ export default {
         title: 'Fußzeilenmenüs',
         description: 'Diese Menüs werden in der Fußzeile angezeigt',
       },
-      gtmID: {
+      gtmId: {
         title: 'Google Tag Manager (GTM)',
         description: 'Um GTM zu aktivieren, gib deine Container-ID ein',
       },
-      lastInvoiceNumber: {
-        title: 'Letzte Rechnungsnummer',
-        description: 'Achtung! Dieser Wert wird automatisch erhöht und sollte nicht manuell geändert werden.',
+      company: {
+        title: 'Firma',
       },
     },
   },
@@ -954,23 +954,6 @@ export default {
         minValueRequired: "Der Mindestwert muß gesetzt werden",
         quantityRequired: "Die Mindestanzahl muß gesetzt werden",
         userStatusRequired: "Der Kundenstatus muß ausgewählt werden",
-      },
-    },
-  },
-  shippingCountry: {
-    title: 'Versandland',
-    fields: {
-      isDefault: {
-        title: 'Standard',
-      },
-      code: {
-        title: 'Länderkürzel',
-      },
-      taxRate: {
-        title: 'Steuersatz',
-      },
-      rates: {
-        title: 'Versandarten',
       },
     },
   },

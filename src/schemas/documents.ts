@@ -5,8 +5,8 @@ import { category } from './documents/category'
 import { customerGroup } from './documents/customerGroup'
 import { manufacturer } from './documents/manufacturer'
 import { menu } from './documents/menu'
-import { order } from './documents/order'
-import { orderMeta } from './documents/orderMeta'
+import { order } from './documents/orders/order'
+import { orderMeta } from './documents/orders/orderMeta'
 import { page } from './documents/page';
 import { post } from './documents/post';
 import { product } from './documents/product'

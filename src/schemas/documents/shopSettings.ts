@@ -12,7 +12,7 @@ export const shopSettings: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f } = ctx;
 
-    const groups = ['shipping', 'stock', 'tax', ].map((name, index) => ({
+    const groups = ['shipping', 'stock', 'tax', 'orders', 'bankAccount' ].map((name, index) => ({
       name, ...index === 0 && { default: true }
     }));
 
@@ -40,7 +40,18 @@ export const shopSettings: ITSDocumentDefinition = {
         f('defaultTaxCategory', 'reference', {
           to: [{ type: 'taxCategory' }],
         })
-      ]
+      ],
+      orders: [
+        f('orderNumberPrefix', 'string'),
+        f('invoiceNumberPrefix', 'string'),
+        f('lastInvoiceNumber', 'number', {
+          validation: (rule) => rule.required().positive(),
+          initialValue: 0,
+        }),
+      ],
+      bankAccount: [
+        f('bankAccount', 'bankAccount'),
+      ],
     }
     const fields = groups.map(({ name }) => ([
       ...fieldsMap[name].map(field => ({ ...field, group: name }))
