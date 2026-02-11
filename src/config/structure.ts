@@ -65,7 +65,7 @@ export const createStructure = (ctx: ITSContext) => {
           type: 'group',
           id: 'shopSettingsGroup',
           icon: CogIcon,
-          children: mapItems(['shopSettings', 'taxCountry', 'taxCategory'])
+          children: mapItems(['shopSettings', 'shippingMethod', 'taxCountry', 'taxCategory'])
         },
       ]
     },

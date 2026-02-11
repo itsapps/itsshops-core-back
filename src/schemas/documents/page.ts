@@ -1,6 +1,8 @@
 import { DocumentIcon } from '@sanity/icons'
 import { ITSSchemaDefinition } from "../../types";
 
+import { Slug } from 'sanity';
+
 export const page: ITSSchemaDefinition = {
   name: 'page',
   type: 'document',
@@ -17,7 +19,7 @@ export const page: ITSSchemaDefinition = {
         f('title', 'i18nString', { i18n: 'atLeastOne', group: 'page' }),
         f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
         // f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
-        f('seo', 'seo', { tKey: 'seo', group: 'seo' }),
+        f('seo', 'seo', { group: 'seo' }),
         // f('textili', 'portableText'),
         f('textili2', 'internationalizedArrayTextBlock'),
         f('modules', 'array', {
@@ -41,7 +43,7 @@ export const page: ITSSchemaDefinition = {
           slug: 'slug',
         },
         prepare({ title, slug }) {
-          const s = ctx.localizer.value<any>(slug)
+          const s = ctx.localizer.value<Slug>(slug)
           return {
             title: ctx.localizer.value(title),
             subtitle: s?.current,

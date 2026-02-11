@@ -10,6 +10,11 @@ export const settings: ITSSchemaDefinition = {
   build: (ctx) => {
     const { f } = ctx;
     return {
+      groups: [
+        { name: 'site', default: true},
+        { name: 'displays'},
+        { name: 'analytics'},
+      ],
       fields: [
         f('gta', 'number'),
       ],

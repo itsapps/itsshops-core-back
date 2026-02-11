@@ -2,7 +2,7 @@ export default {
   groups: {
     product: 'Produkt',
     description: 'Beschreibung',
-    stock: 'Lagerbestand',
+    stock: 'Lagerstand',
     pricing: 'Preise',
     media: 'Medien',
     seo: 'SEO',
@@ -268,15 +268,28 @@ export default {
     title: 'Allgemeine Shop-Einstellungen',
     fields: {
       defaultCountry: {
-        title: 'Standard-Land',
+        title: 'Standard Land',
         description: 'Welches Land soll beim Checkout standardmäßig verwendet werden?',
+      },
+      defaultTaxCategory: {
+        title: 'Standard Steuerklasse',
+        description: 'Welche Steuerklasse soll für Produkte standardmäßig verwendet werden?',
       },
       freeShippingCalculation: {
         options: {
           beforeDiscount: 'Vor Rabatt',
           afterDiscount: 'Nach Rabatt',
         },
-      }
+      },
+      stockThreshold: {
+        title: 'Allgemeines unteres Limit für Benachrichtigungen über den Lagerbestand',
+        description: 'Erhalte eine Benachrichtigung mit dem Lagerbestand eines Produktes unter diesem Limit.',
+      },
+    },
+    groups: {
+      shipping: 'Versand',
+      stock: 'Lagerbestand',
+      tax: 'Steuern',
     },
     preview: {
       
@@ -826,10 +839,6 @@ export default {
       gtmID: {
         title: 'Google Tag Manager (GTM)',
         description: 'Um GTM zu aktivieren, gib deine Container-ID ein',
-      },
-      stockThreshold: {
-        title: 'Allgemeines unteres Limit für Benachrichtigungen über Lagerbestände',
-        description: 'Erhalte eine Benachrichtigung, wenn ein Produkt unter diesem Limit liegt.',
       },
       lastInvoiceNumber: {
         title: 'Letzte Rechnungsnummer',
