@@ -1,11 +1,18 @@
 import type { ITSContext, ITSStructureItem } from '../types';
-import { type StructureToolOptions } from 'sanity/structure'
+
+import { type SanityDocument } from 'sanity'
 import { EditIcon, BasketIcon, CogIcon, HomeIcon, UserIcon, ConfettiIcon } from '@sanity/icons'
-import type {DefaultDocumentNodeResolver} from 'sanity/structure'
+import type { DefaultDocumentNodeResolver, StructureToolOptions } from 'sanity/structure'
 import DocumentsPane from 'sanity-plugin-documents-pane'
+
 import { categoriesMenu } from '../structure/categories';
 import { fromRegistry, isDocHidden, localizedStructure } from '../utils/structure';
 import { OrderView } from '../components/OrderView';
+import { CustomerGroupView } from '../components/CustomerGroupView';
+
+import {type UserViewComponent} from 'sanity/structure'
+// type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
+type UserViewDocument = React.ComponentProps<UserViewComponent>['document']
 
 export const createStructureTool = (ctx: ITSContext): StructureToolOptions => {
   return {
@@ -50,10 +57,10 @@ export const createStructure = (ctx: ITSContext) => {
     },
     {
       type: 'group',
-      id: 'users',
+      id: 'customers',
       icon: UserIcon,
       feature: 'shop',
-      children: mapItems(['user', 'customerGroup'])
+      children: mapItems(['customer', 'customerGroup'])
     },
     {
       type: 'group',
@@ -80,31 +87,71 @@ export const createDefaultDocumentNode = (ctx: ITSContext) => {
     switch (schemaType) {
       case `order`:
         return S.document().views([
-          S.view.component(OrderView).title(t('order.views.overview')),
+          S.view.component(OrderView).options({}).title(t('order.views.overview')),
           S.view.form().icon(EditIcon).title(t('views.titles.edit')),
         ])
-      case `product`:
-      case `productVariant`:
-      case `page`:
-      case `post`:
-      case `menu`:
-      case `variantOption`:
-      // case `variantOptionGroup`:
-      case `category`:
+      // case `customerGroup`:
+      // //   return S.document().views([
+      // //     S.view.form().icon(EditIcon).title(t('views.titles.edit')),
+      // //     S.view.component(CustomerGroupView).title(t('customerGroup.views.overview')),
+      // //   ])
+      // case `product`:
+      // case `productVariant`:
+      // case `page`:
+      // case `post`:
+      // case `menu`:
+      // case `variantOption`:
+      // // case `variantOptionGroup`:
+      // case `category`:
+      default:
         return S.document().views([
           S.view.form(),
           S.view
             .component(DocumentsPane)
             .options({
+              // debug: true,
               query: `*[references($id)]`,
               // query: `*[references($id)][0...10]`,
-              params: {id: `_id`},
+              // params: {id: '_id'},
+              params: ({document}: {document: UserViewDocument}) => {
+                return {id: document.draft?._id || document.published?._id || document.displayed?._id}
+              },
+              initialValueTemplates: initialValueReferenceTemplate,
             })
             .title(t('views.titles.references')),
         ])
-      default:
-        return S.document().views([S.view.form()])
+      // default:
+      //   return S.document().views([S.view.form()])
     }
   }
   return defaultDocumentNode
+}
+
+const initialValueReferenceTemplate = ({document}: {document: SanityDocument}) => {
+  const templates = []
+
+  // references must point to a non-draft ID, so if using the ID in the template,
+  // be sure it doesn't start with `drafts.`
+  const id = document?.displayed?._id.replace('drafts.', '')
+  const name = document?.displayed?.name || 'author'
+
+  if (id) {
+    templates.push({
+      // the name of the schema type that should be created (required)
+      schemaType: 'post',
+      // the title that should appear on the button - we can customize it (required)
+      title: `New post by ${name}`,
+      // the name of the template that should be used (optional)
+      template: 'postWithAuthor',
+      // values for parameters that can be passed to the template referenced above (optional)
+      parameters: {
+        authorId: id,
+      },
+    })
+
+    // we could push more templates if needed.
+  }
+
+  // must always return a list, even if empty
+  return templates
 }

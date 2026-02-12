@@ -12,7 +12,19 @@ export const customerGroup: ITSSchemaDefinition = {
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
-      ]
+      ],
+      preview: {
+        select: {
+          title: 'title',
+        },
+        prepare({ title }) {
+          return {
+            title: ctx.localizer.value(title) || 'No title',
+            // subtitle: sub ? `– ${sub}` : ``,
+            // media: media,
+          }
+        }
+      }
     }
   }
 };

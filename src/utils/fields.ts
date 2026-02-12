@@ -97,6 +97,8 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
 
         // 2. Handle References inside the array
         if (itemDef.type === 'reference' && Array.isArray(itemDef.to)) {
+          // TODO: autotranslate reference titles
+
           // 'target' was implicitly 'any', so we type it here
           return itemDef.to.every((target: { type: string }) => {
             return isValidRef(ctx, namespace, target.type, fieldName);

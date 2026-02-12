@@ -17,7 +17,7 @@ import { shippingMethod } from './documents/shippingMethod'
 import { taxCategory } from './documents/taxCategory'
 import { shopSettings } from './documents/shopSettings'
 import { taxCountry } from './documents/taxCountry'
-import { user } from './documents/user'
+import { customer } from './documents/customer'
 import { variantOption } from './documents/variantOption'
 import { variantOptionGroup } from './documents/variantOptionGroup'
 import { voucher } from './documents/voucher';
@@ -30,8 +30,8 @@ export const getCoreDocuments = (extensions: ITSSchemaDefinition[] | undefined):
   }) || [];
 
   return [
-    blog, category, customerGroup, manufacturer, menu, order, orderMeta, page, post, product, productBundle, productVariant,
-    settings, shippingMethod, shopSettings, taxCountry, taxCategory, user, variantOption, variantOptionGroup, voucher,
+    blog, category, customer, customerGroup, manufacturer, menu, order, orderMeta, page, post, product, productBundle, productVariant,
+    settings, shippingMethod, shopSettings, taxCountry, taxCategory, variantOption, variantOptionGroup, voucher,
     ...extensionsWithoutFeature,
   ]
 }

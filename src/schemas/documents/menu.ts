@@ -24,7 +24,7 @@ export const menu: ITSSchemaDefinition = {
         prepare({ title }) {
 
           return {
-            title: ctx.localizer.value(title),
+            title: ctx.localizer.value(title) || 'No title',
             // subtitle: sub ? `– ${sub}` : ``,
             // media: media,
           }

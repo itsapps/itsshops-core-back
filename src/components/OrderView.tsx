@@ -3,7 +3,8 @@ import { Order, OrderStatus } from '../types/orders'
 import { useITSContext } from '../context/ITSCoreProvider'
 
 import { Dialog, Button, Flex, Stack, Box, Card, Text, Heading, useToast } from '@sanity/ui'
-import { SanityDocument } from 'sanity'
+
+import {type UserViewComponent} from 'sanity/structure'
 import { useState } from 'react'
 import { FilePdf, CheckCircle } from 'phosphor-react'
 
@@ -15,17 +16,46 @@ import OrderFreeProductPreview from './OrderFreeProductPreview'
 import OrderVoucherPreview from './OrderVoucherPreview'
 import { OrderActions } from './actions/OrderActions'
 
-type OrderViewProps = {
-  document: {
-    draft?: SanityDocument & Order
-    published?: SanityDocument & Order
-  }
-}
+// type Override<T, R> = Omit<T, keyof R> & R;
+// type OrderUserViewDocumenti = Override<
+//   UserViewDocument,
+//   { draft: Order | null }
+// >;
+// type OrderUserViewDocument = Override<
+//   React.ComponentProps<UserViewComponent>['document'],
+//   { draft: Order | null }
+// >;
+type BaseUserViewProps = React.ComponentProps<UserViewComponent>;
+type OrderViewProps2 = Omit<BaseUserViewProps, 'document'> & {
+  document: Omit<BaseUserViewProps['document'], 'draft' | 'displayed' | 'published'> & {
+    draft: Order | null;
+    displayed: Partial<Order>;
+    published: Order | null;
+  };
+};
 
-export function OrderView({document}: OrderViewProps) {
+
+export type OrderViewOptions = {
+  query: string
+  debug?: boolean
+  shit: boolean
+  useDraft?: boolean
+  duplicate?: boolean
+}
+type OrderViewProps = React.ComponentProps<UserViewComponent<OrderViewOptions>>
+
+
+// type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
+// type UserViewDocument2 = ExtractDocument<UserViewComponent>;
+// type UserViewDocument = React.ComponentProps<UserViewComponent>['document'];
+// type DisplayedDocument = React.ComponentProps<UserViewComponent>['document']['displayed'];
+
+
+// export const OrderView = (props: OrderViewProps) => {
+export const OrderView: React.FC<OrderViewProps2> = ({ document }) => {
   const { t, frontendClient, format } = useITSContext();
 
-  // const {document} = props.published
+  // const { document } = props
   const order = document.published
 
   const [loadingPdf, setLoadingPdf] = useState(false)
@@ -34,10 +64,15 @@ export function OrderView({document}: OrderViewProps) {
   const [pdfUrl, setPdfUrl] = useState('')
   const toast = useToast()
 
+  return (
+      <Box padding={4}>
+        <Text>{props.options.shit}</Text>
+      </Box>
+    )
   if (!order) {
     return (
       <Box padding={4}>
-        <Text>{t('order.loading')}</Text>
+        <Text>{t('document.notFound')}</Text>
       </Box>
     )
   }

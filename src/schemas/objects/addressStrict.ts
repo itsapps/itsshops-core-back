@@ -6,7 +6,7 @@ export const addressStrict: ITSSchemaDefinition = {
   type: 'object',
   feature: 'shop',
   build: (ctx) => {
-    const { f, config } = ctx;
+    const { f } = ctx;
 
     return {
       fields: [

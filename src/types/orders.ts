@@ -1,6 +1,8 @@
 import { ITSi18nArray } from './localization';
 import { SendMailType } from './mail';
 
+import { SanityDocument } from 'sanity';
+
 export type Address = {
   city: string;
   country: string;
@@ -99,8 +101,7 @@ export type StatusAction =
   | { type: 'payment'; newState: OrderPaymentStatus; label: string, mailType?: SendMailType };
 
 
-export type Order = {
-  _id: string;
+export interface Order extends SanityDocument {
   orderNumber: string;
   invoiceNumber: string;
   status: OrderStatus;

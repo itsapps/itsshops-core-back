@@ -7,6 +7,8 @@ export default {
     media: 'Medien',
     seo: 'SEO',
     variants: 'Varianten',
+    general: 'Allgemeines',
+    address: 'Adresse',
     vinofact: 'Vinofact',
     content: 'Inhalt',
     images: 'Bilder',
@@ -25,6 +27,18 @@ export default {
 
   },
   fields: {
+    locale: {
+      title: 'Sprache',
+    },
+    contactEmail: {
+      title: 'Kontakt-Email',
+    },
+    email: {
+      title: 'Email',
+    },
+    supabaseId: {
+      title: 'Externe User-ID (Supabase)',
+    },
     prename: {
       title: 'Vorname',
     },
@@ -54,6 +68,9 @@ export default {
     },
     countries: {
       title: 'Länder'
+    },
+    address: {
+      title: 'Adresse'
     },
     enabled: {
       title: 'Aktiviert'
@@ -519,9 +536,6 @@ export default {
       contactEmail: {
         title: 'Kontakt-Email',
       },
-      supabaseId: {
-        title: 'Externe User-ID (Supabase)',
-      },
     },
     groups: {
       general: 'Allgemeines',
@@ -556,7 +570,7 @@ export default {
   tag: {
     title: 'Tag',
   },
-  user: {
+  customer: {
     title: 'Kunde',
     fields: {
       customerNumber: {
@@ -565,20 +579,8 @@ export default {
       customerGroups: {
         title: 'Kundengruppen',
       },
-      adress: {
-        title: 'Adresse',
-      },
-      email: {
-        title: 'Email',
-      },
       receiveNewsletter: {
         title: 'Newsletter',
-      },
-      externalUserId: {
-        title: 'Supabase User ID',
-      },
-      portal: {
-        title: 'Portal',
       },
       status: {
         title: 'Registrierungsstatus',
