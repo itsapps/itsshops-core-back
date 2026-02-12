@@ -4,7 +4,7 @@ export type {
   ItsshopsConfig,
   ITSSchemaDefinition,
   ITSStructureItem,
-  CountryOption,
+  SchemaExtension
 } from './types';
 export { useITSContext } from './context/ITSCoreProvider'
 export { PriceInput } from './components/PriceInput';
