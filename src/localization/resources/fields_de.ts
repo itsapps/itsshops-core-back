@@ -27,6 +27,23 @@ export default {
 
   },
   fields: {
+    linkTitle: {
+      title: 'Titel',
+    },
+    linkReference: {
+      title: 'Referenz',
+    },
+    url: {
+      title: 'URL',
+    },
+    linkDisplayType: {
+      title: 'Anzeigetyp',
+      options: {
+        link: 'Link',
+        button: 'Button',
+        ghost: 'Ghost',
+      },
+    },
     locale: {
       title: 'Sprache',
     },
@@ -784,6 +801,22 @@ export default {
       items: {
         title: 'Einträge',
       },
+    },
+  },
+  menuItem: {
+    title: 'Menüeintrag',
+    fields: {
+      linkType: {
+        title: 'Typ',
+        options: {
+          internal: 'Interne Verlinkung',
+          external: 'Externe Verlinkung',
+          submenu: 'Untermenü',
+        }
+      },
+      children: {
+        title: 'Einträge',
+      }
     },
   },
   navPage: {

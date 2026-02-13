@@ -21,7 +21,22 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
         ...(options.includeTitle ? [f(`${fieldName}Title`, 'i18nString')] : []),
         f(`${fieldName}Reference`, 'reference', {
           to,
-          ...(options.required || true) && { validation: (Rule) => Rule.required() },
+          // ...(options.required || true) && { validation: (Rule) => Rule.required() },
+          validation: (Rule) => Rule.custom((value, context) => {
+            const parent = context.parent as any;
+            
+            // If the item is a submenu or external link, this field isn't required
+            if (parent?.linkType && parent.linkType !== 'internal') {
+              return true;
+            }
+            
+            // If it IS an internal link, we require the reference
+            if (!value) {
+              return 'A reference is required for internal links.';
+            }
+            
+            return true;
+          }),
           // TODO: dynamic filter
           options: {
             // filter: options.to?.includes('product') ? `...your product filter...` : ''

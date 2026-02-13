@@ -5,7 +5,7 @@ import { createCountries } from './countries';
 
 const sanityApiVersion = 'v2025-05-25';
 const allowedDocumentReferenceTypes = ['product', 'productVariant', 'page', 'post', 'category', 'blog'];
-const localizedFieldTypes = [ 'string', 'text', 'slug', 'cropImage', 'baseImage', 'localeImage', 'localeTextsImage', 'textBlock' ];
+const localizedFieldTypes = [ 'string', 'url', 'text', 'slug', 'cropImage', 'baseImage', 'localeImage', 'localeTextsImage', 'textBlock' ];
 
 export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   const { uiLanguages, fieldLanguages, uiLocales, fieldLocales } = getLanguages(config.i18n);
@@ -14,7 +14,7 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   
   const coreSchemaSettings: ITSCoreSchemaSettings = {
     links: { allowedReferences: allowedDocumentReferenceTypes },
-    menus: { disableSubmenus: false, allowedReferences: allowedDocumentReferenceTypes }
+    menus: { disableSubmenus: false, maxDepth: 1, allowedReferences: allowedDocumentReferenceTypes }
   };
   const schemaSettings = deepMerge(coreSchemaSettings, config.schemaSettings || {});
 

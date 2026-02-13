@@ -251,6 +251,7 @@ export interface ITSCoreSchemaSettings {
   menus: {
     allowedReferences: string[];
     disableSubmenus: boolean;
+    maxDepth: number;
   };
 }
 export type CoreSchemaSettings = ITSCoreSchemaSettings
