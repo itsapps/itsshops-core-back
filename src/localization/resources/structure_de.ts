@@ -4,7 +4,7 @@ export default {
   shop: "Shop",
   website: "Webseite",
   content: "Inhalt",
-  // products: "Produkte",
+  products: "Produkte",
   product: "Produkte",
   productVariant: "Produktvarianten",
   productBundle: "Produktpakete",

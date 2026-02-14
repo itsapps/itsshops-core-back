@@ -14,7 +14,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       
       // Filter default 'to' based on config features
       const to = (options.to || config.schemaSettings.links.allowedReferences)
-        .filter(type => ctx.featureRegistry.isDocEnabled(type))
+        // .filter(type => ctx.featureRegistry.isDocEnabled(type))
         .map(type => ({ type }))
       
       return [

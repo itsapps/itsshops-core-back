@@ -1,14 +1,5 @@
 import { CountryOption, ItsshopsConfig } from './types';
 
-export type {
-  ItsshopsConfig,
-  ITSSchemaDefinition,
-  ITSStructureItem,
-  SchemaExtension
-} from './types';
-export { useITSContext } from './context/ITSCoreProvider'
-export { PriceInput } from './components/PriceInput';
-
 import { defineConfig, WorkspaceOptions } from 'sanity'
 import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
@@ -16,13 +7,8 @@ import { media } from 'sanity-plugin-media'
 import { presentationTool } from 'sanity/presentation'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 
-import {
-  createTranslator,
-  getTranslationBundles,
-  getStructureOverrideBundles,
-  getTranslationPackage,
-} from './localization'
-import { createI18nHelpers, createFormatHelpers } from './utils/localization';
+import { createTranslator, createI18nHelpers, createFormatHelpers } from './localization';
+import { getTranslationBundles, getStructureOverrideBundles, getTranslationPackage } from './localization/sanityTranslation';
 
 
 import { mapConfig } from './config/mapper';
@@ -38,7 +24,13 @@ import { ITSStudioWrapper } from './context/ITSStudioWrapper'
 
 export function createCoreBack(config: ItsshopsConfig) {
   const coreConfig = mapConfig(config);
-  const translator = createTranslator(coreConfig)
+  const translator = createTranslator({
+    isDev: coreConfig.isDev,
+    fallbackLng: coreConfig.localization.defaultLocale,
+    supportedLngs: coreConfig.localization.uiLocales,
+    overrides: coreConfig.localization.overrides
+
+  })
   const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.overrides.general)
   const structureOverrideBundles = getStructureOverrideBundles(coreConfig.localization.uiLanguages)
   const featureRegistry = createFeatureRegistry(coreConfig)

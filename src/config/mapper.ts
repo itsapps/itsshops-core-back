@@ -1,5 +1,5 @@
 import { ItsshopsConfig, CoreBackConfig, ITSCoreSchemaSettings, FeatureConfig, ITSFeatureConfig } from '../types';
-import { getLanguages } from '../localization'; // Assuming this helper exists
+import { getLanguages } from './localization'; // Assuming this helper exists
 import { deepMerge } from '../utils';
 import { createCountries } from './countries';
 

@@ -10,7 +10,7 @@ export const menuItem: ITSSchemaDefinition = {
     return {
       fields: [
         f('title', 'i18nString', {
-          validation: (Rule) => Rule.custom((value, context) => {
+          validation: (Rule) => Rule.custom((value: any[] | undefined, context) => {
             const parent = context.parent as any;
             if (parent?.linkType === 'submenu' && (!value || value.length === 0)) {
               return 'A title is required for submenus.';
@@ -49,28 +49,13 @@ export const menuItem: ITSSchemaDefinition = {
         f('url', 'i18nUrl', {
           hidden: ({ parent }: any) => parent?.linkType !== 'external',
           // validation: (Rule) => Rule.uri({ scheme: ['http', 'https', 'mailto', 'tel'] })
-          validation: (Rule) => Rule.custom((value, context) => {
+          validation: (Rule) => Rule.custom((value: any[] | undefined, context) => {
             const parent = context.parent as any;
             if (parent?.linkType === 'external' && (!value || value.length === 0)) {
               return 'An external URL is required.';
             }
             return true;
           }),
-          // validation: (Rule) => [
-          //   // 1. Ensure it's a valid URI format
-          //   Rule.uri({ scheme: ['http', 'https', 'mailto', 'tel'] }),
-            
-          //   // 2. Conditional Required Check
-          //   Rule.custom((value, context) => {
-          //     const parent = context.parent as any;
-              
-          //     if (parent?.linkType === 'external' && !value) {
-          //       return 'An external URL is required when Link Type is set to External.';
-          //     }
-              
-          //     return true;
-          //   })
-          // ]
         }),
 
         // The Recursive Part: Children
@@ -80,7 +65,7 @@ export const menuItem: ITSSchemaDefinition = {
             // Don't allow infinite nesting if you don't want to
             hidden: ({ parent }: any) => parent?.linkType !== 'submenu',
             // hidden: ({ parent }: any) => !!parent?.url || !!parent?.reference
-            validation: (Rule) => Rule.custom((value, context) => {
+            validation: (Rule) => Rule.custom((value: any[] | undefined, context) => {
               const parent = context.parent as any;
               const path = context.path || [];
               

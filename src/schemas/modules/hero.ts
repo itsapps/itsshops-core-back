@@ -61,7 +61,7 @@ export const hero: ITSSchemaDefinition = {
         prepare({ title, actions }) {
           return {
             title: localizer.value(title),
-            subtitle: t.default('hero.preview.actions', undefined, { count: actions?.length || 0 }),
+            subtitle: t.default('hero.preview.actions', "Actions", { count: actions?.length || 0 }),
             media: Star,
           };
         }
