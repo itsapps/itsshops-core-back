@@ -1,9 +1,7 @@
 import { useITSContext } from '../context/ITSCoreProvider'
 import React from 'react'
-import { useClient } from 'sanity'
-import {Heading, Container, Text, Box, Button, Grid, Stack, Flex, Card} from '@sanity/ui'
-import { ImageIcon, TrashIcon } from '@sanity/icons'
-import imageUrlBuilder from '@sanity/image-url'
+import {Heading, Container, Text, Grid, Stack, Flex, Card} from '@sanity/ui'
+import { TrashIcon } from '@sanity/icons'
 
 import { Product, VariantContainer, VariantOption, VariantOptionGroup } from "../types";
 import {ConfirmButton} from './ConfirmButton';
@@ -25,7 +23,7 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
   const item = variant.draft ?? variant.published
   const isDraft = item._id.startsWith('drafts.')
   const isInactive = item.active == false
-  const image = product.images?.[0]
+  const image = item.images?.[0] || product.images?.[0]
 
   const getVariantTitles = (variantOptions: VariantOption[], optionGroups: VariantOptionGroup[]) => {
     if (variantOptions == null) return []
@@ -86,9 +84,7 @@ export const ProductVariantItem = ({variant, variantOptionGroups, product, onCli
             </Stack>
             <Flex gap={1} align={"center"} justify={"center"}>
               <Grid columns={1} gap={1} padding={4}>
-                <Box>
-                  <LocaleImageView image={image} />
-                  </Box>
+                <LocaleImageView image={image} options={{width: 35}} />
               </Grid>
               <ConfirmButton
                 style={{ cursor: 'pointer' }}

@@ -1,8 +1,8 @@
-import { SparklesIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
+import { ITSDocumentDefinition } from "../../types";
 import { EditGroupOptions } from '../../components/EditGroupOptions'
+import { SparklesIcon } from '@sanity/icons'
 
-export const variantOptionGroup: ITSSchemaDefinition = {
+export const variantOptionGroup: ITSDocumentDefinition = {
   name: 'variantOptionGroup',
   type: 'document',
   icon: SparklesIcon,

@@ -18,7 +18,7 @@ export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureIt
 
     // 3. Resolve to Sanity UI
     const items = fullManifest
-      .map(item => resolveItem(item, S, context, ctx)) // uses the resolveItem function from before
+      .map(item => resolveItem(item, S, context, ctx))
       .filter(Boolean);
 
     return S.list()
@@ -152,11 +152,55 @@ const resolveItem = (
             .items(resolved)
         );
     }
-    case 'custom':
+    case 'custom': {
       return item.component?.(S, context, ctx);
-
-    default: // 'document'
+    }
+    // document
+    default: {
+      // if (item.id === 'product') {
+      //   return S.listItem()
+      //     // .id(item.id)
+      //     .title(title)
+      //     .icon(item.icon)
+      //     .child(
+      //       S.list()
+      //         .id(item.id)
+      //         .title(title)
+      //         .items([
+      //           S.listItem({
+      //             id: 'product-price',
+      //             title: 'Books by author',
+      //             schemaType: 'product',
+      //             child: () =>
+      //               S.documentTypeList('product').child(price =>
+      //                 S.documentTypeList('product')
+      //                   .title('Books by author')
+      //                   .filter('_type == $type && price == $price')
+      //                   .params({type: 'product', price})
+      //                   .initialValueTemplates([
+      //                     S.initialValueTemplateItem('product-price', {price})
+      //                   ])
+      //               )
+      //           }),
+      //           // ...S.documentTypeListItems()
+      //         ])
+      //     );
+      // }
       return S.documentTypeListItem(item.id).title(title).icon(item.icon);
+      // return S.documentTypeListItem(item.id)
+      //   .title(title)
+      //   .icon(item.icon)
+      //   .child(
+      //     S.documentTypeList(item.id)
+      //       .title(title)
+      //       // This is the missing piece:
+      //       // .initialValueTemplates([
+      //       //   S.initialValueTemplateItem('product-with-title'),
+      //       //   S.initialValueTemplateItem('product-price'),
+      //       //   // S.initialValueTemplateItem('product-price', { price: 100 }),
+      //       // ])
+      //   );
+    }
   }
 };
 

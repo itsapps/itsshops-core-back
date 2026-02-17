@@ -1,10 +1,10 @@
-import { ITSSchemaDefinition } from "../../../types";
+import { ITSDocumentDefinition } from "../../../types";
 import { buildShared } from './orderAndOrderMetaFields';
 
 import { TrolleyIcon } from '@sanity/icons'
-import { FieldDefinition, isDev } from 'sanity'
+import { isDev } from 'sanity'
 
-export const orderMeta: ITSSchemaDefinition = {
+export const orderMeta: ITSDocumentDefinition = {
   name: 'orderMeta',
   type: 'document',
   icon: TrolleyIcon,

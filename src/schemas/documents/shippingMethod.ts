@@ -1,6 +1,5 @@
-import { Package } from 'phosphor-react'
 import { ITSDocumentDefinition } from "../../types";
-
+import { Package } from 'phosphor-react'
 
 export const shippingMethod: ITSDocumentDefinition = {
   name: 'shippingMethod',

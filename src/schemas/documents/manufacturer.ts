@@ -1,7 +1,7 @@
 import { WrenchIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
+import { ITSDocumentDefinition } from "../../types";
 
-export const manufacturer: ITSSchemaDefinition = {
+export const manufacturer: ITSDocumentDefinition = {
   name: 'manufacturer',
   type: 'document',
   icon: WrenchIcon,
@@ -13,7 +13,7 @@ export const manufacturer: ITSSchemaDefinition = {
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
         f('description', 'i18nText'),
         f('link', 'url'),
-        f('image', 'i18nImage'),
+        f('image', 'localeImage'),
       ],
       preview: {
         select: {
@@ -21,10 +21,9 @@ export const manufacturer: ITSSchemaDefinition = {
           image: "image"
         },
         prepare({ title, image }) {
-          const img = ctx.localizer.value<any>(image)
           return {
             title: ctx.localizer.value(title),
-            media: img?.asset || WrenchIcon,
+            media: ctx.localizer.value(image) || WrenchIcon,
           }
         }
       }

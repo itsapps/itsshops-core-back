@@ -1,9 +1,9 @@
+import { ITSDocumentDefinition } from "../../types";
 import { CogIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
 import { FieldDefinition } from 'sanity';
 
 
-export const settings: ITSSchemaDefinition = {
+export const settings: ITSDocumentDefinition = {
   name: 'settings',
   type: 'document',
   icon: CogIcon,

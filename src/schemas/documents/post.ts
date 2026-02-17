@@ -1,7 +1,7 @@
+import { ITSDocumentDefinition } from "../../types";
 import { Note } from 'phosphor-react'
-import { ITSSchemaDefinition } from "../../types";
 
-export const post: ITSSchemaDefinition = {
+export const post: ITSDocumentDefinition = {
   name: 'post',
   type: 'document',
   icon: Note,

@@ -1,7 +1,8 @@
 
-import { Order, OrderStatus } from '../types/orders'
+// import {  OrderStatus } from '../types/orders'
 import { useITSContext } from '../context/ITSCoreProvider'
 
+import { z } from "zod";
 import { Dialog, Button, Flex, Stack, Box, Card, Text, Heading, useToast } from '@sanity/ui'
 
 import {type UserViewComponent} from 'sanity/structure'
@@ -9,7 +10,7 @@ import { useState } from 'react'
 import { FilePdf, CheckCircle } from 'phosphor-react'
 
 import { isWebKit, getFilename } from '../utils/browser'
-import { getStateTranslationKey, canChangeToFullfillmentStatus } from '../utils/orders'
+import { StrictOrder, getStateTranslationKey, canChangeToFullfillmentStatus, strictOrderSchema, OrderStatus, OrderPaymentStatus } from '../utils/orders'
 
 import OrderItemPreview from './OrderItemPreview'
 import OrderFreeProductPreview from './OrderFreeProductPreview'
@@ -28,9 +29,9 @@ import { OrderActions } from './actions/OrderActions'
 type BaseUserViewProps = React.ComponentProps<UserViewComponent>;
 type OrderViewProps2 = Omit<BaseUserViewProps, 'document'> & {
   document: Omit<BaseUserViewProps['document'], 'draft' | 'displayed' | 'published'> & {
-    draft: Order | null;
-    displayed: Partial<Order>;
-    published: Order | null;
+    draft: StrictOrder | null;
+    displayed: Partial<StrictOrder>;
+    published: StrictOrder | null;
   };
 };
 
@@ -44,6 +45,28 @@ export type OrderViewOptions = {
 }
 type OrderViewProps = React.ComponentProps<UserViewComponent<OrderViewOptions>>
 
+export const createI18nArraySchema = <T extends z.ZodTypeAny>(valueSchema: T) => 
+  z.array(
+    z.object({
+      _key: z.string(),
+      value: valueSchema.optional().nullable(),
+      _type: z.string().optional(),
+    })
+  );
+// Specific schema for i18n strings
+export const i18nStringSchema = createI18nArraySchema(z.string());
+
+// export const orderSchema = z.object({
+//   // title: i18nStringSchema,
+//   _id: z.string(),
+//   _createdAt: z.string(),
+//   orderNumber: z.string().default('NEW'),
+//   // 2. Use .catch() or .default() to handle any potential undefined values from Sanity
+//   status: z.custom<OrderStatus>().catch('created'),
+//   paymentStatus: z.custom<OrderPaymentStatus>().catch('succeeded'),
+//   invoiceNumber: z.string().optional(),
+// });
+// export type Order = z.infer<typeof orderSchema>;
 
 // type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
 // type UserViewDocument2 = ExtractDocument<UserViewComponent>;
@@ -52,11 +75,13 @@ type OrderViewProps = React.ComponentProps<UserViewComponent<OrderViewOptions>>
 
 
 // export const OrderView = (props: OrderViewProps) => {
-export const OrderView: React.FC<OrderViewProps2> = ({ document }) => {
+export const OrderView: React.FC<OrderViewProps2> = (props) => {
   const { t, frontendClient, format } = useITSContext();
 
+  const order = strictOrderSchema.safeParse(props.document.published).data;
+
   // const { document } = props
-  const order = document.published
+  // const order = props.document.published
 
   const [loadingPdf, setLoadingPdf] = useState(false)
   const [open, setOpen] = useState(false)
@@ -64,11 +89,11 @@ export const OrderView: React.FC<OrderViewProps2> = ({ document }) => {
   const [pdfUrl, setPdfUrl] = useState('')
   const toast = useToast()
 
-  return (
-      <Box padding={4}>
-        <Text>{props.options.shit}</Text>
-      </Box>
-    )
+  // return (
+  //     <Box padding={4}>
+  //       <Text>{props.options.shit}</Text>
+  //     </Box>
+  //   )
   if (!order) {
     return (
       <Box padding={4}>
@@ -270,7 +295,7 @@ export const OrderView: React.FC<OrderViewProps2> = ({ document }) => {
               <OrderItemPreview key={index} item={item} orderId={order._id}/>
           ))}
         </Stack>
-        {order.freeProducts && order.freeProducts.length > 0 && <Stack marginTop={4} space={2}>
+        {/* {order.freeProducts && order.freeProducts.length > 0 && <Stack marginTop={4} space={2}>
           <Box padding={2}>
             <Heading as="h3">
               {t('order.freeProducts')}
@@ -289,7 +314,7 @@ export const OrderView: React.FC<OrderViewProps2> = ({ document }) => {
           {order.vouchers.map((item, index) => (
               <OrderVoucherPreview key={index} {...item}/>
           ))}
-        </Stack>}
+        </Stack>} */}
         <Stack marginTop={4} space={2}>
           <Box padding={2}>
             <Heading as="h3">

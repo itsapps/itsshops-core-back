@@ -535,6 +535,10 @@ export default {
       },
       statusHistory: {
         title: 'Statusverlauf',
+        options: {
+          payment: 'Zahlung',
+          fulfillment: 'Versand',
+        }
       },
       billingAddress: {
         title: 'Rechnungsadresse',

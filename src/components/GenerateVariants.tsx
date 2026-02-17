@@ -35,7 +35,7 @@ type VariantReferences = {
 }
 
 export function GenerateVariants(props: VariantsInputProps) {
-  const { t, localizer, config: { apiVersion } } = useITSContext();
+  const { t, localizer, config: { apiVersion }, featureRegistry } = useITSContext();
   const client = useClient({apiVersion})
 
 
@@ -68,7 +68,8 @@ export function GenerateVariants(props: VariantsInputProps) {
           featured,
           active,
           price,
-          sku
+          sku,
+          images
         `
         const query = `*[_type == "productVariant" && _id in $ids] {
           _id,
@@ -174,7 +175,7 @@ export function GenerateVariants(props: VariantsInputProps) {
         options: optionRefs,
         featured: variantIndex === 0,
         active: true,
-        stock: 0,
+        ...featureRegistry.isFeatureEnabled('shop.stock') && {stock: 0},
       };
       return newVariant;
     })
@@ -198,7 +199,7 @@ export function GenerateVariants(props: VariantsInputProps) {
     }
     
     setLoadingVariants(false);
-  },[onChange, client, originalDocument, selectedOptions]);
+  },[onChange, client, originalDocument, selectedOptions, featureRegistry]);
 
   const getCombinations = (arr: Array<Array<{ groupId: string; optionId: string }>>): Array<Array<{ groupId: string; optionId: string }>> => {
     if (arr.some(inner => inner.length === 0)) return [];

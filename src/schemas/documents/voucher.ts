@@ -1,8 +1,7 @@
+import { ITSDocumentDefinition } from "../../types";
 import { Barcode } from 'phosphor-react'
-import { ITSSchemaDefinition } from "../../types";
 
-
-export const voucher: ITSSchemaDefinition = {
+export const voucher: ITSDocumentDefinition = {
   name: 'voucher',
   type: 'document',
   icon: Barcode,

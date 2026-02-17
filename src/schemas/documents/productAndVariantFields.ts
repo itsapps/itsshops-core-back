@@ -1,14 +1,10 @@
-import type { FieldContext, ITSContext } from "../../types";
-import { ProductType } from "../../types";
-
-import { FieldGroupDefinition } from "sanity";
-import { Cube } from 'phosphor-react';
-
-import { PriceInput } from "../../components/PriceInput";
+import { type FieldContext, type ITSContext, ProductType } from "../../types";
 import { VinofactWineSelector } from "../../components/VinofactWineSelector";
+import { FieldGroupDefinition } from "sanity";
 
 export const createSharedProductFields = (ctx: FieldContext, type: ProductType) => {
   const { f } = ctx;
+  const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock');
   const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact');
 
   const fields = [
@@ -19,9 +15,14 @@ export const createSharedProductFields = (ctx: FieldContext, type: ProductType) 
         group: 'vinofact'
       })
     ] : [],
+
     f('sku', 'string', { group: 'product' }),
-    f('stock', 'number', { initialValue: 0, validation: (Rule) => Rule.positive(), group: 'stock' }),
-    f('stockThreshold', 'number', { validation: (Rule) => Rule.min(0), group: 'stock' }),
+
+    ...stockEnabled ? [
+      f('stock', 'number', { initialValue: 0, validation: (Rule) => Rule.positive(), group: 'stock' }),
+      f('stockThreshold', 'number', { validation: (Rule) => Rule.min(0), group: 'stock' }),  
+    ] : [],
+    
     f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
 
     // { name: 'modules', type: 'array',
@@ -110,17 +111,18 @@ export const createSharedProductFields = (ctx: FieldContext, type: ProductType) 
 };
 
 export const createSharedProductGroups = (ctx: ITSContext, type: ProductType): FieldGroupDefinition[] => {
+  const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock');
   const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact');
   
   return [
     { name: 'product', default: true},
-    { name: 'stock'},
     { name: 'description'},
     { name: 'pricing'},
     { name: 'media'},
     { name: 'seo'},
     { name: 'vat'},
     ...(type === ProductType.Product ? [{ name: 'variants' }] : []),
-    ...(vinofactEnabled ? [{ name: 'vinofact' }] : []),
+    ...vinofactEnabled ? [{ name: 'vinofact' }] : [],
+    ...stockEnabled ? [{ name: 'stock'}] : [],
   ];
 }

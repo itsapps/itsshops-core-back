@@ -1,33 +1,9 @@
-import { Rule, FieldDefinition, defineField, type TypeReference, ReferenceTo } from 'sanity';
+import { Rule, FieldDefinition, defineField, type TypeReference } from 'sanity';
 import { i18nValidators } from './validation';
 import { ITSContext, CoreFactory, FieldFactory, I18nRuleShortcut } from "../types";
 
 // Map simple types to your internationalized plugin types
-const typeMap: Record<string, string> = {
-  // Your custom internationalized shorthand
-  'i18nString': 'internationalizedArrayString',
-  'i18nUrl': 'internationalizedArrayUrl',
-  'i18nSlug': 'internationalizedArraySlug',
-  'i18nCropImage': 'internationalizedArrayCropImage',
-  'i18nImage': 'internationalizedArrayBaseImage',
-  'i18nLocaleImage': 'internationalizedArrayLocaleImage',
-  'i18nBaseImage': 'internationalizedArrayBaseImage',
-  'i18nTextImage': 'internationalizedArrayLocaleTextsImage',
-  'i18nDictImage': 'i18nDictImage',
-  'i18nImage2': 'internationalizedArrayCustomImage',
-  'i18nText':   'internationalizedArrayText',
-  'i18nBlock':  'internationalizedArrayComplexPortableText',
-  
-  // Standard shorthand (optional, for convenience)
-  'string':     'string',
-  'text':       'text',
-  'number':     'number',
-  'boolean':    'boolean',
-  'array':    'array',
 
-  // text: 'internationalizedArrayText',
-  // content: 'internationalizedArrayBlockContent', // Assuming you named your block type this
-};
 
 export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFactory => {
   const { config, t } = ctx;
@@ -147,7 +123,7 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
 
     const field = defineField({
       name: fieldName,
-      type: typeMap[type] || type,
+      type: ctx.i18nFieldTypes[type] || type,
       title,
       ...description && { description },
       validation: (Rule: Rule) => {
@@ -180,7 +156,7 @@ const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName:
     console.warn(`Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`);
     return false;
   } else if (!ctx.featureRegistry.isSchemaEnabled(type)) {
-    console.warn(`Structure Error: Schema type "${type}" is disabled for reference in "${namespace}.${fieldName}".`);
+    // console.warn(`Schema type "${type}" is disabled for reference in "${namespace}.${fieldName}".`);
     return false;
   }
   return true;
@@ -201,10 +177,6 @@ export const createFactory = (namespace: string, ctx: ITSContext): CoreFactory =
   const findDefault = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string => {
     const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
     return ctx.t.strict(translationPaths.local) || ctx.t.default(translationPaths.global, fieldName)
-  };
-  const findStrict = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string | undefined => {
-    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
-    return ctx.t.strict(translationPaths.local) || ctx.t.strict(translationPaths.global)
   };
   const extendField = <T extends FieldDefinition>(field: T): T => {
   // const extendField = (field: FieldDefinition) => {

@@ -58,11 +58,11 @@ export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, 
 
             try {
               const result = await value.apply(target, args);
-              const duration = (performance.now() - start).toFixed(2);
+              const duration = (performance.now() - start);
               
               // Performance warning: highlight slow queries in red
               const color = duration > 500 ? 'color: #ff4d4f; font-weight: bold;' : 'color: #2a7e39;';
-              console.log(`%c✅ Result (${duration}ms)`, color, result);
+              console.log(`%c✅ Result (${duration.toFixed(2)}ms)`, color, result);
               
               return result;
             } catch (err) {

@@ -1,8 +1,8 @@
 import { UsersIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
+import { ITSDocumentDefinition } from "../../types";
 
 
-export const customerGroup: ITSSchemaDefinition = {
+export const customerGroup: ITSDocumentDefinition = {
   name: 'customerGroup',
   type: 'document',
   icon: UsersIcon,

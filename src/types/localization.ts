@@ -58,7 +58,7 @@ export type I18nCropImage = ITSi18nArray<CropImage>;
 
 export interface LocaleImage {
   _type: 'localeImage';
-  image: ITSi18nArray<SanityImageObject>;
+  image?: ITSi18nArray<SanityImageObject>;
   title?: ITSi18nArray;
   alt?: ITSi18nArray;
 }

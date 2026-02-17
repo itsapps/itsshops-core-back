@@ -1,11 +1,11 @@
-import { ITSFeatureRegistry } from '../types'
+import { ITSLocaleContext } from '../types'
 import { Template } from 'sanity'
 
 
-export function templateResolver (prev: Template[], registry: ITSFeatureRegistry) {
-  const templates = []
-  if (registry.isDocEnabled('category')) {
-    const category2Child: Template = {
+export function templateResolver (prev: Template[], ctx: ITSLocaleContext) {
+  const templates: Template[] = []
+  if (ctx.featureRegistry.isDocEnabled('category')) {
+    const category: Template = {
       id: 'subCategory',
       title: 'Sub-category',
       schemaType: 'category',
@@ -17,17 +17,52 @@ export function templateResolver (prev: Template[], registry: ITSFeatureRegistry
         }
       })
     }
-    templates.push(category2Child)
+    templates.push(category)
   }
-  const allowedDocs = registry.getEnabledDocs()
+  const allowedDocs = ctx.featureRegistry.getEnabledDocs()
     .filter(doc => {
-      return !doc.isSingleton && doc.allowCreate !== false;
+      // 1. Singletons are never in the "New Document" menu
+      if (doc.isSingleton) return false;
+
+      // 2. Resolve allowCreate (handle boolean, function, or undefined)
+      const canCreate = typeof doc.allowCreate === 'function' 
+        ? doc.allowCreate(ctx.config.isDev) 
+        : doc.allowCreate !== false; // Default to true if undefined
+
+      return canCreate;
     })
+  
+  // const pt = {
+  //   id: 'product-with-title',
+  //   title: 'Product with title...',
+  //   schemaType: 'product',
+  //   // value: {
+  //   //   title: [
+  //   //     { 
+  //   //       _key: 'de', 
+  //   //       _type: 'internationalizedArrayStringValue', 
+  //   //       value: '' 
+  //   //     }
+  //   //   ]
+  //   // }
+  //   // parameters: [{ name: 'title', title: 'Titel', type: 'string' }],
+  //   value: {
+  //     title: [
+  //       { 
+  //         _key: 'de', 
+  //         _type: 'internationalizedArrayStringValue', 
+  //         value: ''
+  //       }
+  //     ]
+  //   }
+  // }
+  // templates.push(pt)
 
   const allowedDocIds = allowedDocs.map(doc => doc.name)
-  return [
+  const t = [
     ...prev.filter((template) => allowedDocIds.includes(template.schemaType)),
     // ...prev.filter((template) => true),
     ...templates,
   ]
+  return t
 }

@@ -1,10 +1,8 @@
 import { ITSContext, CoreFactory, ITSBuilders } from '../types';
 import { PriceInput } from '../components/PriceInput';
 
-import { defineField } from 'sanity'
-
 export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilders => {
-  const { config, t: { default: t }, localizer, format } = ctx;
+  const { config, t: { default: t } } = ctx;
   const f = factory.fields;
   const apiVersion = config.apiVersion
   

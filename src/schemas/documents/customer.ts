@@ -1,9 +1,9 @@
 import { UserIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
+import { ITSDocumentDefinition } from "../../types";
 
 import { FieldDefinition } from 'sanity'
 
-export const customer: ITSSchemaDefinition = {
+export const customer: ITSDocumentDefinition = {
   name: 'customer',
   type: 'document',
   icon: UserIcon,

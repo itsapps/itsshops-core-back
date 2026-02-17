@@ -1,7 +1,7 @@
 import { ITSSchemaDefinition } from '../../../types';
 
 import { PackageIcon } from '@sanity/icons'
-import { FieldDefinition, isDev } from 'sanity'
+import { FieldDefinition } from 'sanity'
 
 export const orderCustomer: ITSSchemaDefinition = {
   name: 'orderCustomer',

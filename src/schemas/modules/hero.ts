@@ -9,7 +9,7 @@ export const hero: ITSSchemaDefinition = {
     // Define the UNIQUE fields for this module
     const contentFields = [
       f('title', 'i18nString', { group: 'content' }),
-      f('bgImage', 'i18nTextImage', { group: 'media' }),
+      f('bgImage', 'localeImage', { group: 'media' }),
       f('actions', 'array', {
         of: [
           {

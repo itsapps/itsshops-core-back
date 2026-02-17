@@ -30,7 +30,7 @@ export type OrderItemOption = {
 
 export type BaseOrderItem = {
   _key: string
-  type: number
+  type: string
   productId: string
   parentId?: string
   sku?: string

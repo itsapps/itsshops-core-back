@@ -1,6 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
+import { ITSImageDefinition } from '../../types';
 
-export const cropImage: ITSSchemaDefinition = {
+export const cropImage: ITSImageDefinition = {
   name: 'cropImage',
   type: 'image',
   build: (ctx) => {
@@ -8,20 +8,15 @@ export const cropImage: ITSSchemaDefinition = {
       options: { hotspot: true },
       // preview: {
       //   select: {
-      //     title: 'title',
-      //     alt: 'alt',
-      //     media: 'image',
+      //     asset: 'asset',
+      //     crop: 'crop',
+      //     hotspot: 'hotspot',
       //   },
-      //   prepare: ({ title, alt, media }: any) => {
+      //   prepare: ({ asset, crop, hotspot }) => {
       //     return {
-      //       // We use our new array-based helper here
-      //       // title,
-      //       // subtitle: alt,
-      //       title: ctx.localizer.value(title) || 'No title',
-      //       subtitle: ctx.localizer.value(alt) || 'No alt',
-      //       media: 'asdf',
+      //       media: { asset, crop, hotspot } as any,
       //     };
-      //   },
+      //   }
       // },
     }
   }

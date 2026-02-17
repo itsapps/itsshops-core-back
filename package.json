@@ -44,7 +44,8 @@
     "sanity-plugin-internationalized-array": "4.0.1",
     "sanity-plugin-media": "^4.1.1",
     "styled-components": "^6.1.19",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",

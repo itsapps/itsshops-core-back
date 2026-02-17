@@ -29,8 +29,8 @@ import {
   DocumentDefinition,
   ArrayDefinition,
   ReferenceDefinition,
-  BlockDefinition,
-  NumberDefinition,
+  // BlockDefinition,
+  // NumberDefinition,
   ImageDefinition,
   ObjectDefinition,
   FieldDefinition,
@@ -40,8 +40,9 @@ import {
   PreviewConfig,
   DocumentActionComponent,
   TFunction,
-  ReferenceOptions,
+  // ReferenceOptions,
   SanityClient,
+  Template,
 } from 'sanity';
 
 import { ImageUrlBuilder } from '@sanity/image-url/lib/types/builder'
@@ -137,7 +138,7 @@ export interface ITSBuilders {
   priceField: (options: PriceOptions) => FieldDefinition<'number'>;
 }
 
-export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'shop.category' | 'shop.vinofact' | 'blog' | 'users';
+export type ITSFeatureKey = 'shop' | 'shop.manufacturer' | 'shop.stock' | 'shop.category' | 'shop.vinofact' | 'blog' | 'users';
 export type ITSFeatureRegistry = {
   isFeatureEnabled: (name: ITSFeatureKey) => boolean;
   allSchemas: ITSSchemaDefinition[];
@@ -159,6 +160,9 @@ export interface ITSLocaleContext {
   localizer: ITSLocalizer;
   format: ITSFormatter;
   countryOptions: CountryOption[];
+  i18nFieldTypes: Record<string, string>;
+  schemaT: ITSTranslator;
+  structureT: ITSTranslator;
 }
 export interface ITSContext extends ITSLocaleContext {
   t: ITSTranslator;
@@ -215,29 +219,28 @@ interface ITSBaseDefinition {
   description?: string;
   icon?: ComponentType | ReactNode
 }
+type DefinitionOmits = 'name' | 'type' | 'title' | 'icon'
 export interface ITSDocumentDefinition extends ITSBaseDefinition {
   type: 'document';
   isSingleton?: boolean;
   hideInStructure?: boolean;
-  allowCreate?: boolean;
+  allowCreate?: boolean | ((isDev: boolean) => boolean);
   disallowedActions?: ITSSanityDefinedAction[];
-  build: (ctx: FieldContext) => Omit<DocumentDefinition, 'name' | 'type' | 'title' | 'icon'>;
+  getInitialValue?: (ctx: ITSContext) => Template;
+  build: (ctx: FieldContext) => Omit<DocumentDefinition, DefinitionOmits>;
 }
 export interface ITSObjectDefinition extends ITSBaseDefinition {
   type: 'object';
-  build: (ctx: FieldContext) => Omit<ObjectDefinition, 'name' | 'type' | 'title' | 'icon'>;
+  build: (ctx: FieldContext) => Omit<ObjectDefinition, DefinitionOmits>;
 }
-
 export interface ITSArrayDefinition extends ITSBaseDefinition {
   type: 'array';
-  build: (ctx: FieldContext) => Omit<ArrayDefinition, 'name' | 'type' | 'title' | 'icon'>;
+  build: (ctx: FieldContext) => Omit<ArrayDefinition, DefinitionOmits>;
 }
-
 export interface ITSImageDefinition extends ITSBaseDefinition {
   type: 'image';
-  build: (ctx: FieldContext) => Omit<ImageDefinition, 'name' | 'type' | 'title' | 'icon'>;
+  build: (ctx: FieldContext) => Omit<ImageDefinition, DefinitionOmits>;
 }
-
 export type ITSSchemaDefinition = 
   | ITSDocumentDefinition 
   | ITSObjectDefinition 
@@ -264,6 +267,7 @@ export interface FeatureConfig {
   shop?: Partial<{
     enabled: boolean
     manufacturer?: boolean
+    stock?: boolean
     category?: boolean
     vinofact?: VinofactConfig
   }>
@@ -275,6 +279,7 @@ export interface ITSFeatureConfig {
   shop: {
     enabled: boolean
     manufacturer: boolean
+    stock: boolean
     category: boolean
     vinofact: VinofactConfig
   }
@@ -338,7 +343,7 @@ export interface ItsshopsConfig {
   integrations: IntegrationsConfig;
   schemaSettings?: SchemaSettingsInput;
   schemaExtensions?: Record<string, SchemaExtension>;
-  documents?: ITSSchemaDefinition[];
+  documents?: ITSDocumentDefinition[];
   objects?: ITSSchemaDefinition[];
   structure?: ITSStructureItem[];
 }

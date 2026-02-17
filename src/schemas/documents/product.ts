@@ -1,11 +1,10 @@
-import { Cube } from 'phosphor-react';
-import { ITSSchemaDefinition, ProductType } from "../../types";
+import { ITSDocumentDefinition, ProductType } from "../../types";
 import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
-import { PriceInput } from "../../components/PriceInput";
 import { GenerateVariants } from "../../components/GenerateVariants";
-import { ProductPreview } from '../../components/previews/ProductPreview'
+// import { ProductPreview } from '../../components/previews/ProductPreview'
+import { Cube } from 'phosphor-react';
 
-export const product: ITSSchemaDefinition = {
+export const product: ITSDocumentDefinition = {
   name: 'product',
   type: 'document',
   icon: Cube,

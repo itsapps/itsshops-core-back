@@ -2,7 +2,7 @@ import { useITSContext } from '../context/ITSCoreProvider'
 import {DocumentReference, VariantOption} from '../types'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { useToast, Grid, Flex, Button, Stack, Card, Spinner, Text } from '@sanity/ui'
+import { useToast, Flex, Button, Stack, Card, Spinner, Text } from '@sanity/ui'
 import { SparklesIcon, TrashIcon } from '@sanity/icons'
 import { ArrayOfObjectsInputProps, useFormValue, set, useClient, SanityDocument } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'

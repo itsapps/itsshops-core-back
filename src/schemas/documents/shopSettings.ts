@@ -1,6 +1,5 @@
-import { Package } from 'phosphor-react'
 import { ITSDocumentDefinition } from "../../types";
-import { shipping } from '../objects/aaa_not_used_shipping';
+import { Package } from 'phosphor-react'
 
 
 export const shopSettings: ITSDocumentDefinition = {

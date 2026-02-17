@@ -1,7 +1,7 @@
 import { SparklesIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
+import { ITSDocumentDefinition } from "../../types";
 
-export const variantOption: ITSSchemaDefinition = {
+export const variantOption: ITSDocumentDefinition = {
   name: 'variantOption',
   type: 'document',
   icon: SparklesIcon,

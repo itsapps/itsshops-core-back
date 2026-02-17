@@ -1,5 +1,6 @@
 import { useITSContext } from '../../context/ITSCoreProvider'
-import { Order, StatusHistoryEntry, OrderPaymentStatus, OrderStatus, StatusAction } from '../../types'
+// import { Order, StatusHistoryEntry, OrderPaymentStatus, OrderStatus, StatusAction } from '../../types'
+import { StrictOrder, OrderStatus, OrderPaymentStatus, StatusAction, StatusHistoryEntry } from '../../utils/orders'
 
 import React, { useState } from 'react'
 import { Dialog, Flex, Stack, Text, TextArea, Button, Checkbox, TextInput, Box } from '@sanity/ui'
@@ -18,7 +19,7 @@ import {
 
 export function OrderActions(
   {order, onComplete, selectedFullfillmentStatus}:
-  {order: Order, onComplete: () => void, selectedFullfillmentStatus: OrderStatus}) {
+  {order: StrictOrder, onComplete: () => void, selectedFullfillmentStatus: OrderStatus}) {
   const { t } = useITSContext();
   const {fulfillmentActions, paymentActions} = getFullfillmentActions(order, t)
   const statusAction = fulfillmentActions.find(a => a.newState === selectedFullfillmentStatus)
@@ -44,7 +45,7 @@ export function OrderActions(
 
 export function OrderDocumentActions(props: DocumentActionProps): DocumentActionDescription {
   const { published } = props
-  const order = published as Order | null
+  const order = published as StrictOrder | null
   const { t } = useITSContext();
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -84,7 +85,7 @@ export function OrderActionContent(
     selectedFullfillmentStatusAction = undefined
   }:
   {
-    order: Order,
+    order: StrictOrder,
     onComplete: () => void,
     fulfillementActions: StatusAction[],
     paymentActions: StatusAction[],

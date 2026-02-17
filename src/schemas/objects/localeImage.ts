@@ -29,7 +29,7 @@ export const localeImage: ITSSchemaDefinition = {
             // subtitle: alt,
             title: ctx.localizer.value(title) || '',
             subtitle: ctx.localizer.value(alt) || '',
-            media: image?.asset,
+            media: image,
           };
         },
       },

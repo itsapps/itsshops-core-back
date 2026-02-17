@@ -49,6 +49,7 @@ export type Variant = SanityDocument & {
   coverImage: string;
   sku?: string;
   active: boolean;
+  images?: LocaleImage[]
 }
 
 export type NewVariant = SanityDocumentLike & {

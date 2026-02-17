@@ -27,13 +27,14 @@ import { orderItem } from './objects/orders/orderItem';
 import { orderTotals } from './objects/orders/orderTotals';
 import { orderStatusHistory } from './objects/orders/orderStatusHistory';
 import { orderCustomer } from './objects/orders/orderCustomer';
-import { imageArray } from './objects/imageArray';
 
 import { hero } from './modules/hero';
 import { portableText } from './modules/portableText';
 import { textBlock } from './objects/textBlock';
 import { bankAccount } from './objects/bankAccount';
 import { company } from './objects/company';
+import { vatBreakdownItem } from './objects/orders/vatBreakdownItem';
+import { fulfillment } from './objects/orders/fulfillment';
 
 export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
   return [
@@ -62,11 +63,12 @@ export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): I
     addressStrict,
     bankAccount,
     company,
-    imageArray,
     orderItem,
     orderTotals,
     orderStatusHistory,
     orderCustomer,
+    fulfillment,
+    vatBreakdownItem,
 
     hero,
     portableText,

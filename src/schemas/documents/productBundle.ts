@@ -1,9 +1,9 @@
-import { Stack } from 'phosphor-react';
-import { ITSSchemaDefinition, ProductType } from "../../types";
+import { ITSDocumentDefinition, ProductType } from "../../types";
 import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
+import { Stack } from 'phosphor-react';
 
-export const productBundle: ITSSchemaDefinition = {
+export const productBundle: ITSDocumentDefinition = {
   name: 'productBundle',
   type: 'document',
   icon: Stack,

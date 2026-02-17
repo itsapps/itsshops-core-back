@@ -1,11 +1,10 @@
 import { OrderItem, OrderBundleItem, ITSi18nArray, ProductType } from '../types'
 import { useITSContext } from '../context/ITSCoreProvider'
+import { LocaleImageView } from './LocaleImageView';
 
 import React, { useEffect, useState } from 'react'
-import imageUrlBuilder from '@sanity/image-url'
 import { Inline, Card, Stack, Flex, Button, Text, Checkbox } from '@sanity/ui'
 import { usePaneRouter } from 'sanity/structure'
-import { useClient } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
 
 type ProductData = {
@@ -14,18 +13,18 @@ type ProductData = {
   title?: ITSi18nArray
   images?: any[]
 }
-type ProductVariantData = ProductData
+type ProductVariantData = ProductData & {
+  coverImage?: string
+}
 
 
 export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleItem), orderId: string}) {
-  const { localizer, format, config: { apiVersion, features: {shop} } } = useITSContext();
-  const client = useClient({ apiVersion })
+  const { localizer, format, sanityClient } = useITSContext();
 
-  const imageBuilder = imageUrlBuilder(client)
   const { type, productId, parentId, quantity, price, title } = props.item || {}
   const [packed, setPacked] = useState(props.item.packed || false)
   const [loading, setLoading] = useState(false)
-  const isBundleProduct = type == shop.productTypes.bundle
+  const isBundleProduct = type == ProductType.Bundle
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
   const [product, setProduct] = useState<ProductData | null>(null)
   const [variant, setVariant] = useState<ProductVariantData | null>(null)
@@ -38,7 +37,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
 
     const fetchData = async () => {
       if (isVariant) {
-        const data = await client.fetch(
+        const data = await sanityClient.fetch(
           `{
             "variant": *[_type == "productVariant" && _id == $variantId][0]{_id, sku, title, images, coverImage},
             "product": *[_type == "product" && _id == $productId][0]{_id, sku, title, images}
@@ -53,7 +52,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
         setProduct(data?.product || null)
       }
       else {
-        const data = await client.fetch(
+        const data = await sanityClient.fetch(
           `*[_type == "product" && _id == $productId][0]{_id, sku, title, images}`,
           {
             productId: productId,
@@ -67,7 +66,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
     fetchData().catch((err) => {
       console.error('Failed to fetch product data:', err)
     })
-  }, [isBundleProduct, productId, parentId, isVariant, client])
+  }, [isBundleProduct, productId, parentId, isVariant, sanityClient])
 
   const handleTitleClick = async () => {
     if (variant) {
@@ -132,11 +131,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
   const productButtonContent = (
     <Flex align={'center'} gap={2}>
       {image && (
-        <img
-          src={imageBuilder.image(image).width(34).height(34).url()}
-          alt="preview"
-          style={{width: '34px', height: '34px', objectFit: 'cover'}}
-        />
+        <LocaleImageView image={image} options={{width: 34}} />
       )}
       <Flex direction={'column'} gap={2}>
         <Text size={1}>{displayTitle}</Text>
@@ -150,7 +145,7 @@ export default function OrderItemPreview(props: {item: (OrderItem | OrderBundleI
     const newPacked = e.target.checked
     setPacked(newPacked)
     try {
-      await client.patch(props.orderId)
+      await sanityClient.patch(props.orderId)
       .set({[`items[_key == "${props.item._key}"].packed`]: e.target.checked})
       .commit()
     } catch {

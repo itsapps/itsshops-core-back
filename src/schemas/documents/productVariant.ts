@@ -1,9 +1,9 @@
-import { SlidersHorizontal } from 'phosphor-react';
-import { ITSSchemaDefinition, ProductType } from "../../types";
+import { ITSDocumentDefinition, ProductType } from "../../types";
 import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
 import { PriceInput } from "../../components/PriceInput";
+import { SlidersHorizontal } from 'phosphor-react';
 
-export const productVariant: ITSSchemaDefinition = {
+export const productVariant: ITSDocumentDefinition = {
   name: 'productVariant',
   type: 'document',
   icon: SlidersHorizontal,

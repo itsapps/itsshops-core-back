@@ -1,8 +1,8 @@
+import { ITSDocumentDefinition } from "../../types";
 import { OlistIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
 
 
-export const menu: ITSSchemaDefinition = {
+export const menu: ITSDocumentDefinition = {
   name: 'menu',
   type: 'document',
   icon: OlistIcon,

@@ -1,14 +1,14 @@
+import { ITSDocumentDefinition } from "../../types";
 import { SchemaIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
 
-export const category: ITSSchemaDefinition = {
+export const category: ITSDocumentDefinition = {
   name: 'category',
   type: 'document',
   icon: SchemaIcon,
   feature: 'shop.category',
   disallowedActions: ['delete' ],
   build: (ctx) => {
-    const { f, factory, config: { apiVersion } } = ctx;
+    const { f, config: { apiVersion } } = ctx;
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),

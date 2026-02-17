@@ -1,17 +1,17 @@
-import { ITSSchemaDefinition } from "../../../types";
+import { ITSDocumentDefinition } from "../../../types";
 import { buildShared } from './orderAndOrderMetaFields';
 import { StatusIcon } from '../../../components/StatusIcon';
 
 import { TrolleyIcon } from '@sanity/icons'
-import { FieldDefinition, isDev } from 'sanity'
+import { FieldDefinition } from 'sanity'
 
-export const order: ITSSchemaDefinition = {
+export const order: ITSDocumentDefinition = {
   name: 'order',
   type: 'document',
   icon: TrolleyIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate' ],
-  allowCreate: isDev,
+  allowCreate: (isDev) => isDev,
   build: (ctx) => {
     const { f } = ctx;
 
@@ -22,13 +22,13 @@ export const order: ITSSchemaDefinition = {
     const fieldsMap: Record<string, FieldDefinition[]> = {
       order: [
         f('orderNumber', 'string', {
-          validation: (rule) => rule.required(),
-          readOnly: true,
+          // validation: (rule) => rule.required(),
+          readOnly: !ctx.config.isDev,
         }),
 
         f('invoiceNumber', 'string', {
-          validation: (rule) => rule.required(),
-          readOnly: true,
+          // validation: (rule) => rule.required(),
+          readOnly: !ctx.config.isDev,
         }),
 
         f('status', 'string', {
@@ -45,7 +45,7 @@ export const order: ITSSchemaDefinition = {
           },
           initialValue: 'created',
           validation: (rule) => rule.required(),
-          hidden: true,
+          hidden: !ctx.config.isDev,
         }),
         f('paymentStatus', 'string', {
           options: {
@@ -58,7 +58,7 @@ export const order: ITSSchemaDefinition = {
           },
           initialValue: 'succeeded',
           validation: (rule) => rule.required(),
-          hidden: true,
+          hidden: !ctx.config.isDev,
         }),
       ],
       history: [

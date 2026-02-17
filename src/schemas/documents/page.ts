@@ -1,9 +1,9 @@
+import { ITSDocumentDefinition } from "../../types";
 import { DocumentIcon } from '@sanity/icons'
-import { ITSSchemaDefinition } from "../../types";
 
 import { Slug } from 'sanity';
 
-export const page: ITSSchemaDefinition = {
+export const page: ITSDocumentDefinition = {
   name: 'page',
   type: 'document',
   icon: DocumentIcon,
@@ -21,7 +21,6 @@ export const page: ITSSchemaDefinition = {
         // f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
         f('seo', 'seo', { group: 'seo' }),
         // f('textili', 'portableText'),
-        f('textili2', 'internationalizedArrayTextBlock'),
         f('modules', 'array', {
           of: [
             { type: 'hero' },

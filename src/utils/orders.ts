@@ -1,8 +1,57 @@
 import {
   TFunction,
 } from 'sanity'
-import { Order, OrderPaymentStatus, OrderStatus, StatusAction } from '../types/orders'
+// import { Order, OrderPaymentStatus, OrderStatus, StatusAction } from '../types/orders'
+// import { Order } from '../types/sanity.types'
 import { SendMailType, SendMailTypes } from '../types/mail'
+import { z } from 'zod';
+import { Order, OrderStatusHistory } from '../types/sanity.types';
+
+// 1. Extract pure literals from TypeGen
+export type OrderStatus = NonNullable<Order['status']>;
+export type OrderPaymentStatus = NonNullable<Order['paymentStatus']>;
+
+export type StrictHistoryEntry = {
+  _key: string;
+  type: 'payment' | 'fulfillment';
+  status: OrderStatus | OrderPaymentStatus; // It's always one of these two
+  timestamp: string;
+  source: string;
+  note?: string;
+};
+
+// Define the full Strict Order
+export type StrictOrder = Omit<Order, 'status' | 'paymentStatus' | 'statusHistory'> & {
+  status: OrderStatus;
+  paymentStatus: OrderPaymentStatus;
+  statusHistory: StrictHistoryEntry[];
+};
+
+// 2. Define the Strict Schema
+export const strictOrderSchema = z.object({
+  _id: z.string(),
+  _createdAt: z.string(),
+  orderNumber: z.string().catch('NEW'),
+  invoiceNumber: z.string().optional(),
+  // Use .catch() to ensure these are NEVER undefined in your logic
+  status: z.custom<OrderStatus>().catch('created'),
+  paymentStatus: z.custom<OrderPaymentStatus>().catch('succeeded'),
+  statusHistory: z.array(
+    z.object({
+      _key: z.string(),
+      type: z.enum(['payment', 'fulfillment']).catch('fulfillment'),
+      status: z.string().catch('unknown'), // We'll handle the union in logic
+      timestamp: z.string().catch(() => new Date().toISOString()),
+      source: z.string().catch('system'),
+      note: z.string().optional(),
+    })
+  ).catch([]),
+});
+
+// 3. Export the Strict Type
+// export type StrictOrder = z.infer<typeof strictOrderSchema>;
+
+
 
 const fulfillmentTransitions: Record<OrderStatus, OrderStatus[]> = {
   created: ['processing', 'canceled'],
@@ -19,7 +68,14 @@ const paymentTransitions: Record<OrderPaymentStatus, OrderPaymentStatus[]> = {
   refunded: [],
 }
 
-export const getFullfillmentActions = (order: Order, t: TFunction): {fulfillmentActions: StatusAction[], paymentActions: StatusAction[]} => {
+export const getFullfillmentActions = (order: StrictOrder, t: TFunction): {fulfillmentActions: StatusAction[], paymentActions: StatusAction[]} => {
+/**
+ * Compute possible fulfillment and payment actions for an order.
+ * Locks fulfillment and payment transitions if paymentStatus = "refunded"
+ * @param order - The order to compute fulfillment and payment actions for
+ * @param t - The translation function
+ * @returns An object with fulfillmentActions and paymentActions
+ */
   // Compute possible actions
   const fulfillmentActions: StatusAction[] = []
   const paymentActions: StatusAction[] = []
@@ -44,7 +100,7 @@ export function getAllowedFulfillmentTransitions(
   return fulfillmentTransitions[currentStatus] ?? []
 }
 
-export function canChangeToFullfillmentStatus(status: OrderStatus, order: Order): boolean {
+export function canChangeToFullfillmentStatus(status: OrderStatus, order: StrictOrder): boolean {
   const possibleStates = getAllowedFulfillmentTransitions(order.status, order.paymentStatus)
   return possibleStates.includes(status)
 }

@@ -1,4 +1,4 @@
-import { ITSSchemaDefinition } from '../types'
+import { ITSDocumentDefinition } from '../types'
 
 import { blog } from './documents/blog'
 import { category } from './documents/category'
@@ -22,7 +22,7 @@ import { variantOption } from './documents/variantOption'
 import { variantOptionGroup } from './documents/variantOptionGroup'
 import { voucher } from './documents/voucher';
 
-export const getCoreDocuments = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
+export const getCoreDocuments = (extensions: ITSDocumentDefinition[] | undefined): ITSDocumentDefinition[] => {
   // remove feature from extensions, if accidently added, because it makes no sense here
   const extensionsWithoutFeature = extensions?.map(d => {
     const { feature, ...rest } = d;

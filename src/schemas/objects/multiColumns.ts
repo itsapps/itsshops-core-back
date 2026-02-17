@@ -9,7 +9,7 @@ export const multiColumns: CoreObject = {
       type: 'object',
       fields: [
         f('headline', 'i18nString'),
-        f('backgroundImage', 'i18nImage'),
+        f('backgroundImage', 'i18nBaseImage'),
         f('columns', 'array', {
           of: [
             // { type: 'i18nBlock' }, 

@@ -1,6 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
+import { ITSImageDefinition } from '../../types';
 
-export const baseImage: ITSSchemaDefinition = {
+export const baseImage: ITSImageDefinition = {
   name: 'baseImage',
   type: 'image',
   build: (ctx) => {
@@ -27,15 +27,17 @@ export const baseImage: ITSSchemaDefinition = {
           title: 'title',
           alt: 'alt',
           asset: 'asset',
+          crop: 'crop',
+          hotspot: 'hotspot',
         },
-        prepare: ({ title, alt, asset }) => {
+        prepare: ({ title, alt, asset, crop, hotspot }) => {
           return {
             // We use our new array-based helper here
             title,
             subtitle: alt,
             // title: ctx.localizer.value(title) || 'No title',
             // subtitle: ctx.localizer.value(alt) || 'No alt',
-            media: asset,
+            media: { asset, crop, hotspot } as any,
           };
         }
       }

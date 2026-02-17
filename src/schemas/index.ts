@@ -30,7 +30,8 @@ export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinitio
     ...icon && { icon },
   }
   if (definition.type === 'document' || definition.type === 'object') {
-    const built = definition.build(fieldCtx);
+    // const built = definition.build(fieldCtx);
+    const built = definition.build(fieldCtx)
     const { fields, groups, fieldsets } = shapeSchema(
       name,
       fieldCtx,
