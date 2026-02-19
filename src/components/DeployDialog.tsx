@@ -28,6 +28,7 @@ const getStatus = (build: NetlifyBuild | null): "building" | "ready" | "error" |
 export function DeployDialog() {
   const coreContext = useITSContext()
   const { t, config } = coreContext
+  const reloadInterval = 10000
   const { accessToken, siteId, projectName } = config.integrations.netlify;
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -54,6 +55,7 @@ export function DeployDialog() {
   const handleTrigger = async () => {
     setActionLoading(true)
     try {
+      // sleep for a second
       await client.triggerBuild(title ? title : t('deployments.dialog.defaultDeploymentTitle'))
       setTitle('')
       await fetchBuild()
@@ -62,6 +64,10 @@ export function DeployDialog() {
     } finally {
       setActionLoading(false)
     }
+  }
+
+  const goToNetlify = () => {
+    window.open(`https://app.netlify.com/projects/${projectName}/deploys`, '_blank', 'noopener noreferrer')
   }
 
   const handleCancel = async () => {
@@ -85,8 +91,8 @@ export function DeployDialog() {
 
     const interval = setInterval(() => {
       // Pass true for "silent" so the user doesn't see a spinner every 10s
-      fetchBuild(true)
-    }, 10000)
+      fetchBuild(false)
+    }, reloadInterval)
 
     return () => clearInterval(interval)
   }, [open, fetchBuild])
@@ -160,47 +166,44 @@ export function DeployDialog() {
                       value={title}
                     />
                   )}
-
-                  <Flex gap={3} justify="flex-end">
-                     <Button
-                      text={t('deployments.dialog.actions.close')}
-                      mode="ghost"
-                      onClick={() => setOpen(false)}
-                    />
-                    {status === "building" ? (
-                      <Button
-                        text={t('deployments.dialog.actions.cancel')}
-                        tone="critical"
-                        onClick={handleCancel}
-                        loading={actionLoading}
-                      />
-                    ) : (
-                      <Button
-                        text={t('deployments.dialog.actions.deploy')}
-                        tone="primary"
-                        onClick={handleTrigger}
-                        loading={actionLoading}
-                        disabled={loading} // Prevent double clicks while silent fetching
-                      />
-                    )}
-                  </Flex>
+                  <Stack>
+                    <Flex gap={3} justify="space-between">
+                      <Flex gap={3}>
+                        <Button
+                          text={t('deployments.dialog.actions.goToNetlify')}
+                          tone="default"
+                          onClick={goToNetlify}
+                        />
+                      </Flex>
+                      <Flex gap={3}>
+                        <Button
+                          text={t('deployments.dialog.actions.close')}
+                          mode="ghost"
+                          onClick={() => setOpen(false)}
+                        />
+                        {status === "building" ? (
+                          <Button
+                            text={t('deployments.dialog.actions.cancel')}
+                            tone="critical"
+                            onClick={handleCancel}
+                            loading={actionLoading}
+                          />
+                        ) : (
+                          <Button
+                            text={t('deployments.dialog.actions.deploy')}
+                            tone="primary"
+                            onClick={handleTrigger}
+                            loading={actionLoading || loading}
+                            disabled={loading} // Prevent double clicks while silent fetching
+                          />
+                        )}
+                      </Flex>
+                    </Flex>
+                  </Stack>
                 </>
               ) : (
                 <Text size={1} muted>{t('deployments.dialog.noInfos')}</Text>
               )}
-              
-              <Flex justify="center" paddingTop={2}>
-                <Text size={1}>
-                  <a 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    href={`https://app.netlify.com/projects/${projectName}/deploys`}
-                    style={{ color: 'inherit' }}
-                  >
-                    {t('deployments.dialog.actions.goToNetlify', { projectName })}
-                  </a>
-                </Text>
-              </Flex>
             </Stack>
           </Card>
         </Dialog>
