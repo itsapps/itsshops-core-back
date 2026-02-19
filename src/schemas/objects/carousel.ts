@@ -11,9 +11,9 @@ export const carousel: ITSSchemaDefinition = {
     return {
       options: { collapsible: true, collapsed: false },
       fields: [
-        // f('slides', 'array', { 
-        //   of: [ { type: "localeImage" } ],
-        // }),
+        f('slides', 'array', { 
+          of: [ { type: "localeImage" } ],
+        }),
         f('autoplay', 'boolean', { initialValue: false }),
         f('autoplayDelay', 'number', { initialValue: 5 }),
         f('loop', 'boolean', { initialValue: false }),

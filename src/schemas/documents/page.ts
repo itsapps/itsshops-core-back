@@ -21,20 +21,20 @@ export const page: ITSDocumentDefinition = {
         // f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
         f('seo', 'seo', { group: 'seo' }),
         // f('textili', 'portableText'),
-        f('modules', 'array', {
-          of: [
-            { type: 'hero' },
-            // { type: 'portableText' },
-            { type: 'textBlock' },
-            // { type: 'textModule' },
-            // Conditionally add shop modules based on features config
-            // ...(features.shop.enabled ? [{ type: 'productGridModule' }] : []),
-            // ...(features.blog ? [{ type: 'latestPostsModule' }] : []),
-          ],
-          // Sanity UI hint to make it look better
-          // options: { layout: 'grid' },
-          group: 'content',
-        }),
+        // f('modules', 'array', {
+        //   of: [
+        //     { type: 'hero' },
+        //     // { type: 'portableText' },
+        //     { type: 'textBlock' },
+        //     // { type: 'textModule' },
+        //     // Conditionally add shop modules based on features config
+        //     // ...(features.shop.enabled ? [{ type: 'productGridModule' }] : []),
+        //     // ...(features.blog ? [{ type: 'latestPostsModule' }] : []),
+        //   ],
+        //   // Sanity UI hint to make it look better
+        //   // options: { layout: 'grid' },
+        //   group: 'content',
+        // }),
       ],
       preview: {
         select: {

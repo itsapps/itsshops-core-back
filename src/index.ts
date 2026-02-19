@@ -66,14 +66,13 @@ export function createCoreBack(config: ItsshopsConfig) {
       name: locale,
       basePath: `/${locale}`,
       title: `${language.locale.split('-')[0].toUpperCase()} - ${workspaceName}`,
-      // title: `${workspaceName} (${language.title})`,
       icon: coreConfig.workspaceIcon,
       // theme: defaultTheme,
       projectId,
       dataset,
       plugins: [
         internationalizedArray({
-          languages: coreConfig.localization.uiLanguages,
+          languages: coreConfig.localization.fieldLanguages,
           fieldTypes: coreConfig.localization.localizedFieldTypes,
           buttonAddAll: false,
           languageDisplay: 'titleOnly',

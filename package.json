@@ -59,7 +59,7 @@
   "peerDependencies": {
     "react": "^19.1",
     "react-dom": "^19.1",
-    "sanity": "^5.9.0"
+    "sanity": "^5.10.0"
   },
   "prettier": {
     "semi": false,

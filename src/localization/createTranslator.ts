@@ -36,7 +36,7 @@ export const createTranslator = (config: TranslatorConfig): TranslatorFn => {
 
   const instance = i18next.createInstance();
   instance.init({
-    saveMissing: config.isDev,
+    // saveMissing: config.isDev,
     fallbackLng: config.fallbackLng,
     supportedLngs: config.supportedLngs,
     resources,

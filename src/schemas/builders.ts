@@ -49,9 +49,9 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
           f(`${fieldName}DisplayType`, 'string', {
             options: {
               list: [
-                { title: t(`${fieldName}DisplayType.options.link`), value: 'link' },
-                { title: t(`${fieldName}DisplayType.options.button`), value: 'button' },
-                { title: t(`${fieldName}DisplayType.options.ghost`), value: 'ghost' },
+                { title: t(`fields.${fieldName}DisplayType.options.link`), value: 'link' },
+                { title: t(`fields.${fieldName}DisplayType.options.button`), value: 'button' },
+                { title: t(`fields.${fieldName}DisplayType.options.ghost`), value: 'ghost' },
               ],
               layout: 'radio',
               direction: 'horizontal'
@@ -78,7 +78,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
           // Content fields (assigned to content group)
           ...options.fields.map(field => ({ ...field, group: field.group || 'content' })),
           
-          // Global Settings (The "Stuff")
+          // Settings fields
           f('disabled', 'boolean', { 
             group: 'settings', 
             initialValue: false 

@@ -15,11 +15,11 @@ export const hero: ITSSchemaDefinition = {
           {
             type: 'object',
             name: 'action',
-            fields: builders.internalLink({ name: 'action', required: true, includeTitle: true }),
+            fields: builders.internalLink({ required: true, includeTitle: true, includeDisplayType: true }),
             preview: {
               select: {
-                type: 'action._type',
-                title: 'action.title'
+                type: 'linkReference._type',
+                title: 'linkTitle'
               },
               prepare({ type, title }) {
                 return {
