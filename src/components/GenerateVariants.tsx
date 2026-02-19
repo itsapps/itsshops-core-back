@@ -10,7 +10,7 @@ import { useToast, Grid, Flex, Button, Dialog, Stack, Box, Card, Text, Checkbox,
 import { SparklesIcon, TrashIcon } from '@sanity/icons'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import React, { useCallback, useState, useEffect } from 'react'
-import { ArrayOfObjectsInputProps, set, useFormValue, useClient } from 'sanity'
+import { ArrayOfObjectsInputProps, set, useFormValue } from 'sanity'
 import { usePaneRouter } from 'sanity/structure'
 import { v4 as uuidv4 } from 'uuid';
 import {nanoid} from 'nanoid'
@@ -35,8 +35,7 @@ type VariantReferences = {
 }
 
 export function GenerateVariants(props: VariantsInputProps) {
-  const { t, localizer, config: { apiVersion }, featureRegistry } = useITSContext();
-  const client = useClient({apiVersion})
+  const { t, localizer, featureRegistry, sanityClient } = useITSContext();
 
 
   const toast = useToast()
@@ -78,7 +77,7 @@ export function GenerateVariants(props: VariantsInputProps) {
         }`
 
         const ids = value.map((ref) => ref._ref)
-        const data = await client.fetch(query, {ids: ids});
+        const data = await sanityClient.fetch(query, {ids: ids});
         setVariants(data);
       } catch (error) {
         console.error('Error fetching variants: ', error);
@@ -100,7 +99,7 @@ export function GenerateVariants(props: VariantsInputProps) {
           title,
           options[]->{_id, title}
         }`
-        const data = await client.fetch(query);
+        const data = await sanityClient.fetch(query);
         setVariantOptionGroups(data);
       } catch (error) {
         console.error('Error fetching product groups:', error);
@@ -110,7 +109,7 @@ export function GenerateVariants(props: VariantsInputProps) {
     };
 
     fetchData();
-  }, [client]);
+  }, [sanityClient]);
 
   useEffect(() => {
     if (!value) return
@@ -121,7 +120,7 @@ export function GenerateVariants(props: VariantsInputProps) {
     const newSubscriptions = value.map((variantRef) => {
       if (!variantRef?._ref) return null
 
-      return client
+      return sanityClient
         .listen(
           `*[_id == $id || _id == $draftId]`,
           { id: variantRef._ref, draftId: `drafts.${variantRef._ref}` },
@@ -135,7 +134,7 @@ export function GenerateVariants(props: VariantsInputProps) {
 
     // Cleanup listeners when component unmounts or value changes
     return () => newSubscriptions.forEach((sub) => sub?.unsubscribe())
-  }, [value, client])
+  }, [value, sanityClient])
 
 
   const generateVariants = useCallback(async () => {
@@ -180,7 +179,7 @@ export function GenerateVariants(props: VariantsInputProps) {
       return newVariant;
     })
 
-    const transaction = client.transaction();
+    const transaction = sanityClient.transaction();
     //create variants
     newVariants.forEach(variant => transaction.create(variant));
 
@@ -199,7 +198,7 @@ export function GenerateVariants(props: VariantsInputProps) {
     }
     
     setLoadingVariants(false);
-  },[onChange, client, originalDocument, selectedOptions, featureRegistry]);
+  },[onChange, sanityClient, originalDocument, selectedOptions, featureRegistry]);
 
   const getCombinations = (arr: Array<Array<{ groupId: string; optionId: string }>>): Array<Array<{ groupId: string; optionId: string }>> => {
     if (arr.some(inner => inner.length === 0)) return [];
@@ -263,10 +262,10 @@ export function GenerateVariants(props: VariantsInputProps) {
         "references": *[references(^._id) && _id != $productId] { _id, _type }
       }
     `
-    const variantRefs: VariantReferences[] = await client.fetch(refQuery, {ids: variantIds, productId: originalDocument._id})
+    const variantRefs: VariantReferences[] = await sanityClient.fetch(refQuery, {ids: variantIds, productId: originalDocument._id})
     const variantIdsToDelete = variantRefs.filter(ref => ref.references.length === 0).map(ref => ref._id)
     if (variantIdsToDelete.length > 0) {
-      const transaction = client.transaction();
+      const transaction = sanityClient.transaction();
 
       transaction.patch(originalDocument._id, (patch) =>
         patch.set({variants: value.filter(ref => !variantIdsToDelete.includes(ref._ref))})
@@ -289,7 +288,7 @@ export function GenerateVariants(props: VariantsInputProps) {
         title: t("variants.couldNotDeleteAll")
       });
     }
-  },[client, originalDocument, value, t, toast])
+  },[sanityClient, originalDocument, value, t, toast])
 
   // Clear out existing variants
   const handleClear = useCallback(async () => {

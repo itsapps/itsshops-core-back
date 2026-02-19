@@ -1,6 +1,6 @@
 import { ITSLocaleContext, ITSProviderContext } from '../types'
 import { createContext, useContext, useMemo } from 'react'
-import { useTranslation, useClient, isDev, SanityClient } from 'sanity'
+import { useTranslation, useClient, type SanityClient } from 'sanity'
 import { createFrontendClient } from '../external/frontend'
 import { createVinofactClient } from '../external/vinofact'
 import { createImageBuilder } from '../utils/imageBuilder'
@@ -12,32 +12,9 @@ const ITSCoreContext = createContext<ITSProviderContext | null>(null)
 
 export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, ctx: ITSLocaleContext }) => {
   const { t } = useTranslation('itsapps')
-  const baseClient = useClient({ apiVersion: ctx.config.apiVersion })
-  // const sanityClient = useMemo(() => {
-  //   if (!isDev) return baseClient
-
-  //   return {
-  //     ...baseClient,
-  //     fetch: async (query: string, params?: any, options?: any) => {
-  //       const start = performance.now()
-  //       console.groupCollapsed(`🔍 GROQ: ${query.substring(0, 50)}...`)
-  //       console.log('Query:', query)
-  //       console.log('Params:', params)
-        
-  //       try {
-  //         const result = await baseClient.fetch(query, params, options)
-  //         const duration = (performance.now() - start).toFixed(2)
-  //         console.log(`✅ Result (${duration}ms):`, result)
-  //         return result
-  //       } catch (err) {
-  //         console.error('❌ GROQ Error:', err)
-  //         throw err
-  //       } finally {
-  //         console.groupEnd()
-  //       }
-  //     }
-  //   }
-  // }, [baseClient])
+  const baseClient: SanityClient = useClient({ apiVersion: ctx.config.apiVersion })
+  const isDev = ctx.config.isDev
+  
   const sanityClient = useMemo(() => {
     if (!isDev) return baseClient;
 
@@ -50,26 +27,33 @@ export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, 
         if (prop === 'fetch' && typeof value === 'function') {
           return async (...args: any[]) => {
             const [query, params] = args;
+            
             const start = performance.now();
             
-            console.groupCollapsed(`🔍 GROQ: ${query.substring(0, 50)}...`);
-            console.log('Query:', query);
-            console.log('Params:', params);
+            if (isDev) {
+              console.groupCollapsed(`🔍 GROQ: ${query.substring(0, 50)}...`);
+              console.log('Query:', query);
+              console.log('Params:', params);
+            }
 
             try {
               const result = await value.apply(target, args);
-              const duration = (performance.now() - start);
               
-              // Performance warning: highlight slow queries in red
-              const color = duration > 500 ? 'color: #ff4d4f; font-weight: bold;' : 'color: #2a7e39;';
-              console.log(`%c✅ Result (${duration.toFixed(2)}ms)`, color, result);
+              if (isDev) {
+                const duration = (performance.now() - start);
+                // Performance warning: highlight slow queries in red
+                const color = duration > 500 ? 'color: #ff4d4f; font-weight: bold;' : 'color: #2a7e39;';
+                console.log(`%c✅ Result (${duration.toFixed(2)}ms)`, color, result);
+              }
               
               return result;
             } catch (err) {
               console.error('❌ GROQ Error:', err);
               throw err;
             } finally {
-              console.groupEnd();
+              if (isDev) {
+                console.groupEnd();
+              }
             }
           };
         }
@@ -79,7 +63,7 @@ export const ITSCoreProvider = ({ children, ctx }: { children: React.ReactNode, 
         return typeof value === 'function' ? value.bind(target) : value;
       }
     }) as SanityClient; // Type assertion is safe now because the Proxy implements the interface
-  }, [baseClient]);
+  }, [baseClient, isDev]);
 
   const imageBuilder = useMemo(() => createImageBuilder(sanityClient), [sanityClient]);
   

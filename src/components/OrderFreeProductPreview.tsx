@@ -1,12 +1,10 @@
 import { ITSi18nArray } from '../types'
 import { useITSContext } from '../context/ITSCoreProvider'
 import React, { useEffect, useState } from 'react'
-import imageUrlBuilder from '@sanity/image-url'
+import { LocaleImageView } from './LocaleImageView';
 import { Card, Stack, Flex, Button, Text, Checkbox } from '@sanity/ui'
 import { usePaneRouter } from 'sanity/structure'
-import { useClient } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
-
 import { OrderFreeProduct } from '../types'
 
 type ProductData = {
@@ -18,10 +16,8 @@ type ProductData = {
 }
 
 export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, orderId: string}) {
-  const { localizer, config: { apiVersion } } = useITSContext();
-  const client = useClient({apiVersion})
+  const { localizer, sanityClient } = useITSContext();
 
-  const imageBuilder = imageUrlBuilder(client)
   const { productId, quantity, title } = props.item || {}
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
   const [product, setProduct] = useState<ProductData | null>(null)
@@ -34,7 +30,7 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
     }
 
     const fetchData = async () => {
-      const data = await client.fetch(
+      const data = await sanityClient.fetch(
         `*[_id == $productId][0]{
           _id,
           _type,
@@ -55,7 +51,7 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
     fetchData().catch((err) => {
       console.error('Failed to fetch product data:', err)
     })
-  }, [productId, client])
+  }, [productId, sanityClient])
 
   const handleTitleClick = async () => {
     if (product) {
@@ -91,11 +87,7 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
   const productButtonContent = (
     <Flex align={'center'} gap={2}>
       {image && (
-        <img
-          src={imageBuilder.image(image).width(34).height(34).url()}
-          alt="preview"
-          style={{width: '34px', height: '34px', objectFit: 'cover'}}
-        />
+        <LocaleImageView image={image} options={{width: 34}} />
       )}
       <Flex direction={'column'} gap={2}>
         <Text size={1}>{displayTitle}</Text>
@@ -109,7 +101,7 @@ export default function OrderFreeProductPreview(props: {item: OrderFreeProduct, 
     const newPacked = e.target.checked
     setPacked(newPacked)
     try {
-      await client.patch(props.orderId)
+      await sanityClient.patch(props.orderId)
       .set({[`freeProducts[_key == "${props.item._key}"].packed`]: e.target.checked})
       .commit()
     } catch {

@@ -4,7 +4,7 @@ import {DocumentReference, VariantOption} from '../types'
 import React, { useState, useEffect, useCallback } from 'react'
 import { useToast, Flex, Button, Stack, Card, Spinner, Text } from '@sanity/ui'
 import { SparklesIcon, TrashIcon } from '@sanity/icons'
-import { ArrayOfObjectsInputProps, useFormValue, set, useClient, SanityDocument } from 'sanity'
+import { ArrayOfObjectsInputProps, useFormValue, set, SanityDocument } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import { usePaneRouter } from 'sanity/structure'
 import {nanoid} from 'nanoid'
@@ -18,9 +18,7 @@ type Props = Omit<ArrayOfObjectsInputProps, 'value'> & {
 }
 
 export const EditGroupOptions = (props: Props) => {
-  const { t, localizer, config } = useITSContext();
-  
-  const client = useClient({apiVersion: config.apiVersion})
+  const { t, localizer, config, sanityClient } = useITSContext();
 
   const { value, onChange } = props;
   const toast = useToast()
@@ -48,7 +46,7 @@ export const EditGroupOptions = (props: Props) => {
           }`;
 
           const draftIds = ids.map(id => `drafts.${id}`);
-          const data: VariantOption[] = await client.fetch(query, { ids, draftIds });
+          const data: VariantOption[] = await sanityClient.fetch(query, { ids, draftIds });
 
           // 3. De-duplicate: If both draft and published exist, pick the draft.
           const merged = ids.map(baseId => {
@@ -79,7 +77,7 @@ export const EditGroupOptions = (props: Props) => {
     const draftIds = ids.map(id => `drafts.${id}`);
 
     // One listener for all related options
-    const sub = client
+    const sub = sanityClient
       .listen(
         `*[_type == "variantOption" && (_id in $ids || _id in $draftIds)]`,
         { ids, draftIds },
@@ -88,16 +86,16 @@ export const EditGroupOptions = (props: Props) => {
       .subscribe(() => fetchData());
 
     return () => sub.unsubscribe();
-  }, [value, client])
+  }, [value, sanityClient])
 
   const deleteOption = useCallback(async (optionId: string) => {
     if (!value) return
     // is referenced in a productVariant?
     const query = `count(*[_type == "productVariant" && references($id)]) > 0`
-    const isUsed = await client.fetch(query, { id: optionId });
+    const isUsed = await sanityClient.fetch(query, { id: optionId });
 
     if (!isUsed) {
-      const transaction = client.transaction();
+      const transaction = sanityClient.transaction();
       transaction.patch(originalDocument._id, (patch) =>
         patch.set({options: value?.filter(ref => ref._ref !== optionId)})
       );
@@ -117,7 +115,7 @@ export const EditGroupOptions = (props: Props) => {
         title: t("optionsGroups.couldNotDeleteOption")
       });
     }
-  },[client, originalDocument, value, t, toast])
+  },[sanityClient, originalDocument, value, t, toast])
 
   const handleRemove = useCallback(async (optionId: string) => {
     setLoading(true);
@@ -143,7 +141,7 @@ export const EditGroupOptions = (props: Props) => {
     setLoading(true);
 
     const maxSort = options.reduce((max, opt) => Math.max(max, opt.sortOrder ?? 0), 0);
-    const newOption = await client.create({
+    const newOption = await sanityClient.create({
       _id: uuidv4().replaceAll("-", ""),
       _type: 'variantOption',
       title: [

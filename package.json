@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
-    "@sanity/types": "^5.5.0",
+    "@sanity/types": "^5.10.0",
     "@types/react": "^19.1",
     "eslint": "^9.28",
     "prettier": "^3.5",

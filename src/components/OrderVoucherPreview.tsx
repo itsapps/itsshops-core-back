@@ -4,13 +4,12 @@ import { useITSContext } from '../context/ITSCoreProvider'
 import React, { useState } from 'react'
 import { Card, Stack, Flex, Button, useToast } from '@sanity/ui'
 import { usePaneRouter } from 'sanity/structure'
-import { useClient } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
 
 
 export default function OrderVoucherPreview(props: OrderVoucher) {
-  const {t, localizer, config: { apiVersion } } = useITSContext()
-  const client = useClient({ apiVersion })
+  const {t, localizer, sanityClient } = useITSContext()
+
   const { voucherId, title } = props || {}
   const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
   const [loading, setLoading] = useState(false)
@@ -18,7 +17,7 @@ export default function OrderVoucherPreview(props: OrderVoucher) {
 
   const handleClick = async () => {
     setLoading(true)
-    const data = await client.fetch(
+    const data = await sanityClient.fetch(
       `*[_type == "voucher" && _id == $voucherId][0]{_id, title}`, {
         voucherId,
       }
