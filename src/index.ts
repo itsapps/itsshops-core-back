@@ -4,13 +4,13 @@ import { defineConfig, WorkspaceOptions } from 'sanity'
 import { visionTool } from '@sanity/vision'
 import { structureTool } from 'sanity/structure'
 import { media } from 'sanity-plugin-media'
-// import { presentationTool } from 'sanity/presentation'
+import { presentationTool } from 'sanity/presentation'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 
 import { createi18nFieldTypes } from './config/fieldTypes';
 import { createTranslator, createI18nHelpers, createFormatHelpers } from './localization';
 import { getTranslationBundles, getStructureOverrideBundles, getTranslationPackage } from './localization/sanityTranslation';
-
+import { createPresentations } from './presentation';
 
 import { mapConfig } from './config/mapper';
 import { createStructureTool } from './config/structure';
@@ -61,6 +61,7 @@ export function createCoreBack(config: ItsshopsConfig) {
     
     const schemaContext = {...localeContext, t: schemaT}
     const structureContext = {...localeContext, t: structureT}
+    const presentationOptions = createPresentations(structureContext)
 
     const config: WorkspaceOptions = {
       name: locale,
@@ -80,12 +81,7 @@ export function createCoreBack(config: ItsshopsConfig) {
         structureTool(createStructureTool(structureContext)),
         visionTool(),
         media(),
-        // presentationTool({
-        //   resolve: {locations: locations(locale, structureTanslator('liveEditor')), mainDocuments},
-        //   previewUrl: {
-        //     initial: `${process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_ENDPOINT}/${locale}/preview`,
-        //   },
-        // }),
+        presentationTool(presentationOptions),
         ...getTranslationPackage(locale),
       ],
       schema: {
