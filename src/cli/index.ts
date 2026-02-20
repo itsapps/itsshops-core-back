@@ -96,33 +96,42 @@ program
   .description('🏗️ Build the Sanity Studio for production')
   .action(async () => {
     const root = process.cwd();
-    
-    // 1. DYNAMICALLY LOCATE THE SANITY BINARY
-    let sanityBin: string;
-    let coreNodeModules: string;
+    const outputDir = join(root, 'dist');
+    const customerConfigPath = resolve(root, 'sanity.config.ts');
 
-    try {
-      // Find where 'sanity' is installed (handles hoisting on Netlify)
-      const sanityPkgPath = require.resolve('sanity/package.json');
-      const sanityFolder = dirname(sanityPkgPath);
-      
-      // Go from .../node_modules/sanity up to .../node_modules
-      coreNodeModules = resolve(sanityFolder, '..');
-      // The binary is always in the .bin folder of that node_modules
-      sanityBin = join(coreNodeModules, '.bin/sanity');
-    } catch (e) {
-      // Local development / link fallback
-      coreNodeModules = resolve(__dirname, '../node_modules');
-      sanityBin = join(coreNodeModules, '.bin/sanity');
+    // 1. DYNAMIC SEARCH FOR SANITY BINARY
+    // We search the most likely locations where Sanity might be installed
+    const possibleBinPaths = [
+      join(root, 'node_modules/.bin/sanity'),              // 1. Hoisted Root (Netlify/Production)
+      resolve(__dirname, '../node_modules/.bin/sanity'),   // 2. Nested (Local Dev/Link)
+      resolve(__dirname, '../../.bin/sanity'),            // 3. Flattened Side-by-side
+    ];
+
+    let sanityBin = possibleBinPaths.find(p => fs.existsSync(p));
+
+    // Fallback: Try Node resolution if filesystem search fails
+    if (!sanityBin) {
+      try {
+        const pkgPath = require.resolve('sanity/package.json');
+        sanityBin = join(dirname(pkgPath), '../../.bin/sanity');
+      } catch (e) {
+        // Final fallback failed
+      }
     }
 
-    // 2. VERIFY BINARY EXISTS
-    if (!fs.existsSync(sanityBin)) {
-      console.error(`❌ CLI Error: Could not find sanity binary at ${sanityBin}`);
+    if (!sanityBin || !fs.existsSync(sanityBin)) {
+      console.error('❌ CLI Error: Sanity binary not found.');
+      console.error('Paths searched:', possibleBinPaths);
       process.exit(1);
     }
 
-    // 3. SYMLINK LOGIC (Ensuring UI dependencies are found)
+    // 2. RESOLVE CORE NODE_MODULES (For Symlinking/NODE_PATH)
+    // We base this on the location of the sanityBin we found
+    const coreNodeModules = resolve(dirname(sanityBin), '..');
+
+    console.log(`🍷 Heavy Engine: Using Sanity from ${coreNodeModules}`);
+
+    // 3. ENSURE SYMLINKS (Crucial for Vite/Sanity to see UI dependencies)
     const customerNM = join(root, 'node_modules');
     if (!fs.existsSync(customerNM)) fs.mkdirSync(customerNM, { recursive: true });
 
@@ -130,33 +139,45 @@ program
     packagesToSymlink.forEach(pkg => {
       const target = join(customerNM, pkg);
       const source = join(coreNodeModules, pkg);
+      
       if (!fs.existsSync(target) && fs.existsSync(source)) {
-        try { fs.symlinkSync(source, target, 'dir'); } catch (e) { /* silent fail if link exists */ }
+        try {
+          // 'junction' is safer for Windows users without Admin rights
+          fs.symlinkSync(source, target, process.platform === 'win32' ? 'junction' : 'dir');
+        } catch (e) {
+          /* Link might exist or permission denied - continue */
+        }
       }
     });
 
-    // 4. PREPARE PATHS
-    const configPath = resolve(root, 'sanity.config.ts');
-    const outputDir = join(root, 'dist');
+    // 4. VALIDATE CONFIG
+    if (!fs.existsSync(customerConfigPath)) {
+      console.error(`❌ CLI Error: Could not find sanity.config.ts in ${root}`);
+      process.exit(1);
+    }
 
-    console.log(`🍷 Building Sanity Studio to ${outputDir}...`);
+    // 5. RUN THE BUILD
+    console.log(`🚀 Starting production build into ${outputDir}...`);
 
     try {
+      // We pass outputDir as a positional argument for the 'build' command
       await execa(sanityBin, ['build', outputDir], {
         stdio: 'inherit',
         shell: true,
         env: {
           ...process.env,
-          // Help Node find nested dependencies during the Vite build
+          // Force Node to look in our core modules for dependencies
           NODE_PATH: coreNodeModules,
-          // Tell your Master Config where the customer config is
-          ITSSHOPS_CUSTOMER_CONFIG_PATH: configPath,
-          // Bypass the Sanity project check
+          // Let the Master Config (if used) know where the customer file is
+          ITSSHOPS_CUSTOMER_CONFIG_PATH: customerConfigPath,
+          // Bypass the "is this a sanity project" check
           SANITY_SKIP_LOCAL_CLI_CHECK: 'true',
         }
       });
+      
+      console.log('\n✅ Build complete successfully.');
     } catch (err) {
-      console.error('❌ Sanity build failed.');
+      console.error('\n❌ Sanity build failed.');
       process.exit(1);
     }
   });
