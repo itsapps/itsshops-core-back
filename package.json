@@ -23,6 +23,7 @@
     }
   },
   "scripts": {
+    "prepare": "npm run build",
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint .",
