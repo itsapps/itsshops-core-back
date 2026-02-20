@@ -1,4 +1,5 @@
 import { CountryOption, ITSLocaleContext, ItsshopsConfig } from './types';
+export type { ItsshopsConfig } from './types';
 
 import { defineConfig, WorkspaceOptions } from 'sanity'
 import { visionTool } from '@sanity/vision'
@@ -22,6 +23,11 @@ import { buildSchemas } from './schemas'
 
 import { CustomToolbar } from './components/CustomToolbar'
 import { ITSStudioWrapper } from './context/ITSStudioWrapper'
+
+// // We use an environment variable to find the customer's config
+// const customerConfigPath = process.env.ITSSHOPS_CUSTOMER_CONFIG_PATH!;
+// // Dynamic import of the customer's shop.config.ts
+// const config = await import(customerConfigPath).then(m => m.default);
 
 export function createCoreBack(config: ItsshopsConfig) {
   const coreConfig = mapConfig(config);
