@@ -1,4 +1,5 @@
 
+export * from './blocks';
 export * from './components';
 export * from './country';
 export * from './fields';
@@ -8,6 +9,7 @@ export * from './mail';
 export * from './netlify';
 export * from './orders';
 export * from './schema';
+export * from './utils';
 export * from './vinofact';
 
 import {
@@ -16,6 +18,7 @@ import {
   ITSTranslator,
   ITSLocalizer,
   ITSFormatter,
+  FieldTranslators,
 } from './localization';
 import { ITSFrontendClient } from './frontend';
 import { ITSVinofactClient } from './vinofact';
@@ -43,6 +46,12 @@ import {
   // ReferenceOptions,
   SanityClient,
   Template,
+  BlockDefinition,
+  BlockStyleDefinition,
+  BlockMarksDefinition,
+  BlockAnnotationDefinition,
+  BlockDecoratorDefinition,
+  defineArrayMember
 } from 'sanity';
 
 import { ImageUrlBuilder } from '@sanity/image-url/lib/types/builder'
@@ -83,6 +92,7 @@ export type ReferenceFieldBuilder = (
 
 export type CoreFactory = {
   fields: FieldFactory;
+  fieldTranslators: FieldTranslators;
   reference: (name: string, options: Omit<ReferenceDefinition, 'name' | 'type'>) => FieldDefinition<'reference'>;
   // array: (name: string, options: Omit<ArrayDefinition, 'name' | 'type'>) => FieldDefinition<'array'>;
 }
@@ -97,6 +107,7 @@ export interface ITSInternalLinkOptions {
   to?: string[];
   includeTitle?: boolean;
   includeDisplayType?: boolean;
+  displayTypes?: string[];
   required?: boolean;
 }
 
@@ -126,11 +137,14 @@ export interface ITSCountryCodesOptions {
   documentType: string;
 }
 
+
 export interface ITSBuilders {
   internalLink: (options?: ITSInternalLinkOptions) => FieldDefinition[];
   module: (options: ITSModuleOptions) => any;
   // portableText: (options?: ITSPTOptions) => any;
   // portableText: (options?: ITSPTOptions) => Partial<ArrayDefinition>;
+  // block: (options: ITSBlockOptions) => ArrayOfType<'block'>
+  block: (options: ITSArrayBlock) => ArrayOfType<'block'>;
   portableText: (options?: ITSPTOptions) => Pick<ArrayDefinition, 'of'>;
   actionGroup: (options: ITSActionGroupOptions) => any;
   countryCodeField: (options: ITSCountryCodeOptions) => FieldDefinition;

@@ -4,16 +4,20 @@ import { PriceInput } from '../components/PriceInput';
 export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilders => {
   const { config, t: { default: t } } = ctx;
   const f = factory.fields;
+  const ft = factory.fieldTranslators;
   const apiVersion = config.apiVersion
+
   
   return {
     internalLink: (options = { required: true }) => {
       const fieldName = options.name || 'link';
+      const required = options.required || true;
       
       // Filter default 'to' based on config features
       const to = (options.to || config.schemaSettings.links.allowedReferences)
         // .filter(type => ctx.featureRegistry.isDocEnabled(type))
         .map(type => ({ type }))
+      const displayTypes = options.displayTypes || ['link', 'button', 'ghost'];
       
       return [
         ...(options.includeTitle ? [f(`${fieldName}Title`, 'i18nString')] : []),
@@ -29,7 +33,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             }
             
             // If it IS an internal link, we require the reference
-            if (!value) {
+            if (!value && required) {
               return 'A reference is required for internal links.';
             }
             
@@ -45,18 +49,14 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             `
           }
         }),
-        ...(options.includeDisplayType ? [
+        ...(options.includeDisplayType && displayTypes.length ? [
           f(`${fieldName}DisplayType`, 'string', {
             options: {
-              list: [
-                { title: t(`fields.${fieldName}DisplayType.options.link`), value: 'link' },
-                { title: t(`fields.${fieldName}DisplayType.options.button`), value: 'button' },
-                { title: t(`fields.${fieldName}DisplayType.options.ghost`), value: 'ghost' },
-              ],
+              list: displayTypes.map(type => ({value: type })),
               layout: 'radio',
               direction: 'horizontal'
             },
-            initialValue: 'link'
+            // initialValue: 'link'
           })
         ] : [])
       ];
@@ -100,6 +100,38 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       };
     },
 
+    block: (options) => {
+      return {
+        type: 'block',
+        ...options,
+        // ...options.styles && { styles: options.styles?.map(s => {
+        //   return {
+        //     ...s,
+        //     ...(!s.title) && { title: ft.default(`block.styles.${s.value}`) },
+        //   }
+        // })},
+        // marks: {
+        //   ...options.marks?.decorators && {decorators: options.marks.decorators.map(d => {
+        //     return {
+        //       ...d,
+        //       ...(!d.title) && { title: t(`fields.block.marks.decorators.${d.value}`) },
+        //     }
+        //   })},
+        //   annotations: options.allowLinks ? [
+        //     {
+        //       name: 'internalLink',
+        //       type: 'object',
+        //       title: 'Internal Link',
+        //       // Recursively call the link builder!
+        //       fields: createBuilders(factory, ctx).internalLink({ 
+        //         includeDisplayType: true 
+        //       })
+        //     }
+        //   ] : []
+        // }
+      };
+    },
+
     /**
      * PORTABLE TEXT BUILDER
      * Context-aware text editor configuration.
@@ -129,7 +161,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             }
           },
           // f('image', 'baseImage')
-          { type: 'image' }
+          { type: 'image', title: 'bidlle' },
         ]
       };
     },
@@ -244,3 +276,18 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     },
   };
 };
+
+// export const createITSBlock: ITSBuilderBlock = (options) => {
+//   const {
+//     styles,
+//     marks,
+//     ...rest
+//   } = options
+
+//   return defineArrayMember({
+//     type: 'block',
+//     styles: resolveStyles(styles),
+//     marks: resolveMarks(marks),
+//     ...rest
+//   })
+// }

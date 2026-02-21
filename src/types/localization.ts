@@ -1,4 +1,5 @@
 import { SanityImageSource, SanityImageObject } from '@sanity/image-url/lib/types/types'
+import { type BlockDefinition } from 'sanity'
 
 export interface Language {
   id: string;
@@ -23,6 +24,37 @@ export type StrictTranslatorFunction = (
 export interface ITSTranslator {
   default: TranslatorFunction;
   strict: StrictTranslatorFunction;
+}
+
+export type BaseFieldTProps = {
+  namespace: string,
+  t: ITSTranslator,
+}
+export type FieldKeypathTProps = {
+  fieldGroup: string,
+  fieldName: string,
+  attribute?: string
+}
+export type FieldTProps = {
+  fieldGroup: string,
+  fieldName: string,
+  attribute?: string
+}
+export type FieldOptionProps = {
+  fieldName: string,
+  value: string
+}
+export type BlockFieldProps = {
+  fieldName: string,
+  block: BlockDefinition
+}
+
+export interface FieldTranslators {
+  default: (props: FieldKeypathTProps) => string,
+  strict: (props: FieldKeypathTProps) => string | undefined,
+  option: (props: FieldOptionProps) => string,
+  blockStyle: (props: FieldOptionProps) => string | undefined,
+  block: (props: BlockFieldProps) => void,
 }
 
 export interface ITSi18nDictValue<T = string> {

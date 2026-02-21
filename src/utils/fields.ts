@@ -1,11 +1,12 @@
-import { Rule, FieldDefinition, defineField, type TypeReference } from 'sanity';
+import { Rule, FieldDefinition, defineField, type TypeReference, ArrayOfType, BlockDefinition } from 'sanity';
 import { i18nValidators } from './validation';
-import { ITSContext, CoreFactory, FieldFactory, I18nRuleShortcut } from "../types";
+import { ITSContext, CoreFactory, FieldFactory, I18nRuleShortcut, FieldTranslators } from "../types";
+import { createFieldTranslators } from '../localization/fieldTranslators';
 
 // Map simple types to your internationalized plugin types
 
 
-export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFactory => {
+export const createFieldFactory = (namespace: string, ctx: ITSContext, fieldTranslators: FieldTranslators): FieldFactory => {
   const { config, t } = ctx;
   const defaultLocale = config.localization.defaultLocale;
   const allLocales = config.localization.fieldLocales;
@@ -28,30 +29,6 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
         }
         return null;
     }
-  };
-
-  const getTranslationKeypaths = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): {local: string, global: string} => {
-    // const groupPath = `${fieldGroup}.${fieldName}.${attribute}`
-    const groupPath = [fieldGroup, fieldName, attribute].filter(Boolean).join('.')
-    return {
-      local: `${namespace}.${groupPath}`,
-      global: groupPath
-    }
-  };
-
-  const findDefault = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string => {
-    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
-    return ctx.t.strict(translationPaths.local) || ctx.t.default(translationPaths.global, fieldName)
-  };
-  const findStrict = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string | undefined => {
-    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
-    return ctx.t.strict(translationPaths.local) || ctx.t.strict(translationPaths.global)
-  };
-  const findOption = ({namespace, fieldName, value }: {namespace: string, fieldName: string, value: string}): string | undefined => {
-    const local = `${namespace}.fields.${fieldName}.options.${value}`
-    const global = `${fieldName}.options.${value}`
-
-    return ctx.t.strict(local) || ctx.t.strict(global) || ctx.t.default(`options.${value}`, value)
   };
 
   return (fieldName, type = 'string', overrides = {}) => {
@@ -108,18 +85,29 @@ export const createFieldFactory = (namespace: string, ctx: ITSContext): FieldFac
       });
     }
 
+    //input
+    if (type === 'array' && input && input.of && Array.isArray(input.of)) {
+      const ofs = input.of as any[];
+      ofs.forEach(item => {
+        if (item.type === 'block') {
+          const block = item as BlockDefinition
+          fieldTranslators.block({fieldName, block})
+        }
+      })
+    }
+
     if (type === 'string' && rest.options) {
       const ops = rest.options as any;
       if ( ops.list && Array.isArray(ops.list)) {
         // find title if not already set
         ops.list.forEach((option: { title?: string, value: string }) => {
-          option.title = option.title || findOption({namespace, fieldName, value: option.value })
+          option.title = option.title || fieldTranslators.option({fieldName, value: option.value })
         })
       }
     }
 
-    const title = rest.title || findDefault({namespace, fieldGroup: 'fields', fieldName, attribute: 'title' })
-    const description = rest.description || findStrict({namespace, fieldGroup: 'fields', fieldName, attribute: 'description' })
+    const title = rest.title || fieldTranslators.default({fieldGroup: 'fields', fieldName, attribute: 'title' })
+    const description = rest.description || fieldTranslators.strict({fieldGroup: 'fields', fieldName, attribute: 'description' })
 
     const field = defineField({
       name: fieldName,
@@ -164,24 +152,13 @@ const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName:
 
 
 export const createFactory = (namespace: string, ctx: ITSContext): CoreFactory => {
-  const f = createFieldFactory(namespace, ctx);
+  const fieldTranslators = createFieldTranslators(namespace, ctx.t);
+  const f = createFieldFactory(namespace, ctx, fieldTranslators);
 
-  const getTranslationKeypaths = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): {local: string, global: string} => {
-    // const groupPath = `${fieldGroup}.${fieldName}.${attribute}`
-    const groupPath = [fieldGroup, fieldName, attribute].filter(Boolean).join('.')
-    return {
-      local: `${namespace}.${groupPath}`,
-      global: groupPath
-    }
-  };
-  const findDefault = ({namespace, fieldGroup, fieldName, attribute }: {namespace: string, fieldGroup: string, fieldName: string, attribute?: string}): string => {
-    const translationPaths = getTranslationKeypaths({ namespace, fieldGroup, fieldName, attribute })
-    return ctx.t.strict(translationPaths.local) || ctx.t.default(translationPaths.global, fieldName)
-  };
   const extendField = <T extends FieldDefinition>(field: T): T => {
   // const extendField = (field: FieldDefinition) => {
-    const title = findDefault({namespace, fieldGroup: 'fields', fieldName: field.name, attribute: 'title' })
-    const description = findDefault({namespace, fieldGroup: 'fields', fieldName: field.name, attribute: 'description' })
+    const title = fieldTranslators.default({fieldGroup: 'fields', fieldName: field.name, attribute: 'title' })
+    const description = fieldTranslators.default({fieldGroup: 'fields', fieldName: field.name, attribute: 'description' })
     return {
       title,
       ...description && { description },
@@ -191,6 +168,7 @@ export const createFactory = (namespace: string, ctx: ITSContext): CoreFactory =
   
   return {
     fields: f,
+    fieldTranslators,
     reference: (name, options) => {
       const toArray = Array.isArray(options.to)
         ? options.to

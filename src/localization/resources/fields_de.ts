@@ -192,6 +192,35 @@ export default {
       title: 'Geschenke',
     },
   },
+  block: {
+    styles: {
+      normal: 'Normal',
+      h1: 'Überschrift 1',
+      h2: 'Überschrift 2',
+      h3: 'Überschrift 3',
+      h4: 'Überschrift 4',
+      h5: 'Überschrift 5',
+      h6: 'Überschrift 6',
+    },
+    marks: {
+      decorators: {
+        'strong': 'Fett',
+        'em': 'Kursiv',
+        'underline': 'Unterstrichen',
+        'strikethrough': 'Durchgestrichen',
+        'code': 'Code',
+        'link': 'Link',
+        'highlight': 'Hervorheben',
+      },
+      annotations: {
+        'underline': 'Unterstrichen',
+        'strikethrough': 'Durchgestrichen',
+        'code': 'Code',
+        'link': 'Link',
+        'highlight': 'Hervorheben',
+      }
+    }
+  },
   orderings: {
     asc: "Aufsteigend",
     desc: "Absteigend",
@@ -288,6 +317,22 @@ export default {
     fields: {
       link: {
         title: 'Link',
+      },
+    }
+  },
+  textBlock: {
+    title: 'Text Block',
+    fields: {
+      content: {
+        title: 'Inhalt',
+      },
+      content2: {
+        title: 'Inhalt 2',
+        block: {
+          styles: {
+            
+          }
+        }
       },
     }
   },

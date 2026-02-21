@@ -85,7 +85,19 @@ export function createCoreBack(config: ItsshopsConfig) {
         ...getTranslationPackage(locale),
       ],
       schema: {
-        types: buildSchemas(schemaContext),
+        types: [
+          ...buildSchemas(schemaContext),
+          // {
+          //   name: 'blockContent',
+          //   title: 'Content',
+          //   type: 'array',
+          //   of: [
+          //     {
+          //       type: 'block',
+          //     },
+          //   ]
+          // }
+        ],
         templates: (prev) => templateResolver(prev, localeContext),
       },
       studio: {

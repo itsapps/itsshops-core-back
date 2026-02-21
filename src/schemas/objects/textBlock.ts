@@ -12,13 +12,14 @@ export const textBlock: ITSSchemaDefinition = {
         ctx.f('content', 'array', {
           // We use the builder to fill the 'of' property
           input: ctx.builders.portableText({ allowLinks: true })
-        })
+        }),
+
       ],
       preview: {
         select: { content: 'content' },
         prepare: ({ content }) => ({
           title: 'Text Block',
-          subtitle: ctx.localizer.value(content?.[0]?.children?.[0]?.text) || 'Empty',
+          subtitle: content?.[0]?.children?.[0]?.text || 'Empty',
           media: Article,
         })
       }
