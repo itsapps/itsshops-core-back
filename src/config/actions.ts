@@ -1,8 +1,8 @@
 import { DocumentActionComponent, DocumentActionsContext } from 'sanity'
 import { ITSFeatureRegistry, ITSSanityDefinedAction } from '../types'
 
-import { OrderDocumentActions } from '../components/actions/OrderActions'
-import { OrderMailAction } from '../components/actions/OrderDialogAction'
+// import { OrderDocumentActions } from '../components/actions/OrderActions'
+// import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import { createCustomDocumentAction, type CustomDocumentAction } from '../components/actions/CustomDocumentAction'
 
 type ProductVariantReferenceDoc = {
@@ -45,11 +45,11 @@ export function actionResolver (
       context,
     })
   }
-  if (context.schemaType === 'order') {
-    actions.push(OrderDocumentActions)
-    actions.push(OrderMailAction)
-  }
-  else if (context.schemaType === 'variantOptionGroup') {
+  // if (context.schemaType === 'order') {
+  //   actions.push(OrderDocumentActions)
+  //   actions.push(OrderMailAction)
+  // }
+  if (context.schemaType === 'variantOptionGroup') {
     const action = prev.find(({ action }) => action === 'delete')
     if (action) {
       const query = `count(*[_type == "variantOptionGroup" && _id == $id && defined(options) && count(options) > 0]) > 0`

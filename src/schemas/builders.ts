@@ -100,37 +100,37 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       };
     },
 
-    block: (options) => {
-      return {
-        type: 'block',
-        ...options,
-        // ...options.styles && { styles: options.styles?.map(s => {
-        //   return {
-        //     ...s,
-        //     ...(!s.title) && { title: ft.default(`block.styles.${s.value}`) },
-        //   }
-        // })},
-        // marks: {
-        //   ...options.marks?.decorators && {decorators: options.marks.decorators.map(d => {
-        //     return {
-        //       ...d,
-        //       ...(!d.title) && { title: t(`fields.block.marks.decorators.${d.value}`) },
-        //     }
-        //   })},
-        //   annotations: options.allowLinks ? [
-        //     {
-        //       name: 'internalLink',
-        //       type: 'object',
-        //       title: 'Internal Link',
-        //       // Recursively call the link builder!
-        //       fields: createBuilders(factory, ctx).internalLink({ 
-        //         includeDisplayType: true 
-        //       })
-        //     }
-        //   ] : []
-        // }
-      };
-    },
+    // block: (options) => {
+    //   return {
+    //     type: 'block',
+    //     ...options,
+    //     // ...options.styles && { styles: options.styles?.map(s => {
+    //     //   return {
+    //     //     ...s,
+    //     //     ...(!s.title) && { title: ft.default(`block.styles.${s.value}`) },
+    //     //   }
+    //     // })},
+    //     // marks: {
+    //     //   ...options.marks?.decorators && {decorators: options.marks.decorators.map(d => {
+    //     //     return {
+    //     //       ...d,
+    //     //       ...(!d.title) && { title: t(`fields.block.marks.decorators.${d.value}`) },
+    //     //     }
+    //     //   })},
+    //     //   annotations: options.allowLinks ? [
+    //     //     {
+    //     //       name: 'internalLink',
+    //     //       type: 'object',
+    //     //       title: 'Internal Link',
+    //     //       // Recursively call the link builder!
+    //     //       fields: createBuilders(factory, ctx).internalLink({ 
+    //     //         includeDisplayType: true 
+    //     //       })
+    //     //     }
+    //     //   ] : []
+    //     // }
+    //   };
+    // },
 
     /**
      * PORTABLE TEXT BUILDER

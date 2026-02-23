@@ -1,5 +1,5 @@
 import { ITSSchemaDefinition, ProductType } from '../../../types';
-import { getStateTranslationKey } from '../../../utils/orders';
+// import { getStateTranslationKey } from '../../../utils/orders';
 
 import { PackageIcon } from '@sanity/icons'
 import { FieldDefinition, isDev } from 'sanity'
@@ -51,10 +51,10 @@ export const orderStatusHistory: ITSSchemaDefinition = {
         prepare({ status, type, timestamp, source, note }) {
           const dateTime = timestamp ? ctx.format.date(timestamp, { dateStyle: 'medium', timeStyle: 'medium' }) : 'No Date'
           const typeString = type ? ctx.t.default(`orderStatusHistory.fields.type.options.${type}`, type) : 'No Type'
-          const statusString = status ? ctx.t.default(getStateTranslationKey(status), status) : 'No Status'
+          // const statusString = status ? ctx.t.default(getStateTranslationKey(status), status) : 'No Status'
           const subtitle = [source, note].filter(Boolean).join(' - ')
           return {
-            title: `${dateTime}: ${typeString} - ${statusString}`,
+            title: `${dateTime}: ${typeString} - ${"statusString"}`,
             subtitle,
           }
         }

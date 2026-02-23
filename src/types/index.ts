@@ -24,6 +24,7 @@ import { ITSFrontendClient } from './frontend';
 import { ITSVinofactClient } from './vinofact';
 import { PriceOptions } from './fields';
 import { Country, CountryOption } from './country';
+import { SanityImageSource } from './components'
 
 import { ComponentType, ReactNode } from 'react';
 import {
@@ -54,12 +55,13 @@ import {
   defineArrayMember
 } from 'sanity';
 
-import { ImageUrlBuilder } from '@sanity/image-url/lib/types/builder'
-import { SanityImageSource } from '@sanity/image-url/lib/types/types'
+// import { ImageUrlBuilder } from '@sanity/image-url/lib/types/builder'
+// import { SanityImageSource } from '@sanity/image-url/lib/types/types'
+// import imageUrlBuilder from '@sanity/image-url'
 
 export type ITSImageBuilder = {
-  builder: ImageUrlBuilder
-  urlFor: (source: SanityImageSource) => ImageUrlBuilder
+  builder: any
+  urlFor: (source: SanityImageSource) => any
   getUrl: (params: {
     source: SanityImageSource,
     width?: number, 
@@ -144,7 +146,7 @@ export interface ITSBuilders {
   // portableText: (options?: ITSPTOptions) => any;
   // portableText: (options?: ITSPTOptions) => Partial<ArrayDefinition>;
   // block: (options: ITSBlockOptions) => ArrayOfType<'block'>
-  block: (options: ITSArrayBlock) => ArrayOfType<'block'>;
+  // block: (options: ITSArrayBlock) => ArrayOfType<'block'>;
   portableText: (options?: ITSPTOptions) => Pick<ArrayDefinition, 'of'>;
   actionGroup: (options: ITSActionGroupOptions) => any;
   countryCodeField: (options: ITSCountryCodeOptions) => FieldDefinition;

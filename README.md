@@ -1,9 +1,34 @@
-# Sanity Clean Content Studio
+# sanity-plugin-core-back
 
-Congratulations, you have now installed the Sanity Content Studio, an open-source real-time content editing environment connected to the Sanity backend.
 
-Now you can do the following things:
+## Installation
 
-- [Read “getting started” in the docs](https://www.sanity.io/docs/introduction/getting-started?utm_source=readme)
-- [Join the Sanity community](https://www.sanity.io/community/join?utm_source=readme)
-- [Extend and build plugins](https://www.sanity.io/docs/content-studio/extending?utm_source=readme)
+```sh
+npm install sanity-plugin-core-back
+```
+
+## Usage
+
+Add it as a plugin in `sanity.config.ts` (or .js):
+
+```ts
+import {defineConfig} from 'sanity'
+import {myPlugin} from 'sanity-plugin-core-back'
+
+export default defineConfig({
+  //...
+  plugins: [myPlugin({})],
+})
+```
+
+## License
+
+[MIT](LICENSE) © itsapps
+
+## Develop & test
+
+This plugin uses [@sanity/plugin-kit](https://github.com/sanity-io/plugin-kit)
+with default configuration for build & watch scripts.
+
+See [Testing a plugin in Sanity Studio](https://github.com/sanity-io/plugin-kit#testing-a-plugin-in-sanity-studio)
+on how to run this plugin with hotreload in the studio.

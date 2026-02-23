@@ -6,7 +6,7 @@ import DocumentsPane from 'sanity-plugin-documents-pane'
 
 import { categoriesMenu } from '../structure/categories';
 import { fromRegistry, isDocHidden, localizedStructure } from '../structure/structure';
-import { OrderView } from '../components/OrderView2';
+// import { OrderView } from '../components/OrderView2';
 // import { CustomerGroupView } from '../components/CustomerGroupView';
 
 import {type UserViewComponent} from 'sanity/structure'
@@ -86,7 +86,7 @@ export const createDefaultDocumentNode = (ctx: ITSContext) => {
     switch (schemaType) {
       case `order`:
         return S.document().views([
-          S.view.component(OrderView).options({}).title(t('order.views.overview')),
+          // S.view.component(OrderView).options({}).title(t('order.views.overview')),
           S.view.form().icon(EditIcon).title(t('views.titles.edit')),
         ])
       // case `customerGroup`:

@@ -17,6 +17,7 @@ export const taxCountry: ITSDocumentDefinition = {
           of: [{ type: 'taxRule' }],
           validation: (Rule) => Rule.min(1),
         }),
+        f('rules2', 'string')
       ],
       preview: {
         select: {

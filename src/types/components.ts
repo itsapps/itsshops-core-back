@@ -1,4 +1,9 @@
-import { SanityImageSource } from '@sanity/image-url/lib/types/types';
+// import { SanityImageSource } from 'sanity/image-url/lib/types/types';
+export type SanityImageSource = {
+  asset: any;
+  crop?: any;
+  hotspot?: any;
+}
 
 export interface Image {
   image?: SanityImageSource;

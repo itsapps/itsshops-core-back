@@ -1,4 +1,4 @@
-import { LocaleImage, ImageOptions } from '../types'
+import {LocaleImage, ImageOptions} from '../types'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { SimpleImage } from './SimpleImage';
 
@@ -9,7 +9,7 @@ export type LocaleImageProps = {
 
 export const LocaleImageView = ({ image, options }: LocaleImageProps) => {
   const { localizer } = useITSContext();
-  const img = localizer.value(image?.image)
+  const img = localizer.value<any>(image?.image)
   const title = localizer.value(image?.title)
   const alt = localizer.value(image?.alt)
 

@@ -1,0 +1,24 @@
+{
+  "root": true,
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "extends": [
+    "sanity",
+    "sanity/typescript",
+    "sanity/react",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended",
+    "plugin:react/jsx-runtime"
+  ],
+  "rules": {
+    // This allows the spaces that your .prettierrc wants
+    "object-curly-spacing": ["always"],
+
+    
+    // Optional: If you find Prettier and ESLint still fighting, 
+    // you can turn the ESLint version off and let Prettier handle it
+    "prettier/prettier": "error"
+  }
+}

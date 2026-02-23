@@ -1,4 +1,3 @@
-import { SanityImageSource, SanityImageObject } from '@sanity/image-url/lib/types/types'
 import { type BlockDefinition } from 'sanity'
 
 export interface Language {
@@ -90,7 +89,7 @@ export type I18nCropImage = ITSi18nArray<CropImage>;
 
 export interface LocaleImage {
   _type: 'localeImage';
-  image?: ITSi18nArray<SanityImageObject>;
+  image?: ITSi18nArray<any>;
   title?: ITSi18nArray;
   alt?: ITSi18nArray;
 }
