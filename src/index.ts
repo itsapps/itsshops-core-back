@@ -46,13 +46,8 @@ import { ITSStudioWrapper } from './context/ITSStudioWrapper'
 // export const itsshops = definePlugin<ItsshopsConfig | void>((config = {}) => {
 export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
   const presentationOptions = createPresentations({ ...context, t: context.structureT })
-  // eslint-disable-next-line no-console
-  // console.log('hello from sanity-plugin-core-back')
-  // return {
-  //   name: 'sanity-plugin-core-back',
-  // }
   return {
-    name: 'sanity-plugin-itsshops-core-back',
+    name: '@itsapps/itsshops-core-back',
     plugins: [
       internationalizedArray({
         languages: context.config.localization.fieldLanguages,
