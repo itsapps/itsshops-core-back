@@ -1,3 +1,5 @@
+export * from './types'
+
 import {definePlugin} from 'sanity'
 import { structureTool } from 'sanity/structure'
 
