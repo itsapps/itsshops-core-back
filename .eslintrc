@@ -14,7 +14,7 @@
   ],
   "rules": {
     // This allows the spaces that your .prettierrc wants
-    "object-curly-spacing": ["always"],
+    "object-curly-spacing": ["off", "always"],
 
     
     // Optional: If you find Prettier and ESLint still fighting, 
