@@ -1,4 +1,4 @@
-import { ITSDocumentDefinition } from "../../types";
+import { ITSDocumentDefinition } from "../../types"
 import { EditGroupOptions } from '../../components/EditGroupOptions'
 import { SparklesIcon } from '@sanity/icons'
 
@@ -9,7 +9,7 @@ export const variantOptionGroup: ITSDocumentDefinition = {
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
@@ -19,28 +19,32 @@ export const variantOptionGroup: ITSDocumentDefinition = {
           validation: (rule) => rule.required().positive(),
         }),
         f('options', 'array', {
-          of: [{
-            type: 'reference',
-            to: [{
-              type: 'variantOption',
-            }],
-          }],
+          of: [
+            {
+              type: 'reference',
+              to: [
+                {
+                  type: 'variantOption',
+                },
+              ],
+            },
+          ],
           components: {
-            input:  EditGroupOptions
-          }
+            input: EditGroupOptions,
+          },
         }),
       ],
       preview: {
         select: {
           title: 'title',
-          options: 'options'
+          options: 'options',
         },
-        prepare( { title, options } ) {
+        prepare({ title, options }) {
           const count = options?.length || 0
           return {
             title: ctx.localizer.value(title),
             subtitle: ctx.t.default('variantOptionGroup.preview.options', 'options', { count }),
-            media: SparklesIcon
+            media: SparklesIcon,
           }
         },
       }

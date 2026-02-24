@@ -1,10 +1,10 @@
 import { ITSSchemaDefinition } from '../../types';
-import { Article } from 'phosphor-react'
+import { ArticleIcon } from '@phosphor-icons/react'
 
 export const textBlock: ITSSchemaDefinition = {
   name: 'textBlock',
   type: 'object',
-  icon: Article,
+  icon: ArticleIcon,
   build: (ctx) => {
     return {
       fields: [
@@ -20,7 +20,7 @@ export const textBlock: ITSSchemaDefinition = {
         prepare: ({ content }) => ({
           title: 'Text Block',
           subtitle: content?.[0]?.children?.[0]?.text || 'Empty',
-          media: Article,
+          media: ArticleIcon,
         })
       }
     };

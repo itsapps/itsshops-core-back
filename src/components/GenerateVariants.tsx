@@ -13,7 +13,7 @@ import React, { useCallback, useState, useEffect } from 'react'
 import { ArrayOfObjectsInputProps, set, useFormValue } from 'sanity'
 import { usePaneRouter } from 'sanity/structure'
 import { v4 as uuidv4 } from 'uuid';
-import {nanoid} from 'nanoid'
+import { nanoid } from 'nanoid/non-secure'
 
 import {ConfirmButton} from './ConfirmButton';
 import {Details} from './Details';

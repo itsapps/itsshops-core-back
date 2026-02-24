@@ -1,41 +1,48 @@
 import {OrderStatus, OrderPaymentStatus} from '../types'
-
+import React from 'react'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import { styled } from 'styled-components'
-import {ArrowUDownLeft, Circle, Warning, Clock, Truck, Check, Question} from 'phosphor-react'
+import {ArrowUDownLeftIcon, CircleIcon, WarningIcon, ClockIcon, TruckIcon, CheckIcon, QuestionIcon} from '@phosphor-icons/react'
 
 const StyledSpan = styled.span<{ $color: string }>`
   > svg {
-    color: ${props => (props.$color)};
+    color: ${(props) => props.$color};
   }
 `
 
 export const getOrderGeneralState = (
   status: OrderStatus,
-  payment: OrderPaymentStatus
+  payment: OrderPaymentStatus,
 ): { state: string; color: string; icon: React.FC } => {
-  if (payment === 'refunded') return { state: 'refunded', color: 'red', icon: ArrowUDownLeft }
-  if (payment === 'partiallyRefunded') return { state: 'attention', color: 'yellow', icon: Warning }
+  if (payment === 'refunded') return { state: 'refunded', color: 'red', icon: ArrowUDownLeftIcon }
+  if (payment === 'partiallyRefunded')
+    return { state: 'attention', color: 'yellow', icon: WarningIcon }
 
   switch (status) {
     case 'created':
-      return { state: 'new', color: 'gray', icon: Circle }
+      return { state: 'new', color: 'gray', icon: CircleIcon }
     case 'processing':
-      return { state: 'processing', color: 'yellow', icon: Clock }
+      return { state: 'processing', color: 'yellow', icon: ClockIcon }
     case 'shipped':
-      return { state: 'shipped', color: 'blue', icon: Truck }
+      return { state: 'shipped', color: 'blue', icon: TruckIcon }
     case 'delivered':
-      return { state: 'completed', color: 'green', icon: Check }
+      return { state: 'completed', color: 'green', icon: CheckIcon }
     case 'returned':
-      return { state: 'returned', color: 'orange', icon: ArrowUDownLeft }
+      return { state: 'returned', color: 'orange', icon: ArrowUDownLeftIcon }
     case 'canceled':
       return { state: 'canceled', color: 'red', icon: ErrorOutlineIcon }
     default:
-      return { state: 'unknown', color: 'gray', icon: Question }
+      return { state: 'unknown', color: 'gray', icon: QuestionIcon }
   }
 }
 
-export const StatusIcon = ({ status, paymentStatus }: {status: OrderStatus, paymentStatus: OrderPaymentStatus}) => {
+export const StatusIcon = ({
+  status,
+  paymentStatus,
+}: {
+  status: OrderStatus
+  paymentStatus: OrderPaymentStatus
+}) => {
   const { color, icon: Icon } = getOrderGeneralState(status, paymentStatus)
   return (
     <StyledSpan $color={color}>

@@ -1,10 +1,10 @@
 import { ITSDocumentDefinition } from "../../types";
-import { Barcode } from 'phosphor-react'
+import { BarcodeIcon } from '@phosphor-icons/react'
 
 export const voucher: ITSDocumentDefinition = {
   name: 'voucher',
   type: 'document',
-  icon: Barcode,
+  icon: BarcodeIcon,
   feature: 'shop',
   build: (ctx) => {
     const { f } = ctx;

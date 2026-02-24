@@ -1,16 +1,16 @@
+import { ITSDocumentDefinition } from "../../types"
 import { SparklesIcon } from '@sanity/icons'
-import { ITSDocumentDefinition } from "../../types";
 
 export const variantOption: ITSDocumentDefinition = {
   name: 'variantOption',
   type: 'document',
   icon: SparklesIcon,
   feature: 'shop',
-  disallowedActions: [ 'duplicate' ],
+  disallowedActions: ['duplicate'],
   allowCreate: false,
   hideInStructure: true,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),

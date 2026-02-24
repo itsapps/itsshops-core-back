@@ -2,12 +2,12 @@ import { ITSDocumentDefinition, ProductType } from "../../types";
 import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
 import { GenerateVariants } from "../../components/GenerateVariants";
 // import { ProductPreview } from '../../components/previews/ProductPreview'
-import { Cube } from 'phosphor-react';
+import { CubeIcon } from '@phosphor-icons/react'
 
 export const product: ITSDocumentDefinition = {
   name: 'product',
   type: 'document',
-  icon: Cube,
+  icon: CubeIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
@@ -113,7 +113,7 @@ export const product: ITSDocumentDefinition = {
           return {
             title: ctx.localizer.value(title),
             ...variantInfo && {subtitle: variantInfo},
-            media: ctx.localizer.value<any>(image) || Cube,
+            media: ctx.localizer.value<any>(image) || CubeIcon,
           }
         },
       }

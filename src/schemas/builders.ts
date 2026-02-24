@@ -92,7 +92,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
           ...(options.allowTheme ? [
             f('theme', 'string', {
               group: 'settings',
-              options: { list: ['light', 'dark', 'accent'] },
+              options: { list: [{value: 'light'}, {value: 'dark'}, { value: 'accent' } ] },
               initialValue: 'light'
             })
           ] : [])
@@ -151,7 +151,6 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
                 {
                   name: 'internalLink',
                   type: 'object',
-                  title: 'Internal Link',
                   // Recursively call the link builder!
                   fields: createBuilders(factory, ctx).internalLink({ 
                     includeDisplayType: true 

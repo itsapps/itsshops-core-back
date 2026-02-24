@@ -1,15 +1,15 @@
 import { ITSDocumentDefinition } from "../../types";
-import { Note } from 'phosphor-react'
+import { NoteIcon } from '@phosphor-icons/react'
 
 export const blog: ITSDocumentDefinition = {
   name: 'blog',
   type: 'document',
-  icon: Note,
+  icon: NoteIcon,
   feature: 'blog',
   isSingleton: true,
   // validation: (Rule) => Rule.required(),
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       // validation: (Rule) => Rule.required(),
       fields: [
@@ -18,23 +18,23 @@ export const blog: ITSDocumentDefinition = {
         f('seo', 'seo', { group: 'seo' }),
         // f('image', 'baseImage', { validation: (Rule) => Rule.required().assetRequired() }),
         // f('imagearray', 'imageArray'),
-        f('postsPerPage', 'number', { group: 'settings', validation: (Rule) => Rule.min(1).max(100), initialValue: 10 }),
+        f('postsPerPage', 'number', {
+          group: 'settings',
+          validation: (Rule) => Rule.min(1).max(100),
+          initialValue: 10,
+        }),
       ],
-      groups: [
-        { name: 'blog', default: true },
-        { name: 'seo' },
-        { name: 'settings' },
-      ],
+      groups: [{ name: 'blog', default: true }, { name: 'seo' }, { name: 'settings' }],
       preview: {
         select: {
           title: 'title',
           description: 'description',
         },
-        prepare: ({title, description}) => {
+        prepare: ({ title, description }) => {
           return {
             title: ctx.localizer.value(title),
             subtitle: ctx.localizer.value(description),
-            // media: PackageIcon,
+            media: NoteIcon,
           }
         }
       }

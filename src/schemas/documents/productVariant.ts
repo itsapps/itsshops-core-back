@@ -1,14 +1,14 @@
-import { ITSDocumentDefinition, ProductType } from "../../types";
-import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
-import { PriceInput } from "../../components/PriceInput";
-import { SlidersHorizontal } from 'phosphor-react';
+import { ITSDocumentDefinition, ProductType } from '../../types'
+import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
+import { PriceInput } from '../../components/PriceInput'
+import { SlidersHorizontalIcon } from '@phosphor-icons/react'
 
 export const productVariant: ITSDocumentDefinition = {
   name: 'productVariant',
   type: 'document',
-  icon: SlidersHorizontal,
+  icon: SlidersHorizontalIcon,
   feature: 'shop',
-  disallowedActions: ['delete', 'duplicate' ],
+  disallowedActions: ['delete', 'duplicate'],
   allowCreate: false,
   hideInStructure: true,
   build: (ctx) => {
@@ -25,19 +25,19 @@ export const productVariant: ITSDocumentDefinition = {
           },
         }),
         ...createSharedProductFields(ctx, ProductType.Variant),
-        f('active', 'boolean', { initialValue: true, group: 'product', }),
-        f('options', 'array', { 
+        f('active', 'boolean', { initialValue: true, group: 'product' }),
+        f('options', 'array', {
           group: 'product',
           of: [
             {
               type: 'reference',
-              to: [{type: 'variantOption'}]
-            }
+              to: [{ type: 'variantOption' }],
+            },
           ],
-          readOnly: true
+          readOnly: true,
         }),
-        f('featured', 'boolean', { initialValue: false, group: 'product', }),
-        f('coverImage', 'string', { hidden: true, group: 'media', }),
+        f('featured', 'boolean', { initialValue: false, group: 'product' }),
+        f('coverImage', 'string', { hidden: true, group: 'media' }),
       ],
       preview: {
         select: {
@@ -51,7 +51,7 @@ export const productVariant: ITSDocumentDefinition = {
           return {
             title: ctx.localizer.value(title),
             subtitle: [options0, options1, options2].map(o => ctx.localizer.value(o)).filter(Boolean).join(", "),
-            media: ctx.localizer.value<any>(image) || SlidersHorizontal,
+            media: ctx.localizer.value<any>(image) || SlidersHorizontalIcon,
           }
         },
       }

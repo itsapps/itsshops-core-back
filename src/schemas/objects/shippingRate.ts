@@ -1,11 +1,11 @@
 import { ITSSchemaDefinition } from '../../types';
-import { Boat } from 'phosphor-react'
+import { BoatIcon } from '@phosphor-icons/react'
 
 export const shippingRate: ITSSchemaDefinition = {
   name: 'shippingRate',
   type: 'object',
   feature: 'shop',
-  icon: Boat,
+  icon: BoatIcon,
   build: (ctx) => {
     const { f, builders } = ctx;
     return {
@@ -26,7 +26,7 @@ export const shippingRate: ITSSchemaDefinition = {
           return {
             title: `<= ${maxWeight} kg`,
             subtitle: ctx.format.currency(price/100),
-            media: Boat
+            media: BoatIcon
           }
         },
       }

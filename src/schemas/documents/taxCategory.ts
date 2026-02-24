@@ -1,11 +1,11 @@
-import { Package } from 'phosphor-react'
+import { PackageIcon } from '@phosphor-icons/react'
 import { ITSDocumentDefinition } from "../../types";
 
 
 export const taxCategory: ITSDocumentDefinition = {
   name: 'taxCategory',
   type: 'document',
-  icon: Package,
+  icon: PackageIcon,
   feature: 'shop',
   build: (ctx) => {
     const { f } = ctx;

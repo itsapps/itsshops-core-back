@@ -1,17 +1,15 @@
-import { ITSDocumentDefinition } from "../../types";
-import { Note } from 'phosphor-react'
+import { ITSDocumentDefinition } from '../../types'
+import { NoteIcon } from '@phosphor-icons/react'
 
 export const post: ITSDocumentDefinition = {
   name: 'post',
   type: 'document',
-  icon: Note,
+  icon: NoteIcon,
   feature: 'blog',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
-      fields: [
-        f('title', 'i18nString', { i18n: 'atLeastOne' }),
-      ]
+      fields: [f('title', 'i18nString', { i18n: 'atLeastOne' })]
     }
   },
   // preview: (ctx: ITSContext) => {

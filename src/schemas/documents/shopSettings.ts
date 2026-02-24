@@ -1,21 +1,26 @@
 import { ITSDocumentDefinition } from "../../types";
-import { Package } from 'phosphor-react'
+import { PackageIcon } from '@phosphor-icons/react'
 
 
 export const shopSettings: ITSDocumentDefinition = {
   name: 'shopSettings',
   type: 'document',
-  icon: Package,
+  icon: PackageIcon,
   feature: 'shop',
   isSingleton: true,
   build: (ctx) => {
     const { f } = ctx;
 
-    const groups = ['shipping', 'stock', 'tax', 'orders', 'bankAccount' ].map((name, index) => ({
+    const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'bankAccount' ].map((name, index) => ({
       name, ...index === 0 && { default: true }
     }));
 
     const fieldsMap: Record<string, any[]> = {
+      displays: [
+        f('shopPage', 'reference', {
+          to: [{ type: 'page' }],
+        }),
+      ],
       shipping: [
         f('defaultCountry', 'reference', {
           to: [{ type: 'taxCountry' }],

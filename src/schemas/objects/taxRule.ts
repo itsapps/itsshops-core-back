@@ -1,14 +1,13 @@
 import { ITSSchemaDefinition } from '../../types';
-import { PriceInput } from '../../components/PriceInput';
-import {UserIcon} from '@sanity/icons'
-import { Package } from 'phosphor-react'
+import { PackageIcon } from '@phosphor-icons/react'
 
 export const taxRule: ITSSchemaDefinition = {
   name: 'taxRule',
   type: 'object',
+  icon: PackageIcon,
   feature: 'shop',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         f('taxCategory', 'reference', {
@@ -23,11 +22,12 @@ export const taxRule: ITSSchemaDefinition = {
       preview: {
         select: {
           title: 'taxCategory.title',
-          rate: 'rate'
+          rate: 'rate',
         },
         prepare({ title, rate }) {
           return {
             title: `${ctx.localizer.value(title) || 'New Rule'}: ${rate || '-'}%`,
+            media: PackageIcon,
           }
         },
       }

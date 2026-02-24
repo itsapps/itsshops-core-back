@@ -1,12 +1,12 @@
 import { ITSSchemaDefinition } from '../../types';
-import { YoutubeLogo } from 'phosphor-react'
+import { YoutubeLogoIcon } from '@phosphor-icons/react'
 
 export const youtube: ITSSchemaDefinition = {
   name: 'youtube',
   type: 'object',
-  icon: YoutubeLogo,
+  icon: YoutubeLogoIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         f('url', 'string', { validation: (Rule) => Rule.required() }),
@@ -18,7 +18,7 @@ export const youtube: ITSSchemaDefinition = {
       preview: {
         select: {
           title: 'url',
-          subtitle: 'start'
+          subtitle: 'start',
         },
       }
     };

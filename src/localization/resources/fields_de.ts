@@ -27,6 +27,9 @@ export default {
 
   },
   fields: {
+    disabled: {
+      title: 'Inaktiv',
+    },
     linkTitle: {
       title: 'Titel',
     },
@@ -439,8 +442,13 @@ export default {
         title: 'Letzte Rechnungsnummer',
         description: 'Achtung! Dieser Wert wird automatisch erhöht und sollte nicht manuell geändert werden.',
       },
+      shopPage: {
+        title: 'Shopseite',
+        description: 'Diese Seite wird als Haupseite des Shops verwendet.',
+      },
     },
     groups: {
+      displays: 'Anzeigen',
       shipping: 'Versand',
       stock: 'Lagerbestand',
       tax: 'Steuern',

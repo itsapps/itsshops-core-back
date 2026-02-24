@@ -1,13 +1,13 @@
 import { ITSSchemaDefinition } from '../../../types';
-import { Calculator } from 'phosphor-react';
+import { CalculatorIcon } from '@phosphor-icons/react';
 
 export const vatBreakdownItem: ITSSchemaDefinition = {
   name: 'vatBreakdownItem',
   type: 'object',
   feature: 'shop',
-  icon: Calculator,
+  icon: CalculatorIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
     return {
       fields: [

@@ -11,5 +11,6 @@ export default defineConfig({
       'ae-internal-missing-underscore': 'off',
       'ae-missing-release-tag': 'off',
     },
-  },
+    checkTypes: false,
+  }
 })

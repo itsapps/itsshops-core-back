@@ -1,10 +1,10 @@
-import { ITSSchemaDefinition } from '../../types';
-import { Star } from 'phosphor-react'
+import { ITSSchemaDefinition } from '../../types'
+import { StarIcon } from '@phosphor-icons/react'
 
 export const hero: ITSSchemaDefinition = {
   name: 'hero',
   type: 'object',
-  icon: Star,
+  icon: StarIcon,
   build: ({ f, builders, t, localizer }) => {
     // Define the UNIQUE fields for this module
     const contentFields = [
@@ -62,7 +62,7 @@ export const hero: ITSSchemaDefinition = {
           return {
             title: localizer.value(title),
             subtitle: t.default('hero.preview.actions', "Actions", { count: actions?.length || 0 }),
-            media: Star,
+            media: StarIcon,
           };
         }
       }

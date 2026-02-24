@@ -1,7 +1,6 @@
 import { SimpleImageProps } from '../types'
 import { useITSContext } from '../context/ITSCoreProvider'
-import React from 'react';
-import { Image as ImageIcon } from 'phosphor-react'
+import { ImageIcon } from '@phosphor-icons/react'
 
 export const SimpleImage = (props: SimpleImageProps) => {
   const { imageBuilder } = useITSContext();

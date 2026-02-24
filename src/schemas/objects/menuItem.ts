@@ -1,10 +1,10 @@
 import { ITSSchemaDefinition } from '../../types';
-import { Link } from 'phosphor-react'
+import { LinkIcon } from '@phosphor-icons/react'
 
 export const menuItem: ITSSchemaDefinition = {
   name: 'menuItem',
   type: 'object',
-  icon: Link,
+  icon: LinkIcon,
   build: (ctx) => {
     const { f } = ctx;
     return {
@@ -123,7 +123,7 @@ export const menuItem: ITSSchemaDefinition = {
           return {
             title: displayTitle,
             subtitle,
-            media: Link
+            media: LinkIcon
           };
         }
         // prepare: ({ title, linkType, url, refTitle, children }) => {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Stack, Text, Box, Code, Flex, Badge } from '@sanity/ui'
-import { WarningCircle } from 'phosphor-react'
+import { WarningCircleIcon } from '@phosphor-icons/react'
 import { type ZodError, z } from 'zod'
 
 interface OrderDataErrorProps {
@@ -27,7 +27,7 @@ export function OrderDataError({ error, isDev = false }: OrderDataErrorProps) {
       >
         <Stack space={4}>
           <Flex align="center" gap={3}>
-            <WarningCircle size={24} weight="bold" />
+            <WarningCircleIcon size={24} weight="bold" />
             <Text weight="bold" size={2}>
               Order Data Inconsistent
             </Text>

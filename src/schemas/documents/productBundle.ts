@@ -1,16 +1,16 @@
-import { ITSDocumentDefinition, ProductType } from "../../types";
-import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
-import { PriceInput } from "../../components/PriceInput";
-import { Stack } from 'phosphor-react';
+import { ITSDocumentDefinition, ProductType } from '../../types'
+import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
+import { PriceInput } from '../../components/PriceInput'
+import { StackIcon } from '@phosphor-icons/react'
 
 export const productBundle: ITSDocumentDefinition = {
   name: 'productBundle',
   type: 'document',
-  icon: Stack,
+  icon: StackIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       groups: createSharedProductGroups(ctx, ProductType.Bundle),
       fieldsets: [],
@@ -24,9 +24,14 @@ export const productBundle: ITSDocumentDefinition = {
           },
         }),
         ...createSharedProductFields(ctx, ProductType.Bundle),
-        f('items', 'array', { 
-          of: [ { type: 'productBundleItem' } ],
+        f('items', 'array', {
+          of: [
+            {
+              type: 'productBundleItem',
+            },
+          ],
           group: 'product',
+          validation: (Rule) => Rule.required(),
           // options: {
           //   layout: 'grid'
           // },
@@ -47,7 +52,7 @@ export const productBundle: ITSDocumentDefinition = {
           return {
             title: ctx.localizer.value(title),
             subtitle: ctx.t.default('productBundle.preview.items', 'products', { count }),
-            media: ctx.localizer.value<any>(image) || Stack,
+            media: ctx.localizer.value(image) || StackIcon,
           }
         },
       }

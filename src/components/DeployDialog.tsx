@@ -1,19 +1,9 @@
 import { useITSContext } from '../context/ITSCoreProvider'
-import { NetlifyBuild } from "../types"
+import { NetlifyBuild } from '../types'
 
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
-import {
-  Button,
-  Dialog,
-  Card,
-  Stack,
-  Text,
-  Flex,
-  Spinner,
-  Badge,
-  TextArea,
-} from "@sanity/ui"
-import {RocketLaunch} from 'phosphor-react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
+import { Badge, Button, Card, Dialog, Flex, Spinner, Stack, Text, TextArea } from '@sanity/ui'
+import { RocketLaunchIcon } from '@phosphor-icons/react'
 
 import { createNetlifyClient } from '../external/netlify'
 
@@ -102,7 +92,7 @@ export function DeployDialog() {
   return (
     <>
       <Button
-        icon={RocketLaunch}
+        icon={RocketLaunchIcon}
         title={t('deployments.title')}
         onClick={() => setOpen(true)}
       />

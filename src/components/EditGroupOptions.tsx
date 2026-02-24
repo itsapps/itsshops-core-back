@@ -7,69 +7,66 @@ import { SparklesIcon, TrashIcon } from '@sanity/icons'
 import { ArrayOfObjectsInputProps, useFormValue, set, SanityDocument } from 'sanity'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import { usePaneRouter } from 'sanity/structure'
-import {nanoid} from 'nanoid'
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid/non-secure'
+import { v4 as uuidv4 } from 'uuid'
 
-import {ConfirmButton} from './ConfirmButton';
-
+import {ConfirmButton} from './ConfirmButton'
 
 type Props = Omit<ArrayOfObjectsInputProps, 'value'> & {
   value?: DocumentReference[]
 }
 
 export const EditGroupOptions = (props: Props) => {
-  const { t, localizer, config, sanityClient } = useITSContext();
+  const { t, localizer, config, sanityClient } = useITSContext()
 
-  const { value, onChange } = props;
+  const { value, onChange } = props
   const toast = useToast()
-  const [options, setOptions] = useState<VariantOption[]>([]);
-  const [loading, setLoading] = useState(false);
-  const {routerPanesState, groupIndex, handleEditReference} = usePaneRouter();
-  const originalDocument = useFormValue([]) as SanityDocument;
-  
+  const [options, setOptions] = useState<VariantOption[]>([])
+  const [loading, setLoading] = useState(false)
+  const { routerPanesState, groupIndex, handleEditReference } = usePaneRouter()
+  const originalDocument = useFormValue([]) as SanityDocument
+
   // useEffect(() => {
-    const fetchData = async () => {
-      if (!value || value.length === 0) {
-        setOptions([]);
-        return;
+  const fetchData = async () => {
+    if (!value || value.length === 0) {
+      setOptions([])
+      return
+    }
+
+    try {
+      if (value.length > 0) {
+        const ids = value.map((ref) => ref._ref)
+        // 1. Fetch both published and draft versions
+        // 2. We use a GROQ trick to group them by their "base ID"
+        const query = `*[_type == "variantOption" && (_id in $ids || _id in $draftIds)] {
+          _id,
+          title,
+          sortOrder
+        }`
+
+        const draftIds = ids.map((id) => `drafts.${id}`)
+        const data: VariantOption[] = await sanityClient.fetch(query, { ids, draftIds })
+
+        // 3. De-duplicate: If both draft and published exist, pick the draft.
+        const merged = ids
+          .map((baseId) => {
+            const draft = data.find((d) => d._id === `drafts.${baseId}`)
+            const published = data.find((d) => d._id === baseId)
+            return draft || published
+          })
+          .filter(Boolean) as VariantOption[]
+        const sorted = merged.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+        setOptions(sorted)
       }
-
-      try {
-        if (value.length > 0) {
-          const ids = value.map((ref) => ref._ref);
-          // 1. Fetch both published and draft versions
-          // 2. We use a GROQ trick to group them by their "base ID"
-          const query = `*[_type == "variantOption" && (_id in $ids || _id in $draftIds)] {
-            _id,
-            title,
-            sortOrder
-          }`;
-
-          const draftIds = ids.map(id => `drafts.${id}`);
-          const data: VariantOption[] = await sanityClient.fetch(query, { ids, draftIds });
-
-          // 3. De-duplicate: If both draft and published exist, pick the draft.
-          const merged = ids.map(baseId => {
-            const draft = data.find(d => d._id === `drafts.${baseId}`);
-            const published = data.find(d => d._id === baseId);
-            return draft || published;
-          }).filter(Boolean) as VariantOption[];
-          const sorted = merged.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-          setOptions(sorted);
-        }
-      } catch (error) {
-        console.error('Error fetching product groups:', error);
-      }
-    };
-
-  //   fetchData();
-  // }, [client, value]);
+    } catch (error) {
+      console.error('Error fetching product groups:', error)
+    }
+  }
 
   useEffect(() => {
-    if (!value || value.length === 0) return;
+    if (!value || value.length === 0) return
 
-
-    setLoading(true);
+    setLoading(true)
     fetchData();
     setLoading(false);
 
@@ -130,44 +127,47 @@ export const EditGroupOptions = (props: Props) => {
 
     handleEditReference({
       id: cleanId,
-      type: "variantOption",
+      type: 'variantOption',
       // Uncertain that this works as intended
       parentRefPath: parentRefPath ? pathFromString(parentRefPath) : [``],
-      template: {id: optionValueId},
+      template: { id: optionValueId },
     })
-  };
-  
-  const handleAddOption = async () => {
-    setLoading(true);
+  }
 
-    const maxSort = options.reduce((max, opt) => Math.max(max, opt.sortOrder ?? 0), 0);
+  const handleAddOption = async () => {
+    setLoading(true)
+
+    const maxSort = options.reduce((max, opt) => Math.max(max, opt.sortOrder ?? 0), 0)
     const newOption = await sanityClient.create({
-      _id: uuidv4().replaceAll("-", ""),
+      _id: uuidv4().replaceAll('-', ''),
       _type: 'variantOption',
       title: [
-        { _key: config.localization.defaultLocale, value: t('optionsGroups.defaults.title') }
+        { _key: config.localization.defaultLocale, value: t('optionsGroups.defaults.title') },
       ],
-      sortOrder: maxSort + 1
-    });
+      sortOrder: maxSort + 1,
+    })
 
     // Add the new reference to the array
     const newValues = value ? value : []
-    onChange(set([...newValues, { _type: 'reference', _ref: newOption._id, _key: nanoid(8) }]));
+    const newRef = { _type: 'reference', _ref: newOption._id, _key: nanoid(8) }
+    onChange(set([...newValues, newRef]))
     handleOptionClick(newOption._id)
-    setLoading(false);
+    setLoading(false)
   };
 
-  return loading ? <Spinner muted /> : (
+  return loading ? (
+    <Spinner muted />
+  ) : (
     <Stack space={3}>
       {options.map((option, index) => {
-        const baseId = option._id.replace('drafts.', '');
+        const baseId = option._id.replace('drafts.', '')
         const isDraft = option._id.startsWith('drafts.')
         const tone = isDraft ? 'caution' : 'positive'
         return (
           <Card key={index} padding={3} radius={2} shadow={1}>
             <Flex justify="space-between" align="center" gap={2}>
               <Button
-                mode='ghost'
+                mode="ghost"
                 tone={tone}
                 // tone={tone}
                 onClick={() => handleOptionClick(baseId)}
@@ -177,7 +177,8 @@ export const EditGroupOptions = (props: Props) => {
                   flexDirection: 'column',
                   textAlign: 'left',
                   lineHeight: '1.4',
-                }}>
+                }}
+              >
                 <Stack space={1}>
                   <Text>{localizer.value(option.title) || t('optionsGroups.defaults.title')}</Text>
                 </Stack>

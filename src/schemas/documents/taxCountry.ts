@@ -1,11 +1,11 @@
-import { Package } from 'phosphor-react'
+import { PackageIcon } from '@phosphor-icons/react'
 import { ITSDocumentDefinition } from "../../types";
 
 
 export const taxCountry: ITSDocumentDefinition = {
   name: 'taxCountry',
   type: 'document',
-  icon: Package,
+  icon: PackageIcon,
   feature: 'shop',
   build: (ctx) => {
     const { f, builders } = ctx;
@@ -17,7 +17,6 @@ export const taxCountry: ITSDocumentDefinition = {
           of: [{ type: 'taxRule' }],
           validation: (Rule) => Rule.min(1),
         }),
-        f('rules2', 'string')
       ],
       preview: {
         select: {
