@@ -22,7 +22,8 @@ const productAndVariantFields = {
   },
   stockThreshold: {
     title: 'Product Stock Level Notification Threshold',
-    description: 'Receive a notification when the stock level of the product is below this threshold.',
+    description:
+      'Receive a notification when the stock level of the product is below this threshold.',
   },
   compareAtPrice: {
     title: 'Compare At Price',
@@ -52,7 +53,7 @@ export default {
     pricing: 'Pricing',
     media: 'Media',
     seo: 'SEO',
-    variants: 'Variants'
+    variants: 'Variants',
   },
   productFieldsets: {
     states: 'States',
@@ -62,10 +63,10 @@ export default {
     fields: {
       variants: {
         title: 'Product Variants',
-        description: 'All variants generated from product options'
+        description: 'All variants generated from product options',
       },
-      ...productAndVariantFields
-    }
+      ...productAndVariantFields,
+    },
   },
   productVariant: {
     title: 'Product Variant',
@@ -73,7 +74,8 @@ export default {
       ...productAndVariantFields,
       coverImage: {
         title: 'Cover Image',
-        description: "Select the cover image for this variant. Has no effect if the variant uses it's own images."
+        description:
+          "Select the cover image for this variant. Has no effect if the variant uses it's own images.",
       },
       options: {
         title: 'Options',
@@ -83,11 +85,12 @@ export default {
       },
       featured: {
         title: 'Featured',
-        description: 'If checked, this variant will be displayed in the search. If no variant is featured, the first will automatically be used.',
+        description:
+          'If checked, this variant will be displayed in the search. If no variant is featured, the first will automatically be used.',
       },
     },
     preview: {
-      variants: "Variants"
+      variants: 'Variants',
     },
   },
   category: {
@@ -233,7 +236,7 @@ export default {
         options: {
           payment: 'Payment',
           fulfillment: 'Fulfillment',
-        }
+        },
       },
       state: {
         title: 'Status',
@@ -442,7 +445,8 @@ export default {
     schemaTitle: 'Link',
     href: {
       title: 'URL',
-      description: 'For Emails, use "mailto:hello@example.com", for Phone Numbers, use "tel:+4365012345678"',
+      description:
+        'For Emails, use "mailto:hello@example.com", for Phone Numbers, use "tel:+4365012345678"',
     },
     displayType: {
       title: 'Display Type',
@@ -653,7 +657,8 @@ export default {
       },
       lastInvoiceNumber: {
         title: 'Last Invoice Number',
-        description: 'Caution! This value is automatically incremented and should not be changed manually.',
+        description:
+          'Caution! This value is automatically incremented and should not be changed manually.',
       },
     },
   },
@@ -661,7 +666,7 @@ export default {
     schemaTitle: 'Customer Group',
     title: {
       title: 'Title',
-    }
+    },
   },
   voucher: {
     schemaTitle: 'Voucher',
@@ -679,7 +684,8 @@ export default {
     },
     code: {
       title: 'Voucher Code',
-      description: 'Code that must be entered by user to apply the voucher. If no code is used, the voucher will be applied automatically.',
+      description:
+        'Code that must be entered by user to apply the voucher. If no code is used, the voucher will be applied automatically.',
     },
     autoApply: {
       title: 'Auto Apply',
@@ -691,7 +697,7 @@ export default {
         none: 'None',
         fixed: 'Fixed Amount',
         percentage: 'Percentage',
-      }
+      },
     },
     discountFixed: {
       title: 'Amount',
@@ -732,8 +738,8 @@ export default {
       },
       quantity: {
         title: 'Quantity',
-      }
-    }
+      },
+    },
   },
   voucherCondition: {
     schemaTitle: 'Voucher Condition',
@@ -764,14 +770,14 @@ export default {
       options: {
         registeredCustomer: 'Registerd Customer',
         newCustomer: 'New Customer',
-      }
+      },
     },
     messages: {
-      productRequired: "A product is required",
-      categoryRequired: "A category is required",
-      minValueRequired: "The minimum value must be set",
-      quantityRequired: "The minimum quantity must be set",
-      userStatusRequired: "The customer status must be set",
+      productRequired: 'A product is required',
+      categoryRequired: 'A category is required',
+      minValueRequired: 'The minimum value must be set',
+      quantityRequired: 'The minimum quantity must be set',
+      userStatusRequired: 'The customer status must be set',
     },
   },
   shippingCountry: {
@@ -869,15 +875,15 @@ export default {
     categories: {
       title: 'Categories',
       validation: {
-        atLeastOneCategoryRequired: 'At least one category is required'
-      }
+        atLeastOneCategoryRequired: 'At least one category is required',
+      },
     },
     totalProducts: {
       title: 'Total Products',
       description: 'Number of products to show',
       validation: {
-        numProducts: 'At least one and up to 50 products can be shown'
-      }
+        numProducts: 'At least one and up to 50 products can be shown',
+      },
     },
   },
   categorySection: {
@@ -921,10 +927,9 @@ export default {
   },
 
   orderings: {
-    asc: "Ascending",
-    desc: "Descending",
+    asc: 'Ascending',
+    desc: 'Descending',
   },
-
 
   localeBlock: {
     schemaTitle: 'Localized Block',

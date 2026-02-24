@@ -16,19 +16,20 @@ export default {
       remove: 'Remove',
       save: 'Save',
       add: 'Add',
-      edit: 'Edit', 
+      edit: 'Edit',
       optionalNote: 'Optional note',
     },
     errors: {
-      failedToLoad: "Failed to load data: {{errorMessage}}",
-    }
+      failedToLoad: 'Failed to load data: {{errorMessage}}',
+    },
   },
   product: {
-    deleteNotAllowedVariantsExist: "Product cannot be deleted because it contains variants.",
+    deleteNotAllowedVariantsExist: 'Product cannot be deleted because it contains variants.',
   },
   productVariant: {
-    publishNotAllowedButByGenerating: "Product variants can only be generated in products.",
-    setInactiveNotAllowedReferencesExist: "Product variant cannot be deactivated because it is referenced in other documents.",
+    publishNotAllowedButByGenerating: 'Product variants can only be generated in products.',
+    setInactiveNotAllowedReferencesExist:
+      'Product variant cannot be deactivated because it is referenced in other documents.',
   },
   variants: {
     generate: 'Generate Variants',
@@ -48,33 +49,37 @@ export default {
     couldNotDeleteAll: 'One or more variants could not be deleted because they are in use.',
   },
   optionsGroups: {
-    addOption: "Add Option",
-    confirmDelete: "Are you sure you want to delete this option?",
-    deleteErrorMessage: "Cannot remove this option because it's used in one or more product variants.",
-    groupDeleteNotAllowedOptionsExist: "Option group cannot be deleted because it contains options.",
-    couldNotDeleteOption: "Cannot remove this option because it's used in one or more product variants.",
+    addOption: 'Add Option',
+    confirmDelete: 'Are you sure you want to delete this option?',
+    deleteErrorMessage:
+      "Cannot remove this option because it's used in one or more product variants.",
+    groupDeleteNotAllowedOptionsExist:
+      'Option group cannot be deleted because it contains options.',
+    couldNotDeleteOption:
+      "Cannot remove this option because it's used in one or more product variants.",
   },
   categories: {
-    deleteNotAllowedSubcategoriesExist: "Category cannot be deleted because it contains subcategories.",
+    deleteNotAllowedSubcategoriesExist:
+      'Category cannot be deleted because it contains subcategories.',
   },
   order: {
-    shipping: "Shipping",
-    billingAddress: "Billing Address",
-    items: "Products",
-    freeProducts: "Free Products",
-    vouchers: "Vouchers",
+    shipping: 'Shipping',
+    billingAddress: 'Billing Address',
+    items: 'Products',
+    freeProducts: 'Free Products',
+    vouchers: 'Vouchers',
     voucher: {
       notFound: 'Voucher does not exist anymore',
     },
-    discount: "Discount",
-    contactEmail: "Contact Email",
-    total: "Total",
-    subtotal: "Subtotal",
-    trackingNumber: "Tracking Number",
-    loading: "Loading Order...",
-    orderNumber: "Order Number",
-    invoiceNumber: "Invoice Number",
-    totalWithVat: "Total (Incl. {{vatRate}}% Vat = {{total}})",
+    discount: 'Discount',
+    contactEmail: 'Contact Email',
+    total: 'Total',
+    subtotal: 'Subtotal',
+    trackingNumber: 'Tracking Number',
+    loading: 'Loading Order...',
+    orderNumber: 'Order Number',
+    invoiceNumber: 'Invoice Number',
+    totalWithVat: 'Total (Incl. {{vatRate}}% Vat = {{total}})',
     status: {
       title: 'Status',
       options: {
@@ -101,9 +106,9 @@ export default {
         options: {
           payment: 'Payment',
           fulfillment: 'Shipping',
-        }
+        },
       },
-    }
+    },
   },
   actions: {
     order: {
@@ -154,11 +159,11 @@ export default {
     status: {
       title: 'Status',
       options: {
-        building: "Deploying",
-        ready: "Ready",
-        error: "Error",
-        none: "No Status"
-      }
+        building: 'Deploying',
+        ready: 'Ready',
+        error: 'Error',
+        none: 'No Status',
+      },
     },
     startedOn: 'Started on',
   },
@@ -179,7 +184,7 @@ export default {
     xlsx: {
       inventory: {
         title: 'Inventory (XLSX)',
-      }
-    }
+      },
+    },
   },
 }

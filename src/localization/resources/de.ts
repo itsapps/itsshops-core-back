@@ -72,23 +72,23 @@ export default {
       'Kategorie kann nicht gelöscht werden, weil sie Unterkategorien enthält.',
   },
   order: {
-    shipping: "Versand",
-    billingAddress: "Rechnungsadresse",
-    items: "Produkte",
-    freeProducts: "Gratis Produkte",
-    vouchers: "Gutscheine",
+    shipping: 'Versand',
+    billingAddress: 'Rechnungsadresse',
+    items: 'Produkte',
+    freeProducts: 'Gratis Produkte',
+    vouchers: 'Gutscheine',
     voucher: {
       notFound: 'Gutschein existiert nicht mehr',
     },
-    discount: "Ermäßigung",
-    contactEmail: "Kontakt E-Mail",
-    total: "Gesamtsumme",
-    subtotal: "Zwischensumme",
-    trackingNumber: "Sendungsnummer",
-    loading: "Lade Bestellung...",
-    orderNumber: "Bestellnummer",
-    invoiceNumber: "Rechungsnummer",
-    totalWithVat: "Gesamt (Inkl. {{vatRate}}% MwSt = {{total}})",
+    discount: 'Ermäßigung',
+    contactEmail: 'Kontakt E-Mail',
+    total: 'Gesamtsumme',
+    subtotal: 'Zwischensumme',
+    trackingNumber: 'Sendungsnummer',
+    loading: 'Lade Bestellung...',
+    orderNumber: 'Bestellnummer',
+    invoiceNumber: 'Rechungsnummer',
+    totalWithVat: 'Gesamt (Inkl. {{vatRate}}% MwSt = {{total}})',
     status: {
       title: 'Status',
       options: {
@@ -115,9 +115,9 @@ export default {
         options: {
           payment: 'Zahlung',
           fulfillment: 'Versand',
-        }
+        },
       },
-    }
+    },
   },
   actions: {
     order: {
@@ -168,11 +168,11 @@ export default {
     status: {
       title: 'Status',
       options: {
-        building: "Wird gebaut",
-        ready: "Bereit",
-        error: "Fehler",
-        none: "Kein Status"
-      }
+        building: 'Wird gebaut',
+        ready: 'Bereit',
+        error: 'Fehler',
+        none: 'Kein Status',
+      },
     },
     startedOn: 'Gestarted am',
   },
@@ -193,7 +193,7 @@ export default {
     xlsx: {
       inventory: {
         title: 'Lagerbestand (XLSX)',
-      }
-    }
+      },
+    },
   },
 }

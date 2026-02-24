@@ -23,9 +23,7 @@ export default {
     orderFreeProducts: 'Goodies',
     infos: 'Informationen',
   },
-  fieldsets: {
-
-  },
+  fieldsets: {},
   fields: {
     disabled: {
       title: 'Inaktiv',
@@ -87,20 +85,21 @@ export default {
       title: 'Bundesland',
     },
     countries: {
-      title: 'Länder'
+      title: 'Länder',
     },
     address: {
-      title: 'Adresse'
+      title: 'Adresse',
     },
     enabled: {
-      title: 'Aktiviert'
+      title: 'Aktiviert',
     },
     countryCode: {
       title: 'Land',
     },
     freeShippingThreshold: {
       title: 'Gratisversand',
-      description: 'Für Bestellungen mit einem Wert oberhalb dieses Brutto-Betrags ist der Versand gratis.',
+      description:
+        'Für Bestellungen mit einem Wert oberhalb dieses Brutto-Betrags ist der Versand gratis.',
     },
     freeShippingCalculation: {
       title: 'Gratis-Versand Berechnung',
@@ -152,7 +151,8 @@ export default {
     },
     stockThreshold: {
       title: 'Unteres Limit für Benachrichtigungen über den Lagerbestand',
-      description: 'Erhalte eine Benachrichtigung, wenn der Lagerbestand des Produktes unter diesem Limit liegt.',
+      description:
+        'Erhalte eine Benachrichtigung, wenn der Lagerbestand des Produktes unter diesem Limit liegt.',
     },
     compareAtPrice: {
       title: 'Vergleichspreis',
@@ -207,26 +207,26 @@ export default {
     },
     marks: {
       decorators: {
-        'strong': 'Fett',
-        'em': 'Kursiv',
-        'underline': 'Unterstrichen',
-        'strikethrough': 'Durchgestrichen',
-        'code': 'Code',
-        'link': 'Link',
-        'highlight': 'Hervorheben',
+        strong: 'Fett',
+        em: 'Kursiv',
+        underline: 'Unterstrichen',
+        strikethrough: 'Durchgestrichen',
+        code: 'Code',
+        link: 'Link',
+        highlight: 'Hervorheben',
       },
       annotations: {
-        'underline': 'Unterstrichen',
-        'strikethrough': 'Durchgestrichen',
-        'code': 'Code',
-        'link': 'Link',
-        'highlight': 'Hervorheben',
-      }
-    }
+        underline: 'Unterstrichen',
+        strikethrough: 'Durchgestrichen',
+        code: 'Code',
+        link: 'Link',
+        highlight: 'Hervorheben',
+      },
+    },
   },
   orderings: {
-    asc: "Aufsteigend",
-    desc: "Absteigend",
+    asc: 'Aufsteigend',
+    desc: 'Absteigend',
   },
   validation: {
     assetRequired: 'Bild ist erforderlich',
@@ -248,16 +248,17 @@ export default {
       },
     },
     preview: {
-      variants_one: "{{count}} Variante",
-      variants_other: "{{count}} Varianten",
-    }
+      variants_one: '{{count}} Variante',
+      variants_other: '{{count}} Varianten',
+    },
   },
   productVariant: {
     title: 'Produktvariante',
     fields: {
       coverImage: {
         title: 'Cover-Bild',
-        description: 'Cover-Bild für diese Variant auswählen. Hat keinen Effekt, wenn die Variante eigene Bilder verwendet.'
+        description:
+          'Cover-Bild für diese Variant auswählen. Hat keinen Effekt, wenn die Variante eigene Bilder verwendet.',
       },
       options: {
         title: 'Optionen',
@@ -267,11 +268,12 @@ export default {
       },
       featured: {
         title: 'Gefeatured',
-        description: 'Wenn ausgewählt, wird diese Variante in der Suche angezeigt. Wenn keine Variante gefeatured ist, wird automatisch die Erste verwendet.',
+        description:
+          'Wenn ausgewählt, wird diese Variante in der Suche angezeigt. Wenn keine Variante gefeatured ist, wird automatisch die Erste verwendet.',
       },
     },
     preview: {
-      variants: "Varianten",
+      variants: 'Varianten',
     },
   },
   productBundle: {
@@ -282,10 +284,10 @@ export default {
       },
     },
     preview: {
-      items_zero: "Keine Produkte",
-      items_one: "{{count}} Produkt",
-      items_other: "{{count}} Produkte",
-    }
+      items_zero: 'Keine Produkte',
+      items_one: '{{count}} Produkt',
+      items_other: '{{count}} Produkte',
+    },
   },
   productBundleItem: {
     title: 'Produkt',
@@ -298,10 +300,10 @@ export default {
       },
     },
     preview: {
-      quantity_zero: "Keine Produkte",
-      quantity_one: "{{count}} Produkt",
-      items_other: "{{count}} Produkte",
-    }
+      quantity_zero: 'Keine Produkte',
+      quantity_one: '{{count}} Produkt',
+      items_other: '{{count}} Produkte',
+    },
   },
   category: {
     title: 'Kategorie',
@@ -321,7 +323,7 @@ export default {
       link: {
         title: 'Link',
       },
-    }
+    },
   },
   textBlock: {
     title: 'Text Block',
@@ -332,12 +334,10 @@ export default {
       content2: {
         title: 'Inhalt 2',
         block: {
-          styles: {
-            
-          }
-        }
+          styles: {},
+        },
       },
-    }
+    },
   },
   shippingMethod: {
     title: 'Versandart',
@@ -361,20 +361,20 @@ export default {
       },
     },
     preview: {
-      countries_zero: "Keine Länder ausgewählt",
-      countries_one: "{{count}} Land",
-      countries_other: "{{count}} Länder",
-    }
+      countries_zero: 'Keine Länder ausgewählt',
+      countries_one: '{{count}} Land',
+      countries_other: '{{count}} Länder',
+    },
   },
   shippingRate: {
     title: 'Kosten',
     fields: {
       price: {
-        description: 'Brutto-Preis'
+        description: 'Brutto-Preis',
       },
       maxWeight: {
         title: 'Maximales Gewicht',
-        description: 'Bis zu Gewicht (kg)'
+        description: 'Bis zu Gewicht (kg)',
       },
       // title: {
       //   description: 'Name der Klasse (z.b. "Standard, Alkohol, ...")',
@@ -397,13 +397,13 @@ export default {
           beforeDiscount: 'Vor Rabatt',
           afterDiscount: 'Nach Rabatt',
         },
-      }
+      },
     },
     preview: {
-      rules_zero: "Keine Regeln ausgewählt",
-      rules_one: "{{count}} Regel",
-      rules_other: "{{count}} Regeln",
-    }
+      rules_zero: 'Keine Regeln ausgewählt',
+      rules_one: '{{count}} Regel',
+      rules_other: '{{count}} Regeln',
+    },
   },
   shopSettings: {
     title: 'Allgemeine Shop-Einstellungen',
@@ -424,7 +424,8 @@ export default {
       },
       stockThreshold: {
         title: 'Allgemeines unteres Limit für Benachrichtigungen über den Lagerbestand',
-        description: 'Erhalte eine Benachrichtigung mit dem Lagerbestand eines Produktes unter diesem Limit.',
+        description:
+          'Erhalte eine Benachrichtigung mit dem Lagerbestand eines Produktes unter diesem Limit.',
       },
       bankAccount: {
         title: 'Bankdaten',
@@ -440,7 +441,8 @@ export default {
       },
       lastInvoiceNumber: {
         title: 'Letzte Rechnungsnummer',
-        description: 'Achtung! Dieser Wert wird automatisch erhöht und sollte nicht manuell geändert werden.',
+        description:
+          'Achtung! Dieser Wert wird automatisch erhöht und sollte nicht manuell geändert werden.',
       },
       shopPage: {
         title: 'Shopseite',
@@ -455,9 +457,7 @@ export default {
       orders: 'Bestellungen',
       bankAccount: 'Bankdaten',
     },
-    preview: {
-      
-    }
+    preview: {},
   },
   bankAccount: {
     title: 'Bank',
@@ -471,7 +471,7 @@ export default {
       bic: {
         title: 'BIC',
       },
-    }
+    },
   },
   company: {
     title: 'Organisation',
@@ -485,7 +485,7 @@ export default {
       address: {
         title: 'Adresse',
       },
-    }
+    },
   },
   taxRule: {
     title: 'Regel',
@@ -496,7 +496,7 @@ export default {
       exciseDuty: {
         title: 'Verbrauchssteuer in %',
       },
-    }
+    },
   },
   taxCategory: {
     title: 'Steuerklasse',
@@ -506,26 +506,23 @@ export default {
       },
       code: {
         title: 'Code',
-        description: 'Der Code wird verwendet, um die Steuerklasse zu identifizieren und kann nur einmalig gesetzt werden.',
+        description:
+          'Der Code wird verwendet, um die Steuerklasse zu identifizieren und kann nur einmalig gesetzt werden.',
         // description: 'The code used by the system. Locked after publishing to prevent breaking the shop.',
       },
     },
-    preview: {
-
-    }
+    preview: {},
   },
   address: {
     title: 'Adresse',
-    fields: {
-      
-    },
+    fields: {},
   },
   addressStrict: {
     title: 'Adresse',
     fields: {
       name: {
-        title: 'Voller Name'
-      }
+        title: 'Voller Name',
+      },
     },
   },
   orderTotals: {
@@ -552,7 +549,7 @@ export default {
       currency: {
         title: 'Währung',
       },
-    }
+    },
   },
   order: {
     title: 'Bestellung',
@@ -591,7 +588,7 @@ export default {
         options: {
           payment: 'Zahlung',
           fulfillment: 'Versand',
-        }
+        },
       },
       billingAddress: {
         title: 'Rechnungsadresse',
@@ -615,7 +612,7 @@ export default {
       general: 'Allgemeines',
       billing: 'Rechnungsadresse',
       shipping: 'Versandadresse',
-    }
+    },
   },
   orderStatusHistory: {
     title: 'Statusverlauf',
@@ -625,7 +622,7 @@ export default {
         options: {
           payment: 'Zahlung',
           fulfillment: 'Versand',
-        }
+        },
       },
       status: {
         title: 'Status',
@@ -662,7 +659,7 @@ export default {
           registered: 'Registriert',
           invited: 'Eingeladen',
           active: 'Aktiv',
-        }
+        },
       },
       locale: {
         title: 'Sprache',
@@ -681,10 +678,10 @@ export default {
       },
     },
     preview: {
-      options_zero: "Keine Optionen",
-      options_one: "{{count}} Option",
-      options_other: "{{count}} Optionen",
-    }
+      options_zero: 'Keine Optionen',
+      options_one: '{{count}} Option',
+      options_other: '{{count}} Optionen',
+    },
   },
   variantOption: {
     title: 'Option',
@@ -755,7 +752,8 @@ export default {
     fields: {
       href: {
         title: 'URL',
-        description: 'Für Emails "mailto:hallo@beispiel.com", für Telefonnummern "tel:+4365012345678"',
+        description:
+          'Für Emails "mailto:hallo@beispiel.com", für Telefonnummern "tel:+4365012345678"',
       },
       displayType: {
         title: 'Display Type',
@@ -850,7 +848,7 @@ export default {
       altText: {
         title: 'Alternativer Text',
       },
-    }
+    },
   },
   menu: {
     title: 'Menü',
@@ -869,11 +867,11 @@ export default {
           internal: 'Interne Verlinkung',
           external: 'Externe Verlinkung',
           submenu: 'Untermenü',
-        }
+        },
       },
       children: {
         title: 'Einträge',
-      }
+      },
     },
   },
   navPage: {
@@ -952,11 +950,13 @@ export default {
       },
       code: {
         title: 'Gutschein Code',
-        description: 'Code, der vom Benutzer eingegeben werden muss, um den Gutschein zu nutzen. Wenn kein Code verwendet wird, wird der Gutschein automatisch angewendet.',
+        description:
+          'Code, der vom Benutzer eingegeben werden muss, um den Gutschein zu nutzen. Wenn kein Code verwendet wird, wird der Gutschein automatisch angewendet.',
       },
       autoApply: {
         title: 'Automatisch anwenden',
-        description: 'Der Gutschein wird automatisch angewendet, falls alle Bedingungen erfüllt sind.',
+        description:
+          'Der Gutschein wird automatisch angewendet, falls alle Bedingungen erfüllt sind.',
       },
       discountType: {
         title: 'Ermässigungstyp',
@@ -964,7 +964,7 @@ export default {
           none: 'Keiner',
           fixed: 'Fixer Betrag',
           percentage: 'Prozentueller Betrag',
-        }
+        },
       },
       discountFixed: {
         title: 'Wert',
@@ -1004,7 +1004,7 @@ export default {
         },
         quantity: {
           title: 'Menge',
-        }
+        },
       },
     },
   },
@@ -1019,7 +1019,7 @@ export default {
           totalValue: 'Mindestwert des Warenkorbs',
           quantity: 'Mindestmenge',
           userStatus: 'Kundenstatus',
-        }
+        },
       },
       product: {
         title: 'Produkt',
@@ -1038,14 +1038,14 @@ export default {
         options: {
           registeredCustomer: 'Registrierter Kunde',
           newCustomer: 'Neuer Kunde',
-        }
+        },
       },
       messages: {
-        productRequired: "Ein Produkt muß ausgewählt werden",
-        categoryRequired: "Eine Kategory muß ausgewählt werden",
-        minValueRequired: "Der Mindestwert muß gesetzt werden",
-        quantityRequired: "Die Mindestanzahl muß gesetzt werden",
-        userStatusRequired: "Der Kundenstatus muß ausgewählt werden",
+        productRequired: 'Ein Produkt muß ausgewählt werden',
+        categoryRequired: 'Eine Kategory muß ausgewählt werden',
+        minValueRequired: 'Der Mindestwert muß gesetzt werden',
+        quantityRequired: 'Die Mindestanzahl muß gesetzt werden',
+        userStatusRequired: 'Der Kundenstatus muß ausgewählt werden',
       },
     },
   },
@@ -1118,15 +1118,15 @@ export default {
       categories: {
         title: 'Kategorien',
         validation: {
-          atLeastOneCategoryRequired: 'Es muss mindestens eine Kategorie ausgewählt werden'
-        }
+          atLeastOneCategoryRequired: 'Es muss mindestens eine Kategorie ausgewählt werden',
+        },
       },
       totalProducts: {
         title: 'Anzahl',
         description: 'Anzahl der Produkte, die angezeigt werden sollen',
         validation: {
-          numProducts: 'Es können mindestens eines und maximal 50 Produkte angezeigt werden'
-        }
+          numProducts: 'Es können mindestens eines und maximal 50 Produkte angezeigt werden',
+        },
       },
     },
   },

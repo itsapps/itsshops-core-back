@@ -15,7 +15,6 @@ type UserViewDocument = React.ComponentProps<UserViewComponent>['document']
 export const createStructure = (ctx: ITSContext) => {
   const mapItems = (ids: string[]) => ids.map((id) => fromRegistry(ctx, id))
 
-
   const coreManifest: ITSStructureItem[] = [
     {
       type: 'group',

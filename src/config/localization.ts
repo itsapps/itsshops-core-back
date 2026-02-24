@@ -52,7 +52,7 @@ export function getLanguages(config?: {
     if (a.id === defaultLocale) return -1
     if (b.id === defaultLocale) return 1
     return 0
-})
+  })
 
   // 2️⃣ Field languages
   const fieldLanguages = config?.fields

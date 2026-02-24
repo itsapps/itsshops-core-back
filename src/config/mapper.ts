@@ -57,8 +57,8 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     schemaSettings,
     schemaExtensions: config.schemaExtensions || {},
     apiVersion: sanityApiVersion,
-  };
-};
+  }
+}
 
 function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
   return {
