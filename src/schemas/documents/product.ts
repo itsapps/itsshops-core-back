@@ -1,8 +1,9 @@
-import { ITSDocumentDefinition, ProductType } from "../../types";
-import { createSharedProductFields, createSharedProductGroups } from "./productAndVariantFields";
-import { GenerateVariants } from "../../components/GenerateVariants";
 // import { ProductPreview } from '../../components/previews/ProductPreview'
 import { CubeIcon } from '@phosphor-icons/react'
+
+import { GenerateVariants } from '../../components/GenerateVariants'
+import { ITSDocumentDefinition, PRODUCT_TYPES } from '../../types'
+import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
 
 export const product: ITSDocumentDefinition = {
   name: 'product',
@@ -11,95 +12,30 @@ export const product: ITSDocumentDefinition = {
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
-      groups: createSharedProductGroups(ctx, ProductType.Product),
+      groups: createSharedProductGroups(ctx, PRODUCT_TYPES.PRODUCT),
       fieldsets: [],
       fields: [
-        // ...getInternalLinkFields(ctx, { 
-        //   to: ['page', 'post'],
-        //   includeTitle: false,
-        //   includeDisplayType: false 
-        // }).map(field => ({
-        //   ...field,
-        //   // hidden: ({ parent }: any) => parent?.linkType !== 'internal'
-        // })),
-        // f('content', 'i18nBlock', {
-        //   options: {
-        //     // These 'of' types are what go inside each localized block array
-        //     of: [
-        //       { type: 'complexPortableText' },
-        //     ]
-        //   }
-        // }),
-        // f('multiple', 'multiColumns'),
         f('title', 'i18nString', { i18n: 'atLeastOne', group: 'product' }),
         ctx.builders.priceField({
           validation: (Rule) => Rule.required(),
           group: 'pricing',
         }),
-        // f('price', 'number', {
-        //   validation: (Rule) => Rule.positive().required(),
-        //   group: 'pricing',
-        //   components: {
-        //     input: PriceInput,
-        //   },
-        // }),
-        // f('i18nTitel', 'number', { validation: (Rule) => Rule.required().min(3) }),
-        // f('i18nTitel', 'i18nString', { i18n: ['atLeastOne', { min: 3, warning: false }] }),
-        // f('i18nTitel', 'i18nString', { i18n: ['requiredDefault', { min: 3, warning: false }] }),
-        // f('i18nTitel', 'i18nString', { i18n: ['requiredDefault', { min: 3, warning: true }] }),
-        // f('i18nTitel222', 'i18nString', { i18n: 'atLeastOneWarning' }),
-        ...createSharedProductFields(ctx, ProductType.Product),
-
-        {
-  title: "Example object list",
-  type: "array",
-  name: "example",
-  of: [
-    {
-      type: "object",
-      name: "inline",
-      fields: [
-        { type: "string", name: "title" },
-        { type: "number", name: "amount" }
-      ]
-    }
-  ],
-  options: {
-    list: [
-      { _type: "inline", title: "Big amount", amount: 100 },
-      { _type: "inline", title: "Small amount", amount: 1 }
-    ]
-  }
-},
-        f('variants', 'array', { 
+        ...createSharedProductFields(ctx, PRODUCT_TYPES.PRODUCT),
+        f('variants', 'array', {
           of: [
             {
               type: 'reference',
-              to: [{type: 'productVariant'}]
-            }
+              to: [{ type: 'productVariant' }],
+            },
           ],
           group: 'variants',
           components: {
-            input: GenerateVariants
+            input: GenerateVariants,
           },
         }),
-        // f('n18nRequiredTitel', 'string', { validation: (Rule) => Rule.required() }),
       ],
-      // components: {
-      //   preview: ProductPreview
-      // },
-      // preview: {
-      //   select: {
-      //     title: 'title.0',
-      //     productType: '_type',
-      //     price: 'price',
-      //     variantCount: 'variants.length',
-      //     // Get the URL of the image asset
-      //     media: 'images.0.image' 
-      //   }
-      // },
       preview: {
         select: {
           title: 'title',
@@ -107,16 +43,16 @@ export const product: ITSDocumentDefinition = {
           variants: 'variants',
         },
         prepare({ title, image, variants }) {
-          const count = (variants && variants.length > 0) ? variants.length : 0
-          const variantInfo = count > 0 ? ctx.t.default('product.preview.variants', 'variants', { count }) : undefined
-          // const subtitle = [variantInfo].filter(Boolean).join(", ")
+          const count = variants && variants.length > 0 ? variants.length : 0
+          const variantInfo =
+            count > 0 ? ctx.t.default('product.preview.variants', 'variants', { count }) : undefined
           return {
             title: ctx.localizer.value(title),
-            ...variantInfo && {subtitle: variantInfo},
-            media: ctx.localizer.value<any>(image) || CubeIcon,
+            ...(variantInfo && { subtitle: variantInfo }),
+            media: ctx.localizer.value(image) || CubeIcon,
           }
         },
-      }
+      },
     }
   },
-};
+}

@@ -1,14 +1,18 @@
-import { ITSDocumentDefinition } from "../../types";
 import { SchemaIcon } from '@sanity/icons'
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const category: ITSDocumentDefinition = {
   name: 'category',
   type: 'document',
   icon: SchemaIcon,
   feature: 'shop.category',
-  disallowedActions: ['delete' ],
+  disallowedActions: ['delete'],
   build: (ctx) => {
-    const { f, config: { apiVersion } } = ctx;
+    const {
+      f,
+      config: { apiVersion },
+    } = ctx
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
@@ -71,22 +75,21 @@ export const category: ITSDocumentDefinition = {
         f('image', 'localeImage'),
         f('seo', 'seo'),
       ],
-      preview:  {
+      preview: {
         select: {
           title: 'title',
           subtitle: 'parent.title',
-          media: 'image',
+          image: 'image.image',
         },
-        prepare({ title, subtitle, media }: any) {
+        prepare({ title, subtitle, image }) {
           const sub = ctx.localizer.value(subtitle)
-          const image = ctx.localizer.value<any>(media)
           return {
             title: ctx.localizer.value(title),
             subtitle: sub ? `– ${sub}` : ``,
-            media: image?.asset,
+            media: ctx.localizer.value(image) || SchemaIcon,
           }
-        }
+        },
       },
     }
   },
-};
+}

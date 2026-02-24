@@ -1,23 +1,23 @@
 // import { SanityImageSource } from 'sanity/image-url/lib/types/types';
 export type SanityImageSource = {
-  asset: any;
-  crop?: any;
-  hotspot?: any;
+  asset: any
+  crop?: any
+  hotspot?: any
 }
 
 export interface Image {
-  image?: SanityImageSource;
-  title?: string;
-  alt?: string;
+  image?: SanityImageSource
+  title?: string
+  alt?: string
 }
 
 export type ImageOptions = {
-  width?: number;
-  height?: number;
+  width?: number
+  height?: number
 }
 export type SimpleImageProps = {
-  source?: SanityImageSource;
-  title?: string;
-  alt?: string;
-  options?: ImageOptions;
+  source?: SanityImageSource
+  title?: string
+  alt?: string
+  options?: ImageOptions
 }

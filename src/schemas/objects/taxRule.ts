@@ -1,5 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
 import { PackageIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../types'
 
 export const taxRule: ITSSchemaDefinition = {
   name: 'taxRule',
@@ -30,7 +31,7 @@ export const taxRule: ITSSchemaDefinition = {
             media: PackageIcon,
           }
         },
-      }
+      },
     }
   },
 }

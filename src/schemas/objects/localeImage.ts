@@ -1,17 +1,17 @@
-import { ITSSchemaDefinition } from '../../types';
+import { ITSSchemaDefinition } from '../../types'
 
 export const localeImage: ITSSchemaDefinition = {
   name: 'localeImage',
   type: 'object',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       groups: [
         { name: 'image', title: 'Image', default: true },
         { name: 'texts', title: 'Texts' },
       ],
       fields: [
-        f('image', 'i18nCropImage', { group: 'image'} ),
+        f('image', 'i18nCropImage', { group: 'image' }),
         f('title', 'i18nString', { group: 'texts' }),
         f('alt', 'i18nString', { group: 'texts' }),
       ],
@@ -30,9 +30,9 @@ export const localeImage: ITSSchemaDefinition = {
             title: ctx.localizer.value(title) || '',
             subtitle: ctx.localizer.value(alt) || '',
             media: image,
-          };
+          }
         },
       },
     }
-  }
+  },
 }

@@ -1,32 +1,31 @@
 export * from './types'
 
-import {definePlugin} from 'sanity'
-import { structureTool } from 'sanity/structure'
-
-import type { CountryOption, ITSLocaleContext, ItsshopsConfig } from './types'
-
-import { defineConfig, WorkspaceOptions } from 'sanity'
 import { visionTool } from '@sanity/vision'
-import { media } from 'sanity-plugin-media'
+import { definePlugin } from 'sanity'
+import { WorkspaceOptions } from 'sanity'
 import { presentationTool } from 'sanity/presentation'
+import { structureTool } from 'sanity/structure'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
-
-import { createi18nFieldTypes } from './config/fieldTypes';
-import { createTranslator, createI18nHelpers, createFormatHelpers } from './localization';
-import { getTranslationBundles, getStructureOverrideBundles, getTranslationPackage } from './localization/sanityTranslation';
-import { createPresentations } from './presentation';
-
-import { mapConfig } from './config/mapper';
-import { createStructureTool } from './config/structure';
-import { createFeatureRegistry } from './config/features'
-import { actionResolver } from './config/actions'
-import { templateResolver } from './config/templates'
-// import { defaultTheme } from './config/theme'
-import { buildSchemas } from './schemas'
+import { media } from 'sanity-plugin-media'
 
 import { CustomToolbar } from './components/CustomToolbar'
+import { actionResolver } from './config/actions'
+import { createFeatureRegistry } from './config/features'
+import { createi18nFieldTypes } from './config/fieldTypes'
+import { mapConfig } from './config/mapper'
+import { createStructureTool } from './config/structure'
+import { templateResolver } from './config/templates'
 import { ITSStudioWrapper } from './context/ITSStudioWrapper'
-
+import { createFormatHelpers, createI18nHelpers, createTranslator } from './localization'
+import {
+  getStructureOverrideBundles,
+  getTranslationBundles,
+  getTranslationPackage,
+} from './localization/sanityTranslation'
+import { createPresentations } from './presentation'
+// import { defaultTheme } from './config/theme'
+import { buildSchemas } from './schemas'
+import type { CountryOption, ITSLocaleContext, ItsshopsConfig } from './types'
 
 // interface ItsshopsConfig {
 //   /* nothing here yet */
@@ -79,10 +78,13 @@ export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
     },
     i18n: {
       bundles: [
-        ...getTranslationBundles(context.config.localization.uiLanguages, context.config.localization.overrides.general),
-        ...getStructureOverrideBundles(context.config.localization.uiLanguages)
-      ]
-    }
+        ...getTranslationBundles(
+          context.config.localization.uiLanguages,
+          context.config.localization.overrides.general,
+        ),
+        ...getStructureOverrideBundles(context.config.localization.uiLanguages),
+      ],
+    },
   }
 })
 
@@ -92,21 +94,23 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
     isDev: coreConfig.isDev,
     fallbackLng: coreConfig.localization.defaultLocale,
     supportedLngs: coreConfig.localization.uiLocales,
-    overrides: coreConfig.localization.overrides
-
+    overrides: coreConfig.localization.overrides,
   })
   // const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.overrides.general)
   // const structureOverrideBundles = getStructureOverrideBundles(coreConfig.localization.uiLanguages)
   const featureRegistry = createFeatureRegistry(coreConfig)
   const i18nFieldTypes = createi18nFieldTypes(coreConfig.localization.localizedFieldTypes)
-  
+
   // const { projectId, dataset, workspaceName } = config
 
-  return coreConfig.localization.uiLanguages.map(language => {
+  return coreConfig.localization.uiLanguages.map((language) => {
     const locale = language.id
     const localizer = createI18nHelpers(locale, coreConfig.localization.defaultLocale)
     const format = createFormatHelpers(locale)
-    const countryOptions: CountryOption[] = coreConfig.localization.countries.map(country => ({ title: `${country.code} (${localizer.dictValue(country.title)})`, value: country.code }))
+    const countryOptions: CountryOption[] = coreConfig.localization.countries.map((country) => ({
+      title: `${country.code} (${localizer.dictValue(country.title)})`,
+      value: country.code,
+    }))
 
     const schemaT = translator('schema', locale)
     const structureT = translator('structure', locale)
@@ -119,13 +123,13 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
       countryOptions,
       i18nFieldTypes,
       schemaT,
-      structureT
+      structureT,
     }
-    
+
     // const schemaContext = {...localeContext, t: schemaT}
     // const structureContext = {...localeContext, t: structureT}
     // const presentationOptions = createPresentations(structureContext)
-    
+
     return {
       name: locale,
       basePath: `/${locale}`,

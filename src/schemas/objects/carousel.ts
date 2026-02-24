@@ -1,6 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
-
 import { ImagesIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../types'
 
 export const carousel: ITSSchemaDefinition = {
   name: 'carousel',
@@ -34,8 +34,8 @@ export const carousel: ITSSchemaDefinition = {
             }),
             media: ImagesIcon,
           }
-        }
-      }
+        },
+      },
     }
   },
-};
+}

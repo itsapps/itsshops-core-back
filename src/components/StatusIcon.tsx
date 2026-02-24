@@ -1,8 +1,17 @@
-import {OrderStatus, OrderPaymentStatus} from '../types'
+import {
+  ArrowUDownLeftIcon,
+  CheckIcon,
+  CircleIcon,
+  ClockIcon,
+  QuestionIcon,
+  TruckIcon,
+  WarningIcon,
+} from '@phosphor-icons/react'
+import { ErrorOutlineIcon } from '@sanity/icons'
 import React from 'react'
-import {ErrorOutlineIcon} from '@sanity/icons'
 import { styled } from 'styled-components'
-import {ArrowUDownLeftIcon, CircleIcon, WarningIcon, ClockIcon, TruckIcon, CheckIcon, QuestionIcon} from '@phosphor-icons/react'
+
+import { OrderPaymentStatus, OrderStatus } from '../types'
 
 const StyledSpan = styled.span<{ $color: string }>`
   > svg {
@@ -42,7 +51,7 @@ export const StatusIcon = ({
 }: {
   status: OrderStatus
   paymentStatus: OrderPaymentStatus
-}) => {
+}): React.ReactElement => {
   const { color, icon: Icon } = getOrderGeneralState(status, paymentStatus)
   return (
     <StyledSpan $color={color}>

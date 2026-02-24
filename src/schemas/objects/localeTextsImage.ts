@@ -1,4 +1,4 @@
-import { ITSSchemaDefinition } from '../../types';
+import { ITSSchemaDefinition } from '../../types'
 
 export const localeTextsImage: ITSSchemaDefinition = {
   name: 'localeTextsImage',
@@ -6,10 +6,7 @@ export const localeTextsImage: ITSSchemaDefinition = {
   build: (ctx) => {
     return {
       options: { hotspot: true },
-      fields: [
-        ctx.f('title', 'i18nString'),
-        ctx.f('alt', 'i18nString'),
-      ],
+      fields: [ctx.f('title', 'i18nString'), ctx.f('alt', 'i18nString')],
       validation: (Rule) => Rule.required().assetRequired(),
       // validation: (rule) =>
       //   rule.custom((field) => {
@@ -33,9 +30,9 @@ export const localeTextsImage: ITSSchemaDefinition = {
             title: ctx.localizer.value(title),
             subtitle: ctx.localizer.value(alt),
             media: asset,
-          };
-        }
-      }
+          }
+        },
+      },
     }
-  }
+  },
 }

@@ -1,20 +1,16 @@
-import { ITSDocumentDefinition } from "../../types";
 import { DocumentIcon } from '@sanity/icons'
+import { Slug } from 'sanity'
 
-import { Slug } from 'sanity';
+import { ITSDocumentDefinition } from '../../types'
 
 export const page: ITSDocumentDefinition = {
   name: 'page',
   type: 'document',
   icon: DocumentIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
-      groups: [
-        { name: 'page', default: true },
-        { name: 'seo' },
-        { name: 'content' },
-      ],
+      groups: [{ name: 'page', default: true }, { name: 'seo' }, { name: 'content' }],
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne', group: 'page' }),
         f('slug', 'i18nSlug', { i18n: 'atLeastOne', group: 'page' }),
@@ -48,7 +44,7 @@ export const page: ITSDocumentDefinition = {
             subtitle: s?.current,
           }
         },
-      }
+      },
     }
   },
   // preview: (ctx: ITSContext) => {
@@ -69,4 +65,4 @@ export const page: ITSDocumentDefinition = {
   //     },
   //   }
   // }
-};
+}

@@ -1,7 +1,8 @@
-import { ITSDocumentDefinition, ProductType } from '../../types'
-import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
-import { PriceInput } from '../../components/PriceInput'
 import { SlidersHorizontalIcon } from '@phosphor-icons/react'
+
+import { PriceInput } from '../../components/PriceInput'
+import { ITSDocumentDefinition, PRODUCT_TYPES } from '../../types'
+import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
 
 export const productVariant: ITSDocumentDefinition = {
   name: 'productVariant',
@@ -12,9 +13,9 @@ export const productVariant: ITSDocumentDefinition = {
   allowCreate: false,
   hideInStructure: true,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
-      groups: createSharedProductGroups(ctx, ProductType.Variant),
+      groups: createSharedProductGroups(ctx, PRODUCT_TYPES.VARIANT),
       fields: [
         f('title', 'i18nString', { group: 'product' }),
         f('price', 'number', {
@@ -24,7 +25,7 @@ export const productVariant: ITSDocumentDefinition = {
             input: PriceInput,
           },
         }),
-        ...createSharedProductFields(ctx, ProductType.Variant),
+        ...createSharedProductFields(ctx, PRODUCT_TYPES.VARIANT),
         f('active', 'boolean', { initialValue: true, group: 'product' }),
         f('options', 'array', {
           group: 'product',
@@ -48,13 +49,17 @@ export const productVariant: ITSDocumentDefinition = {
           image: 'images.0.image',
         },
         prepare({ title, options0, options1, options2, image }) {
+          const subtitle = [options0, options1, options2]
+            .map((o) => ctx.localizer.value(o))
+            .filter(Boolean)
+            .join(', ')
           return {
             title: ctx.localizer.value(title),
-            subtitle: [options0, options1, options2].map(o => ctx.localizer.value(o)).filter(Boolean).join(", "),
-            media: ctx.localizer.value<any>(image) || SlidersHorizontalIcon,
+            subtitle,
+            media: ctx.localizer.value(image) || SlidersHorizontalIcon,
           }
         },
-      }
+      },
     }
-  }
-};
+  },
+}

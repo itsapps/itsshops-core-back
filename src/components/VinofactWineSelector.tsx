@@ -1,8 +1,30 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Autocomplete, Card, Stack, Text, Flex, Badge, Box, Inline, Button, Menu, MenuItem, MenuButton, MenuDivider } from '@sanity/ui'
-import { EllipsisHorizontalIcon, TrashIcon, SyncIcon, LaunchIcon, WarningOutlineIcon } from '@sanity/icons'
 import { WineIcon } from '@phosphor-icons/react'
+import {
+  EllipsisHorizontalIcon,
+  LaunchIcon,
+  SyncIcon,
+  TrashIcon,
+  WarningOutlineIcon,
+} from '@sanity/icons'
+import {
+  Autocomplete,
+  Badge,
+  Box,
+  Button,
+  Card,
+  Flex,
+  Inline,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  Stack,
+  Text,
+  useToast,
+} from '@sanity/ui'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { set, unset, useTranslation } from 'sanity'
+
 import { useITSContext } from '../context/ITSCoreProvider'
 import { VinofactWine } from '../types'
 
@@ -29,23 +51,26 @@ const WinePreview = ({ wine }: { wine: VinofactWine }) => (
   </Flex>
 )
 
-export function VinofactWineSelector(props: any) {
+export function VinofactWineSelector(props: any): ReactElement {
   const { value, onChange, readOnly } = props
   const { vinofactClient } = useITSContext()
   const { t } = useTranslation('studio')
-  
+  const toast = useToast()
+
   const [wines, setWines] = useState<VinofactWine[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [isReplacing, setIsReplacing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!vinofactClient) {
-      setError('Vinofact client not initialized.')
+      toast.push({
+        status: 'error',
+        title: 'Vinofact client not initialized.',
+      })
       return
     }
 
-    setLoading(true)
     setError(null)
 
     vinofactClient

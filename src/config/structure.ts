@@ -1,28 +1,19 @@
-import type { ITSContext, ITSStructureItem } from '../types';
-
-import { EditIcon, BasketIcon, CogIcon, HomeIcon, UserIcon } from '@sanity/icons'
+import { BasketIcon, CogIcon, EditIcon, HomeIcon, UserIcon } from '@sanity/icons'
+// type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
+import React from 'react'
 import type { DefaultDocumentNodeResolver, StructureToolOptions } from 'sanity/structure'
-import DocumentsPane from 'sanity-plugin-documents-pane'
-
-import { categoriesMenu } from '../structure/categories';
-import { fromRegistry, isDocHidden, localizedStructure } from '../structure/structure';
 // import { OrderView } from '../components/OrderView2';
 // import { CustomerGroupView } from '../components/CustomerGroupView';
+import { type UserViewComponent } from 'sanity/structure'
+import DocumentsPane from 'sanity-plugin-documents-pane'
 
-import {type UserViewComponent} from 'sanity/structure'
-// type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
+import { categoriesMenu } from '../structure/categories'
+import { fromRegistry, isDocHidden, localizedStructure } from '../structure/structure'
+import type { ITSContext, ITSStructureItem } from '../types'
 type UserViewDocument = React.ComponentProps<UserViewComponent>['document']
 
-export const createStructureTool = (ctx: ITSContext): StructureToolOptions => {
-  return {
-    title: ctx.t.default('structure'),
-    structure: createStructure(ctx),
-    defaultDocumentNode: createDefaultDocumentNode(ctx),
-  }
-}
-
 export const createStructure = (ctx: ITSContext) => {
-  const mapItems = (ids: string[]) => ids.map(id => fromRegistry(ctx, id));
+  const mapItems = (ids: string[]) => ids.map((id) => fromRegistry(ctx, id))
 
 
   const coreManifest: ITSStructureItem[] = [
@@ -30,7 +21,7 @@ export const createStructure = (ctx: ITSContext) => {
       type: 'group',
       id: 'website',
       icon: HomeIcon,
-      children: mapItems(['page', 'post', 'menu'])
+      children: mapItems(['page', 'post', 'menu']),
     },
     {
       type: 'group',
@@ -38,10 +29,24 @@ export const createStructure = (ctx: ITSContext) => {
       icon: BasketIcon,
       feature: 'shop',
       children: [
-        ...mapItems(['order', 'orderMeta', 'product', 'productBundle', 'productVariant', 'variantOptionGroup', 'variantOption']),
-        { type: 'custom', id: 'categories', feature: 'shop.category', component: categoriesMenu, hidden: isDocHidden(ctx, 'category') },
+        ...mapItems([
+          'order',
+          'orderMeta',
+          'product',
+          'productBundle',
+          'productVariant',
+          'variantOptionGroup',
+          'variantOption',
+        ]),
+        {
+          type: 'custom',
+          id: 'categories',
+          feature: 'shop.category',
+          component: categoriesMenu,
+          hidden: isDocHidden(ctx, 'category'),
+        },
         ...mapItems(['manufacturer', 'voucher']),
-      ]
+      ],
     },
     // {
     //   type: 'group',
@@ -59,7 +64,7 @@ export const createStructure = (ctx: ITSContext) => {
       id: 'customers',
       icon: UserIcon,
       feature: 'shop',
-      children: mapItems(['customer', 'customerGroup'])
+      children: mapItems(['customer', 'customerGroup']),
     },
     {
       type: 'group',
@@ -71,18 +76,18 @@ export const createStructure = (ctx: ITSContext) => {
           type: 'group',
           id: 'shopSettingsGroup',
           icon: CogIcon,
-          children: mapItems(['shopSettings', 'shippingMethod', 'taxCountry', 'taxCategory'])
+          children: mapItems(['shopSettings', 'shippingMethod', 'taxCountry', 'taxCategory']),
         },
-      ]
+      ],
     },
-  ];
-  return localizedStructure(ctx, coreManifest);
+  ]
+  return localizedStructure(ctx, coreManifest)
 }
 
 export const createDefaultDocumentNode = (ctx: ITSContext) => {
   const t = ctx.t.default
 
-  const defaultDocumentNode: DefaultDocumentNodeResolver = (S, {schemaType}) => {
+  const defaultDocumentNode: DefaultDocumentNodeResolver = (S, { schemaType }) => {
     switch (schemaType) {
       case `order`:
         return S.document().views([
@@ -112,8 +117,10 @@ export const createDefaultDocumentNode = (ctx: ITSContext) => {
               query: `*[references($id)]`,
               // query: `*[references($id)][0...10]`,
               // params: {id: '_id'},
-              params: ({document}: {document: UserViewDocument}) => {
-                return {id: document.draft?._id || document.published?._id || document.displayed?._id}
+              params: ({ document }: { document: UserViewDocument }) => {
+                return {
+                  id: document.draft?._id || document.published?._id || document.displayed?._id,
+                }
               },
               // initialValueTemplates: initialValueReferenceTemplate,
             })
@@ -124,6 +131,14 @@ export const createDefaultDocumentNode = (ctx: ITSContext) => {
     }
   }
   return defaultDocumentNode
+}
+
+export const createStructureTool = (ctx: ITSContext): StructureToolOptions => {
+  return {
+    title: ctx.t.default('structure'),
+    structure: createStructure(ctx),
+    defaultDocumentNode: createDefaultDocumentNode(ctx),
+  }
 }
 
 // const initialValueReferenceTemplate = ({document}: {document: SanityDocument}) => {

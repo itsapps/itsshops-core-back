@@ -1,5 +1,6 @@
-import { ITSDocumentDefinition } from "../../types";
 import { PackageIcon } from '@phosphor-icons/react'
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const shippingMethod: ITSDocumentDefinition = {
   name: 'shippingMethod',
@@ -7,20 +8,17 @@ export const shippingMethod: ITSDocumentDefinition = {
   icon: PackageIcon,
   feature: 'shop',
   build: (ctx) => {
-    const { f, builders } = ctx;
+    const { f } = ctx
     return {
       fields: [
         // f('isDefault', 'boolean', { initialValue: false }),
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
         f('methodType', 'string', {
-          options: { 
-            list: [
-              { value: 'delivery' },
-              { value: 'pickup' }
-            ] 
+          options: {
+            list: [{ value: 'delivery' }, { value: 'pickup' }],
           },
           initialValue: 'delivery',
-          validation: (Rule) => Rule.required()
+          validation: (Rule) => Rule.required(),
         }),
         ctx.builders.priceField({
           name: 'pickupFee',
@@ -29,35 +27,36 @@ export const shippingMethod: ITSDocumentDefinition = {
         }),
         f('eligibleCountries', 'array', {
           of: [
-            { 
-              type: 'reference', 
+            {
+              type: 'reference',
               to: [{ type: 'taxCountry' }],
-              options: { filter: 'enabled == true' } 
-            }
+              options: { filter: 'enabled == true' },
+            },
           ],
           validation: (Rule) => Rule.required().min(1).unique(),
         }),
-        f('rates', 'array', { 
-          of: [ { type: 'shippingRate' } ],
+        f('rates', 'array', {
+          of: [{ type: 'shippingRate' }],
           // validation: (Rule) => Rule.required(),
           hidden: ({ parent }) => parent?.methodType === 'pickup',
-          validation: (Rule) => Rule.custom((value, context) => {
-            const rates = value as unknown[];
-            const parent = context.parent as { methodType?: string } | undefined;
-            
-            // 1. If we don't know the method type yet, don't throw an error
-            if (!parent?.methodType) return true;
+          validation: (Rule) =>
+            Rule.custom((value, context) => {
+              const rates = value as unknown[]
+              const parent = context.parent as { methodType?: string } | undefined
 
-            // 2. Only enforce rates if it's explicitly 'delivery'
-            if (parent.methodType === 'delivery') {
-              if (!rates || rates.length === 0) {
-                return 'Delivery methods must have at least one weight rate defined.';
+              // 1. If we don't know the method type yet, don't throw an error
+              if (!parent?.methodType) return true
+
+              // 2. Only enforce rates if it's explicitly 'delivery'
+              if (parent.methodType === 'delivery') {
+                if (!rates || rates.length === 0) {
+                  return 'Delivery methods must have at least one weight rate defined.'
+                }
               }
-            }
 
-            // 3. For everything else (like 'pickup'), it's valid
-            return true;
-          })
+              // 3. For everything else (like 'pickup'), it's valid
+              return true
+            }),
         }),
         f('taxCategory', 'reference', {
           to: [{ type: 'taxCategory' }],
@@ -76,13 +75,15 @@ export const shippingMethod: ITSDocumentDefinition = {
         prepare({ title, countries }) {
           return {
             title: ctx.localizer.value(title),
-            subtitle: ctx.t.default('shippingMethod.preview.countries', 'Countries', { count: countries?.length || 0 }),
+            subtitle: ctx.t.default('shippingMethod.preview.countries', 'Countries', {
+              count: countries?.length || 0,
+            }),
           }
         },
-      }
+      },
     }
-  }
-};
+  },
+}
 
 // Fetching the list of available countries
 // const query = `array::unique(*[_type == "shippingMethod"].countries[]) | order(@ asc)`;
@@ -93,15 +94,13 @@ export const shippingMethod: ITSDocumentDefinition = {
 //   <option value="">Select your country</option>
 //   {availableCountries.map((code) => (
 //     <option key={code} value={code}>
-//       {/* Using a helper like 'intl-list' or a local dictionary 
-//           to turn "AT" into "Austria" 
+//       {/* Using a helper like 'intl-list' or a local dictionary
+//           to turn "AT" into "Austria"
 //       */}
-//       {getCountryName(code)} 
+//       {getCountryName(code)}
 //     </option>
 //   ))}
 // </select>
-
-
 
 // To determine if a shipment to Austria (AT) is possible, your code needs to "interrogate" your shippingMethod documents. It isn't enough to just check if the country exists; you also have to check if the total weight of the bottles fits within the carrier's limits.
 // Here is the logic flow to validate if checkout is possible:
@@ -113,8 +112,8 @@ export const shippingMethod: ITSDocumentDefinition = {
 
 // The GROQ Query
 // This query asks Sanity: "Give me all shipping methods that serve Austria and can carry X kilograms."
-// *[_type == "shippingMethod" 
-//   && $country in countries 
+// *[_type == "shippingMethod"
+//   && $country in countries
 //   && count(rateTable[maxWeight >= $totalWeight]) > 0
 // ] {
 //   _id,
@@ -122,7 +121,6 @@ export const shippingMethod: ITSDocumentDefinition = {
 //   "price": rateTable[maxWeight >= $totalWeight] | order(maxWeight asc)[0].price,
 //   freeShippingThreshold
 // }
-
 
 // 4. Pro-Tip: The "Fallback" Pickup Method
 // Many wineries in Austria allow "Self-Pickup" (Abholung). You should create one shippingMethod specifically for this:

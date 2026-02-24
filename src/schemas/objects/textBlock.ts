@@ -1,5 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
 import { ArticleIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../types'
 
 export const textBlock: ITSSchemaDefinition = {
   name: 'textBlock',
@@ -11,9 +12,8 @@ export const textBlock: ITSSchemaDefinition = {
         // ctx.f('pt', 'portableText'),
         ctx.f('content', 'array', {
           // We use the builder to fill the 'of' property
-          input: ctx.builders.portableText({ allowLinks: true })
+          input: ctx.builders.portableText({ allowLinks: true }),
         }),
-
       ],
       preview: {
         select: { content: 'content' },
@@ -21,8 +21,8 @@ export const textBlock: ITSSchemaDefinition = {
           title: 'Text Block',
           subtitle: content?.[0]?.children?.[0]?.text || 'Empty',
           media: ArticleIcon,
-        })
-      }
-    };
-  }
-};
+        }),
+      },
+    }
+  },
+}

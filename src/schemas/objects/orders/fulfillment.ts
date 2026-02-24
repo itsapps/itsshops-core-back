@@ -1,6 +1,6 @@
-import { ITSSchemaDefinition } from '../../../types';
-
 import { PackageIcon } from '@sanity/icons'
+
+import { ITSSchemaDefinition } from '../../../types'
 
 export const fulfillment: ITSSchemaDefinition = {
   name: 'fulfillment',
@@ -8,7 +8,7 @@ export const fulfillment: ITSSchemaDefinition = {
   feature: 'shop',
   icon: PackageIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
     // const groups = ['info'].map((name, index) => ({
     //   name, ...index === 0 && { default: true }
@@ -16,41 +16,40 @@ export const fulfillment: ITSSchemaDefinition = {
 
     const all = [
       f('methodTitle', 'i18nString', {
-        description: 'Snapshotted title (e.g., "DHL Express" or "Self-Pickup")'
+        description: 'Snapshotted title (e.g., "DHL Express" or "Self-Pickup")',
       }),
       f('methodType', 'string', {
-        options: { list: [{value: 'delivery'}, {value: 'pickup'}] },
-        validation: (Rule) => Rule.required()
+        options: { list: [{ value: 'delivery' }, { value: 'pickup' }] },
+        validation: (Rule) => Rule.required(),
       }),
 
       // 2. Financials: What was the cost and tax for this specific service?
       f('shippingCost', 'number', {
-        description: 'The fee charged to the customer'
+        description: 'The fee charged to the customer',
       }),
-      
+
       // This handles the tax on the shipping fee itself
       f('taxSnapshot', 'vatBreakdownItem'),
 
       // 3. Tracking & References
-      f('method', 'reference', { 
+      f('method', 'reference', {
         to: [{ type: 'shippingMethod' }],
         weak: true,
-        description: 'Link to the original config (may change over time)'
+        description: 'Link to the original config (may change over time)',
       }),
 
       f('trackingCode', 'string', {
-        hidden: ({ parent }) => parent?.methodType === 'pickup'
+        hidden: ({ parent }) => parent?.methodType === 'pickup',
       }),
 
       // 4. Pickup Specifics
       f('pickupLocation', 'string', {
         description: 'The address where the customer will collect the goods',
-        hidden: ({ parent }) => parent?.methodType !== 'pickup'
-      })
+        hidden: ({ parent }) => parent?.methodType !== 'pickup',
+      }),
     ]
-    
+
     // const fieldsMap: Record<string, FieldDefinition[]> = {
-      
     // }
     // const fields = groups.map(({ name }) => ([
     //   ...fieldsMap[name].map(field => ({ ...field, group: name }))
@@ -76,5 +75,5 @@ export const fulfillment: ITSSchemaDefinition = {
       //   }
       // },
     }
-  }
+  },
 }

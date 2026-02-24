@@ -1,23 +1,19 @@
-import { ITSImageBuilder, SanityImageSource } from '../types'
-import { SanityClient } from 'sanity'
 import { createImageUrlBuilder } from '@sanity/image-url'
+import { SanityClient } from 'sanity'
+
+import { ITSImageBuilder, SanityImageSource } from '../types'
 
 export const createImageBuilder = (client: SanityClient): ITSImageBuilder => {
   const imageBuilder = createImageUrlBuilder(client)
 
   return {
     builder: imageBuilder,
-    
+
     // Use 'urlFor' naming convention (standard in Sanity projects)
     urlFor: (source) => imageBuilder.image(source),
 
     // Your specific helper
-    getUrl: ({
-      source, 
-      width, 
-      height, 
-      quality = 80 
-    }) => {
+    getUrl: ({ source, width, height, quality = 80 }) => {
       if (!source) return ''
 
       let url = imageBuilder
@@ -27,19 +23,17 @@ export const createImageBuilder = (client: SanityClient): ITSImageBuilder => {
 
       if (width) url = url.width(width)
       if (height) url = url.height(height)
-      
+
       // 'fit' ensures the hotspot is respected when cropping
       return url.fit('crop').url()
     },
 
-    getPreviewUrl: (
-      source: SanityImageSource, 
-      size: number = 100
-    ) => {
+    getPreviewUrl: (source: SanityImageSource, size: number = 100) => {
       if (!source) return undefined
 
       // Get screen density (usually 1, 2, or 3)
-      const dpr = typeof window !== 'undefined' ? Math.min(Math.ceil(window.devicePixelRatio || 1), 3) : 1
+      const dpr =
+        typeof window === 'undefined' ? 1 : Math.min(Math.ceil(window.devicePixelRatio || 1), 3)
 
       return imageBuilder
         .image(source)
@@ -49,6 +43,6 @@ export const createImageBuilder = (client: SanityClient): ITSImageBuilder => {
         .auto('format')
         .fit('crop')
         .url()
-    }
+    },
   }
 }

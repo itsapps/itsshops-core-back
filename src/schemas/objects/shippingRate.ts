@@ -1,5 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
 import { BoatIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../types'
 
 export const shippingRate: ITSSchemaDefinition = {
   name: 'shippingRate',
@@ -7,11 +8,11 @@ export const shippingRate: ITSSchemaDefinition = {
   feature: 'shop',
   icon: BoatIcon,
   build: (ctx) => {
-    const { f, builders } = ctx;
+    const { f, builders } = ctx
     return {
       fields: [
         f('maxWeight', 'number', {
-          validation: Rule => Rule.required().min(0.1).precision(2)
+          validation: (rule) => rule.required().min(0.1).precision(2),
         }),
         builders.priceField({
           validation: (Rule) => Rule.required(),
@@ -25,11 +26,11 @@ export const shippingRate: ITSSchemaDefinition = {
         prepare({ maxWeight, price }) {
           return {
             title: `<= ${maxWeight} kg`,
-            subtitle: ctx.format.currency(price/100),
-            media: BoatIcon
+            subtitle: ctx.format.currency(price / 100),
+            media: BoatIcon,
           }
         },
-      }
+      },
       // fields: [
       //   builders.countryField(),
       //   f('rules', 'array', {

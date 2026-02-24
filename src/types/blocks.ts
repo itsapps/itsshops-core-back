@@ -1,37 +1,15 @@
-import type { WithOptionalTitle } from './utils';
-
 import {
-  ArrayOfType,
-  ReferenceTo,
-  DocumentDefinition,
-  ArrayDefinition,
-  ReferenceDefinition,
-  // BlockDefinition,
-  // NumberDefinition,
-  ImageDefinition,
-  ObjectDefinition,
-  FieldDefinition,
-  FieldGroupDefinition,
-  FieldsetDefinition,
-  Rule,
-  PreviewConfig,
-  DocumentActionComponent,
-  TFunction,
-  // ReferenceOptions,
-  SanityClient,
-  Template,
-  BlockDefinition,
-  BlockStyleDefinition,
-  BlockMarksDefinition,
   BlockAnnotationDefinition,
   BlockDecoratorDefinition,
-  defineArrayMember
-} from 'sanity';
+  BlockDefinition,
+  BlockStyleDefinition,
+} from 'sanity'
 
+import type { WithOptionalTitle } from './utils'
 
-export type ITSBlockStyleInput = WithOptionalTitle<BlockStyleDefinition>;
-export type ITSBlockDecoratorInput = WithOptionalTitle<BlockDecoratorDefinition>;
-export type ITSBlockAnnotationInut = WithOptionalTitle<BlockAnnotationDefinition>;
+export type ITSBlockStyleInput = WithOptionalTitle<BlockStyleDefinition>
+export type ITSBlockDecoratorInput = WithOptionalTitle<BlockDecoratorDefinition>
+export type ITSBlockAnnotationInut = WithOptionalTitle<BlockAnnotationDefinition>
 // export interface ITSBlockMarksDefinition {
 //   decorators?: ITSBlockDecorator[];
 //   annotations?: ITSBlockAnnotation[];

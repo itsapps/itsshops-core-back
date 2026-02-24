@@ -1,24 +1,25 @@
-import { SchemaTypeDefinition, defineType } from 'sanity';
-import { ITSSchemaDefinition, ITSContext, FieldContext } from '../types'
-import { createFactory, shapeSchema } from "../utils";
-import { createBuilders } from './builders';
+import { defineType, SchemaTypeDefinition } from 'sanity'
+
+import { FieldContext, ITSContext, ITSSchemaDefinition } from '../types'
+import { createFactory, shapeSchema } from '../utils'
+import { createBuilders } from './builders'
 
 export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
-  const objectBuilders = ctx.featureRegistry.getEnabledObjects();
-  const documentBuilders = ctx.featureRegistry.getEnabledDocs();
+  const objectBuilders = ctx.featureRegistry.getEnabledObjects()
+  const documentBuilders = ctx.featureRegistry.getEnabledDocs()
 
-  return [...objectBuilders, ...documentBuilders].map(b => createDefinition(ctx, b));
+  return [...objectBuilders, ...documentBuilders].map((b) => createDefinition(ctx, b))
 }
 
 export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition) {
-  const extension = ctx.config.schemaExtensions?.[definition.name];
+  const extension = ctx.config.schemaExtensions?.[definition.name]
   const name = definition.name
 
   // const factory = createFieldFactory(name, ctx);
-  const factory = createFactory(name, ctx);
-  const builders = createBuilders(factory, ctx);
-  const fieldCtx: FieldContext = { ...ctx, f: factory.fields, factory, builders };
-  
+  const factory = createFactory(name, ctx)
+  const builders = createBuilders(factory, ctx)
+  const fieldCtx: FieldContext = { ...ctx, f: factory.fields, factory, builders }
+
   const icon = extension?.icon ?? definition.icon
   const title = definition.title ?? ctx.t.default(`${name}.title`)
   const description = definition.description ?? ctx.t.strict(`${name}.description`)
@@ -26,78 +27,71 @@ export function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinitio
   const base = {
     name,
     title,
-    ...description && { description },
-    ...icon && { icon },
+    ...(description && { description }),
+    ...(icon && { icon }),
   }
   if (definition.type === 'document' || definition.type === 'object') {
-    // const built = definition.build(fieldCtx);
     const built = definition.build(fieldCtx)
-    const { fields, groups, fieldsets } = shapeSchema(
-      name,
-      fieldCtx,
-      built.groups,
-      built.fieldsets,
-      built.fields,
-      extension
-    );
+    const { fields, groups, fieldsets } = shapeSchema({
+      docName: name,
+      ctx: fieldCtx,
+      coreGroups: built.groups,
+      coreFieldsets: built.fieldsets,
+      coreFields: built.fields,
+      extension,
+    })
 
-    const preview = extension?.preview ?
-      extension.preview(ctx) :
-      built.preview
+    const maybePreview = extension?.preview ? extension.preview(ctx) : built.preview
+    const preview =
+      maybePreview ||
+      (definition.type === 'document'
+        ? {
+            prepare: () => ({
+              title,
+            }),
+          }
+        : undefined)
 
     const d = defineType({
       ...built,
       ...base,
       type: definition.type,
       fields,
-      ...groups && { groups },
-      ...fieldsets && { fieldsets },
-      preview: preview ?? (
-        definition.type === 'document' ? {
-          prepare: () => ({
-            title
-          })
-        } : undefined
-      ),
+      ...(groups && { groups }),
+      ...(fieldsets && { fieldsets }),
+      preview,
     })
     return d
-  }
-  
-  else if (definition.type === 'array') {
-    const built = definition.build(fieldCtx);
-    
+  } else if (definition.type === 'array') {
+    const built = definition.build(fieldCtx)
     return defineType({
       ...built,
       ...base,
       type: definition.type,
     })
   } else if (definition.type === 'image') {
-    const built = definition.build(fieldCtx);
+    const built = definition.build(fieldCtx)
 
-    const { fields, fieldsets } = shapeSchema(
-      name,
-      fieldCtx,
-      [],
-      built.fieldsets,
-      built.fields || [],
-      extension
-    );
-    
-    const preview = extension?.preview ?
-      extension.preview(ctx) :
-      built.preview
+    const { fields, fieldsets } = shapeSchema({
+      docName: name,
+      ctx: fieldCtx,
+      coreGroups: [],
+      coreFieldsets: built.fieldsets,
+      coreFields: built.fields || [],
+      extension,
+    })
+
+    const preview = extension?.preview ? extension.preview(ctx) : built.preview
 
     return defineType({
       ...built,
       ...base,
       type: definition.type,
-      ...fields && { fields },
-      ...fieldsets && { fieldsets },
+      ...(fields && { fields }),
+      ...(fieldsets && { fieldsets }),
       preview,
     })
   }
-  else {
-    throw new Error(`Unknown schema type for schema named "${name}"`)
-  }
-  
+
+  throw new Error(`Unknown schema type for schema named "${name}"`)
 }

@@ -1,7 +1,7 @@
-import { ITSDocumentDefinition } from "../../types";
 import { CogIcon } from '@sanity/icons'
-import { FieldDefinition } from 'sanity';
+import { FieldDefinition } from 'sanity'
 
+import { ITSDocumentDefinition } from '../../types'
 
 export const settings: ITSDocumentDefinition = {
   name: 'settings',
@@ -9,11 +9,12 @@ export const settings: ITSDocumentDefinition = {
   icon: CogIcon,
   isSingleton: true,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
-    const groups = ['site', 'displays', 'analytics', 'company' ].map((name, index) => ({
-      name, ...index === 0 && { default: true }
-    }));
+    const groups = ['site', 'displays', 'analytics', 'company'].map((name, index) => ({
+      name,
+      ...(index === 0 && { default: true }),
+    }))
 
     const fieldsMap: Record<string, FieldDefinition[]> = {
       site: [
@@ -29,26 +30,22 @@ export const settings: ITSDocumentDefinition = {
           to: [{ type: 'page' }],
         }),
         f('mainMenus', 'array', {
-          of: [{ type: 'reference', to: [{ type: 'menu', }]}],
+          of: [{ type: 'reference', to: [{ type: 'menu' }] }],
         }),
         f('footerMenus', 'array', {
-          of: [{ type: 'reference', to: [{ type: 'menu', }]}],
+          of: [{ type: 'reference', to: [{ type: 'menu' }] }],
         }),
       ],
-      analytics: [
-        f('gtmId', 'string')
-      ],
-      company: [
-        f('company', 'company')
-      ],
+      analytics: [f('gtmId', 'string')],
+      company: [f('company', 'company')],
     }
-    const fields = groups.map(({ name }) => ([
-      ...fieldsMap[name].map(field => ({ ...field, group: name }))
-    ])).flat();
+    const fields = groups
+      .map(({ name }) => [...fieldsMap[name].map((field) => ({ ...field, group: name }))])
+      .flat()
 
     return {
       groups,
       fields,
     }
-  }
-};
+  },
+}

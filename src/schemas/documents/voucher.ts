@@ -1,5 +1,6 @@
-import { ITSDocumentDefinition } from "../../types";
 import { BarcodeIcon } from '@phosphor-icons/react'
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const voucher: ITSDocumentDefinition = {
   name: 'voucher',
@@ -7,11 +8,9 @@ export const voucher: ITSDocumentDefinition = {
   icon: BarcodeIcon,
   feature: 'shop',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
-      fields: [
-        f('title', 'i18nString', { i18n: 'atLeastOne' }),
-      ]
+      fields: [f('title', 'i18nString', { i18n: 'atLeastOne' })],
     }
   },
   // preview: (ctx: ITSContext) => {
@@ -32,4 +31,4 @@ export const voucher: ITSDocumentDefinition = {
   //     },
   //   }
   // }
-};
+}

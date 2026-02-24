@@ -1,5 +1,6 @@
 import { WrenchIcon } from '@sanity/icons'
-import { ITSDocumentDefinition } from "../../types";
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const manufacturer: ITSDocumentDefinition = {
   name: 'manufacturer',
@@ -7,7 +8,7 @@ export const manufacturer: ITSDocumentDefinition = {
   icon: WrenchIcon,
   feature: 'shop.manufacturer',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
@@ -18,15 +19,15 @@ export const manufacturer: ITSDocumentDefinition = {
       preview: {
         select: {
           title: 'title',
-          image: "image"
+          image: 'image',
         },
         prepare({ title, image }) {
           return {
             title: ctx.localizer.value(title),
             media: ctx.localizer.value(image) || WrenchIcon,
           }
-        }
-      }
+        },
+      },
     }
-  }
-};
+  },
+}

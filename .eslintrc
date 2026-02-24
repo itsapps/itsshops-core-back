@@ -2,23 +2,24 @@
   "root": true,
   "env": {
     "node": true,
-    "browser": true
+    "browser": true,
+    "es2024": true
   },
   "extends": [
     "sanity",
     "sanity/typescript",
     "sanity/react",
     "plugin:react-hooks/recommended",
-    "plugin:prettier/recommended",
-    "plugin:react/jsx-runtime"
+    "plugin:react/jsx-runtime",
+    "prettier"
   ],
+  "plugins": ["prettier"],
   "rules": {
-    // This allows the spaces that your .prettierrc wants
-    "object-curly-spacing": ["off", "always"],
-
-    
-    // Optional: If you find Prettier and ESLint still fighting, 
-    // you can turn the ESLint version off and let Prettier handle it
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "semi": "off", 
+    "@typescript-eslint/semi": "off",
+    // Allow the "any" type occasionally in core libs where generics are complex
+    "@typescript-eslint/no-explicit-any": "warn",
+    "no-console": ["warn", { "allow": ["warn", "error"] }]
   }
 }

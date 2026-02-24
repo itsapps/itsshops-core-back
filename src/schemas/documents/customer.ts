@@ -1,27 +1,31 @@
 import { UserIcon } from '@sanity/icons'
-import { ITSDocumentDefinition } from "../../types";
-
 import { FieldDefinition } from 'sanity'
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const customer: ITSDocumentDefinition = {
   name: 'customer',
   type: 'document',
   icon: UserIcon,
   feature: 'users',
-  disallowedActions: [ 'duplicate' ],
+  disallowedActions: ['duplicate'],
   build: (ctx) => {
-    const { f } = ctx;
-    const groups = ['general', 'address' ].map((name, index) => ({
-      name, ...index === 0 && { default: true }
-    }));
+    const { f } = ctx
+    const groups = ['general', 'address'].map((name, index) => ({
+      name,
+      ...(index === 0 && { default: true }),
+    }))
 
     const fieldsMap: Record<string, FieldDefinition[]> = {
       general: [
         f('email', 'string'),
-        
+
         f('locale', 'string', {
           options: {
-            list: ctx.config.localization.uiLanguages.map(language => ({ title: language.title, value: language.id }))
+            list: ctx.config.localization.uiLanguages.map((language) => ({
+              title: language.title,
+              value: language.id,
+            })),
           },
         }),
 
@@ -31,10 +35,12 @@ export const customer: ITSDocumentDefinition = {
 
         f('customerNumber', 'string'),
         f('customerGroups', 'array', {
-          of: [{
-            type: 'reference',
-            to: [{ type: 'customerGroup' }],
-          }],
+          of: [
+            {
+              type: 'reference',
+              to: [{ type: 'customerGroup' }],
+            },
+          ],
         }),
 
         f('supabaseId', 'string', {
@@ -43,26 +49,18 @@ export const customer: ITSDocumentDefinition = {
 
         f('status', 'string', {
           options: {
-            list: [
-              { value: 'registered' },
-              { value: 'invited' },
-              { value: 'active' },
-            ],
-            layout: 'dropdown'
+            list: [{ value: 'registered' }, { value: 'invited' }, { value: 'active' }],
+            layout: 'dropdown',
           },
           validation: (rule) => rule.required(),
-
         }),
       ],
-      address: [
-        f('address', 'address', {
-        }),
-      ]
+      address: [f('address', 'address', {})],
     }
 
-    const fields = groups.map(({ name }) => ([
-      ...fieldsMap[name].map(field => ({ ...field, group: name }))
-    ])).flat();
+    const fields = groups
+      .map(({ name }) => [...fieldsMap[name].map((field) => ({ ...field, group: name }))])
+      .flat()
 
     return {
       groups,
@@ -73,18 +71,18 @@ export const customer: ITSDocumentDefinition = {
           status: 'status',
           newsletter: 'receiveNewsletter',
         },
-        prepare: ({address, status, newsletter}) => {
-          const title = [address?.prename, address?.lastname].filter(Boolean).join(' ') || 'No Name';
-          const statusString = `${ctx.t.default('customer.fields.status.options.active')}: ${status === 'active' ? "✅" : "❌"}`
-          const newsletterString = `${ctx.t.default('customer.fields.receiveNewsletter.title')}: ${newsletter ? "✅" : "❌"}`
+        prepare: ({ address, status, newsletter }) => {
+          const title = [address?.prename, address?.lastname].filter(Boolean).join(' ') || 'No Name'
+          const statusString = `${ctx.t.default('customer.fields.status.options.active')}: ${status === 'active' ? '✅' : '❌'}`
+          const newsletterString = `${ctx.t.default('customer.fields.receiveNewsletter.title')}: ${newsletter ? '✅' : '❌'}`
           const subtitle = `${statusString}, ${newsletterString}`
           return {
             title,
             subtitle,
-            media: UserIcon
+            media: UserIcon,
           }
-        }
+        },
       },
     }
-  }
-};
+  },
+}

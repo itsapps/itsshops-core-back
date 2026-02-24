@@ -1,6 +1,6 @@
-import { ITSDocumentDefinition } from "../../types";
 import { PackageIcon } from '@phosphor-icons/react'
 
+import { ITSDocumentDefinition } from '../../types'
 
 export const shopSettings: ITSDocumentDefinition = {
   name: 'shopSettings',
@@ -9,11 +9,14 @@ export const shopSettings: ITSDocumentDefinition = {
   feature: 'shop',
   isSingleton: true,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
-    const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'bankAccount' ].map((name, index) => ({
-      name, ...index === 0 && { default: true }
-    }));
+    const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'bankAccount'].map(
+      (name, index) => ({
+        name,
+        ...(index === 0 && { default: true }),
+      }),
+    )
 
     const fieldsMap: Record<string, any[]> = {
       displays: [
@@ -25,13 +28,10 @@ export const shopSettings: ITSDocumentDefinition = {
         f('defaultCountry', 'reference', {
           to: [{ type: 'taxCountry' }],
         }),
-        
+
         f('freeShippingCalculation', 'string', {
           options: {
-            list: [
-              { value: 'beforeDiscount' },
-              { value: 'afterDiscount' },
-            ]
+            list: [{ value: 'beforeDiscount' }, { value: 'afterDiscount' }],
           },
           initialValue: 'afterDiscount',
           // validation: (Rule) => Rule.required()
@@ -43,7 +43,7 @@ export const shopSettings: ITSDocumentDefinition = {
       tax: [
         f('defaultTaxCategory', 'reference', {
           to: [{ type: 'taxCategory' }],
-        })
+        }),
       ],
       orders: [
         f('orderNumberPrefix', 'string'),
@@ -53,17 +53,15 @@ export const shopSettings: ITSDocumentDefinition = {
           initialValue: 0,
         }),
       ],
-      bankAccount: [
-        f('bankAccount', 'bankAccount'),
-      ],
+      bankAccount: [f('bankAccount', 'bankAccount')],
     }
-    const fields = groups.map(({ name }) => ([
-      ...fieldsMap[name].map(field => ({ ...field, group: name }))
-    ])).flat();
+    const fields = groups
+      .map(({ name }) => [...fieldsMap[name].map((field) => ({ ...field, group: name }))])
+      .flat()
 
     return {
       groups,
       fields,
     }
-  }
-};
+  },
+}

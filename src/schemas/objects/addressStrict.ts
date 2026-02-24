@@ -1,12 +1,11 @@
-// packages/core-back/src/schemas/objects/multiColumns.ts
-import { ITSSchemaDefinition } from '../../types';
+import { ITSSchemaDefinition } from '../../types'
 
 export const addressStrict: ITSSchemaDefinition = {
   name: 'addressStrict',
   type: 'object',
   feature: 'shop',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
     return {
       fields: [
@@ -20,12 +19,12 @@ export const addressStrict: ITSSchemaDefinition = {
         f('city', 'string', { validation: (Rule) => Rule.required() }),
         f('country', 'string', {
           options: {
-            list: ctx.countryOptions
+            list: ctx.countryOptions,
           },
-          validation: (Rule) => Rule.required()
+          validation: (Rule) => Rule.required(),
         }),
         f('state', 'string'),
       ],
     }
-  }
-};
+  },
+}

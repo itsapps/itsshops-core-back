@@ -1,90 +1,82 @@
+import { TextInput } from '@sanity/ui'
+import React, { useCallback, useMemo, useState } from 'react'
+import { NumberInputProps, set, unset } from 'sanity'
+
 import { useITSContext } from '../context/ITSCoreProvider'
 
-import React, { useState, useEffect } from "react";
-import { TextInput } from "@sanity/ui";
-import { set, unset, NumberInputProps } from "sanity";
-
 function getSeparators(locale: string) {
-  const parts = Intl.NumberFormat(locale).formatToParts(1234.5);
-  const decimal = parts.find((p) => p.type === "decimal")?.value || ".";
-  const group = parts.find((p) => p.type === "group")?.value || ",";
-  return { decimal, group };
+  const parts = Intl.NumberFormat(locale).formatToParts(1234.5)
+  const decimal = parts.find((p) => p.type === 'decimal')?.value || '.'
+  const group = parts.find((p) => p.type === 'group')?.value || ','
+  return { decimal, group }
 }
 
-export const PriceInput = ({ value, onChange, ...props }: NumberInputProps) => {
+export const PriceInput = (props: NumberInputProps): React.ReactElement => {
+  const { value, onChange, elementProps } = props
   const { format, locale } = useITSContext()
-  const { decimal: decimalSep, group: groupSep } = getSeparators(locale);
 
-  // Internal state for raw input (for a smooth editing experience)
-  const [editValue, setEditValue] = useState<string>(() => {
-    if (typeof value === "number") {
-      return format.currency(value/100);
-    }
-    return "";
-  });
-  const [focused, setFocused] = useState(false);
+  // 1. Memoize separators so they don't re-calculate every render
+  const { decimal: decimalSep, group: groupSep } = useMemo(() => getSeparators(locale), [locale])
 
-  // Reset editValue if value changes outside (e.g. undo, reload, etc). Only update if not focused.
-  useEffect(() => {
-    if (!focused) {
-      if (typeof value === "number") {
-        setEditValue(format.currency(value/100));
-      } else {
-        setEditValue("");
-      }
-    }
-  }, [value, locale, focused, format]);
+  // Internal state ONLY for when the user is actively typing
+  const [editValue, setEditValue] = useState<string>('')
+  const [focused, setFocused] = useState(false)
+
+  // 2. DERIVED VALUE: Calculate what to show in the input
+  // If focused, show what they typed. If not, show the pretty currency from Sanity.
+  const displayValue = useMemo(() => {
+    if (focused) return editValue
+    return typeof value === 'number' ? format.currency(value / 100) : ''
+  }, [focused, editValue, value, format])
 
   // Helper: parse input string to cents
-  function parseRawToCents(raw: string): number | undefined {
-    let normalized = raw.split(groupSep).join("");
-    if (decimalSep !== ".") normalized = normalized.replace(decimalSep, ".");
-    if (!normalized.match(/\d/)) return undefined;
-    const float = parseFloat(normalized);
-    if (!isNaN(float)) return Math.round(float * 100);
-    return undefined;
-  }
+  const parseRawToCents = useCallback(
+    (raw: string): number | undefined => {
+      let normalized = raw.split(groupSep).join('')
+      if (decimalSep !== '.') normalized = normalized.replace(decimalSep, '.')
+      if (!normalized.match(/\d/)) return undefined
+      const float = parseFloat(normalized)
+      return isNaN(float) ? undefined : Math.round(float * 100)
+    },
+    [decimalSep, groupSep],
+  )
 
-  // Handle user typing
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const raw = event.currentTarget.value;
-    setEditValue(raw);
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = event.currentTarget.value
+      setEditValue(raw)
 
-    // Only patch if input is a number (not just separator or empty)
-    const cents = parseRawToCents(raw);
-    if (typeof cents === "number" && raw.trim() !== "") {
-      onChange(set(cents));
-    } else if (raw.trim() === "") {
-      onChange(unset());
-    }
-    // Otherwise, don't patch (invalid input in progress)
-  }
+      const cents = parseRawToCents(raw)
+      if (typeof cents === 'number' && raw.trim() !== '') {
+        onChange(set(cents))
+      } else if (raw.trim() === '') {
+        onChange(unset())
+      }
+    },
+    [onChange, parseRawToCents],
+  )
 
-  // On blur, format nicely
-  function handleBlur() {
-    setFocused(false);
-    if (typeof value === "number") {
-      setEditValue(format.currency(value/100));
-    } else {
-      setEditValue("");
-    }
-  }
+  const handleFocus = useCallback(() => {
+    setFocused(true)
+    // When focusing, prepopulate the edit field with a "clean" number for editing
+    // instead of the currency symbol and formatted groups
+    setEditValue(typeof value === 'number' ? (value / 100).toString().replace('.', decimalSep) : '')
+  }, [value, decimalSep])
 
-  // On focus, show raw edit
-  function handleFocus() {
-    setFocused(true);
-  }
+  const handleBlur = useCallback(() => {
+    setFocused(false)
+    setEditValue('') // Clear the scratchpad on blur
+  }, [])
 
   return (
     <TextInput
-      {...props.elementProps}
-      customValidity=""
+      {...elementProps}
       inputMode="decimal"
-      value={editValue}
+      value={displayValue}
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
       placeholder={`0${decimalSep}00`}
     />
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import { ITSSchemaDefinition } from '../../types';
+import { ITSSchemaDefinition } from '../../types'
 
 export const seo: ITSSchemaDefinition = {
   name: 'seo',
   type: 'object',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         f('metaTitle', 'i18nString', { i18n: { max: 50, warning: true } }),
@@ -13,7 +13,7 @@ export const seo: ITSSchemaDefinition = {
         f('shareDescription', 'i18nString', { i18n: { max: 150, warning: true } }),
         f('shareImage', 'localeImage'),
         f('keywords', 'i18nString'),
-      ]
+      ],
     }
-  }
+  },
 }

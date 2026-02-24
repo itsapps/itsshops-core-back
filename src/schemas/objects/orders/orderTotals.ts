@@ -1,5 +1,6 @@
-import { ITSSchemaDefinition } from '../../../types';
 import { CalculatorIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../../types'
 
 export const orderTotals: ITSSchemaDefinition = {
   name: 'orderTotals',
@@ -7,7 +8,7 @@ export const orderTotals: ITSSchemaDefinition = {
   feature: 'shop',
   icon: CalculatorIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
     return {
       fields: [
@@ -39,14 +40,14 @@ export const orderTotals: ITSSchemaDefinition = {
         f('vatBreakdown', 'array', {
           title: 'VAT Breakdown',
           description: 'Taxes grouped by rate (e.g., 10% vs 20%)',
-          of: [{ type: 'vatBreakdownItem' }]
+          of: [{ type: 'vatBreakdownItem' }],
         }),
-        
+
         f('currency', 'string', {
           initialValue: 'EUR',
-          options: { list: [{value: 'EUR'}] }
+          options: { list: [{ value: 'EUR' }] },
         }),
       ],
-    };
-  }
-};
+    }
+  },
+}

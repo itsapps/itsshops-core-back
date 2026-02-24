@@ -1,18 +1,20 @@
-import type {PreviewProps} from 'sanity'
-import {Flex, Text, Box} from '@sanity/ui'
-import {extractYouTubeId} from '../utils'
-// import ReactPlayer from 'react-player'
+import { Box, Flex, Text } from '@sanity/ui'
+import { ReactElement } from 'react'
+import type { PreviewProps } from 'sanity'
 
-export default function YoutubePreview(props: PreviewProps) {
+import { extractYouTubeId } from '../utils'
+
+export default function YoutubePreview(props: PreviewProps): ReactElement {
   const title = props.title as string
   const videoId = extractYouTubeId(title)
   const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : null
 
-  // TODO: reintroduce react player if referrerPolicy is fixed?
   return (
     <Flex padding={3} direction="column">
-      <Box padding={2}><Text>{"YouTube Video"}</Text></Box>
-      {(embedUrl) &&
+      <Box padding={2}>
+        <Text>{'YouTube Video'}</Text>
+      </Box>
+      {embedUrl && (
         <iframe
           width="100%"
           height="200"
@@ -28,7 +30,7 @@ export default function YoutubePreview(props: PreviewProps) {
             height: '200px',
           }}
         />
-      }
+      )}
     </Flex>
   )
 }

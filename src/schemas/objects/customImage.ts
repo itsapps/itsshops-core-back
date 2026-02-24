@@ -1,10 +1,10 @@
-import { ITSSchemaDefinition } from '../../types';
+import { ITSSchemaDefinition } from '../../types'
 
 export const customImage: ITSSchemaDefinition = {
   name: 'customImage',
   type: 'object',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         f('image', 'image', { options: { hotspot: true } }),
@@ -24,9 +24,9 @@ export const customImage: ITSSchemaDefinition = {
             subtitle: alt,
             media: image?.asset,
             // media: ctx.getLocalizedValue(image)?.asset,
-          };
+          }
         },
       },
     }
-  }
+  },
 }

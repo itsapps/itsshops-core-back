@@ -1,7 +1,7 @@
-import { ITSSchemaDefinition } from '../../../types';
-
 import { PackageIcon } from '@sanity/icons'
 import { FieldDefinition } from 'sanity'
+
+import { ITSSchemaDefinition } from '../../../types'
 
 export const orderCustomer: ITSSchemaDefinition = {
   name: 'orderCustomer',
@@ -9,17 +9,21 @@ export const orderCustomer: ITSSchemaDefinition = {
   feature: 'shop',
   icon: PackageIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
     const groups = ['general', 'billing', 'shipping'].map((name, index) => ({
-      name, ...index === 0 && { default: true }
-    }));
+      name,
+      ...(index === 0 && { default: true }),
+    }))
 
     const fieldsMap: Record<string, FieldDefinition[]> = {
       general: [
         f('locale', 'string', {
           options: {
-            list: ctx.config.localization.uiLanguages.map(language => ({ title: language.title, value: language.id }))
+            list: ctx.config.localization.uiLanguages.map((language) => ({
+              title: language.title,
+              value: language.id,
+            })),
           },
           validation: (rule) => rule.required(),
         }),
@@ -33,15 +37,16 @@ export const orderCustomer: ITSSchemaDefinition = {
           // validation: (rule) => rule.required(),
         }),
       ],
-      shipping: [
-        f('shippingAddress', 'addressStrict', {
-          
-        })
-      ],
+      shipping: [f('shippingAddress', 'addressStrict', {})],
     }
-    const fields = groups.map(({ name }) => ([
-      ...fieldsMap[name].map(field => ({ ...field, group: name }))
-    ])).flat();
+    // 1. Ensure the accumulator is typed (replace 'Field' with your actual type)
+    const fields = groups.flatMap(({ name }) => {
+      const groupFields = fieldsMap[name] || []
+      return groupFields.map((field: any) => ({
+        ...field,
+        group: name,
+      }))
+    })
 
     return {
       groups,
@@ -63,5 +68,5 @@ export const orderCustomer: ITSSchemaDefinition = {
       //   }
       // },
     }
-  }
+  },
 }

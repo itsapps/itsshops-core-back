@@ -1,5 +1,6 @@
-import { ITSSchemaDefinition } from '../../../types';
-import { CalculatorIcon } from '@phosphor-icons/react';
+import { CalculatorIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../../types'
 
 export const vatBreakdownItem: ITSSchemaDefinition = {
   name: 'vatBreakdownItem',
@@ -24,6 +25,6 @@ export const vatBreakdownItem: ITSSchemaDefinition = {
           title: 'Label (e.g., "VAT 20%")',
         }),
       ],
-    };
-  }
-};
+    }
+  },
+}

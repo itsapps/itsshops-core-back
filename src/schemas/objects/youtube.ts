@@ -1,5 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
 import { YoutubeLogoIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../types'
 
 export const youtube: ITSSchemaDefinition = {
   name: 'youtube',
@@ -20,7 +21,7 @@ export const youtube: ITSSchemaDefinition = {
           title: 'url',
           subtitle: 'start',
         },
-      }
-    };
-  }
-};
+      },
+    }
+  },
+}

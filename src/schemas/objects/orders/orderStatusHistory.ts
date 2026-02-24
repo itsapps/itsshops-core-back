@@ -1,8 +1,7 @@
-import { ITSSchemaDefinition, ProductType } from '../../../types';
 // import { getStateTranslationKey } from '../../../utils/orders';
-
 import { PackageIcon } from '@sanity/icons'
-import { FieldDefinition, isDev } from 'sanity'
+
+import { ITSSchemaDefinition } from '../../../types'
 
 export const orderStatusHistory: ITSSchemaDefinition = {
   name: 'orderStatusHistory',
@@ -10,15 +9,12 @@ export const orderStatusHistory: ITSSchemaDefinition = {
   feature: 'shop',
   icon: PackageIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
     const fields = [
       f('type', 'string', {
         options: {
-          list: [
-            { value: 'payment' },
-            { value: 'fulfillment' },
-          ],
+          list: [{ value: 'payment' }, { value: 'fulfillment' }],
         },
         validation: (Rule) => Rule.required(),
       }),
@@ -27,7 +23,7 @@ export const orderStatusHistory: ITSSchemaDefinition = {
 
       f('timestamp', 'datetime', {
         initialValue: () => new Date().toISOString(),
-        validation: (Rule) => Rule.required()
+        validation: (Rule) => Rule.required(),
       }),
 
       f('source', 'string'),
@@ -35,9 +31,8 @@ export const orderStatusHistory: ITSSchemaDefinition = {
       f('note', 'text', {
         rows: 2,
       }),
-
     ]
-    
+
     return {
       fields,
       preview: {
@@ -49,12 +44,16 @@ export const orderStatusHistory: ITSSchemaDefinition = {
           note: 'note',
         },
         prepare({ status, type, timestamp, source, note }) {
-          const dateTime = timestamp ? ctx.format.date(timestamp, { dateStyle: 'medium', timeStyle: 'medium' }) : 'No Date'
-          const typeString = type ? ctx.t.default(`orderStatusHistory.fields.type.options.${type}`, type) : 'No Type'
+          const dateTime = timestamp
+            ? ctx.format.date(timestamp, { dateStyle: 'medium', timeStyle: 'medium' })
+            : 'No Date'
+          const typeString = type
+            ? ctx.t.default(`orderStatusHistory.fields.type.options.${type}`, type)
+            : 'No Type'
           // const statusString = status ? ctx.t.default(getStateTranslationKey(status), status) : 'No Status'
           const subtitle = [source, note].filter(Boolean).join(' - ')
           return {
-            title: `${dateTime}: ${typeString} - ${"statusString"}`,
+            title: `${dateTime}: ${typeString} - ${'statusString'}`,
             subtitle,
           }
         }

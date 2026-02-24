@@ -1,4 +1,4 @@
-import { ITSImageDefinition } from '../../types';
+import { ITSImageDefinition } from '../../types'
 
 export const baseImage: ITSImageDefinition = {
   name: 'baseImage',
@@ -6,10 +6,7 @@ export const baseImage: ITSImageDefinition = {
   build: (ctx) => {
     return {
       options: { hotspot: true },
-      fields: [
-        ctx.f('title', 'string'),
-        ctx.f('alt', 'string'),
-      ],
+      fields: [ctx.f('title', 'string'), ctx.f('alt', 'string')],
       validation: (Rule) => Rule.required().assetRequired(),
       // validation: (rule) =>
       //   rule.custom((field) => {
@@ -38,9 +35,9 @@ export const baseImage: ITSImageDefinition = {
             // title: ctx.localizer.value(title) || 'No title',
             // subtitle: ctx.localizer.value(alt) || 'No alt',
             media: { asset, crop, hotspot } as any,
-          };
-        }
-      }
+          }
+        },
+      },
     }
-  }
+  },
 }

@@ -1,24 +1,23 @@
 export function isWebKit(): boolean {
-  const ua = navigator.userAgent;
+  const ua = navigator.userAgent
 
-  const isWebKitBrowser =
-    ua.includes('Safari');
+  const isWebKitBrowser = ua.includes('Safari')
 
-  return !!isWebKitBrowser;
+  return !!isWebKitBrowser
 }
 
 export function getFilename(response: Response, defaultFilename: string) {
-  const contentDisposition = response.headers.get("Content-Disposition");
+  const contentDisposition = response.headers.get('Content-Disposition')
   if (contentDisposition) {
-    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+    const match = contentDisposition.match(/filename="?([^"]+)"?/)
     if (match?.[1]) {
-      return match[1];
+      return match[1]
     }
   }
   return defaultFilename
 }
 
-export const downloadFile = async(response: Response, defaultFilename: string) => {
+export const downloadFile = async (response: Response, defaultFilename: string) => {
   const blob = await response.blob()
   const url = URL.createObjectURL(blob)
   const link = window.document.createElement('a')

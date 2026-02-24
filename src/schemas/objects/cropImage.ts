@@ -1,9 +1,9 @@
-import { ITSImageDefinition } from '../../types';
+import { ITSImageDefinition } from '../../types'
 
 export const cropImage: ITSImageDefinition = {
   name: 'cropImage',
   type: 'image',
-  build: (ctx) => {
+  build: () => {
     return {
       options: { hotspot: true },
       // preview: {
@@ -19,5 +19,5 @@ export const cropImage: ITSImageDefinition = {
       //   }
       // },
     }
-  }
+  },
 }

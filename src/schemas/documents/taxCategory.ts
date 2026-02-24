@@ -1,6 +1,6 @@
 import { PackageIcon } from '@phosphor-icons/react'
-import { ITSDocumentDefinition } from "../../types";
 
+import { ITSDocumentDefinition } from '../../types'
 
 export const taxCategory: ITSDocumentDefinition = {
   name: 'taxCategory',
@@ -8,7 +8,7 @@ export const taxCategory: ITSDocumentDefinition = {
   icon: PackageIcon,
   feature: 'shop',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
       fields: [
         // f('isDefault', 'boolean', { initialValue: false }),
@@ -16,7 +16,7 @@ export const taxCategory: ITSDocumentDefinition = {
         f('code', 'slug', {
           // options: { source: 'title' },
           // readOnly: ({ document }) => !!document?._createdAt, // Safety lock
-          validation: (Rule) => Rule.required()
+          validation: (Rule) => Rule.required(),
         }),
       ],
       preview: {
@@ -30,7 +30,7 @@ export const taxCategory: ITSDocumentDefinition = {
             subtitle: code?.current,
           }
         },
-      }
+      },
     }
-  }
-};
+  },
+}

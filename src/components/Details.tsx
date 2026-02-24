@@ -57,11 +57,7 @@ const Content = styled.div`
   color: #333;
 `
 
-export const Details: React.FC<DetailsProps> = ({
-  title,
-  children,
-  defaultOpen = false,
-}) => {
+export const Details: React.FC<DetailsProps> = ({ title, children, defaultOpen = false }) => {
   return (
     <StyledDetails open={defaultOpen}>
       <StyledSummary>

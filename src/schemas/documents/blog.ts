@@ -1,5 +1,6 @@
-import { ITSDocumentDefinition } from "../../types";
 import { NoteIcon } from '@phosphor-icons/react'
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const blog: ITSDocumentDefinition = {
   name: 'blog',
@@ -36,8 +37,8 @@ export const blog: ITSDocumentDefinition = {
             subtitle: ctx.localizer.value(description),
             media: NoteIcon,
           }
-        }
-      }
+        },
+      },
     }
-  }
-};
+  },
+}

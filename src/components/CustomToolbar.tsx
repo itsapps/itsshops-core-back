@@ -1,13 +1,13 @@
 import React from 'react'
 import { ToolMenuProps } from 'sanity'
+
 import { DeployDialog } from './DeployDialog'
 
-export function CustomToolbar(props: ToolMenuProps) {
-  
+export function CustomToolbar(props: ToolMenuProps): React.ReactElement {
   return (
     <>
       {props.renderDefault(props)}
-      <DeployDialog/>
+      <DeployDialog />
     </>
   )
 }

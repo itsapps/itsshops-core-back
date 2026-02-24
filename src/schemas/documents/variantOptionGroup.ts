@@ -1,6 +1,7 @@
-import { ITSDocumentDefinition } from "../../types"
-import { EditGroupOptions } from '../../components/EditGroupOptions'
 import { SparklesIcon } from '@sanity/icons'
+
+import { EditGroupOptions } from '../../components/EditGroupOptions'
+import { ITSDocumentDefinition } from '../../types'
 
 export const variantOptionGroup: ITSDocumentDefinition = {
   name: 'variantOptionGroup',
@@ -47,7 +48,7 @@ export const variantOptionGroup: ITSDocumentDefinition = {
             media: SparklesIcon,
           }
         },
-      }
+      },
     }
   },
-};
+}

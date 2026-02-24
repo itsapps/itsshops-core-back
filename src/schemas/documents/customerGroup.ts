@@ -1,6 +1,6 @@
 import { UsersIcon } from '@sanity/icons'
-import { ITSDocumentDefinition } from "../../types";
 
+import { ITSDocumentDefinition } from '../../types'
 
 export const customerGroup: ITSDocumentDefinition = {
   name: 'customerGroup',
@@ -8,11 +8,9 @@ export const customerGroup: ITSDocumentDefinition = {
   icon: UsersIcon,
   feature: 'users',
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
     return {
-      fields: [
-        f('title', 'i18nString', { i18n: 'atLeastOne' }),
-      ],
+      fields: [f('title', 'i18nString', { i18n: 'atLeastOne' })],
       preview: {
         select: {
           title: 'title',
@@ -23,8 +21,8 @@ export const customerGroup: ITSDocumentDefinition = {
             // subtitle: sub ? `– ${sub}` : ``,
             // media: media,
           }
-        }
-      }
+        },
+      },
     }
-  }
-};
+  },
+}

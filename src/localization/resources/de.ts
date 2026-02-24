@@ -16,22 +16,24 @@ export default {
       remove: 'Entfernen',
       save: 'Speichern',
       add: 'Hinzufügen',
-      edit: 'Bearbeiten', 
+      edit: 'Bearbeiten',
       optionalNote: 'Optionale Notiz',
     },
     errors: {
-      failedToLoad: "Fehler beim Laden der Daten: {{errorMessage}}",
+      failedToLoad: 'Fehler beim Laden der Daten: {{errorMessage}}',
     },
     defaults: {
       noTitle: 'Ohne Titel',
     },
   },
   product: {
-    deleteNotAllowedVariantsExist: "Produkt kann nicht gelöscht werden, weil es mit Varianten verknüpft ist.",
+    deleteNotAllowedVariantsExist:
+      'Produkt kann nicht gelöscht werden, weil es mit Varianten verknüpft ist.',
   },
   productVariant: {
-    publishNotAllowedButByGenerating: "Produktvarianten können nur in Produkten generiert werden.",
-    setInactiveNotAllowedReferencesExist: "Produktvariante kann nicht deaktiviert werden, weil sie in anderen Dokumenten referenziert ist.",
+    publishNotAllowedButByGenerating: 'Produktvarianten können nur in Produkten generiert werden.',
+    setInactiveNotAllowedReferencesExist:
+      'Produktvariante kann nicht deaktiviert werden, weil sie in anderen Dokumenten referenziert ist.',
   },
   variants: {
     generate: 'Varianten generieren',
@@ -47,21 +49,27 @@ export default {
       title: 'Alle Varianten entfernen',
       confirm: 'Varianten wirklich löschen?',
     },
-    selectProductNumber: 'Bitte gib dem Produkt eine Produktnummer, um dafür Varianten zu generieren.',
-    couldNotDeleteAll: 'Eine oder mehrere Varianten konnten nicht gelöscht werden, weil sie in Verwendung sind.',
+    selectProductNumber:
+      'Bitte gib dem Produkt eine Produktnummer, um dafür Varianten zu generieren.',
+    couldNotDeleteAll:
+      'Eine oder mehrere Varianten konnten nicht gelöscht werden, weil sie in Verwendung sind.',
   },
   optionsGroups: {
-    addOption: "Option hinzufügen",
-    confirmDelete: "Option wirklich löschen?",
-    deleteErrorMessage: "Option kann nicht gelöscht werden, weil sie in einer oder mehreren Produktvarianten verwendet wird.",
-    groupDeleteNotAllowedOptionsExist: "Optionengruppe kann nicht gelöscht werden, weil sie Optionen enthält.",
-    couldNotDeleteOption: "Option konnte nicht gelöscht werden, weil sie in einer oder mehreren Produktvarianten verwendet wird.",
+    addOption: 'Option hinzufügen',
+    confirmDelete: 'Option wirklich löschen?',
+    deleteErrorMessage:
+      'Option kann nicht gelöscht werden, weil sie in einer oder mehreren Produktvarianten verwendet wird.',
+    groupDeleteNotAllowedOptionsExist:
+      'Optionengruppe kann nicht gelöscht werden, weil sie Optionen enthält.',
+    couldNotDeleteOption:
+      'Option konnte nicht gelöscht werden, weil sie in einer oder mehreren Produktvarianten verwendet wird.',
     defaults: {
       title: 'Neue Option',
     },
   },
   categories: {
-    deleteNotAllowedSubcategoriesExist: "Kategorie kann nicht gelöscht werden, weil sie Unterkategorien enthält.",
+    deleteNotAllowedSubcategoriesExist:
+      'Kategorie kann nicht gelöscht werden, weil sie Unterkategorien enthält.',
   },
   order: {
     shipping: "Versand",

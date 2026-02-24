@@ -1,5 +1,6 @@
-import { ITSDocumentDefinition } from "../../types"
 import { SparklesIcon } from '@sanity/icons'
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const variantOption: ITSDocumentDefinition = {
   name: 'variantOption',
@@ -36,8 +37,8 @@ export const variantOption: ITSDocumentDefinition = {
             media: SparklesIcon,
             // media: image?.asset,
           }
-        }
-      }
+        },
+      },
     }
-  }
-};
+  },
+}

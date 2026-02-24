@@ -8,23 +8,17 @@ interface OrderDataErrorProps {
   isDev?: boolean
 }
 
-export function OrderDataError({ error, isDev = false }: OrderDataErrorProps) {
+export function OrderDataError({ error, isDev = false }: OrderDataErrorProps): React.ReactElement {
   // Flattening the error makes it much easier to read than the raw JSON
   // const fieldErrors = error.flatten().fieldErrors
-  const treeErrors = z.treeifyError(error);
-  
+  const treeErrors = z.treeifyError(error)
+
   // We can still extract the top-level keys for the summary badges
-  const errorKeys = Object.keys(treeErrors);
+  const errorKeys = Object.keys(treeErrors)
 
   return (
     <Box padding={4}>
-      <Card 
-        padding={4} 
-        radius={3} 
-        tone="caution" 
-        shadow={1} 
-        border
-      >
+      <Card padding={4} radius={3} tone="caution" shadow={1} border>
         <Stack space={4}>
           <Flex align="center" gap={3}>
             <WarningCircleIcon size={24} weight="bold" />

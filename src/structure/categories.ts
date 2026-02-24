@@ -1,11 +1,14 @@
+import { EditIcon, SchemaIcon } from '@sanity/icons'
 import type { StructureBuilder } from 'sanity/structure'
-import { SchemaIcon, EditIcon } from '@sanity/icons'
-import type { ITSContext } from '../types';
+
+import type { ITSContext } from '../types'
 
 export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContext) => {
-  const { config: { apiVersion } } = ctx
+  const {
+    config: { apiVersion },
+  } = ctx
   const t = ctx.t.default
-  const client = context.getClient({ apiVersion });
+  const client = context.getClient({ apiVersion })
 
   const getCategoryMenuItems = (id: string) => {
     const customEditButton = S.menuItem()
@@ -21,24 +24,19 @@ export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContex
     return [...(defaultItems ?? []), customEditButton]
   }
 
-
-
   const subCategoryList = async (categoryId: string) => {
     const category = await client.getDocument(categoryId)
 
     return S.documentTypeList('category')
       .title(category.name)
       .apiVersion(apiVersion)
-      .defaultOrdering([{field: 'sortOrder', direction: 'asc'}])
+      .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
       .filter('parent._ref == $categoryId')
       .params({ categoryId })
       .menuItems(getCategoryMenuItems(categoryId))
       .canHandleIntent(() => false)
       .initialValueTemplates([
-        S.initialValueTemplateItem(
-          'subCategory',
-          { parentCategoryId: categoryId }
-        )
+        S.initialValueTemplateItem('subCategory', { parentCategoryId: categoryId }),
       ])
       .child(subCategoryList)
   }
@@ -50,9 +48,9 @@ export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContex
       S.documentTypeList('category')
         .title(t('categories'))
         .apiVersion(apiVersion)
-        .defaultOrdering([{field: 'sortOrder', direction: 'asc'}])
+        .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
         .filter('_type == "category" && !defined(parent)')
         .canHandleIntent(() => false)
-        .child(subCategoryList)
+        .child(subCategoryList),
     )
 }

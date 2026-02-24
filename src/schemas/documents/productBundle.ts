@@ -1,7 +1,8 @@
-import { ITSDocumentDefinition, ProductType } from '../../types'
-import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
-import { PriceInput } from '../../components/PriceInput'
 import { StackIcon } from '@phosphor-icons/react'
+
+import { PriceInput } from '../../components/PriceInput'
+import { ITSDocumentDefinition, PRODUCT_TYPES } from '../../types'
+import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
 
 export const productBundle: ITSDocumentDefinition = {
   name: 'productBundle',
@@ -12,7 +13,7 @@ export const productBundle: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f } = ctx
     return {
-      groups: createSharedProductGroups(ctx, ProductType.Bundle),
+      groups: createSharedProductGroups(ctx, PRODUCT_TYPES.BUNDLE),
       fieldsets: [],
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne', group: 'product' }),
@@ -23,7 +24,7 @@ export const productBundle: ITSDocumentDefinition = {
             input: PriceInput,
           },
         }),
-        ...createSharedProductFields(ctx, ProductType.Bundle),
+        ...createSharedProductFields(ctx, PRODUCT_TYPES.BUNDLE),
         f('items', 'array', {
           of: [
             {
@@ -55,7 +56,7 @@ export const productBundle: ITSDocumentDefinition = {
             media: ctx.localizer.value(image) || StackIcon,
           }
         },
-      }
+      },
     }
   },
-};
+}

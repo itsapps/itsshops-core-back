@@ -1,5 +1,6 @@
-import { ITSSchemaDefinition } from '../../types'
 import { StarIcon } from '@phosphor-icons/react'
+
+import { ITSSchemaDefinition } from '../../types'
 
 export const hero: ITSSchemaDefinition = {
   name: 'hero',
@@ -15,23 +16,27 @@ export const hero: ITSSchemaDefinition = {
           {
             type: 'object',
             name: 'action',
-            fields: builders.internalLink({ required: true, includeTitle: true, includeDisplayType: true }),
+            fields: builders.internalLink({
+              required: true,
+              includeTitle: true,
+              includeDisplayType: true,
+            }),
             preview: {
               select: {
                 type: 'linkReference._type',
-                title: 'linkTitle'
+                title: 'linkTitle',
               },
               prepare({ type, title }) {
                 return {
                   title: type ? t.default(`${type}.title`) : '',
-                  subtitle: localizer.value(title)
+                  subtitle: localizer.value(title),
                 }
-              }
-            }
+              },
+            },
           },
         ],
         group: 'content',
-      })
+      }),
       // {
       //   type: 'object',
       //   name: 'links',
@@ -44,28 +49,24 @@ export const hero: ITSSchemaDefinition = {
       //   options: { collapsed: true, collapsible: true }
       // }),
       // f('text', 'simplePT'),
-      // f('text', 'simplePT', { 
-      //   input: builders.portableText({ allowLinks: false }) 
+      // f('text', 'simplePT', {
+      //   input: builders.portableText({ allowLinks: false })
       // }),
-    ];
+    ]
 
     return {
-      groups: [
-        { name: 'content', default: true },
-        { name: 'media' },
-        { name: 'settings' },
-      ],
+      groups: [{ name: 'content', default: true }, { name: 'media' }, { name: 'settings' }],
       fields: contentFields,
       preview: {
         select: { title: 'title', actions: 'actions' },
         prepare({ title, actions }) {
           return {
             title: localizer.value(title),
-            subtitle: t.default('hero.preview.actions', "Actions", { count: actions?.length || 0 }),
+            subtitle: t.default('hero.preview.actions', 'Actions', { count: actions?.length || 0 }),
             media: StarIcon,
-          };
-        }
-      }
+          }
+        },
+      },
     }
     // Use the module builder to add the "Settings" (anchor, visibility, etc.)
     // const module = builders.module({
@@ -83,8 +84,8 @@ export const hero: ITSSchemaDefinition = {
     //     }
     //   ]
     // };
-  }
-};
+  },
+}
 
 export const hero2: ITSSchemaDefinition = {
   name: 'hero',
@@ -96,8 +97,8 @@ export const hero2: ITSSchemaDefinition = {
       f('image', 'image', { options: { hotspot: true } }),
       builders.actionGroup({ name: 'actions', max: 2 }),
       // f('text', 'portableText'),
-      // f('text', 'portableText', { 
-      //   ...builders.portableText({  }) 
+      // f('text', 'portableText', {
+      //   ...builders.portableText({  })
       // }),
       // {
       //   type: 'object',
@@ -111,10 +112,10 @@ export const hero2: ITSSchemaDefinition = {
       //   options: { collapsed: true, collapsible: true }
       // }),
       // f('text', 'simplePT'),
-      // f('text', 'simplePT', { 
-      //   input: builders.portableText({ allowLinks: false }) 
+      // f('text', 'simplePT', {
+      //   input: builders.portableText({ allowLinks: false })
       // }),
-    ];
+    ]
 
     // Use the module builder to add the "Settings" (anchor, visibility, etc.)
     const module = builders.module({
@@ -129,8 +130,8 @@ export const hero2: ITSSchemaDefinition = {
         ...module.groups,
         {
           name: 'links',
-        }
-      ]
-    };
-  }
-};
+        },
+      ],
+    }
+  },
+}

@@ -1,42 +1,33 @@
-import { ITSSchemaDefinition } from '../types';
+import { ITSSchemaDefinition } from '../types'
+import { hero } from './modules/hero'
+import { portableText } from './modules/portableText'
+import { address } from './objects/address'
+import { addressStrict } from './objects/addressStrict'
+import { bankAccount } from './objects/bankAccount'
+import { baseImage } from './objects/baseImage'
+import { carousel } from './objects/carousel'
+import { company } from './objects/company'
+import { cropImage } from './objects/cropImage'
+import { internalLink } from './objects/internalLink'
+import { localeImage } from './objects/localeImage'
+import { localeTextsImage } from './objects/localeTextsImage'
+import { menuItem } from './objects/menuItem'
+import { fulfillment } from './objects/orders/fulfillment'
+import { orderCustomer } from './objects/orders/orderCustomer'
+import { orderItem } from './objects/orders/orderItem'
+import { orderStatusHistory } from './objects/orders/orderStatusHistory'
+import { orderTotals } from './objects/orders/orderTotals'
+import { vatBreakdownItem } from './objects/orders/vatBreakdownItem'
+import { productBundleItem } from './objects/productBundleItem'
+import { seo } from './objects/seo'
+import { shippingRate } from './objects/shippingRate'
+import { taxRule } from './objects/taxRule'
+import { textBlock } from './objects/textBlock'
+import { youtube } from './objects/youtube'
 
-import { seo } from './objects/seo';
-import { baseImage } from './objects/baseImage';
-import { localeTextsImage } from './objects/localeTextsImage';
-
-// import { customImage } from './objects/customImage';
-import { cropImage } from './objects/cropImage';
-import { localeImage } from './objects/localeImage';
-// import { titleImage } from './objects/titleImage';
-// import { complexPortableText } from './objects/complexPortableText';
-// import { multiColumns } from './objects/multiColumns';
-import { productBundleItem } from './objects/productBundleItem';
-import { youtube } from './objects/youtube';
-// import { localeComplexPortable } from './objects/localeComplexPortable';
-import { carousel } from './objects/carousel';
-// import { shipping } from './objects/shipping';
-// import { shippingRate } from './objects/shippingRate';
-// import { taxCountrySettings } from './objects/taxCountrySettings';
-import { shippingRate } from './objects/shippingRate';
-import { taxRule } from './objects/taxRule';
-import { address } from './objects/address';
-import { addressStrict } from './objects/addressStrict';
-import { internalLink } from './objects/internalLink';
-import { menuItem } from './objects/menuItem';
-import { orderItem } from './objects/orders/orderItem';
-import { orderTotals } from './objects/orders/orderTotals';
-import { orderStatusHistory } from './objects/orders/orderStatusHistory';
-import { orderCustomer } from './objects/orders/orderCustomer';
-
-import { hero } from './modules/hero';
-import { portableText } from './modules/portableText';
-import { textBlock } from './objects/textBlock';
-import { bankAccount } from './objects/bankAccount';
-import { company } from './objects/company';
-import { vatBreakdownItem } from './objects/orders/vatBreakdownItem';
-import { fulfillment } from './objects/orders/fulfillment';
-
-export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): ITSSchemaDefinition[] => {
+export const getCoreObjects = (
+  extensions: ITSSchemaDefinition[] | undefined,
+): ITSSchemaDefinition[] => {
   return [
     productBundleItem,
     seo,
@@ -74,6 +65,6 @@ export const getCoreObjects = (extensions: ITSSchemaDefinition[] | undefined): I
     portableText,
     textBlock,
 
-    ...extensions ? extensions : [],
+    ...(extensions ? extensions : []),
   ]
 }

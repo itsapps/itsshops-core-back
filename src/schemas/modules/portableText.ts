@@ -1,9 +1,9 @@
-import { ITSSchemaDefinition, ITSArrayDefinition } from '../../types';
+import { ITSSchemaDefinition } from '../../types'
 
 export const portableText: ITSSchemaDefinition = {
   name: 'portableText',
   type: 'array',
-  build: ({ f, builders }) => {
+  build: ({ builders }) => {
     // return {
     //   of: [
     //     {
@@ -32,8 +32,9 @@ export const portableText: ITSSchemaDefinition = {
     //   ]
     // }
     return builders.portableText({ allowLinks: true })
-  }
+  },
 }
+
 export const portableText2: ITSSchemaDefinition = {
   name: 'portableText',
   type: 'object',
@@ -42,12 +43,12 @@ export const portableText2: ITSSchemaDefinition = {
       fields: [
         // We put the actual Portable Text array inside a field named "content"
         f('content', 'array', {
-          of: builders.portableText({ allowLinks: true }).of
-        })
+          of: builders.portableText({ allowLinks: true }).of,
+        }),
       ],
     }
 
-    return bla;
+    return bla
     // return builders.portableText({
     //   allowLinks: true,
     //   // allowImages: true
@@ -69,7 +70,7 @@ export const portableText2: ITSSchemaDefinition = {
     //     },
     //     // Allow the engine to inject custom "inline" objects like 'youtube' or 'productCard'
     //     { type: 'image' },
-    //   ] 
+    //   ]
     // };
-  }
-};
+  },
+}

@@ -9,4 +9,4 @@ export const SendMailTypes = {
   ORDER_REFUNDED: 'order-refunded',
   ORDER_REFUNDED_PARTIALLY: 'order-refunded-partially',
 }
-export type SendMailType = (typeof SendMailTypes)[keyof typeof SendMailTypes];
+export type SendMailType = (typeof SendMailTypes)[keyof typeof SendMailTypes]

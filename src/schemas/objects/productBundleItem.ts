@@ -1,6 +1,6 @@
-import { ITSSchemaDefinition } from '../../types';
-
 import { PackageIcon } from '@sanity/icons'
+
+import { ITSSchemaDefinition } from '../../types'
 // import { ProductMediaPreview } from '../../components/previews/ProductMediaPreview';
 
 export const productBundleItem: ITSSchemaDefinition = {
@@ -15,18 +15,15 @@ export const productBundleItem: ITSSchemaDefinition = {
         validation: (Rule) => Rule.min(1).required(),
       }),
       ctx.f('product', 'reference', {
-        to: [
-          { type: 'product' },
-          { type: 'productVariant' },
-        ],
+        to: [{ type: 'product' }, { type: 'productVariant' }],
         validation: (Rule) => Rule.required(),
         options: {
-            // filter: options.to?.includes('product') ? `...your product filter...` : ''
-            filter: `
-              (active == true && _type == "productVariant") ||
-              ((!defined(variants) || count(variants) == 0) && _type == "product")
-            `
-          }
+          // filter: options.to?.includes('product') ? `...your product filter...` : ''
+          filter: `
+            (active == true && _type == "productVariant") ||
+            ((!defined(variants) || count(variants) == 0) && _type == "product")
+          `,
+        },
       }),
     ],
     preview: {
@@ -43,7 +40,7 @@ export const productBundleItem: ITSSchemaDefinition = {
           media: ctx.localizer.value<any>(image) || PackageIcon,
           // media: ProductMediaPreview({ info: `${quantity}x` }),
         }
-      }
+      },
     },
-  })
-};
+  }),
+}

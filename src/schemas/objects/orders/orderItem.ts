@@ -1,7 +1,7 @@
-import { ITSSchemaDefinition, ProductType } from '../../../types';
-
 import { PackageIcon } from '@sanity/icons'
 import { FieldDefinition } from 'sanity'
+
+import { ITSSchemaDefinition, PRODUCT_TYPES } from '../../../types'
 
 export const orderItem: ITSSchemaDefinition = {
   name: 'orderItem',
@@ -9,20 +9,30 @@ export const orderItem: ITSSchemaDefinition = {
   feature: 'shop',
   icon: PackageIcon,
   build: (ctx) => {
-    const { f } = ctx;
+    const { f } = ctx
 
     const groups = ['info'].map((name, index) => ({
-      name, ...index === 0 && { default: true }
-    }));
+      name,
+      ...(index === 0 && { default: true }),
+    }))
 
     const fieldsMap: Record<string, FieldDefinition[]> = {
       info: [
         f('type', 'string', {
           options: {
             list: [
-              { title: ctx.t.default('orderItem.type.options.product'), value: ProductType.Product },
-              { title: ctx.t.default('orderItem.type.options.productVariant'), value: ProductType.Variant },
-              { title: ctx.t.default('orderItem.type.options.productBundle'), value: ProductType.Bundle },
+              {
+                title: ctx.t.default('orderItem.type.options.product'),
+                value: PRODUCT_TYPES.PRODUCT,
+              },
+              {
+                title: ctx.t.default('orderItem.type.options.productVariant'),
+                value: PRODUCT_TYPES.VARIANT,
+              },
+              {
+                title: ctx.t.default('orderItem.type.options.productBundle'),
+                value: PRODUCT_TYPES.BUNDLE,
+              },
             ],
           },
           validation: (Rule) => Rule.required(),
@@ -53,13 +63,16 @@ export const orderItem: ITSSchemaDefinition = {
         f('packed', 'boolean', {
           // validation: (Rule) => Rule.min(1).required(),
         }),
-
-
       ],
     }
-    const fields = groups.map(({ name }) => ([
-      ...fieldsMap[name].map(field => ({ ...field, group: name }))
-    ])).flat();
+
+    const fields = groups.flatMap(({ name }) => {
+      const groupFields = fieldsMap[name] || []
+      return groupFields.map((field: any) => ({
+        ...field,
+        group: name,
+      }))
+    })
 
     return {
       groups,
@@ -81,5 +94,5 @@ export const orderItem: ITSSchemaDefinition = {
       //   }
       // },
     }
-  }
+  },
 }

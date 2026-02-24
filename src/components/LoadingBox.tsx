@@ -1,7 +1,13 @@
-import React from 'react';
-import {Container, Spinner, Card} from '@sanity/ui'
+import { Card, Container, Spinner } from '@sanity/ui'
+import React from 'react'
 
-export function LoadingBox({ content, loading }: { content: React.ReactNode, loading: boolean }) {
+export function LoadingBox({
+  content,
+  loading,
+}: {
+  content: React.ReactNode
+  loading: boolean
+}): React.ReactElement {
   return (
     <Container style={{ position: 'relative' }}>
       {content}
@@ -20,7 +26,7 @@ export function LoadingBox({ content, loading }: { content: React.ReactNode, loa
             backgroundColor: 'rgba(0, 0, 0, 0.6)',
             zIndex: 10,
           }}
-      >
+        >
           <Spinner size={4} muted />
         </Card>
       )}

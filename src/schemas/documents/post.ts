@@ -1,5 +1,6 @@
-import { ITSDocumentDefinition } from '../../types'
 import { NoteIcon } from '@phosphor-icons/react'
+
+import { ITSDocumentDefinition } from '../../types'
 
 export const post: ITSDocumentDefinition = {
   name: 'post',
@@ -9,7 +10,7 @@ export const post: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f } = ctx
     return {
-      fields: [f('title', 'i18nString', { i18n: 'atLeastOne' })]
+      fields: [f('title', 'i18nString', { i18n: 'atLeastOne' })],
     }
   },
   // preview: (ctx: ITSContext) => {
@@ -30,4 +31,4 @@ export const post: ITSDocumentDefinition = {
   //     },
   //   }
   // }
-};
+}

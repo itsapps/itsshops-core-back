@@ -5,8 +5,6 @@ export type PriceOptions = {
   name?: string
   group?: string
   validation?: (rule: NumberRule) => NumberRule | NumberRule[]
-  initialValue?: number,
+  initialValue?: number
   hidden?: boolean | ((parent: any) => boolean)
 }
-
-// export type CoreModules

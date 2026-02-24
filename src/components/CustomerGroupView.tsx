@@ -1,58 +1,54 @@
+import { Box, Flex, Heading, Stack, Text, useToast } from '@sanity/ui'
 import { useEffect } from 'react'
-import { useITSContext } from '../context/ITSCoreProvider'
-
-import { type UserViewComponent } from 'sanity/structure'
-import { type SanityDocument } from 'sanity'
-import { Dialog, Button, Flex, Stack, Box, Card, Text, Heading, useToast } from '@sanity/ui'
 import { useState } from 'react'
+import { type SanityDocument } from 'sanity'
+import { type UserViewComponent } from 'sanity/structure'
+
+import { useITSContext } from '../context/ITSCoreProvider'
 
 interface Customer extends SanityDocument {
   email?: string
 }
-interface CustomerGroup extends SanityDocument {
-  items: any[]
-}
+// interface CustomerGroup extends SanityDocument {
+//   items: any[]
+// }
 export const CustomerGroupView: UserViewComponent = (props) => {
-  const { t, format, sanityClient } = useITSContext();
+  const { t, sanityClient } = useITSContext()
 
   // const {document} = props.published
   const document = props.document.displayed
   const [customers, setCustomers] = useState<Customer[]>([])
 
-  const [loading, setLoading] = useState(false)
-  const [open, setOpen] = useState(false)
+  // const [loading, setLoading] = useState(true)
   const toast = useToast()
 
   useEffect(() => {
-    setLoading(true)
-    
     const query = `*[_type == "customer" && $groupId in customerGroups[]._ref]{_id, email}`
-    sanityClient.fetch(query, {groupId: document._id}).then((data) => {
-      setCustomers(data || [])
-    })
-    .catch((err) => {
-      console.log(err.message || 'Failed to fetch wines from Vinofact.')
-    })
-    .finally(() => setLoading(false))
-  }, [sanityClient, document._id])
-
+    sanityClient
+      .fetch(query, { groupId: document._id })
+      .then((data) => {
+        setCustomers(data || [])
+      })
+      .catch((err) => {
+        toast.push({
+          status: 'error',
+          title: err.message || 'Failed to fetch wines from Vinofact.',
+        })
+      })
+  }, [sanityClient, document._id, toast])
 
   return (
     <Box padding={[2, 3]}>
       <Stack space={[2, 3]}>
         <Flex align="center" gap={3}>
-          <Text weight='medium'>
-            {`Customers`}
-          </Text>
+          <Text weight="medium">{`Customers`}</Text>
         </Flex>
         <Stack marginTop={4} space={2}>
           <Box padding={2}>
-            <Heading as="h3">
-              {t('customerGroup.items')}
-            </Heading>
+            <Heading as="h3">{t('customerGroup.items')}</Heading>
           </Box>
-          {customers.map((item, index) => (
-              <div key={index}>{item.email}</div>
+          {customers.map((item) => (
+            <div key={item._id}>{item.email}</div>
           ))}
         </Stack>
       </Stack>
