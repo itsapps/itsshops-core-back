@@ -90,8 +90,7 @@ export const ITSCoreProvider = ({
       vinofact.integration.accessToken,
       vinofact.integration.profileSlug,
     )
-  }, [ctx.config.features.shop.vinofact, ctx.locale]);
-
+  }, [ctx.config.features.shop.vinofact, ctx.locale])
 
   const value = useMemo(
     () => ({

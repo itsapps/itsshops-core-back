@@ -16,6 +16,11 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./external": {
+      "source": "./src/external/index.ts",
+      "import": "./dist/external/index.js",
+      "default": "./dist/external/index.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
@@ -33,7 +38,8 @@
     "lint": "eslint .",
     "prepublishOnly": "npm run build",
     "watch": "pkg-utils watch --strict",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "vitest"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -74,7 +80,8 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "prettier": "^3.8.1",
     "prettier-plugin-packagejson": "^3.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
     "react": "^19.1",
