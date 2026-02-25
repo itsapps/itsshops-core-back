@@ -1,7 +1,11 @@
 import { BasketIcon, CogIcon, EditIcon, HomeIcon, UserIcon } from '@sanity/icons'
 // type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
 import React from 'react'
-import type { DefaultDocumentNodeResolver, StructureToolOptions } from 'sanity/structure'
+import type {
+  DefaultDocumentNodeResolver,
+  StructureResolver,
+  StructureToolOptions,
+} from 'sanity/structure'
 // import { OrderView } from '../components/OrderView2';
 // import { CustomerGroupView } from '../components/CustomerGroupView';
 import { type UserViewComponent } from 'sanity/structure'
@@ -12,7 +16,7 @@ import { fromRegistry, isDocHidden, localizedStructure } from '../structure/stru
 import type { ITSContext, ITSStructureItem } from '../types'
 type UserViewDocument = React.ComponentProps<UserViewComponent>['document']
 
-export const createStructure = (ctx: ITSContext) => {
+export const createStructure = (ctx: ITSContext): StructureResolver => {
   const mapItems = (ids: string[]) => ids.map((id) => fromRegistry(ctx, id))
 
   const coreManifest: ITSStructureItem[] = [
@@ -83,7 +87,7 @@ export const createStructure = (ctx: ITSContext) => {
   return localizedStructure(ctx, coreManifest)
 }
 
-export const createDefaultDocumentNode = (ctx: ITSContext) => {
+export const createDefaultDocumentNode = (ctx: ITSContext): DefaultDocumentNodeResolver => {
   const t = ctx.t.default
 
   const defaultDocumentNode: DefaultDocumentNodeResolver = (S, { schemaType }) => {

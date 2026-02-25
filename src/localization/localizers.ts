@@ -9,7 +9,7 @@ export const createI18nHelpers = (locale: string, baseLocale: string): ITSLocali
 })
 
 export function getI18nArrayValue<T>(
-  items: any,
+  items: unknown,
   locale: string,
   baseLocale: string,
 ): T | undefined {
@@ -32,7 +32,7 @@ export function getI18nArrayValue<T>(
 }
 
 export function getI18nDictValue<T>(
-  item: any,
+  item: Record<string, T> | undefined,
   locale: string,
   baseLocale: string,
   supportedLocales: string[],

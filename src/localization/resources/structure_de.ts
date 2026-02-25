@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
   shop: 'Shop',
   website: 'Webseite',

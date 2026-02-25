@@ -1,31 +1,41 @@
 import { unflatten } from 'flat'
 import { merge } from 'lodash'
 
-export function isObject(item: any): boolean {
-  return item && typeof item === 'object' && !Array.isArray(item)
+export function isObject(item: unknown): boolean {
+  if (!item) return false
+  return typeof item === 'object' && !Array.isArray(item)
 }
 
-export function deepMerge(target: any, source: any): any {
-  const output = Object.assign({}, target)
+export function deepMerge<T extends object, S extends object>(target: T, source: S): T & S {
+  // We initialize the output. Use 'any' internally during the construction
+  // if necessary, but the function signature remains strictly typed.
+  const output = { ...target } as any
+
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach((key) => {
-      if (isObject(source[key])) {
-        if (key in target) output[key] = deepMerge(target[key], source[key])
-        else Object.assign(output, { [key]: source[key] })
+      const sourceValue = (source as any)[key]
+      const targetValue = (target as any)[key]
+
+      if (isObject(sourceValue)) {
+        if (key in target) {
+          output[key] = deepMerge(targetValue, sourceValue)
+        } else {
+          output[key] = sourceValue
+        }
       } else {
-        Object.assign(output, { [key]: source[key] })
+        output[key] = sourceValue
       }
     })
   }
 
-  return output
+  return output as T & S
 }
 
 export function flattenAndMerge(first: any, second: any): any {
   return merge(unflatten(first), unflatten(second))
 }
 
-export const extractYouTubeId = (input: string | undefined) => {
+export const extractYouTubeId = (input: string | undefined): string | null => {
   if (!input) return null
 
   // If it's already just an 11-char video ID (typical format)
@@ -62,4 +72,8 @@ export const extractYouTubeId = (input: string | undefined) => {
   }
 
   return null
+}
+
+export function isDefined<T>(argument: T | undefined | null | false): argument is T {
+  return argument !== undefined && argument !== null && argument !== false
 }

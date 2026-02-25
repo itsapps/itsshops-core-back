@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention, camelcase */
 const productAndVariantFields = {
   title: {
     title: 'Title',

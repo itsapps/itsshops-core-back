@@ -1,6 +1,7 @@
 import { ComponentType, ReactNode } from 'react'
 import type {
   ArrayDefinition,
+  ArrayOfType,
   DocumentActionComponent,
   DocumentDefinition,
   FieldDefinition,
@@ -10,18 +11,18 @@ import type {
   ObjectDefinition,
   PreviewConfig,
   Reference,
+  ReferenceDefinition,
+  ReferenceTo,
+  Rule,
   SanityDocument,
   SanityDocumentLike,
   Template,
-  Rule,
-  ReferenceTo,
-  ArrayOfType,
-  ReferenceDefinition,
 } from 'sanity'
+import { ListItemBuilder, StructureBuilder, StructureResolverContext } from 'sanity/structure'
 
-import { PriceOptions } from './fields'
 import { FieldContext, ITSContext } from './context'
-import { FieldTranslators, ITSi18nArray, LocaleImage, I18nValidationOptions } from './localization'
+import { PriceOptions } from './fields'
+import { FieldTranslators, I18nValidationOptions, ITSi18nArray, LocaleImage } from './localization'
 
 export type ITSSanityDefinedAction = NonNullable<DocumentActionComponent['action']>
 
@@ -85,15 +86,21 @@ export interface SchemaExtension {
   order?: string[]
 }
 
+export type ITSStructureComponent = (
+  S: StructureBuilder,
+  context: StructureResolverContext,
+  ctx: ITSContext,
+) => ListItemBuilder
+
 export interface ITSStructureItem {
   type: 'document' | 'singleton' | 'group' | 'divider' | 'custom'
   id: string
   title?: string
-  icon?: any
+  icon?: ComponentType | ReactNode
   hidden?: boolean
   feature?: ITSFeatureKey
   children?: ITSStructureItem[]
-  component?: (S: any, context: any, ctx: ITSContext) => any
+  component?: ITSStructureComponent
   // Positioning logic:
   position?: {
     anchor?: 'top' | 'bottom' | string
@@ -101,13 +108,13 @@ export interface ITSStructureItem {
   }
 }
 
-export type CoreFieldOptions = Omit<Partial<FieldDefinition>, 'validation' | 'to' | 'of' > & {
+export type CoreFieldOptions = Omit<Partial<FieldDefinition>, 'validation' | 'to' | 'of'> & {
   i18n?: I18nValidationOptions
   validation?: (rule: Rule) => any
   to?: ReferenceTo[]
   of?: ArrayOfType[]
   [key: string]: any
-};
+}
 
 export type ReferenceFieldBuilder = (
   name: string,
@@ -184,71 +191,71 @@ export type DocumentReference = {
 }
 
 export interface SanityImageWithHotspot {
-  _type: 'image';
+  _type: 'image'
   asset: {
-    _ref: string;
-    _type: 'reference';
-  };
+    _ref: string
+    _type: 'reference'
+  }
   hotspot?: {
-    x: number;
-    y: number;
-    height: number;
-    width: number;
-  };
+    x: number
+    y: number
+    height: number
+    width: number
+  }
   crop?: {
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-  };
+    top: number
+    bottom: number
+    left: number
+    right: number
+  }
 }
 
 export type VariantOption = {
   _id: string
-  title: ITSi18nArray,
+  title: ITSi18nArray
   sortOrder?: number
 }
 
 export type VariantOptionGroup = {
   _id: string
-  title: ITSi18nArray,
-  sortOrder: number,
+  title: ITSi18nArray
+  sortOrder: number
   options: VariantOption[]
 }
 
 export type Variant = SanityDocument & {
-  _id: string;
-  _rev: string;
-  options: VariantOption[];
-  title: ITSi18nArray;
-  featured: boolean;
-  price?: number;
-  coverImage: string;
-  sku?: string;
-  active: boolean;
+  _id: string
+  _rev: string
+  options: VariantOption[]
+  title: ITSi18nArray
+  featured: boolean
+  price?: number
+  coverImage: string
+  sku?: string
+  active: boolean
   images?: LocaleImage[]
 }
 
 export type NewVariant = SanityDocumentLike & {
-  _id: string;
-  _type: string;
-  title: ITSi18nArray;
-  sku?: string;
-  options: Reference[];
-  featured: boolean;
-  active: boolean;
-  price?: number;
+  _id: string
+  _type: string
+  title: ITSi18nArray
+  sku?: string
+  options: Reference[]
+  featured: boolean
+  active: boolean
+  price?: number
 }
 
 export type Product = SanityDocument & {
-  images?: LocaleImage[],
-  price?: number,
-  sku?: string,
-  title: ITSi18nArray,
+  images?: LocaleImage[]
+  price?: number
+  sku?: string
+  title: ITSi18nArray
 }
 
 export type VariantContainer = {
-  _id: string,
+  _id: string
   published: Variant
-  draft?: Variant,
+  draft?: Variant
 }

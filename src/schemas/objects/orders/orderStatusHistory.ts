@@ -56,8 +56,8 @@ export const orderStatusHistory: ITSSchemaDefinition = {
             title: `${dateTime}: ${typeString} - ${'statusString'}`,
             subtitle,
           }
-        }
+        },
       },
     }
-  }
+  },
 }

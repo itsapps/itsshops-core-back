@@ -1,9 +1,8 @@
 import { EditIcon, SchemaIcon } from '@sanity/icons'
-import type { StructureBuilder } from 'sanity/structure'
 
-import type { ITSContext } from '../types'
+import type { ITSStructureComponent } from '../types'
 
-export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContext) => {
+export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
   const {
     config: { apiVersion },
   } = ctx
@@ -28,7 +27,7 @@ export const categoriesMenu = (S: StructureBuilder, context: any, ctx: ITSContex
     const category = await client.getDocument(categoryId)
 
     return S.documentTypeList('category')
-      .title(category.name)
+      .title(category?.name || t('category.title'))
       .apiVersion(apiVersion)
       .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
       .filter('parent._ref == $categoryId')

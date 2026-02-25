@@ -1,6 +1,15 @@
-import { ListItemBuilder, StructureBuilder, StructureResolverContext } from 'sanity/structure'
+import {
+  ListBuilder,
+  ListItem,
+  ListItemBuilder,
+  StructureBuilder,
+  StructureResolverContext,
+} from 'sanity/structure'
 
 import type { ITSContext, ITSStructureItem } from '../types'
+import { isDefined } from '../utils'
+
+type DividerBuilder = ReturnType<StructureBuilder['divider']>
 
 const sortItems = (items: ITSStructureItem[]): ITSStructureItem[] => {
   // 1. Separate items by their basic positioning intent
@@ -95,7 +104,7 @@ const resolveItem = (
   S: StructureBuilder,
   context: StructureResolverContext,
   ctx: ITSContext,
-): ListItemBuilder | any | null => {
+): ListItem | ListItemBuilder | DividerBuilder | null => {
   /// 1. Feature Guard
   if (item.feature && !ctx.featureRegistry.isFeatureEnabled(item.feature)) return null
   if (item.type === 'document' && !ctx.featureRegistry.isDocEnabled(item.id)) return null
@@ -124,7 +133,7 @@ const resolveItem = (
     }
     case 'group': {
       const sorted = sortItems(item.children || [])
-      const resolved = sorted.map((c) => resolveItem(c, S, context, ctx)).filter(Boolean)
+      const resolved = sorted.map((c) => resolveItem(c, S, context, ctx)).filter(isDefined)
 
       // If the group is empty (no enabled features/docs), hide the group entirely
       if (resolved.length === 0) return null
@@ -135,7 +144,7 @@ const resolveItem = (
         .child(S.list().id(item.id).title(title).items(resolved))
     }
     case 'custom': {
-      return item.component?.(S, context, ctx)
+      return item.component?.(S, context, ctx) ?? null
     }
     // document
     default: {
@@ -217,7 +226,7 @@ const mergeManifests = (
 }
 
 export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureItem[]) => {
-  return (S: StructureBuilder, context: StructureResolverContext) => {
+  return (S: StructureBuilder, context: StructureResolverContext): ListBuilder => {
     // 2. Combine and Sort
     const customerManifest = ctx.config.structure || []
     // 1. Merge (to allow overrides like changing position)
@@ -225,7 +234,7 @@ export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureIt
     const fullManifest = sortItems(mergedManifest)
 
     // 3. Resolve to Sanity UI
-    const items = fullManifest.map((item) => resolveItem(item, S, context, ctx)).filter(Boolean)
+    const items = fullManifest.map((item) => resolveItem(item, S, context, ctx)).filter(isDefined)
 
     return S.list()
       .id('root')
