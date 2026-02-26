@@ -6,11 +6,11 @@ import type {
   StructureResolver,
   StructureToolOptions,
 } from 'sanity/structure'
-// import { OrderView } from '../components/OrderView2';
 // import { CustomerGroupView } from '../components/CustomerGroupView';
 import { type UserViewComponent } from 'sanity/structure'
 import DocumentsPane from 'sanity-plugin-documents-pane'
 
+// import { OrderView } from '../components/OrderView'
 import { categoriesMenu } from '../structure/categories'
 import { fromRegistry, isDocHidden, localizedStructure } from '../structure/structure'
 import type { ITSContext, ITSStructureItem } from '../types'

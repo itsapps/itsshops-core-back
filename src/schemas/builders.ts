@@ -8,9 +8,33 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
   const apiVersion = config.apiVersion
 
   return {
-    internalLink: (options = { required: true }) => {
-      const fieldName = options.name || 'link'
-      const required = options.required || true
+    externalLink: (options = {}) => {
+      const fieldName = options.name || 'externalLink'
+      // const required = options.required || true
+
+      return [
+        f(`${fieldName}Url`, 'url', {
+          validation: (Rule) =>
+            Rule.uri({
+              scheme: ['http', 'https', 'mailto', 'tel'],
+            }),
+        }),
+        f(`${fieldName}Blank`, 'boolean', { initialValue: true }),
+        //   {
+        //   name: 'href',
+        //   title: t('link.href.title'),
+        //   description: t('link.href.description'),
+        //   type: 'url',
+        //   validation: Rule =>
+        //     Rule.uri({
+        //       scheme: ['http', 'https', 'mailto', 'tel']
+        //     }),
+        // },
+      ]
+    },
+    internalLink: (options = {}) => {
+      const fieldName = options.name || 'internalLink'
+      const required = options.required ?? true
 
       // Filter default 'to' based on config features
       const to = (options.to || config.schemaSettings.links.allowedReferences)
@@ -70,8 +94,6 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
      */
     module: (options) => {
       return {
-        // name: options.name,
-        // type: 'object',
         groups: [{ name: 'content', default: true }, { name: 'settings' }],
         fields: [
           // Content fields (assigned to content group)
@@ -86,7 +108,6 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             ? [
                 f('anchorId', 'string', {
                   group: 'settings',
-                  description: 'Used for #anchor-links',
                 }),
               ]
             : []),
@@ -135,6 +156,11 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     //   };
     // },
 
+    // annotation: () => {
+    //   return {
+    //     type: 'annotation',
+    //   }
+    // },
     /**
      * PORTABLE TEXT BUILDER
      * Context-aware text editor configuration.

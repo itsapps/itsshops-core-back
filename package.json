@@ -1,6 +1,6 @@
 {
   "name": "@itsapps/itsshops-core-back",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "",
   "keywords": [
     "sanity",
@@ -23,6 +23,21 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./external": {
+        "import": "./dist/external/index.js",
+        "default": "./dist/external/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "browserslist": "extends @sanity/browserslist-config",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -72,6 +87,7 @@
     "@types/react": "^19.2.14",
     "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
+    "babel-plugin-styled-components": "^2.1.4",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-sanity": "^7.1.4",

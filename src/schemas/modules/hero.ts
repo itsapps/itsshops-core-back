@@ -23,8 +23,8 @@ export const hero: ITSSchemaDefinition = {
             }),
             preview: {
               select: {
-                type: 'linkReference._type',
-                title: 'linkTitle',
+                type: 'internalLinkReference._type',
+                title: 'internalLinkTitle',
               },
               prepare({ type, title }) {
                 return {
@@ -119,7 +119,6 @@ export const hero2: ITSSchemaDefinition = {
 
     // Use the module builder to add the "Settings" (anchor, visibility, etc.)
     const module = builders.module({
-      name: 'hero',
       fields: contentFields,
       allowAnchor: true,
       allowTheme: true,

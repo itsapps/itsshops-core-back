@@ -145,8 +145,16 @@ export interface ITSInternalLinkOptions {
   required?: boolean
 }
 
+export interface ITSExternalLinkOptions {
+  name?: string
+  // to?: string[]
+  // includeTitle?: boolean
+  // includeDisplayType?: boolean
+  // displayTypes?: string[]
+  required?: boolean
+}
+
 export interface ITSModuleOptions {
-  name: string
   fields: any[]
   allowAnchor?: boolean
   allowTheme?: boolean
@@ -172,6 +180,7 @@ export interface ITSCountryCodesOptions {
 }
 
 export interface ITSBuilders {
+  externalLink: (options?: ITSExternalLinkOptions) => FieldDefinition[]
   internalLink: (options?: ITSInternalLinkOptions) => FieldDefinition[]
   module: (options: ITSModuleOptions) => any
   // portableText: (options?: ITSPTOptions) => any;

@@ -4,6 +4,10 @@ export default defineConfig({
   dist: 'dist',
   tsconfig: 'tsconfig.dist.json',
 
+  babel: {
+    styledComponents: true, 
+  },
+
   // Remove this block to enable strict export validation
   extract: {
     rules: {

@@ -28,7 +28,7 @@ export function createCustomDocumentAction<T>(customAction: CustomDocumentAction
             toast.push({
               status: 'error',
               title: t(allow),
-            });
+            })
             return
           }
         }
@@ -46,7 +46,7 @@ export function createCustomDocumentAction<T>(customAction: CustomDocumentAction
           toast.push({
             status: 'error',
             title: t(validate),
-          });
+          })
           return
         }
         originalResult?.onHandle?.()

@@ -8,7 +8,7 @@ import { baseImage } from './objects/baseImage'
 import { carousel } from './objects/carousel'
 import { company } from './objects/company'
 import { cropImage } from './objects/cropImage'
-import { internalLink } from './objects/internalLink'
+// import { internalLink } from './objects/internalLink'
 import { localeImage } from './objects/localeImage'
 import { localeTextsImage } from './objects/localeTextsImage'
 import { menuItem } from './objects/menuItem'
@@ -44,7 +44,7 @@ export const getCoreObjects = (
     youtube,
     menuItem,
     carousel,
-    internalLink,
+    // internalLink,
     // shipping,
     // shippingRate,
     // taxCountrySettings,

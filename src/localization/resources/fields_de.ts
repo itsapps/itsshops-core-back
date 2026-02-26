@@ -29,16 +29,24 @@ export default {
     disabled: {
       title: 'Inaktiv',
     },
-    linkTitle: {
+    internalLinkTitle: {
       title: 'Titel',
     },
-    linkReference: {
+    internalLinkReference: {
       title: 'Referenz',
+    },
+    externalLinkUrl: {
+      title: 'Link',
+      description:
+        'Für Emails "mailto:hallo@beispiel.com", für Telefonnummern "tel:+4365012345678"',
+    },
+    externalLinkBlank: {
+      title: 'In neuem Fenster öffnen',
     },
     url: {
       title: 'URL',
     },
-    linkDisplayType: {
+    internalLinkDisplayType: {
       title: 'Anzeigetyp',
       options: {
         link: 'Link',
@@ -211,9 +219,10 @@ export default {
         strong: 'Fett',
         em: 'Kursiv',
         underline: 'Unterstrichen',
-        strikethrough: 'Durchgestrichen',
+        'strike-through': 'Durchgestrichen',
         code: 'Code',
-        link: 'Link',
+        internalLink: 'Interne Verlinkung',
+        externalLink: 'Externe Verlinkung',
         highlight: 'Hervorheben',
       },
       annotations: {
@@ -222,6 +231,8 @@ export default {
         code: 'Code',
         link: 'Link',
         highlight: 'Hervorheben',
+        internalLink: 'Interne Verlinkung',
+        externalLink: 'Externe Verlinkung',
       },
     },
   },
@@ -827,20 +838,6 @@ export default {
       translations: {
         title: 'Übersetzungen',
       },
-    },
-  },
-  complexPortableText: {
-    title: 'Inhalt',
-    decorators: {
-      strong: 'Fett',
-      emphasis: 'Kursiv',
-      left: 'Links ausrichten',
-      right: 'Rechts ausrichten',
-      center: 'Zentrieren',
-    },
-    annotations: {
-      link: 'Link',
-      internalLink: 'Interner Link',
     },
   },
   customImage: {

@@ -1,11 +1,11 @@
 import { DocumentActionComponent, DocumentActionsContext } from 'sanity'
 
-// import { OrderDocumentActions } from '../components/actions/OrderActions'
-// import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import {
   createCustomDocumentAction,
   type CustomDocumentAction,
 } from '../components/actions/CustomDocumentAction'
+// import { OrderDocumentActions } from '../components/actions/OrderActions'
+// import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import { ITSFeatureRegistry, ITSSanityDefinedAction } from '../types'
 
 type ProductVariantReferenceDoc = {
