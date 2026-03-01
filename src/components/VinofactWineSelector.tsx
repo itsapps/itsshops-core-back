@@ -8,12 +8,10 @@ import {
 } from '@sanity/icons'
 import {
   Autocomplete,
-  Badge,
   Box,
   Button,
   Card,
   Flex,
-  Inline,
   Menu,
   MenuButton,
   MenuDivider,
@@ -27,29 +25,7 @@ import { set, unset, useTranslation } from 'sanity'
 
 import { useITSContext } from '../context/ITSCoreProvider'
 import { VinofactWine } from '../types'
-
-const WinePreview = ({ wine }: { wine: VinofactWine }) => (
-  <Flex align="center" gap={3}>
-    <Text size={2} muted>
-      <WineIcon />
-    </Text>
-    <Stack space={2} flex={1}>
-      <Text weight="semibold" size={1}>
-        {wine.title}
-      </Text>
-      <Inline space={2}>
-        <Badge>
-          <Flex align="center" gap={1}>
-            {wine.year || 'N/V'}
-          </Flex>
-        </Badge>
-        <Text size={1} muted>
-          /{wine.slug}
-        </Text>
-      </Inline>
-    </Stack>
-  </Flex>
-)
+import { WinePreview } from './products/WinePreview'
 
 export function VinofactWineSelector(props: any): ReactElement {
   const { value, onChange, readOnly } = props

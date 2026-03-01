@@ -7,6 +7,8 @@ import {
 // import { OrderDocumentActions } from '../components/actions/OrderActions'
 // import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import { ITSFeatureRegistry, ITSSanityDefinedAction } from '../types'
+// import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
+// import { ImportWinesAction } from '../components/actions/ImportWinesAction'
 
 type ProductVariantReferenceDoc = {
   _type: string
@@ -40,6 +42,7 @@ export function actionResolver(
     }
     return !globallyDisallowedActions.includes(action)
   })
+  // actions.push(ImportWinesAction)
 
   // other actions
   const createCustomAction = <T>(customAction: Omit<CustomDocumentAction<T>, 'context'>) => {

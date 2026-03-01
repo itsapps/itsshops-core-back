@@ -1146,29 +1146,27 @@ export default {
   carousel: {
     title: 'Karussell',
     preview: {
-      slides_one: '{{count}} Slide',
-      slides_other: '{{count}} Slides',
+      slides_zero: 'Keine Bilder',
+      slides_one: '{{count}} Bild',
+      slides_other: '{{count}} Bilder',
     },
     fields: {
       slides: {
-        title: 'Slides',
+        title: 'Bilder',
       },
       autoplay: {
         title: 'Autoplay',
       },
       autoplayDelay: {
         title: 'Autoplay-Verzögerung',
-        description: 'Nächster Slide wird nach den angegebenen Sekunden angezeigt.',
+        description: 'Nächstes Bild wird nach den angegebenen Sekunden angezeigt.',
       },
       loop: {
         title: 'Wiederholen',
       },
-      slideSize: {
-        title: 'Slide-Größe',
-      },
       fade: {
         title: 'Fade',
-        description: 'Fade-Animationen beim Wechsel der Slides.',
+        description: 'Fade-Animationen anstatt Bewegung beim Wechsel der Slides.',
       },
     },
   },
@@ -1180,7 +1178,7 @@ export default {
     },
   },
   localeImage: {
-    title: 'Lokalisiertes Bild',
+    title: 'Bild (Mehrsprachig)',
   },
   baseImage: {
     title: 'Bild',

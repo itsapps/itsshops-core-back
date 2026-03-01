@@ -72,7 +72,7 @@ export function shapeSchema({
   // const mergedGroups = Array.from(groupMap.values());
 
   // 2. Combine Core + Custom
-  let allFields = [...coreFields, ...customFields];
+  let allFields = [...coreFields, ...customFields]
 
   // 3. Apply Overrides
   // This allows customers to move core fields into their new groups/fieldsets

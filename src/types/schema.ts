@@ -192,6 +192,7 @@ export interface ITSBuilders {
   countryCodeField: (options: ITSCountryCodeOptions) => FieldDefinition
   countryCodesField: (options: ITSCountryCodesOptions) => FieldDefinition
   priceField: (options: PriceOptions) => FieldDefinition<'number'>
+  defineArrayField(props: Omit<ArrayDefinition, 'type'>): ArrayDefinition
 }
 
 export type DocumentReference = {

@@ -12,6 +12,7 @@ import DocumentsPane from 'sanity-plugin-documents-pane'
 
 // import { OrderView } from '../components/OrderView'
 import { categoriesMenu } from '../structure/categories'
+import { productsMenu } from '../structure/products'
 import { fromRegistry, isDocHidden, localizedStructure } from '../structure/structure'
 import type { ITSContext, ITSStructureItem } from '../types'
 type UserViewDocument = React.ComponentProps<UserViewComponent>['document']
@@ -32,15 +33,16 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
       icon: BasketIcon,
       feature: 'shop',
       children: [
-        ...mapItems([
-          'order',
-          'orderMeta',
-          'product',
-          'productBundle',
-          'productVariant',
-          'variantOptionGroup',
-          'variantOption',
-        ]),
+        ...mapItems(['order', 'orderMeta']),
+        ...mapItems(['product']),
+        // {
+        //   type: 'custom',
+        //   id: 'products',
+        //   feature: 'shop',
+        //   component: productsMenu,
+        //   hidden: isDocHidden(ctx, 'product'),
+        // },
+        ...mapItems(['productBundle', 'productVariant', 'variantOptionGroup', 'variantOption']),
         {
           type: 'custom',
           id: 'categories',

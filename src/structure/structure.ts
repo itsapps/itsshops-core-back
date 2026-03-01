@@ -8,6 +8,7 @@ import {
 
 import type { ITSContext, ITSStructureItem } from '../types'
 import { isDefined } from '../utils'
+import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
 
 type DividerBuilder = ReturnType<StructureBuilder['divider']>
 
@@ -242,6 +243,13 @@ export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureIt
       .items([
         ...items,
         // S.documentTypeListItem('bla').title('pages'),
+        // S.listItem()
+        //   .title('Wine Import')
+        //   .id('wineImport')
+        //   .child(S.component(CreateProductFromWines).title('Import Wines')),
+        // S.listItem()
+        //   .title('Create Product From Wines')
+        //   .child(S.component(CreateProductFromWines).title('Wine Import')),
       ])
   }
 }

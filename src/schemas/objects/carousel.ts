@@ -12,7 +12,7 @@ export const carousel: ITSSchemaDefinition = {
       options: { collapsible: true, collapsed: false },
       fields: [
         f('slides', 'array', {
-          of: [{ type: 'localeImage' }],
+          of: [{ type: 'localeAltImage' }],
         }),
         f('autoplay', 'boolean', { initialValue: false }),
         f('autoplayDelay', 'number', { initialValue: 5 }),
@@ -28,10 +28,10 @@ export const carousel: ITSSchemaDefinition = {
             // title: 'carousel.title',
             // subtitle: 'carousel.preview.slides',
             // media: "asdf"
-            title: ctx.t.default('carousel.title'),
-            subtitle: ctx.t.default('carousel.preview.slides', undefined, {
+            title: ctx.t.default('carousel.preview.slides', `${slides?.length || 0} Slides`, {
               count: slides?.length || 0,
             }),
+            subtitle: ctx.t.default('carousel.title'),
             media: ImagesIcon,
           }
         },

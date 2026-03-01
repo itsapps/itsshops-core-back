@@ -9,8 +9,8 @@ import { carousel } from './objects/carousel'
 import { company } from './objects/company'
 import { cropImage } from './objects/cropImage'
 // import { internalLink } from './objects/internalLink'
+import { localeAltImage } from './objects/localeAltImage'
 import { localeImage } from './objects/localeImage'
-import { localeTextsImage } from './objects/localeTextsImage'
 import { menuItem } from './objects/menuItem'
 import { fulfillment } from './objects/orders/fulfillment'
 import { orderCustomer } from './objects/orders/orderCustomer'
@@ -34,7 +34,7 @@ export const getCoreObjects = (
     // customImage,
     localeImage,
     baseImage,
-    localeTextsImage,
+    localeAltImage,
     // titleImage,
     // // localeImages,
     cropImage,

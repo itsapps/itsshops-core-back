@@ -3,9 +3,7 @@ import { EditIcon, SchemaIcon } from '@sanity/icons'
 import type { ITSStructureComponent } from '../types'
 
 export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
-  const {
-    config: { apiVersion },
-  } = ctx
+  const apiVersion = ctx.config.apiVersion
   const t = ctx.t.default
   const client = context.getClient({ apiVersion })
 

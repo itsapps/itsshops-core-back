@@ -210,7 +210,7 @@ export function DeployDialog(): ReactElement {
   ])
 
   return (
-    <>
+    <Stack>
       <Button icon={RocketLaunchIcon} title={t('deployments.title')} onClick={handleOpen} />
 
       {open && (
@@ -225,6 +225,6 @@ export function DeployDialog(): ReactElement {
           </Card>
         </Dialog>
       )}
-    </>
+    </Stack>
   )
 }

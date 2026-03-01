@@ -1,12 +1,15 @@
+import { ImageIcon } from '@phosphor-icons/react'
+
 import { ITSImageDefinition } from '../../types'
 
 export const baseImage: ITSImageDefinition = {
   name: 'baseImage',
   type: 'image',
+  icon: ImageIcon,
   build: (ctx) => {
     return {
       options: { hotspot: true },
-      fields: [ctx.f('title', 'string'), ctx.f('alt', 'string')],
+      fields: [ctx.f('alt', 'string')],
       validation: (Rule) => Rule.required().assetRequired(),
       // validation: (rule) =>
       //   rule.custom((field) => {
@@ -21,20 +24,19 @@ export const baseImage: ITSImageDefinition = {
       //   }),
       preview: {
         select: {
-          title: 'title',
           alt: 'alt',
           asset: 'asset',
           crop: 'crop',
           hotspot: 'hotspot',
         },
-        prepare: ({ title, alt, asset, crop, hotspot }) => {
+        prepare: ({ alt, asset, crop, hotspot }) => {
+          const img = { asset, crop, hotspot } as any
           return {
             // We use our new array-based helper here
-            title,
-            subtitle: alt,
+            title: alt,
             // title: ctx.localizer.value(title) || 'No title',
             // subtitle: ctx.localizer.value(alt) || 'No alt',
-            media: { asset, crop, hotspot } as any,
+            media: asset ? img : ImageIcon,
           }
         },
       },

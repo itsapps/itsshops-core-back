@@ -71,10 +71,11 @@ const OptionCheckbox = memo(
         </Box>
       </Flex>
     )
-})
+  },
+)
 
 // Set a display name for devtools
-OptionCheckbox.displayName = 'OptionCheckbox';
+OptionCheckbox.displayName = 'OptionCheckbox'
 
 export function GenerateVariants(props: VariantsInputProps): React.ReactElement {
   const { t, localizer, featureRegistry, sanityClient } = useITSContext()
@@ -270,6 +271,7 @@ export function GenerateVariants(props: VariantsInputProps): React.ReactElement 
     }
 
     setLoadingVariants(false)
+    return newVariants
   }, [onChange, sanityClient, originalDocument, selectedOptions, featureRegistry])
 
   const handleDialogOpen = useCallback(() => setDialogOpen(true), [])
@@ -360,18 +362,21 @@ export function GenerateVariants(props: VariantsInputProps): React.ReactElement 
     setLoadingVariants(false)
   }, [deleteVariants, value])
 
-  const handleVariantRefClick = async (variantId: string) => {
-    const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
-    const { parentRefPath } = childParams
+  const handleVariantRefClick = useCallback(
+    async (variantId: string) => {
+      const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
+      const { parentRefPath } = childParams
 
-    handleEditReference({
-      id: variantId,
-      type: 'productVariant',
-      // Uncertain that this works as intended
-      parentRefPath: parentRefPath ? pathFromString(parentRefPath) : [``],
-      template: { id: variantId },
-    })
-  }
+      handleEditReference({
+        id: variantId,
+        type: 'productVariant',
+        // Uncertain that this works as intended
+        parentRefPath: parentRefPath ? pathFromString(parentRefPath) : [``],
+        template: { id: variantId },
+      })
+    },
+    [groupIndex, handleEditReference, routerPanesState],
+  )
 
   const handleVariantDeleteClick = useCallback(
     async (variantId: string) => {

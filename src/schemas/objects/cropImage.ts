@@ -8,15 +8,16 @@ export const cropImage: ITSImageDefinition = {
       options: { hotspot: true },
       // preview: {
       //   select: {
-      //     asset: 'asset',
-      //     crop: 'crop',
-      //     hotspot: 'hotspot',
+      //     // asset: 'asset',
+      //     // crop: 'crop',
+      //     // hotspot: 'hotspot',
       //   },
-      //   prepare: ({ asset, crop, hotspot }) => {
+      //   prepare: () => {
       //     return {
-      //       media: { asset, crop, hotspot } as any,
-      //     };
-      //   }
+      //       title: 'hi',
+      //       // media: { asset, crop, hotspot } as any,
+      //     }
+      //   },
       // },
     }
   },

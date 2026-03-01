@@ -1,3 +1,5 @@
+import { ImageIcon } from '@phosphor-icons/react'
+
 import { ITSSchemaDefinition } from '../../types'
 
 export const localeImage: ITSSchemaDefinition = {
@@ -6,30 +8,21 @@ export const localeImage: ITSSchemaDefinition = {
   build: (ctx) => {
     const { f } = ctx
     return {
-      groups: [
-        { name: 'image', title: 'Image', default: true },
-        { name: 'texts', title: 'Texts' },
-      ],
       fields: [
-        f('image', 'i18nCropImage', { group: 'image' }),
-        f('title', 'i18nString', { group: 'texts' }),
-        f('alt', 'i18nString', { group: 'texts' }),
+        f('image', 'i18nCropImage'),
+        f('alt', 'i18nString', {
+          options: { collapsible: true, collapsed: true },
+        }),
       ],
       preview: {
         select: {
-          title: 'title',
           alt: 'alt',
-          media: 'image',
+          image: 'image',
         },
-        prepare: ({ title, alt, media }) => {
-          const image = ctx.localizer.value<any>(media)
+        prepare: ({ alt, image }) => {
           return {
-            // We use our new array-based helper here
-            // title,
-            // subtitle: alt,
-            title: ctx.localizer.value(title) || '',
-            subtitle: ctx.localizer.value(alt) || '',
-            media: image,
+            title: ctx.localizer.value(alt) || ctx.t.default('localeImage.title'),
+            media: ctx.localizer.value(image) || ImageIcon,
           }
         },
       },

@@ -1,3 +1,5 @@
+import { IntrinsicArrayOfDefinition, defineField, ReferenceTo, ReferenceDefinition, ArrayOfType, isReference } from 'sanity'
+
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
 
@@ -303,6 +305,25 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       //     input: PriceInput,
       //   },
       // })
+    },
+    defineArrayField: (props) => {
+      const of = props.of.filter((item) => {
+        if (isReference(item)) {
+          item.t
+        }
+        if (item.type === 'reference') {
+
+          const refType = item as ArrayOfType<'reference'>
+          // const refType = item as ArrayOfType<'reference'>
+          return ctx.featureRegistry.isDocEnabled(refType.to[0].type)
+        }
+        return true
+      })
+      return defineField({
+        type: 'array',
+        ...props,
+        ...(of && { of }),
+      })
     },
   }
 }
