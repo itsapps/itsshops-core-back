@@ -2,6 +2,7 @@
 import { CubeIcon } from '@phosphor-icons/react'
 
 import { GenerateVariants } from '../../components/GenerateVariants'
+import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
 import { ITSDocumentDefinition, PRODUCT_TYPES } from '../../types'
 import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
 
@@ -32,7 +33,8 @@ export const product: ITSDocumentDefinition = {
           ],
           group: 'variants',
           components: {
-            input: GenerateVariants,
+            // input: GenerateVariants,
+            input: CreateProductFromWines,
           },
         }),
       ],

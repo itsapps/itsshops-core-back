@@ -10,11 +10,9 @@ type WineImporterListProps = {
   onToggle: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export function WineImporterList({
-  wines,
-  selectedIds,
-  onToggle,
-}: WineImporterListProps): React.ReactElement {
+export function WineImporterList(props: WineImporterListProps): React.ReactElement {
+  const { wines, selectedIds, onToggle } = props
+
   if (wines.length === 0) {
     return (
       <Flex align="center" justify="center" height="fill" padding={4}>

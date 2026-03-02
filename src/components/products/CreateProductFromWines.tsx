@@ -6,15 +6,54 @@ import { useITSContext } from '../../context/ITSCoreProvider'
 import { VinofactWine } from '../../types'
 import { WineImporterList } from './WineImporterList'
 
-export function CreateProductFromWines(): ReactElement {
-  const { vinofactClient } = useITSContext()
+export function CreateProductFromWines(props: any): ReactElement {
+  const { vinofactClient, sanityClient } = useITSContext()
   const toast = useToast()
+
+  const isFieldInput = Boolean(props.elementProps)
+  // const initialIds = useMemo(() => {
+  //   if (!props.value) return []
+  //   return props.value.map((ref: any) => ref._ref)
+  // }, [props.value])
 
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [wines, setWines] = useState<VinofactWine[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  // const [selectedIds, setSelectedIds] = useState<string[]>(initialIds)
+
+  // useEffect(() => {
+  //   setSelectedIds(initialIds)
+  // }, [initialIds])
+
+  const fetchExistingWineIds = useCallback(async () => {
+    if (!props.value || props.value.length === 0) {
+      setSelectedIds([])
+      return
+    }
+
+    // Get all the _refs from the current array
+    const refs = props.value.map((val: any) => val._ref)
+
+    // Query Sanity: "Get the wineId for all these variant IDs"
+    const query = `*[_id in $refs].vinofactWineId`
+    try {
+      const result = await sanityClient.fetch(query, { refs })
+      setSelectedIds(result.filter(Boolean)) // Only keep non-null wineIds
+    } catch (err: any) {
+      toast.push({
+        status: 'error',
+        title: 'Fetch failed.',
+        description: err.message,
+      })
+      console.error('Failed to fetch variant wineIds', err)
+    }
+  }, [props.value, sanityClient])
+
+  useEffect(() => {
+    if (open && isFieldInput) fetchExistingWineIds()
+  }, [open, isFieldInput, fetchExistingWineIds])
 
   const loadWines = useCallback(async () => {
     if (!vinofactClient) {

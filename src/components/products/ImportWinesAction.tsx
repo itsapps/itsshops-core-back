@@ -1,7 +1,17 @@
 import { Dialog } from '@sanity/ui'
 import { useEffect, useState } from 'react'
 
-import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
+import { CreateProductFromWines } from './CreateProductFromWines'
+import { VinofactWine } from '../../types'
+
+type WineImportDialogProps = {
+  // buttonText: string
+  // buttonIcon?: React.ComponentType
+  // dialogHeader: string
+  // confirmButtonText: (count: number) => string
+  // This is the key: pass the logic in here
+  onConfirm: (selectedWines: VinofactWine[]) => Promise<void>
+}
 
 export function ImportWinesAction(props) {
   const [dialogOpen, setDialogOpen] = useState(false)
