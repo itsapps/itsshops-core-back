@@ -1,4 +1,4 @@
-import { IntrinsicArrayOfDefinition, defineField, ReferenceTo, ReferenceDefinition, ArrayOfType, isReference } from 'sanity'
+import { defineField, isReference } from 'sanity'
 
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
@@ -225,7 +225,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     countryCodeField: (options) => {
       return f(options.name || 'countryCode', 'string', {
         options: {
-          list: ctx.countryOptions,
+          list: ctx.constants.countryOptions,
         },
         // validation: (Rule) => Rule.required()
         validation: (rule) =>
@@ -256,7 +256,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       return f(options.name || 'countryCodes', 'array', {
         of: [{ type: 'string' }],
         options: {
-          list: ctx.countryOptions,
+          list: ctx.constants.countryOptions,
         },
       })
       // return {
@@ -309,11 +309,11 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     defineArrayField: (props) => {
       const of = props.of.filter((item) => {
         if (isReference(item)) {
-          item.t
+          // item.t
         }
         if (item.type === 'reference') {
-
-          const refType = item as ArrayOfType<'reference'>
+          const refType = item as any
+          // const refType = item as ArrayOfType<'reference'>
           // const refType = item as ArrayOfType<'reference'>
           return ctx.featureRegistry.isDocEnabled(refType.to[0].type)
         }
@@ -324,6 +324,22 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
         ...props,
         ...(of && { of }),
       })
+    },
+    buildGroupedSchema: (props) => {
+      const groups = props.map((item, index) => ({
+        name: item.name,
+        icon: item.icon,
+        default: index === 0,
+      }))
+
+      const fields = props.flatMap((item) =>
+        item.fields.map((field) => ({
+          ...field,
+          group: item.name,
+        })),
+      )
+
+      return { groups, fields }
     },
   }
 }

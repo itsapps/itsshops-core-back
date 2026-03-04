@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 
-import { Country } from './country'
+import { Country } from './constants'
 import { Language } from './localization'
 import {
   ITSDocumentDefinition,
@@ -10,12 +10,21 @@ import {
 } from './schema'
 import { RecursivePartial } from './utils'
 
+export type AllowedDocumentReferenceType =
+  | 'productVariant'
+  | 'page'
+  | 'post'
+  | 'category'
+  | 'blog'
+  | string
+export type AllowedDocumentReferenceTypes = AllowedDocumentReferenceType[]
+
 export interface ITSCoreSchemaSettings {
   links: {
-    allowedReferences: string[]
+    allowedReferences: AllowedDocumentReferenceTypes
   }
   menus: {
-    allowedReferences: string[]
+    allowedReferences: AllowedDocumentReferenceTypes
     disableSubmenus: boolean
     maxDepth: number
   }
@@ -108,10 +117,14 @@ export interface ItsshopsConfig {
   structure?: ITSStructureItem[]
 }
 
+export type ProductKind = 'wine' | 'physical' | 'digital' | 'bundle'
+export type ProductKinds = ProductKind[]
+
 /** Internal version of the config used by the engine **/
 export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features' | 'schemaSettings'> {
   localization: ITSi18nConfig
   features: ITSFeatureConfig
   schemaSettings: CoreSchemaSettings
   apiVersion: string
+  productKinds: ProductKinds
 }

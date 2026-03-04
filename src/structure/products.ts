@@ -1,79 +1,71 @@
-import { EditIcon, PackageIcon } from '@sanity/icons'
+import {
+  DownloadSimpleIcon,
+  PackageIcon as KindPackageIcon,
+  SlidersHorizontalIcon,
+  StackIcon,
+  WineIcon,
+} from '@phosphor-icons/react'
+import { PackageIcon } from '@sanity/icons'
+import { ComponentType } from 'react'
 
-import { WineImporter } from '../components/products/WineImporter'
+// import { WineImporter } from '../components/products/WineImporter'
 // import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
-import type { ITSStructureComponent } from '../types'
+import type { ITSStructureComponent, ProductKind } from '../types'
 
 export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
-  // const apiVersion = ctx.config.apiVersion
+  const apiVersion = ctx.config.apiVersion
   const t = ctx.t.default
-  // const client = context.getClient({ apiVersion })
 
-  // const wineImportPane = () =>
-  //   S.listItem()
-  //     .title('Wine Import')
-  //     .child(S.component(CreateProductFromWines).title('Import Wines'))
-
-  // const getMenuItems = () => {
-  //   const customEditButton = S.menuItem()
-  //     .title('Import from Wines')
-  //     // .action('importWines')
-  //     .showAsAction(true)
-  //     .icon(EditIcon)
-  //     .intent({ type: 'importWines' })
-
-  //   const defaultItems = S.documentTypeList(`product`).getMenuItems()
-  //   return [...(defaultItems ?? []), customEditButton]
-  //   // return [customEditButton]
-  // }
-
-  // return S.documentTypeList('product')
-  //   .title(t('products'))
-  //   .apiVersion(apiVersion)
-  //   .menuItems([S.menuItem().title('Import Wines').action('importWines').icon(PackageIcon)])
+  const productKindIcons: Record<ProductKind, ComponentType> = {
+    wine: WineIcon,
+    digital: DownloadSimpleIcon,
+    bundle: StackIcon,
+    physical: KindPackageIcon,
+  }
 
   return S.listItem()
     .title(t('products'))
     .icon(PackageIcon)
     .child(
       S.list()
-        .title(t('products'))
-        .items([
-          S.listItem().title(t('products')).icon(PackageIcon).child(S.documentTypeList('product')),
-          S.listItem()
-            .title('Import via API')
-            .child(S.component(WineImporter).title('Import Wines')),
-        ]),
+        .title('Select a Kind')
+        .items(
+          ctx.config.productKinds.map((kind) =>
+            S.listItem()
+              .title(kind.toUpperCase())
+              .icon(productKindIcons[kind])
+              // PANE 2: Show Products of this Kind
+              .child(
+                S.documentTypeList('product')
+                  .title(`${kind} Products`)
+                  .apiVersion(apiVersion)
+                  .filter('_type == "product" && kind == $kind')
+                  .params({ kind })
+                  // PANE 3: The Magic "Split" View
+                  .child((productId) =>
+                    S.list()
+                      .id('ProductOptions')
+                      .title('Product Options')
+                      .items([
+                        // Option 1: Edit the Product Details
+                        S.listItem()
+                          .title('Edit Product Info')
+                          .child(S.document().schemaType('product').documentId(productId)),
+                        // Option 2: View/Edit the 1,000 Variants
+                        S.listItem().title('Manage Variants').icon(SlidersHorizontalIcon).child(
+                          S.documentTypeList('productVariant')
+                            .title('Variants')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "productVariant" && product._ref == $productId')
+                            .params({ productId }),
+                          // .initialValueTemplates([
+                          //   S.initialValueTemplateItem('variant-with-parent', { productId })
+                          // ]),
+                        ),
+                      ]),
+                  ),
+              ),
+          ),
+        ),
     )
-  // return S.listItem()
-  //   .title(t('products'))
-  //   .icon(PackageIcon)
-  //   .child(() => {
-  //     // if (context.intent === 'importWines') {
-  //     //   return S.component(CreateProductFromWines)
-  //     //     .title('Import Wines')
-  //     // }
-
-  //     return S.documentTypeList('product')
-  //       .title(t('products'))
-  //       .apiVersion(apiVersion)
-  //       .menuItems(getMenuItems())
-  //   })
-
-  // return S.listItem()
-  //   .title(t('products'))
-  //   .icon(PackageIcon)
-  //   .child(
-  //     S.documentTypeList('product')
-  //       .title(t('products'))
-  //       .apiVersion(apiVersion)
-  //       // .menuItems([S.menuItem().title('Import Wines').action('importWines').icon(PackageIcon)]),
-  //       //   // .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
-  //       .menuItems(getMenuItems())
-  //       .canHandleIntent((intentName) => {
-  //         return intentName === 'importWines'
-  //       }),
-  //     //   .canHandleIntent(() => false),
-  //     // // .child(subCategoryList),
-  //   )
 }

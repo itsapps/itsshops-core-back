@@ -10,7 +10,8 @@ interface ValidatorContext {
 export const i18nValidators = {
   /** 1 & 5: Required (or Warning) for the Default Locale */
   requiredDefault:
-    (defaultLocale: string, isRequired: boolean, ctx: ValidatorContext) => (rule: Rule) => {
+    (defaultLocale: string, isRequired: boolean, ctx: ValidatorContext) =>
+    (rule: Rule): Rule => {
       const customRule = rule.custom((value: any[]) => {
         const entry = value?.find((item) => item._key === defaultLocale)
         if (!entry?.value) {
@@ -23,39 +24,43 @@ export const i18nValidators = {
     },
 
   /** 2: All defined locales are required */
-  requiredAll: (allLocales: string[], ctx: ValidatorContext) => (rule: Rule) => {
-    return rule
-      .custom((value: any[]) => {
-        const missing = allLocales.filter(
-          (lang) => !value?.find((item) => item._key === lang)?.value,
-        )
-        return missing.length === 0
-          ? true
-          : ctx.t('validation.requiredAll', undefined, { missing: missing.join(', ') })
-      })
-      .error()
-  },
+  requiredAll:
+    (allLocales: string[], ctx: ValidatorContext) =>
+    (rule: Rule): Rule => {
+      return rule
+        .custom((value: any[]) => {
+          const missing = allLocales.filter(
+            (lang) => !value?.find((item) => item._key === lang)?.value,
+          )
+          return missing.length === 0
+            ? true
+            : ctx.t('validation.requiredAll', undefined, { missing: missing.join(', ') })
+        })
+        .error()
+    },
 
   /** 3 & 4: At least one (any) exists */
-  atLeastOneExists: (isRequired: boolean, ctx: ValidatorContext) => (rule: Rule) => {
-    // const fieldLabel = t(`${docName}.fields.${fieldName}.title`);
-    const customRule = rule.custom((value: any[]) => {
-      const hasValue = value?.some((item) => !!item.value)
-      if (!hasValue) {
-        return {
-          message: ctx.t('validation.oneFieldMustExist', undefined),
-          // Leaving 'path' out here targets the field itself
+  atLeastOneExists:
+    (isRequired: boolean, ctx: ValidatorContext) =>
+    (rule: Rule): Rule => {
+      // const fieldLabel = t(`${docName}.fields.${fieldName}.title`);
+      const customRule = rule.custom((value: any[]) => {
+        const hasValue = value?.some((item) => !!item.value)
+        if (!hasValue) {
+          return {
+            message: ctx.t('validation.oneFieldMustExist', undefined),
+            // Leaving 'path' out here targets the field itself
+          }
         }
-      }
-      return true
-    })
-    return isRequired ? customRule.error() : customRule.warning()
-  },
+        return true
+      })
+      return isRequired ? customRule.error() : customRule.warning()
+    },
 
   /** 6: Min/Max character limits with specific input highlighting */
   contentLimits:
     (limits: { min?: number; max?: number; warning?: boolean }, ctx: ValidatorContext) =>
-    (rule: Rule) => {
+    (rule: Rule): Rule => {
       const { min, max, warning } = limits
 
       const customRule = rule.custom((value: any[]) => {
@@ -87,5 +92,33 @@ export const i18nValidators = {
         return true
       })
       return warning ? customRule.warning() : customRule.error()
-  },
+    },
 }
+
+export const validateRequiredArrayIfKind =
+  (kind: string) =>
+  (rule: Rule): Rule =>
+    rule.custom((value, context) => {
+      const isCorrectKind = context.document?.kind === kind
+
+      // Check if it's the right kind and if the array is empty
+      if (isCorrectKind && (!Array.isArray(value) || value.length === 0)) {
+        return context.i18n.t('validation:generic.required')
+      }
+
+      return true
+    })
+
+export const validateRequiredIfKind =
+  (kind: string) =>
+  (rule: Rule): Rule =>
+    rule.custom((value, context) => {
+      const isCorrectKind = context.document?.kind === kind
+
+      // Check if it's the right kind and if the array is empty
+      if (isCorrectKind && !value) {
+        return context.i18n.t('validation:generic.required')
+      }
+
+      return true
+    })

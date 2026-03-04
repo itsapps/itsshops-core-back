@@ -3,8 +3,8 @@ import { PackageIcon } from '@sanity/icons'
 import { ITSSchemaDefinition } from '../../types'
 // import { ProductMediaPreview } from '../../components/previews/ProductMediaPreview';
 
-export const productBundleItem: ITSSchemaDefinition = {
-  name: 'productBundleItem',
+export const bundleItem: ITSSchemaDefinition = {
+  name: 'bundleItem',
   type: 'object',
   feature: 'shop',
   build: (ctx) => ({
@@ -15,13 +15,12 @@ export const productBundleItem: ITSSchemaDefinition = {
         validation: (Rule) => Rule.min(1).required(),
       }),
       ctx.f('product', 'reference', {
-        to: [{ type: 'product' }, { type: 'productVariant' }],
+        to: [{ type: 'productVariant' }],
         validation: (Rule) => Rule.required(),
         options: {
           // filter: options.to?.includes('product') ? `...your product filter...` : ''
           filter: `
-            (active == true && _type == "productVariant") ||
-            ((!defined(variants) || count(variants) == 0) && _type == "product")
+            (active == true)
           `,
         },
       }),
@@ -30,7 +29,7 @@ export const productBundleItem: ITSSchemaDefinition = {
       select: {
         title: 'product.title',
         quantity: 'quantity',
-        image: 'product.images.0.image',
+        image: 'product.image',
       },
       prepare({ title, quantity, image }) {
         return {

@@ -8,7 +8,6 @@ import {
 
 import type { ITSContext, ITSStructureItem } from '../types'
 import { isDefined } from '../utils'
-import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
 
 type DividerBuilder = ReturnType<StructureBuilder['divider']>
 
@@ -86,11 +85,12 @@ export const fromRegistry = (ctx: ITSContext, id: string): ITSStructureItem => {
     id: doc.name,
     icon,
     feature: doc.feature,
-    hidden: doc.hideInStructure,
+    hidden: doc.hideInStructure && !ctx.config.isDev,
   }
 }
 
 export const isDocHidden = (ctx: ITSContext, id: string): boolean => {
+  if (ctx.config.isDev) return false
   const doc = ctx.featureRegistry.getDoc(id)
 
   if (!doc) {

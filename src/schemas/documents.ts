@@ -10,7 +10,6 @@ import { orderMeta } from './documents/orders/orderMeta'
 import { page } from './documents/page'
 import { post } from './documents/post'
 import { product } from './documents/product'
-import { productBundle } from './documents/productBundle'
 import { productVariant } from './documents/productVariant'
 import { settings } from './documents/settings'
 import { shippingMethod } from './documents/shippingMethod'
@@ -43,7 +42,6 @@ export const getCoreDocuments = (
     page,
     post,
     product,
-    productBundle,
     productVariant,
     settings,
     shippingMethod,

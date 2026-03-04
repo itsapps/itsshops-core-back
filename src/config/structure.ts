@@ -34,15 +34,14 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
       feature: 'shop',
       children: [
         ...mapItems(['order', 'orderMeta']),
-        ...mapItems(['product']),
-        // {
-        //   type: 'custom',
-        //   id: 'products',
-        //   feature: 'shop',
-        //   component: productsMenu,
-        //   hidden: isDocHidden(ctx, 'product'),
-        // },
-        ...mapItems(['productBundle', 'productVariant', 'variantOptionGroup', 'variantOption']),
+        {
+          type: 'custom',
+          id: 'products',
+          feature: 'shop',
+          component: productsMenu,
+          hidden: isDocHidden(ctx, 'product'),
+        },
+        ...mapItems(['productVariant', 'variantOptionGroup', 'variantOption']),
         {
           type: 'custom',
           id: 'categories',
@@ -53,13 +52,6 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
         ...mapItems(['manufacturer', 'voucher']),
       ],
     },
-    // {
-    //   type: 'group',
-    //   id: 'marketing',
-    //   icon: ConfettiIcon,
-    //   feature: 'shop',
-    //   children: mapItems(['voucher'])
-    // },
     {
       type: 'divider',
       id: 'mainDivider',

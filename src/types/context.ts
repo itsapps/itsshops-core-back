@@ -1,7 +1,7 @@
 import { type SanityClient, TFunction } from 'sanity'
 
 import { CoreBackConfig } from './config'
-import { CountryOption } from './country'
+import { CountryOption, VolumeOption } from './constants'
 import { ITSFrontendClient } from './frontend'
 import { ITSFormatter, ITSLocalizer, ITSTranslator } from './localization'
 import { ITSFeatureRegistry } from './registry'
@@ -15,7 +15,10 @@ export interface ITSLocaleContext {
   locale: string
   localizer: ITSLocalizer
   format: ITSFormatter
-  countryOptions: CountryOption[]
+  constants: {
+    countryOptions: CountryOption[]
+    volumeOptions: VolumeOption[]
+  }
   i18nFieldTypes: Record<string, string>
   schemaT: ITSTranslator
   structureT: ITSTranslator

@@ -49,7 +49,7 @@ export interface ITSDocumentDefinition extends ITSBaseDefinition {
   type: 'document'
   isSingleton?: boolean
   hideInStructure?: boolean
-  allowCreate?: boolean | ((isDev: boolean) => boolean)
+  allowCreate?: boolean
   disallowedActions?: ITSSanityDefinedAction[]
   getInitialValue?: (ctx: ITSContext) => Template
   build: (ctx: FieldContext) => Omit<DocumentDefinition, DefinitionOmits>
@@ -179,6 +179,14 @@ export interface ITSCountryCodesOptions {
   documentType: string
 }
 
+export type GroupFieldsInput = FieldGroupDefinition & {
+  fields: FieldDefinition[]
+}
+export type GroupFieldsOutput = {
+  groups: FieldGroupDefinition[]
+  fields: FieldDefinition[]
+}
+
 export interface ITSBuilders {
   externalLink: (options?: ITSExternalLinkOptions) => FieldDefinition[]
   internalLink: (options?: ITSInternalLinkOptions) => FieldDefinition[]
@@ -193,6 +201,7 @@ export interface ITSBuilders {
   countryCodesField: (options: ITSCountryCodesOptions) => FieldDefinition
   priceField: (options: PriceOptions) => FieldDefinition<'number'>
   defineArrayField(props: Omit<ArrayDefinition, 'type'>): ArrayDefinition
+  buildGroupedSchema: (props: GroupFieldsInput[]) => GroupFieldsOutput
 }
 
 export type DocumentReference = {

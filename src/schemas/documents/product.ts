@@ -1,10 +1,9 @@
 // import { ProductPreview } from '../../components/previews/ProductPreview'
 import { CubeIcon } from '@phosphor-icons/react'
 
-import { GenerateVariants } from '../../components/GenerateVariants'
-import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
-import { ITSDocumentDefinition, PRODUCT_TYPES } from '../../types'
-import { createSharedProductFields, createSharedProductGroups } from './productAndVariantFields'
+// import { GenerateVariants } from '../../components/GenerateVariants'
+// import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
+import { ITSDocumentDefinition } from '../../types'
 
 export const product: ITSDocumentDefinition = {
   name: 'product',
@@ -14,43 +13,90 @@ export const product: ITSDocumentDefinition = {
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
     const { f } = ctx
-    return {
-      groups: createSharedProductGroups(ctx, PRODUCT_TYPES.PRODUCT),
-      fieldsets: [],
-      fields: [
-        f('title', 'i18nString', { i18n: 'atLeastOne', group: 'product' }),
-        ctx.builders.priceField({
-          validation: (Rule) => Rule.required(),
-          group: 'pricing',
-        }),
-        ...createSharedProductFields(ctx, PRODUCT_TYPES.PRODUCT),
-        f('variants', 'array', {
-          of: [
-            {
-              type: 'reference',
-              to: [{ type: 'productVariant' }],
+
+    const groupedData = ctx.builders.buildGroupedSchema([
+      {
+        name: 'product',
+        fields: [
+          f('title', 'i18nString', { i18n: 'atLeastOne' }),
+          f('kind', 'string', {
+            options: {
+              list: ctx.config.productKinds.map((type) => ({ value: type })),
+              layout: 'dropdown',
+              // direction: 'horizontal',
             },
-          ],
-          group: 'variants',
-          components: {
-            // input: GenerateVariants,
-            input: CreateProductFromWines,
-          },
-        }),
-      ],
+          }),
+          ...(ctx.featureRegistry.isDocEnabled('category')
+            ? [
+                f('categories', 'array', {
+                  validation: (rule) => rule.unique(),
+                  of: [
+                    {
+                      type: 'reference',
+                      to: [{ type: 'category' }],
+                    },
+                  ],
+                  options: {
+                    disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
+                    sortable: false,
+                  },
+                }),
+              ]
+            : []),
+          ...(ctx.featureRegistry.isDocEnabled('manufacturer')
+            ? [
+                f('manufacturers', 'array', {
+                  validation: (rule) => rule.unique(),
+                  of: [
+                    {
+                      type: 'reference',
+                      to: [{ type: 'manufacturer' }],
+                    },
+                  ],
+                }),
+              ]
+            : []),
+        ],
+      },
+      {
+        name: 'pricing',
+        fields: [
+          ctx.builders.priceField({
+            validation: (Rule) => Rule.required(),
+            group: 'pricing',
+          }),
+          ctx.builders.priceField({
+            name: 'compareAtPrice',
+            validation: (Rule) => Rule.positive(),
+          }),
+          f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
+        ],
+      },
+      {
+        name: 'media',
+        fields: [f('image', 'localeImage')],
+      },
+      {
+        name: 'seo',
+        fields: [f('seo', 'seo')],
+      },
+      {
+        name: 'variants',
+        fields: [],
+      },
+    ])
+
+    return {
+      ...groupedData,
+      fieldsets: [],
       preview: {
         select: {
           title: 'title',
-          image: 'images.0.image',
-          variants: 'variants',
+          image: 'image.image',
         },
-        prepare({ title, image, variants }) {
-          const count = variants && variants.length > 0 ? variants.length : 0
-          const variantInfo =
-            count > 0 ? ctx.t.default('product.preview.variants', 'variants', { count }) : undefined
+        prepare({ title, image }) {
           return {
             title: ctx.localizer.value(title),
-            ...(variantInfo && { subtitle: variantInfo }),
             media: ctx.localizer.value(image) || CubeIcon,
           }
         },

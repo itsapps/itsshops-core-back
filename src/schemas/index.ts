@@ -11,10 +11,7 @@ export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
   return [...objectBuilders, ...documentBuilders].map((b) => createDefinition(ctx, b))
 }
 
-export function createDefinition(
-  ctx: ITSContext,
-  definition: ITSSchemaDefinition,
-): SchemaTypeDefinition {
+function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): SchemaTypeDefinition {
   const extension = ctx.config.schemaExtensions?.[definition.name]
   const name = definition.name
 

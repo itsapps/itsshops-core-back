@@ -19,7 +19,7 @@ export const addressStrict: ITSSchemaDefinition = {
         f('city', 'string', { validation: (Rule) => Rule.required() }),
         f('country', 'string', {
           options: {
-            list: ctx.countryOptions,
+            list: ctx.constants.countryOptions,
           },
           validation: (Rule) => Rule.required(),
         }),

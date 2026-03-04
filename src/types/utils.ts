@@ -1,10 +1,11 @@
+// import { FieldDefinition } from 'sanity'
+import { SanityImageSource } from './components'
+
 export type WithOptionalTitle<T> = Omit<T, 'title'> & { title?: string }
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
 }
-
-import { SanityImageSource } from './components'
 
 export type ITSImageBuilder = {
   builder: any

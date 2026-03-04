@@ -1,7 +1,7 @@
 import { PackageIcon } from '@sanity/icons'
 import { FieldDefinition } from 'sanity'
 
-import { ITSSchemaDefinition, PRODUCT_TYPES } from '../../../types'
+import { ITSSchemaDefinition } from '../../../types'
 
 export const orderItem: ITSSchemaDefinition = {
   name: 'orderItem',
@@ -18,25 +18,25 @@ export const orderItem: ITSSchemaDefinition = {
 
     const fieldsMap: Record<string, FieldDefinition[]> = {
       info: [
-        f('type', 'string', {
-          options: {
-            list: [
-              {
-                title: ctx.t.default('orderItem.type.options.product'),
-                value: PRODUCT_TYPES.PRODUCT,
-              },
-              {
-                title: ctx.t.default('orderItem.type.options.productVariant'),
-                value: PRODUCT_TYPES.VARIANT,
-              },
-              {
-                title: ctx.t.default('orderItem.type.options.productBundle'),
-                value: PRODUCT_TYPES.BUNDLE,
-              },
-            ],
-          },
-          validation: (Rule) => Rule.required(),
-        }),
+        // f('type', 'string', {
+        //   options: {
+        //     list: [
+        //       {
+        //         title: ctx.t.default('orderItem.type.options.product'),
+        //         value: PRODUCT_TYPES.PRODUCT,
+        //       },
+        //       {
+        //         title: ctx.t.default('orderItem.type.options.productVariant'),
+        //         value: PRODUCT_TYPES.VARIANT,
+        //       },
+        //       {
+        //         title: ctx.t.default('orderItem.type.options.productBundle'),
+        //         value: PRODUCT_TYPES.BUNDLE,
+        //       },
+        //     ],
+        //   },
+        //   validation: (Rule) => Rule.required(),
+        // }),
 
         f('productId', 'string', { validation: (Rule) => Rule.required() }),
         f('parentId', 'string'),

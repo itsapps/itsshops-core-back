@@ -10,6 +10,7 @@ import { media } from 'sanity-plugin-media'
 
 import { CustomToolbar } from './components/CustomToolbar'
 import { actionResolver } from './config/actions'
+import { BOTTLE_VOLUMES_ML } from './config/constants/volumes'
 import { createFeatureRegistry } from './config/features'
 import { createi18nFieldTypes } from './config/fieldTypes'
 import { mapConfig } from './config/mapper'
@@ -25,7 +26,7 @@ import {
 import { createPresentations } from './presentation'
 // import { defaultTheme } from './config/theme'
 import { buildSchemas } from './schemas'
-import type { CountryOption, ITSLocaleContext, ItsshopsConfig } from './types'
+import type { CountryOption, ITSLocaleContext, ItsshopsConfig, VolumeOption } from './types'
 
 // interface ItsshopsConfig {
 //   /* nothing here yet */
@@ -46,6 +47,7 @@ import type { CountryOption, ITSLocaleContext, ItsshopsConfig } from './types'
  */
 // export const itsshops = definePlugin<ItsshopsConfig | void>((config = {}) => {
 export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
+  // console.log('context', context.locale)
   const presentationOptions = createPresentations({ ...context, t: context.structureT })
   return {
     name: '@itsapps/itsshops-core-back',
@@ -74,7 +76,7 @@ export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
     },
     document: {
       comments: { enabled: false },
-      actions: (prev, ctx) => actionResolver(prev, ctx, context.featureRegistry),
+      actions: (prev, ctx) => actionResolver(prev, ctx, context),
     },
     i18n: {
       bundles: [
@@ -105,22 +107,35 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
 
   return coreConfig.localization.uiLanguages.map((language) => {
     const locale = language.id
+
+    const schemaT = translator('schema', locale)
+    const structureT = translator('structure', locale)
+
     const localizer = createI18nHelpers(locale, coreConfig.localization.defaultLocale)
     const format = createFormatHelpers(locale)
+
     const countryOptions: CountryOption[] = coreConfig.localization.countries.map((country) => ({
       title: `${country.code} (${localizer.dictValue(country.title)})`,
       value: country.code,
     }))
-
-    const schemaT = translator('schema', locale)
-    const structureT = translator('structure', locale)
+    const volumeOptions: VolumeOption[] = BOTTLE_VOLUMES_ML.map((volume) => {
+      const liter = volume / 1000
+      const display = format.number(liter, { style: 'unit', unit: 'liter' })
+      return {
+        title: `${schemaT.strict(`constants.bottleVolume.${volume}`) || liter} (${display})`,
+        value: volume,
+      }
+    })
     const localeContext: ITSLocaleContext = {
       config: coreConfig,
       featureRegistry,
       locale,
       localizer,
       format,
-      countryOptions,
+      constants: {
+        countryOptions,
+        volumeOptions,
+      },
       i18nFieldTypes,
       schemaT,
       structureT,

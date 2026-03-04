@@ -11,5 +11,5 @@ export type VinofactWinesResponse = {
 }
 
 export type ITSVinofactClient = {
-  getWines: () => Promise<VinofactWinesResponse>;
+  getWines: () => Promise<VinofactWinesResponse>
 }

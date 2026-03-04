@@ -49,7 +49,7 @@ export function CreateProductFromWines(props: any): ReactElement {
       })
       console.error('Failed to fetch variant wineIds', err)
     }
-  }, [props.value, sanityClient])
+  }, [props.value, sanityClient, toast])
 
   useEffect(() => {
     if (open && isFieldInput) fetchExistingWineIds()

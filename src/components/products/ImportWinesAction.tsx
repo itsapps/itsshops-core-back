@@ -13,7 +13,7 @@ type WineImportDialogProps = {
   onConfirm: (selectedWines: VinofactWine[]) => Promise<void>
 }
 
-export function ImportWinesAction(props) {
+export function ImportWinesAction(props: any) {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   return {

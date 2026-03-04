@@ -1,5 +1,26 @@
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
+  constants: {
+    bottleVolume: {
+      '100': 'Zehntel Liter',
+      '187': 'Quarter Litre-Split',
+      '200': 'Piccolo',
+      '250': 'Quarter Litre',
+      '375': 'Halbflasche',
+      '500': 'Halbliter',
+      '750': 'Standard Flasche',
+      '1000': 'Liter',
+      '1500': 'Magnum',
+      '2250': 'Marie-Jeanne',
+      '3000': 'Doppelmagnum',
+      '4500': 'Rehoboam',
+      '5000': 'Jeroboam',
+      '6000': 'Imperial / Methuselah',
+      '9000': 'Salmanazar',
+      '12000': 'Balthazar',
+      '15000': 'Nebuchadnezzar',
+    },
+  },
   groups: {
     product: 'Produkt',
     description: 'Beschreibung',
@@ -8,6 +29,8 @@ export default {
     media: 'Medien',
     seo: 'SEO',
     variants: 'Varianten',
+    wine: 'Wein',
+    bundle: 'Pakete',
     general: 'Allgemeines',
     address: 'Adresse',
     vinofact: 'Vinofact',
@@ -258,6 +281,15 @@ export default {
         title: 'Produktvarianten',
         description: 'Alle Varianten generiert durch Produktoptionen',
       },
+      kind: {
+        title: 'Produktart',
+        options: {
+          wine: 'Wein',
+          physical: 'Physikalisch',
+          digital: 'Digital',
+          bundle: 'Paket',
+        },
+      },
     },
     preview: {
       variants_one: '{{count}} Variante',
@@ -275,8 +307,26 @@ export default {
       options: {
         title: 'Optionen',
       },
-      active: {
-        title: 'Aktiv',
+      product: {
+        title: 'Produkt',
+      },
+      bundleItems: {
+        title: 'Paketprodukte',
+      },
+      volume: {
+        title: 'Volumen',
+      },
+      vintage: {
+        title: 'Jahrgang',
+      },
+      status: {
+        title: 'Status',
+        options: {
+          active: '🟢 Aktiv',
+          comingSoon: '🟡 Kommt bald/Teaser',
+          soldOut: '🔴 Ausverkauft (Sichtbar)',
+          archived: '⚪ Archiviert',
+        },
       },
       featured: {
         title: 'Gefeatured',
@@ -301,7 +351,7 @@ export default {
       items_other: '{{count}} Produkte',
     },
   },
-  productBundleItem: {
+  bundleItem: {
     title: 'Produkt',
     fields: {
       quantity: {

@@ -3,24 +3,10 @@ import { Badge, Box, Flex, Stack, Text } from '@sanity/ui'
 import React from 'react'
 
 import { useITSContext } from '../../context/ITSCoreProvider'
-import { PRODUCT_TYPES, ProductType } from '../../types'
 
 export function ProductPreview(props: any): React.ReactElement {
-  const { title, productType, price, variantCount, media } = props
+  const { title, price, variantCount, media } = props
   const { localizer } = useITSContext()
-
-  // Map icons and colors to your Enum
-  const typeConfigs = {
-    [PRODUCT_TYPES.PRODUCT]: { icon: PackageIcon, tone: 'primary', label: 'Product' },
-    [PRODUCT_TYPES.VARIANT]: { icon: TagIcon, tone: 'default', label: 'Variant' },
-    [PRODUCT_TYPES.BUNDLE]: { icon: StackIcon, tone: 'caution', label: 'Bundle' },
-  }
-
-  const config = typeConfigs[productType as ProductType] || {
-    icon: PackageIcon,
-    tone: 'default',
-    label: 'Unknown',
-  }
 
   return (
     <Flex align="center" padding={2} gap={3}>
@@ -38,7 +24,7 @@ export function ProductPreview(props: any): React.ReactElement {
             style={{ height: '100%', background: '#f2f3f5', borderRadius: 4 }}
           >
             <Text size={2}>
-              <config.icon />
+              <PackageIcon />
             </Text>
           </Flex>
         )}
@@ -50,9 +36,9 @@ export function ProductPreview(props: any): React.ReactElement {
           <Text weight="semibold" size={1}>
             {localizer.value(title) || 'Untitled'}
           </Text>
-          <Badge tone={config.tone as any} fontSize={0}>
+          {/* <Badge tone={'positive'} fontSize={0}>
             {config.label}
-          </Badge>
+          </Badge> */}
         </Flex>
 
         <Flex gap={3} align="center">

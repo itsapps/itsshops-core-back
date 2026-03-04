@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { usePaneRouter } from 'sanity/structure'
 
 import { useITSContext } from '../context/ITSCoreProvider'
-import { ITSi18nArray, OrderBundleItem, OrderItem, PRODUCT_TYPES } from '../types'
+import { ITSi18nArray, OrderBundleItem, OrderItem } from '../types'
 import { LocaleImageView } from './LocaleImageView'
 
 type ProductData = {
@@ -26,7 +26,7 @@ export default function OrderItemPreview(props: {
   const { type, productId, parentId, quantity, price, title } = props.item || {}
   const [packed, setPacked] = useState(props.item.packed || false)
   const [loading, setLoading] = useState(false)
-  const isBundleProduct = type == PRODUCT_TYPES.BUNDLE
+  const isBundleProduct = false
   const { routerPanesState, groupIndex, handleEditReference } = usePaneRouter()
   const [product, setProduct] = useState<ProductData | null>(null)
   const [variant, setVariant] = useState<ProductVariantData | null>(null)

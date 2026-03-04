@@ -18,7 +18,7 @@ export const address: ITSSchemaDefinition = {
         f('city', 'i18nString'),
         f('country', 'string', {
           options: {
-            list: ctx.countryOptions,
+            list: ctx.constants.countryOptions,
           },
         }),
         f('state', 'string'),

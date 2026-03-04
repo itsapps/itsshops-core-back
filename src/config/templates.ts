@@ -23,11 +23,7 @@ export function templateResolver(prev: Template[], ctx: ITSLocaleContext): Templ
     // 1. Singletons are never in the "New Document" menu
     if (doc.isSingleton) return false
 
-    // 2. Resolve allowCreate (handle boolean, function, or undefined)
-    const canCreate =
-      typeof doc.allowCreate === 'function'
-        ? doc.allowCreate(ctx.config.isDev)
-        : doc.allowCreate !== false // Default to true if undefined
+    const canCreate = ctx.config.isDev || doc.allowCreate !== false // Default to true if undefined
 
     return canCreate
   })

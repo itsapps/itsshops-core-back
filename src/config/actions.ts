@@ -6,7 +6,7 @@ import {
 } from '../components/actions/CustomDocumentAction'
 // import { OrderDocumentActions } from '../components/actions/OrderActions'
 // import { OrderMailAction } from '../components/actions/OrderDialogAction'
-import { ITSFeatureRegistry, ITSSanityDefinedAction } from '../types'
+import { ITSLocaleContext, ITSSanityDefinedAction } from '../types'
 // import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
 // import { ImportWinesAction } from '../components/actions/ImportWinesAction'
 
@@ -21,8 +21,9 @@ const singletonAllowedActions: ITSSanityDefinedAction[] = ['publish', 'discardCh
 export function actionResolver(
   prev: DocumentActionComponent[],
   context: DocumentActionsContext,
-  registry: ITSFeatureRegistry,
+  ctx: ITSLocaleContext,
 ): DocumentActionComponent[] {
+  const registry = ctx.featureRegistry
   const doc = registry.getDoc(context.schemaType)
   if (!doc) {
     return prev
@@ -33,6 +34,8 @@ export function actionResolver(
   }
 
   const actions = prev.filter((obj) => {
+    if (ctx.config.isDev) return true
+
     const action = obj.action
     if (action === undefined) {
       return true

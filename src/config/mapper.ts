@@ -1,4 +1,5 @@
 import {
+  AllowedDocumentReferenceTypes,
   CoreBackConfig,
   FeatureConfig,
   ITSCoreSchemaSettings,
@@ -6,13 +7,12 @@ import {
   ItsshopsConfig,
 } from '../types'
 import { deepMerge } from '../utils'
-import { createCountries } from './countries'
+import { createCountries } from './constants/countries'
 import { i18nFieldTypes } from './fieldTypes'
 import { getLanguages } from './localization'
 
 const sanityApiVersion = 'v2025-05-25'
-const allowedDocumentReferenceTypes = [
-  'product',
+const allowedDocumentReferenceTypes: AllowedDocumentReferenceTypes = [
   'productVariant',
   'page',
   'post',
@@ -57,6 +57,7 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     schemaSettings,
     schemaExtensions: config.schemaExtensions || {},
     apiVersion: sanityApiVersion,
+    productKinds: ['wine', 'physical', 'digital', 'bundle'],
   }
 }
 

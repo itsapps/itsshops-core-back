@@ -14,3 +14,8 @@ export type CountryOption = {
   title: string
   value: string
 }
+
+export type VolumeOption = {
+  title: string
+  value: number
+}

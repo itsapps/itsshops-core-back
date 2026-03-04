@@ -11,7 +11,7 @@ export const order: ITSDocumentDefinition = {
   icon: TrolleyIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
-  allowCreate: (isDev) => isDev,
+  allowCreate: false,
   build: (ctx) => {
     const { f } = ctx
 

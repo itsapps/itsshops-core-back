@@ -14,7 +14,10 @@ export const getTranslationPackage = (locale: string) => {
   return []
 }
 
-export function getTranslationBundles(languages: Language[], overrides?: any) {
+export function getTranslationBundles(
+  languages: Language[],
+  overrides?: any,
+): LocaleResourceBundle[] {
   const resourceMap: Record<string, any> = { de: studioDe, en: studioEn }
   const merged = deepMerge(resourceMap, overrides || {})
 

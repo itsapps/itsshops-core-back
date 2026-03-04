@@ -2,7 +2,7 @@ export * from './blocks'
 export * from './components'
 export * from './config'
 export * from './context'
-export * from './country'
+export * from './constants'
 export * from './fields'
 export * from './frontend'
 export * from './localization'
@@ -13,10 +13,3 @@ export * from './registry'
 export * from './schema'
 export * from './utils'
 export * from './vinofact'
-
-export const PRODUCT_TYPES = {
-  PRODUCT: 'product',
-  VARIANT: 'productVariant',
-  BUNDLE: 'productBundle',
-} as const
-export type ProductType = (typeof PRODUCT_TYPES)[keyof typeof PRODUCT_TYPES]
