@@ -1,12 +1,11 @@
-import { CalculatorIcon } from '@phosphor-icons/react'
-
+import { OrderTotalsIcon } from '../../../assets/icons'
 import { ITSSchemaDefinition } from '../../../types'
 
 export const orderTotals: ITSSchemaDefinition = {
   name: 'orderTotals',
   type: 'object',
   feature: 'shop',
-  icon: CalculatorIcon,
+  icon: OrderTotalsIcon,
   build: (ctx) => {
     const { f } = ctx
 

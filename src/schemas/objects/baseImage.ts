@@ -1,5 +1,4 @@
-import { ImageIcon } from '@phosphor-icons/react'
-
+import { ImageIcon } from '../../assets/icons'
 import { ITSImageDefinition } from '../../types'
 
 export const baseImage: ITSImageDefinition = {

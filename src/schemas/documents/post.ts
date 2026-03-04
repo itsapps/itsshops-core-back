@@ -1,5 +1,4 @@
-import { NoteIcon } from '@phosphor-icons/react'
-
+import { NoteIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const post: ITSDocumentDefinition = {

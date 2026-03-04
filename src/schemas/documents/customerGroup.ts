@@ -1,11 +1,10 @@
-import { UsersIcon } from '@sanity/icons'
-
+import { CustomerIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const customerGroup: ITSDocumentDefinition = {
   name: 'customerGroup',
   type: 'document',
-  icon: UsersIcon,
+  icon: CustomerIcon,
   feature: 'users',
   build: (ctx) => {
     const { f } = ctx

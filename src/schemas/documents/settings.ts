@@ -1,18 +1,17 @@
-import { CogIcon } from '@sanity/icons'
-
+import { SettingsIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const settings: ITSDocumentDefinition = {
   name: 'settings',
   type: 'document',
-  icon: CogIcon,
+  icon: SettingsIcon,
   isSingleton: true,
   build: (ctx) => {
     const { f } = ctx
     return ctx.builders.buildGroupedSchema([
       {
         name: 'site',
-        icon: CogIcon,
+        icon: SettingsIcon,
         fields: [
           f('siteTitle', 'i18nString'),
           f('siteShortDescription', 'i18nString'),

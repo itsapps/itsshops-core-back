@@ -1,6 +1,6 @@
-import { ImageIcon } from '@phosphor-icons/react'
 import { ReactElement } from 'react'
 
+import { ImageIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { SimpleImageProps } from '../types'
 

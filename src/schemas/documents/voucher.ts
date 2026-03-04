@@ -1,11 +1,10 @@
-import { BarcodeIcon } from '@phosphor-icons/react'
-
+import { VoucherIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const voucher: ITSDocumentDefinition = {
   name: 'voucher',
   type: 'document',
-  icon: BarcodeIcon,
+  icon: VoucherIcon,
   feature: 'shop',
   build: (ctx) => {
     const { f } = ctx

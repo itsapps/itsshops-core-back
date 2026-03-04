@@ -1,7 +1,7 @@
-import { RocketLaunchIcon } from '@phosphor-icons/react'
 import { Badge, Button, Card, Dialog, Flex, Spinner, Stack, Text, TextArea } from '@sanity/ui'
 import { ChangeEvent, ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 
+import { DeployIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { createNetlifyClient } from '../external/netlify'
 import { NetlifyBuild } from '../types'
@@ -211,7 +211,7 @@ export function DeployDialog(): ReactElement {
 
   return (
     <Stack>
-      <Button icon={RocketLaunchIcon} title={t('deployments.title')} onClick={handleOpen} />
+      <Button icon={DeployIcon} title={t('deployments.title')} onClick={handleOpen} />
 
       {open && (
         <Dialog

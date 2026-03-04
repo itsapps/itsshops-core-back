@@ -1,5 +1,4 @@
-import { PackageIcon } from '@phosphor-icons/react'
-
+import { PackageIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const shippingMethod: ITSDocumentDefinition = {

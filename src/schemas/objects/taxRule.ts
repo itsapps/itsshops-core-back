@@ -1,11 +1,10 @@
-import { PackageIcon } from '@phosphor-icons/react'
-
+import { TaxRuleIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
 export const taxRule: ITSSchemaDefinition = {
   name: 'taxRule',
   type: 'object',
-  icon: PackageIcon,
+  icon: TaxRuleIcon,
   feature: 'shop',
   build: (ctx) => {
     const { f } = ctx
@@ -28,7 +27,7 @@ export const taxRule: ITSSchemaDefinition = {
         prepare({ title, rate }) {
           return {
             title: `${ctx.localizer.value(title) || 'New Rule'}: ${rate || '-'}%`,
-            media: PackageIcon,
+            media: TaxRuleIcon,
           }
         },
       },

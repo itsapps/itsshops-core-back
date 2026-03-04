@@ -1,7 +1,7 @@
-import { TrashIcon } from '@sanity/icons'
 import { Card, Container, Flex, Grid, Heading, Stack, Text } from '@sanity/ui'
 import React from 'react'
 
+import { TrashIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { Product, VariantContainer, VariantOption, VariantOptionGroup } from '../types'
 import { ConfirmButton } from './ConfirmButton'

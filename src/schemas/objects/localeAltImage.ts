@@ -1,5 +1,4 @@
-import { ImageIcon } from '@phosphor-icons/react'
-
+import { ImageIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
 export const localeAltImage: ITSSchemaDefinition = {

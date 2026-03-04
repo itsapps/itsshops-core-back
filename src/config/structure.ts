@@ -1,4 +1,3 @@
-import { BasketIcon, CogIcon, EditIcon, HomeIcon, UserIcon } from '@sanity/icons'
 // type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
 import React from 'react'
 import type {
@@ -10,6 +9,7 @@ import type {
 import { type UserViewComponent } from 'sanity/structure'
 import DocumentsPane from 'sanity-plugin-documents-pane'
 
+import { EditIcon, SettingsIcon, ShopIcon, UserIcon, WebsiteIcon } from '../assets/icons'
 // import { OrderView } from '../components/OrderView'
 import { categoriesMenu } from '../structure/categories'
 import { productsMenu } from '../structure/products'
@@ -24,13 +24,13 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
     {
       type: 'group',
       id: 'website',
-      icon: HomeIcon,
+      icon: WebsiteIcon,
       children: mapItems(['page', 'post', 'menu']),
     },
     {
       type: 'group',
       id: 'shop',
-      icon: BasketIcon,
+      icon: ShopIcon,
       feature: 'shop',
       children: [
         ...mapItems(['order', 'orderMeta']),
@@ -66,13 +66,13 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
     {
       type: 'group',
       id: 'settingsGroup',
-      icon: CogIcon,
+      icon: SettingsIcon,
       children: [
         ...mapItems(['settings']),
         {
           type: 'group',
           id: 'shopSettingsGroup',
-          icon: CogIcon,
+          icon: SettingsIcon,
           children: mapItems(['shopSettings', 'shippingMethod', 'taxCountry', 'taxCategory']),
         },
       ],

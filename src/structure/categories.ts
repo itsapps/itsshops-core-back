@@ -1,5 +1,4 @@
-import { EditIcon, SchemaIcon } from '@sanity/icons'
-
+import { EditIcon, CategoryIcon } from '../assets/icons'
 import type { ITSStructureComponent } from '../types'
 
 export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
@@ -40,7 +39,7 @@ export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
 
   return S.listItem()
     .title(t('categories'))
-    .icon(SchemaIcon)
+    .icon(CategoryIcon)
     .child(
       S.documentTypeList('category')
         .title(t('categories'))

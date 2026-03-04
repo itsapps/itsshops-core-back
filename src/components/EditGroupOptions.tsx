@@ -1,4 +1,3 @@
-import { SparklesIcon, TrashIcon } from '@sanity/icons'
 import { Button, Card, Flex, Spinner, Stack, Text, useToast } from '@sanity/ui'
 import { fromString as pathFromString } from '@sanity/util/paths'
 import { nanoid } from 'nanoid/non-secure'
@@ -7,6 +6,7 @@ import { ArrayOfObjectsInputProps, SanityDocument, set, useFormValue } from 'san
 import { usePaneRouter } from 'sanity/structure'
 import { v4 as uuidv4 } from 'uuid'
 
+import { OptionGroupIcon, TrashIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { DocumentReference, VariantOption } from '../types'
 import { ConfirmButton } from './ConfirmButton'
@@ -234,7 +234,7 @@ export const EditGroupOptions = (props: Props): ReactElement => {
         />
       ))}
       <Button
-        icon={SparklesIcon}
+        icon={OptionGroupIcon}
         text={t('optionsGroups.addOption')}
         tone="positive"
         onClick={handleAddOption}

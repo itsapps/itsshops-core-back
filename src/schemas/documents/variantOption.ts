@@ -1,11 +1,10 @@
-import { SparklesIcon } from '@sanity/icons'
-
+import { OptionIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const variantOption: ITSDocumentDefinition = {
   name: 'variantOption',
   type: 'document',
-  icon: SparklesIcon,
+  icon: OptionIcon,
   feature: 'shop',
   disallowedActions: ['duplicate'],
   allowCreate: false,
@@ -34,7 +33,7 @@ export const variantOption: ITSDocumentDefinition = {
           // const image = ctx.localizer.value<any>(media)
           return {
             title: ctx.localizer.value(title),
-            media: SparklesIcon,
+            media: OptionIcon,
             // media: image?.asset,
           }
         },

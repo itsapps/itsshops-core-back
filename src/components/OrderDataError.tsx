@@ -1,7 +1,8 @@
+import { Badge, Box, Card, Code, Flex, Stack, Text } from '@sanity/ui'
 import React from 'react'
-import { Card, Stack, Text, Box, Code, Flex, Badge } from '@sanity/ui'
-import { WarningCircleIcon } from '@phosphor-icons/react'
-import { type ZodError, z } from 'zod'
+import { z, type ZodError } from 'zod'
+
+import { WarningCircleIcon } from '../assets/icons'
 
 interface OrderDataErrorProps {
   error: ZodError

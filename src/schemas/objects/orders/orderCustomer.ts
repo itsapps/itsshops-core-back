@@ -1,13 +1,13 @@
-import { PackageIcon } from '@sanity/icons'
 import { FieldDefinition } from 'sanity'
 
+import { CustomerIcon } from '../../../assets/icons'
 import { ITSSchemaDefinition } from '../../../types'
 
 export const orderCustomer: ITSSchemaDefinition = {
   name: 'orderCustomer',
   type: 'object',
   feature: 'shop',
-  icon: PackageIcon,
+  icon: CustomerIcon,
   build: (ctx) => {
     const { f } = ctx
 

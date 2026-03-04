@@ -1,11 +1,10 @@
-import { SchemaIcon } from '@sanity/icons'
-
+import { CategoryIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const category: ITSDocumentDefinition = {
   name: 'category',
   type: 'document',
-  icon: SchemaIcon,
+  icon: CategoryIcon,
   feature: 'shop.category',
   disallowedActions: ['delete'],
   build: (ctx) => {
@@ -86,7 +85,7 @@ export const category: ITSDocumentDefinition = {
           return {
             title: ctx.localizer.value(title),
             subtitle: sub ? `– ${sub}` : ``,
-            media: ctx.localizer.value(image) || SchemaIcon,
+            media: ctx.localizer.value(image) || CategoryIcon,
           }
         },
       },

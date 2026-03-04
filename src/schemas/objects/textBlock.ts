@@ -1,5 +1,4 @@
-import { ArticleIcon } from '@phosphor-icons/react'
-
+import { ArticleIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
 export const textBlock: ITSSchemaDefinition = {

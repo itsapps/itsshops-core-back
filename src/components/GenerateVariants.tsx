@@ -1,4 +1,3 @@
-import { SparklesIcon, TrashIcon } from '@sanity/icons'
 import {
   Box,
   Button,
@@ -20,6 +19,7 @@ import { ArrayOfObjectsInputProps, set, useFormValue } from 'sanity'
 import { usePaneRouter } from 'sanity/structure'
 import { v4 as uuidv4 } from 'uuid'
 
+import { OptionGroupIcon, TrashIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { DocumentReference, Product, VariantContainer, VariantOptionGroup } from '../types'
 import { ConfirmButton } from './ConfirmButton'
@@ -396,7 +396,7 @@ export function GenerateVariants(props: VariantsInputProps): React.ReactElement 
       {variants.length == 0 && (
         <Button
           style={{ cursor: 'pointer' }}
-          icon={SparklesIcon}
+          icon={OptionGroupIcon}
           text={t('variants.generate')}
           tone="positive"
           disabled={loadingVariants}

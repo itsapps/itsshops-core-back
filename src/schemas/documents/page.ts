@@ -1,12 +1,12 @@
-import { DocumentIcon } from '@sanity/icons'
 import { Slug } from 'sanity'
 
+import { PageIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const page: ITSDocumentDefinition = {
   name: 'page',
   type: 'document',
-  icon: DocumentIcon,
+  icon: PageIcon,
   build: (ctx) => {
     const { f } = ctx
     return {

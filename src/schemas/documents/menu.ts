@@ -1,11 +1,10 @@
-import { OlistIcon } from '@sanity/icons'
-
+import { MenuIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const menu: ITSDocumentDefinition = {
   name: 'menu',
   type: 'document',
-  icon: OlistIcon,
+  icon: MenuIcon,
   build: (ctx) => {
     const { f } = ctx
     return {

@@ -1,12 +1,12 @@
-import { UserIcon } from '@sanity/icons'
 import { FieldDefinition } from 'sanity'
 
+import { CustomerIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const customer: ITSDocumentDefinition = {
   name: 'customer',
   type: 'document',
-  icon: UserIcon,
+  icon: CustomerIcon,
   feature: 'users',
   disallowedActions: ['duplicate'],
   build: (ctx) => {
@@ -79,7 +79,7 @@ export const customer: ITSDocumentDefinition = {
           return {
             title,
             subtitle,
-            media: UserIcon,
+            media: CustomerIcon,
           }
         },
       },

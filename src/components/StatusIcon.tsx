@@ -1,16 +1,16 @@
+import React from 'react'
+import { styled } from 'styled-components'
+
 import {
   ArrowUDownLeftIcon,
   CheckIcon,
   CircleIcon,
   ClockIcon,
+  ErrorOutlineIcon,
   QuestionIcon,
   TruckIcon,
   WarningIcon,
-} from '@phosphor-icons/react'
-import { ErrorOutlineIcon } from '@sanity/icons'
-import React from 'react'
-import { styled } from 'styled-components'
-
+} from '../assets/icons'
 import { OrderPaymentStatus, OrderStatus } from '../types'
 
 const StyledSpan = styled.span<{ $color: string }>`

@@ -1,11 +1,3 @@
-import { WineIcon } from '@phosphor-icons/react'
-import {
-  EllipsisHorizontalIcon,
-  LaunchIcon,
-  SyncIcon,
-  TrashIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
 import {
   Autocomplete,
   Box,
@@ -23,6 +15,14 @@ import {
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { set, unset, useTranslation } from 'sanity'
 
+import {
+  EllipsisHorizontalIcon,
+  LaunchIcon,
+  SyncIcon,
+  TrashIcon,
+  WarningOutlineIcon,
+} from '../assets/icons'
+// import { WineIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { VinofactWine } from '../types'
 import { WinePreview } from './products/WinePreview'

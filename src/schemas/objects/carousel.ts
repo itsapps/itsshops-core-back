@@ -1,11 +1,10 @@
-import { ImagesIcon } from '@phosphor-icons/react'
-
+import { CarouselIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
 export const carousel: ITSSchemaDefinition = {
   name: 'carousel',
   type: 'object',
-  icon: ImagesIcon,
+  icon: CarouselIcon,
   build: (ctx) => {
     const { f } = ctx
     return {
@@ -32,7 +31,7 @@ export const carousel: ITSSchemaDefinition = {
               count: slides?.length || 0,
             }),
             subtitle: ctx.t.default('carousel.title'),
-            media: ImagesIcon,
+            media: CarouselIcon,
           }
         },
       },

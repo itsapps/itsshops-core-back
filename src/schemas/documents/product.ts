@@ -1,6 +1,6 @@
 // import { ProductPreview } from '../../components/previews/ProductPreview'
-import { CubeIcon } from '@phosphor-icons/react'
 
+import { ProductIcon } from '../../assets/icons'
 // import { GenerateVariants } from '../../components/GenerateVariants'
 // import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
 import { ITSDocumentDefinition } from '../../types'
@@ -8,7 +8,7 @@ import { ITSDocumentDefinition } from '../../types'
 export const product: ITSDocumentDefinition = {
   name: 'product',
   type: 'document',
-  icon: CubeIcon,
+  icon: ProductIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
@@ -97,7 +97,7 @@ export const product: ITSDocumentDefinition = {
         prepare({ title, image }) {
           return {
             title: ctx.localizer.value(title),
-            media: ctx.localizer.value(image) || CubeIcon,
+            media: ctx.localizer.value(image) || ProductIcon,
           }
         },
       },

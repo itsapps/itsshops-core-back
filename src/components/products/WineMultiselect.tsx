@@ -1,7 +1,7 @@
-import { CloseIcon, SearchIcon } from '@sanity/icons'
 import { Autocomplete, Box, Button, Card, Flex, Stack, Text } from '@sanity/ui'
 import { useCallback, useMemo, useState } from 'react'
 
+import { CloseIcon, SearchIcon } from '../../assets/icons'
 import { VinofactWine } from '../../types'
 import { WinePreview } from './WinePreview'
 

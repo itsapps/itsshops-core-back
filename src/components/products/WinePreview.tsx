@@ -1,7 +1,7 @@
-import { WineIcon } from '@phosphor-icons/react'
 import { Badge, Flex, Inline, Stack, Text } from '@sanity/ui'
 import { ReactElement } from 'react'
 
+import { WineIcon } from '../../assets/icons'
 import { VinofactWine } from '../../types'
 
 export const WinePreview = ({ wine }: { wine: VinofactWine }): ReactElement => (

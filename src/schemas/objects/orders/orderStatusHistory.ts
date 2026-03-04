@@ -1,5 +1,5 @@
 // import { getStateTranslationKey } from '../../../utils/orders';
-import { PackageIcon } from '@sanity/icons'
+import { OrderStatusHistoryIcon } from '../../../assets/icons'
 
 import { ITSSchemaDefinition } from '../../../types'
 
@@ -7,7 +7,7 @@ export const orderStatusHistory: ITSSchemaDefinition = {
   name: 'orderStatusHistory',
   type: 'object',
   feature: 'shop',
-  icon: PackageIcon,
+  icon: OrderStatusHistoryIcon,
   build: (ctx) => {
     const { f } = ctx
 

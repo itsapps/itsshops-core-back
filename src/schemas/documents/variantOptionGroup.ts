@@ -1,12 +1,11 @@
-import { SparklesIcon } from '@sanity/icons'
-
+import { OptionGroupIcon } from '../../assets/icons'
 import { EditGroupOptions } from '../../components/EditGroupOptions'
 import { ITSDocumentDefinition } from '../../types'
 
 export const variantOptionGroup: ITSDocumentDefinition = {
   name: 'variantOptionGroup',
   type: 'document',
-  icon: SparklesIcon,
+  icon: OptionGroupIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
@@ -45,7 +44,7 @@ export const variantOptionGroup: ITSDocumentDefinition = {
           return {
             title: ctx.localizer.value(title),
             subtitle: ctx.t.default('variantOptionGroup.preview.options', 'options', { count }),
-            media: SparklesIcon,
+            media: OptionGroupIcon,
           }
         },
       },

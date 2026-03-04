@@ -1,7 +1,7 @@
-import { AddIcon, SearchIcon } from '@sanity/icons'
 import { Box, Button, Dialog, Flex, Stack, TextInput, useToast } from '@sanity/ui'
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 
+import { AddIcon, SearchIcon } from '../../assets/icons'
 import { useITSContext } from '../../context/ITSCoreProvider'
 import { VinofactWine } from '../../types'
 import { WineImporterList } from './WineImporterList'

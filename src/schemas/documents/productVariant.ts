@@ -1,5 +1,4 @@
-import { SlidersHorizontalIcon } from '@phosphor-icons/react'
-
+import { ProductVariantIcon } from '../../assets/icons'
 import { VinofactWineSelector } from '../../components/VinofactWineSelector'
 import { ITSDocumentDefinition, ProductKind } from '../../types'
 import { validateRequiredArrayIfKind, validateRequiredIfKind } from '../../utils/validation'
@@ -7,7 +6,7 @@ import { validateRequiredArrayIfKind, validateRequiredIfKind } from '../../utils
 export const productVariant: ITSDocumentDefinition = {
   name: 'productVariant',
   type: 'document',
-  icon: SlidersHorizontalIcon,
+  icon: ProductVariantIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   allowCreate: false,
@@ -238,9 +237,7 @@ export const productVariant: ITSDocumentDefinition = {
             title,
             subtitle,
             media:
-              ctx.localizer.value(image) ||
-              ctx.localizer.value(productImage) ||
-              SlidersHorizontalIcon,
+              ctx.localizer.value(image) || ctx.localizer.value(productImage) || ProductVariantIcon,
           }
         },
       },

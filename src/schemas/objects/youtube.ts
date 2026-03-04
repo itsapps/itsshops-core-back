@@ -1,5 +1,4 @@
-import { YoutubeLogoIcon } from '@phosphor-icons/react'
-
+import { YoutubeLogoIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
 export const youtube: ITSSchemaDefinition = {

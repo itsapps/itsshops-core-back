@@ -1,7 +1,7 @@
-import { PackageIcon, StackIcon, TagIcon } from '@sanity/icons'
-import { Badge, Box, Flex, Stack, Text } from '@sanity/ui'
+import { Box, Flex, Stack, Text } from '@sanity/ui'
 import React from 'react'
 
+import { ProductIcon } from '../../assets/icons'
 import { useITSContext } from '../../context/ITSCoreProvider'
 
 export function ProductPreview(props: any): React.ReactElement {
@@ -24,7 +24,7 @@ export function ProductPreview(props: any): React.ReactElement {
             style={{ height: '100%', background: '#f2f3f5', borderRadius: 4 }}
           >
             <Text size={2}>
-              <PackageIcon />
+              <ProductIcon />
             </Text>
           </Flex>
         )}

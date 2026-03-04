@@ -1,6 +1,6 @@
-import { TrolleyIcon } from '@sanity/icons'
 import { FieldDefinition } from 'sanity'
 
+import { OrderIcon } from '../../../assets/icons'
 import { StatusIcon } from '../../../components/StatusIcon'
 import { ITSDocumentDefinition } from '../../../types'
 import { buildShared } from './orderAndOrderMetaFields'
@@ -8,7 +8,7 @@ import { buildShared } from './orderAndOrderMetaFields'
 export const order: ITSDocumentDefinition = {
   name: 'order',
   type: 'document',
-  icon: TrolleyIcon,
+  icon: OrderIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
   allowCreate: false,
