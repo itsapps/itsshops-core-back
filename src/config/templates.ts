@@ -19,6 +19,24 @@ export function templateResolver(prev: Template[], ctx: ITSLocaleContext): Templ
     }
     templates.push(category)
   }
+  if (ctx.featureRegistry.isFeatureEnabled('shop')) {
+    const category: Template = {
+      id: 'product-variant-with-parent',
+      title: 'Product Variant with Parent',
+      schemaType: 'productVariant',
+      parameters: [
+        { name: 'productId', type: 'string' },
+        { name: 'kind', type: 'string' },
+        { name: 'volume', type: 'number' },
+      ],
+      value: (params: any) => ({
+        product: { _type: 'reference', _ref: params.productId },
+        kind: params.kind,
+        ...(params.volume && { volume: params.volume }),
+      }),
+    }
+    templates.push(category)
+  }
   const allowedDocs = ctx.featureRegistry.getEnabledDocs().filter((doc) => {
     // 1. Singletons are never in the "New Document" menu
     if (doc.isSingleton) return false

@@ -5,6 +5,7 @@ import {
   StructureBuilder,
   StructureResolverContext,
 } from 'sanity/structure'
+import DocumentsPane from 'sanity-plugin-documents-pane'
 
 import type { ITSContext, ITSStructureItem } from '../types'
 import { isDefined } from '../utils'
@@ -253,3 +254,87 @@ export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureIt
       ])
   }
 }
+
+export const getReferenceView = (S: StructureBuilder, title: string) =>
+  S.view
+    .component(DocumentsPane)
+    .options({
+      query: `*[references($id)]`,
+      params: { id: `_id` },
+      options: {
+        perspective: 'published',
+      },
+    })
+    .title(title)
+
+export const getProductReferenceView = (S: StructureBuilder, title: string) =>
+  S.view
+    .component(DocumentsPane)
+    // .options((childContext: any) => {
+    //   // 'childContext' contains the data of the document currently open in the pane
+    //   const parentKind = childContext?.displayed?.kind || 'wine'
+
+    //   return {
+    //     query: `*[ _type == "productVariant" && product._ref == $id ]`,
+    //     params: { id: productId },
+    //     initialValueTemplates: [
+    //       {
+    //         template: 'product-variant-with-parent',
+    //         parameters: {
+    //           productId,
+    //           kind: parentKind, // Inherit from the product!
+    //         },
+    //         title: `New ${parentKind} Variant`,
+    //       },
+    //     ],
+    //   }
+    // })
+    .options({
+      query: `*[ _type == "productVariant" && product._ref == $id ] | order(volume asc)`,
+      params: { id: '_id' },
+      useDraft: false,
+      initialValueTemplates: ({ document }: any) => {
+        const templates = []
+
+        // references must point to a non-draft ID, so if using the ID in the template,
+        // be sure it doesn't start with `drafts.`
+        const id = document?.displayed?._id.replace('drafts.', '')
+        const kind = document?.displayed?.kind || 'wine'
+
+        if (id) {
+          templates.push({
+            // the name of the schema type that should be created (required)
+            schemaType: 'productVariant',
+            // the title that should appear on the button - we can customize it (required)
+            title: `New variant by ${kind}`,
+            // the name of the template that should be used (optional)
+            template: 'product-variant-with-parent',
+            // values for parameters that can be passed to the template referenced above (optional)
+            parameters: {
+              productId: id,
+              kind,
+              ...(kind === 'wine' && { volume: 750 }),
+            },
+          })
+
+          // we could push more templates if needed.
+        }
+
+        // must always return a list, even if empty
+        return templates
+      },
+      // initialValueTemplates: [
+      //   {
+      //     template: 'product-variant-with-parent',
+      //     parameters: {
+      //       productId,
+      //       kind: 'wine', // You can hardcode this or make it dynamic
+      //     },
+      //     title: 'Create New Variant',
+      //   },
+      // ],
+      // options: {
+      //   perspective: 'published',
+      // },
+    })
+    .title(title)

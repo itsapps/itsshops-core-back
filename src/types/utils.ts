@@ -1,5 +1,6 @@
 // import { FieldDefinition } from 'sanity'
-import { SanityImageSource } from './components'
+import type { Image } from 'sanity'
+// import { SanityImageSource } from './components'
 
 export type WithOptionalTitle<T> = Omit<T, 'title'> & { title?: string }
 
@@ -9,12 +10,7 @@ export type RecursivePartial<T> = {
 
 export type ITSImageBuilder = {
   builder: any
-  urlFor: (source: SanityImageSource) => any
-  getUrl: (params: {
-    source: SanityImageSource
-    width?: number
-    height?: number
-    quality?: number
-  }) => string
-  getPreviewUrl: (source: SanityImageSource, size?: number) => string | undefined
+  urlFor: (source: Image) => any
+  getUrl: (params: { source: Image; width?: number; height?: number; quality?: number }) => string
+  getPreviewUrl: (source: Image, size?: number) => string | undefined
 }

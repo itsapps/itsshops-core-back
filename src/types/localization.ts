@@ -82,17 +82,13 @@ export type ITSi18nArray<T = string> = ITSi18nEntry<T>[]
 //   alt?: ITSi18nArray;
 //   title?: ITSi18nArray;
 // }
-export interface CropImage {
-  _type: 'cropImage'
-}
-export type I18nCropImage = ITSi18nArray<CropImage>
 
-export interface LocaleImage {
-  _type: 'localeImage'
-  image?: ITSi18nArray<any>
-  title?: ITSi18nArray
-  alt?: ITSi18nArray
-}
+// export interface LocaleImage {
+//   _type: 'localeImage'
+//   image?: ITSi18nArray<any>
+//   title?: ITSi18nArray
+//   alt?: ITSi18nArray
+// }
 
 export type ITSi18nLocalizerValue = <T = string>(data: any) => T | undefined
 export type ITSi18nLocalizerObjectValue = <T = string>(data: any, key: string) => T | undefined

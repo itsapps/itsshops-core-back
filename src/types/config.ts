@@ -101,15 +101,21 @@ export interface IntegrationsConfig {
   netlify: NetlifyConfig
 }
 
-export interface ItsshopsConfig {
+export interface ItsConfigSettings {
   isDev: boolean
+  ignoreExtensions: boolean
+}
+export type ConfigSettings = Partial<ItsConfigSettings>
+
+export interface ItsshopsConfig {
   projectId: string
   dataset: string
   workspaceName: string
   workspaceIcon?: ComponentType
+  settings: ConfigSettings
+  integrations: IntegrationsConfig
   i18n?: I18nConfig
   features?: FeatureConfig
-  integrations: IntegrationsConfig
   schemaSettings?: SchemaSettingsInput
   schemaExtensions?: Record<string, SchemaExtension>
   documents?: ITSDocumentDefinition[]
@@ -121,10 +127,21 @@ export type ProductKind = 'wine' | 'physical' | 'digital' | 'bundle'
 export type ProductKinds = ProductKind[]
 
 /** Internal version of the config used by the engine **/
-export interface CoreBackConfig extends Omit<ItsshopsConfig, 'features' | 'schemaSettings'> {
+export interface CoreBackConfig {
+  projectId: string
+  dataset: string
+  workspaceName: string
+  workspaceIcon?: ComponentType
+  apiVersion: string
+  isDev: boolean
+  productKinds: ProductKinds
+  settings: ItsConfigSettings
+  integrations: IntegrationsConfig
   localization: ITSi18nConfig
   features: ITSFeatureConfig
   schemaSettings: CoreSchemaSettings
-  apiVersion: string
-  productKinds: ProductKinds
+  schemaExtensions: Record<string, SchemaExtension>
+  documents: ITSDocumentDefinition[]
+  objects: ITSSchemaDefinition[]
+  structure: ITSStructureItem[]
 }

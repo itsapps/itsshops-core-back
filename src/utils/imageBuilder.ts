@@ -1,7 +1,7 @@
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { SanityClient } from 'sanity'
 
-import { ITSImageBuilder, SanityImageSource } from '../types'
+import { ITSImageBuilder } from '../types'
 
 export const createImageBuilder = (client: SanityClient): ITSImageBuilder => {
   const imageBuilder = createImageUrlBuilder(client)
@@ -28,7 +28,7 @@ export const createImageBuilder = (client: SanityClient): ITSImageBuilder => {
       return url.fit('crop').url()
     },
 
-    getPreviewUrl: (source: SanityImageSource, size: number = 100) => {
+    getPreviewUrl: (source, size = 100) => {
       if (!source) return undefined
 
       // Get screen density (usually 1, 2, or 3)

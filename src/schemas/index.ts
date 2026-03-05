@@ -8,7 +8,11 @@ export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
   const objectBuilders = ctx.featureRegistry.getEnabledObjects()
   const documentBuilders = ctx.featureRegistry.getEnabledDocs()
 
-  return [...objectBuilders, ...documentBuilders].map((b) => createDefinition(ctx, b))
+  const schemas = [...objectBuilders, ...documentBuilders].map((b) => createDefinition(ctx, b))
+  if (schemas.length === 0) {
+    throw new Error('No schemas found')
+  }
+  return schemas
 }
 
 function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): SchemaTypeDefinition {

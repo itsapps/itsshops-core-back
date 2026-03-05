@@ -1,25 +1,25 @@
 import {
-  TrolleyIcon as Trolley,
-  DocumentIcon as Document,
-  OlistIcon as Olist,
-  WrenchIcon as Wrench,
-  SchemaIcon as Schema,
-  UserIcon as User,
-  HomeIcon as Home,
-  EditIcon as Edit,
-  CogIcon as Cog,
-  PackageIcon as Package,
-  BasketIcon as Basket,
   AddIcon as Add,
+  BasketIcon as Basket,
   CloseIcon as Close,
-  SearchIcon as Search,
+  CogIcon as Cog,
+  DocumentIcon as Document,
+  EditIcon as Edit,
   EllipsisHorizontalIcon as EllipsisHorizontal,
   ErrorOutlineIcon as ErrorOutline,
+  HomeIcon as Home,
   LaunchIcon as Launch,
+  OlistIcon as Olist,
+  PackageIcon as Package,
+  SchemaIcon as Schema,
+  SearchIcon as Search,
   SparklesIcon as Sparkles,
   SyncIcon as Sync,
   TrashIcon as Trash,
+  TrolleyIcon as Trolley,
+  UserIcon as User,
   WarningOutlineIcon as WarningOutline,
+  WrenchIcon as Wrench,
 } from '@sanity/icons'
 import {
   PiArrowUDownLeft,
@@ -49,58 +49,58 @@ import {
   PiYoutubeLogo,
 } from 'react-icons/pi'
 
-export const ProductVariantIcon = PiSlidersHorizontal
-export const DeployIcon = PiRocketLaunch
-export const WarningCircleIcon = PiWarningCircle
-export const ImageIcon = PiImage
+export const AddIcon = Add
 export const ArrowUDownLeftIcon = PiArrowUDownLeft
+export const ArticleIcon = PiArticle
+export const BundleItemIcon = Package
+export const CarouselIcon = PiImages
+export const CategoryIcon = Schema
 export const CheckIcon = PiCheck
 export const CircleIcon = PiCircle
 export const ClockIcon = PiClock
-export const QuestionIcon = PiQuestion
-export const TruckIcon = PiTruck
-export const WarningIcon = PiWarning
-export const PackageIcon = PiPackage
-export const ErrorOutlineIcon = ErrorOutline
-export const WineIcon = PiWine
-export const NoteIcon = PiNote
-export const ProductIcon = PiCube
-export const VoucherIcon = PiBarcode
-export const HeroIcon = PiStar
-export const CarouselIcon = PiImages
-export const LinkIcon = PiLink
-export const ShippingRateIcon = PiBoat
-export const TaxRuleIcon = PiPackage
-export const ArticleIcon = PiArticle
-export const YoutubeLogoIcon = PiYoutubeLogo
-export const OrderTotalsIcon = PiCalculator
-export const VatBreakdownIcon = PiCalculator
-export const ProductKindWineIcon = PiWine
-export const ProductKindPhysicalIcon = PiPackage
-export const ProductKindDigitalIcon = PiDownloadSimple
-export const ProductKindBundleIcon = PiStack
-export const OptionGroupIcon = Sparkles
-export const OptionIcon = Sparkles
-export const TrashIcon = Trash
-export const WarningOutlineIcon = WarningOutline
-export const SyncIcon = Sync
-export const EllipsisHorizontalIcon = EllipsisHorizontal
-export const LaunchIcon = Launch
-export const AddIcon = Add
-export const SearchIcon = Search
 export const CloseIcon = Close
-export const ShopIcon = Basket
-export const SettingsIcon = Cog
-export const EditIcon = Edit
-export const WebsiteIcon = Home
-export const UserIcon = User
-export const CategoryIcon = Schema
 export const CustomerIcon = User
+export const DeployIcon = PiRocketLaunch
+export const EditIcon = Edit
+export const EllipsisHorizontalIcon = EllipsisHorizontal
+export const ErrorOutlineIcon = ErrorOutline
+export const FulfillmentIcon = Package
+export const HeroIcon = PiStar
+export const ImageIcon = PiImage
+export const LaunchIcon = Launch
+export const LinkIcon = PiLink
 export const ManufacturerIcon = Wrench
 export const MenuIcon = Olist
-export const PageIcon = Document
+export const NoteIcon = PiNote
+export const OptionGroupIcon = Sparkles
+export const OptionIcon = Sparkles
 export const OrderIcon = Trolley
-export const BundleItemIcon = Package
-export const FulfillmentIcon = Package
 export const OrderItemIcon = Package
 export const OrderStatusHistoryIcon = Package
+export const OrderTotalsIcon = PiCalculator
+export const PackageIcon = PiPackage
+export const PageIcon = Document
+export const ProductIcon = PiCube
+export const ProductKindBundleIcon = PiStack
+export const ProductKindDigitalIcon = PiDownloadSimple
+export const ProductKindPhysicalIcon = PiPackage
+export const ProductKindWineIcon = PiWine
+export const ProductVariantIcon = PiSlidersHorizontal
+export const QuestionIcon = PiQuestion
+export const SearchIcon = Search
+export const SettingsIcon = Cog
+export const ShippingRateIcon = PiBoat
+export const ShopIcon = Basket
+export const SyncIcon = Sync
+export const TaxRuleIcon = PiPackage
+export const TrashIcon = Trash
+export const TruckIcon = PiTruck
+export const UserIcon = User
+export const VatBreakdownIcon = PiCalculator
+export const VoucherIcon = PiBarcode
+export const WarningCircleIcon = PiWarningCircle
+export const WarningIcon = PiWarning
+export const WarningOutlineIcon = WarningOutline
+export const WebsiteIcon = Home
+export const WineIcon = PiWine
+export const YoutubeLogoIcon = PiYoutubeLogo

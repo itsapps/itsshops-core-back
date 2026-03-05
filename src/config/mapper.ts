@@ -21,7 +21,14 @@ const allowedDocumentReferenceTypes: AllowedDocumentReferenceTypes = [
 ]
 
 export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
+  const isDev = config.settings.isDev || false
+  const ignoreExtensions = config.settings.ignoreExtensions || false
+
   const { uiLanguages, fieldLanguages, uiLocales, fieldLocales } = getLanguages(config.i18n)
+  const defaultLocale = config.i18n?.defaultLocale || uiLocales?.[0] || 'en'
+  const localizedFieldTypes = ignoreExtensions
+    ? i18nFieldTypes
+    : [...i18nFieldTypes, ...(config.i18n?.localizedFieldTypes || [])]
 
   const features = normalizeFeatures(config.features)
 
@@ -33,31 +40,56 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
       allowedReferences: allowedDocumentReferenceTypes,
     },
   }
-  const schemaSettings = deepMerge(coreSchemaSettings, config.schemaSettings || {})
+  const schemaSettings = ignoreExtensions
+    ? coreSchemaSettings
+    : deepMerge(coreSchemaSettings, config.schemaSettings || {})
+
+  const overrides = ignoreExtensions
+    ? {
+        fields: {},
+        structure: {},
+        general: {},
+      }
+    : {
+        fields: config.i18n?.fieldTranslationOverrides || {},
+        structure: config.i18n?.structureTranslationOverrides || {},
+        general: config.i18n?.translationOverrides || {},
+      }
+
+  const schemaExtensions = ignoreExtensions ? {} : config.schemaExtensions || {}
 
   const countries = createCountries(uiLocales)
 
   return {
-    ...config,
+    // ...config,
+    projectId: config.projectId,
+    dataset: config.dataset,
+    workspaceName: config.workspaceName,
+    workspaceIcon: config.workspaceIcon,
+    isDev,
+    settings: {
+      isDev,
+      ignoreExtensions,
+    },
     localization: {
       uiLanguages,
       fieldLanguages,
       uiLocales,
       fieldLocales,
-      defaultLocale: config.i18n?.defaultLocale || uiLocales?.[0] || 'en',
-      localizedFieldTypes: [...i18nFieldTypes, ...(config.i18n?.localizedFieldTypes || [])],
-      overrides: {
-        fields: config.i18n?.fieldTranslationOverrides || {},
-        structure: config.i18n?.structureTranslationOverrides || {},
-        general: config.i18n?.translationOverrides || {},
-      },
+      defaultLocale,
+      localizedFieldTypes,
+      overrides,
       countries,
     },
     features,
+    integrations: config.integrations,
     schemaSettings,
-    schemaExtensions: config.schemaExtensions || {},
+    schemaExtensions,
     apiVersion: sanityApiVersion,
     productKinds: ['wine', 'physical', 'digital', 'bundle'],
+    documents: config.documents || [],
+    objects: config.objects || [],
+    structure: config.structure || [],
   }
 }
 

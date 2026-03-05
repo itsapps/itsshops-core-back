@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import type { Image } from 'sanity'
 
 import { useITSContext } from '../context/ITSCoreProvider'
 import { ImageOptions, LocaleImage } from '../types'
@@ -11,9 +12,8 @@ export type LocaleImageProps = {
 
 export const LocaleImageView = ({ image, options }: LocaleImageProps): ReactElement => {
   const { localizer } = useITSContext()
-  const img = localizer.value<any>(image?.image)
-  const title = localizer.value(image?.title)
+  const img = localizer.value<Image | undefined>(image?.image)
   const alt = localizer.value(image?.alt)
 
-  return <SimpleImage source={img} title={title} alt={alt} options={options} />
+  return <SimpleImage source={img} alt={alt} options={options} />
 }

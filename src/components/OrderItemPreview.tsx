@@ -11,7 +11,7 @@ type ProductData = {
   _id: string
   sku: string
   title?: ITSi18nArray
-  images?: any[]
+  image?: any
 }
 type ProductVariantData = ProductData & {
   coverImage?: string
@@ -96,13 +96,14 @@ export default function OrderItemPreview(props: {
     'No title'
 
   const getImage = () => {
+    /*
     if (!product && !variant) {
       return null
     }
     if (isVariant && variant) {
       const coverImageAssetRef = variant.coverImage
       if (coverImageAssetRef) {
-        const productImages = product?.images || []
+        const productImages = product?.image || []
         const image =
           coverImageAssetRef && productImages.find((img) => img.asset?._ref === coverImageAssetRef)
         return image
@@ -112,6 +113,8 @@ export default function OrderItemPreview(props: {
       }
     }
     return product?.images?.[0]
+    */
+    return null
   }
 
   let optionGroups: Array<{ group: string; title: string }> = []

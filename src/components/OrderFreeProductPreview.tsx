@@ -5,19 +5,19 @@ import { usePaneRouter } from 'sanity/structure'
 
 import { useITSContext } from '../context/ITSCoreProvider'
 import { ITSi18nArray } from '../types'
-import { OrderFreeProduct } from '../types'
-import { LocaleImageView } from './LocaleImageView';
+// import { OrderFreeProduct } from '../types'
+import { LocaleImageView } from './LocaleImageView'
 
 type ProductData = {
   _id: string
   _type: string
   sku: string
   title?: ITSi18nArray
-  images?: any[]
+  image?: any
 }
 
 export default function OrderFreeProductPreview(props: {
-  item: OrderFreeProduct
+  item: any
   orderId: string
 }): React.ReactElement {
   const { localizer, sanityClient } = useITSContext()
@@ -83,7 +83,7 @@ export default function OrderFreeProductPreview(props: {
     if (!product) {
       return null
     }
-    return product?.images?.[0]
+    return product?.image
   }
 
   const image = getImage()

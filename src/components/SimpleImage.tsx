@@ -17,5 +17,5 @@ export const SimpleImage = (props: SimpleImageProps): ReactElement => {
   const url = imageBuilder.getUrl({ source, width, height })
   if (!url) return <ImageIcon size={size} />
 
-  return <img src={url} title={title} alt={alt} width={width} height={height}/>
+  return <img src={url} title={title} alt={alt} width={width} height={height} />
 }

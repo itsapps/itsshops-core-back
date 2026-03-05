@@ -1,21 +1,22 @@
 // type ExtractDocument<T extends React.ComponentType<any>> = React.ComponentProps<T>['document'];
-import React from 'react'
 import type {
   DefaultDocumentNodeResolver,
   StructureResolver,
   StructureToolOptions,
 } from 'sanity/structure'
-// import { CustomerGroupView } from '../components/CustomerGroupView';
-import { type UserViewComponent } from 'sanity/structure'
-import DocumentsPane from 'sanity-plugin-documents-pane'
 
+// import { CustomerGroupView } from '../components/CustomerGroupView';
 import { EditIcon, SettingsIcon, ShopIcon, UserIcon, WebsiteIcon } from '../assets/icons'
 // import { OrderView } from '../components/OrderView'
 import { categoriesMenu } from '../structure/categories'
 import { productsMenu } from '../structure/products'
-import { fromRegistry, isDocHidden, localizedStructure } from '../structure/structure'
+import {
+  fromRegistry,
+  getReferenceView,
+  isDocHidden,
+  localizedStructure,
+} from '../structure/structure'
 import type { ITSContext, ITSStructureItem } from '../types'
-type UserViewDocument = React.ComponentProps<UserViewComponent>['document']
 
 export const createStructure = (ctx: ITSContext): StructureResolver => {
   const mapItems = (ids: string[]) => ids.map((id) => fromRegistry(ctx, id))
@@ -107,21 +108,22 @@ export const createDefaultDocumentNode = (ctx: ITSContext): DefaultDocumentNodeR
       default:
         return S.document().views([
           S.view.form(),
-          S.view
-            .component(DocumentsPane)
-            .options({
-              // debug: true,
-              query: `*[references($id)]`,
-              // query: `*[references($id)][0...10]`,
-              // params: {id: '_id'},
-              params: ({ document }: { document: UserViewDocument }) => {
-                return {
-                  id: document.draft?._id || document.published?._id || document.displayed?._id,
-                }
-              },
-              // initialValueTemplates: initialValueReferenceTemplate,
-            })
-            .title(t('views.titles.references')),
+          getReferenceView(S, t('views.titles.references')),
+          // S.view
+          //   .component(DocumentsPane)
+          //   .options({
+          //     // debug: true,
+          //     query: `*[references($id)]`,
+          //     // query: `*[references($id)][0...10]`,
+          //     // params: {id: '_id'},
+          //     params: ({ document }: { document: UserViewDocument }) => {
+          //       return {
+          //         id: document.draft?._id || document.published?._id || document.displayed?._id,
+          //       }
+          //     },
+          //     // initialValueTemplates: initialValueReferenceTemplate,
+          //   })
+          //   .title(t('views.titles.references')),
         ])
       // default:
       //   return S.document().views([S.view.form()])

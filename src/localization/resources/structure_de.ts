@@ -4,13 +4,14 @@ export default {
   website: 'Webseite',
   content: 'Inhalt',
   products: {
-    product: 'Produkt bearbeiten',
+    editProduct: 'Produkt bearbeiten',
     products: 'Produkte',
     variant: 'Variante',
     variants: 'Varianten',
     kinds: {
       title: 'Produktarten',
       list: {
+        all: 'Alle',
         wine: 'Weine',
         physical: 'Andere',
         digital: 'Digitale',

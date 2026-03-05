@@ -199,33 +199,35 @@ export const productVariant: ITSDocumentDefinition = {
           volume,
           vintage,
         }) {
-          const title = ctx.localizer.value(variantTitle) || ctx.localizer.value(productTitle)
+          const vTitle = ctx.localizer.value(variantTitle)
+          const pTitle = ctx.localizer.value(productTitle)
+          const title = vTitle || (pTitle ? `[${pTitle}]` : '')
           let subtitle
           switch (kind as ProductKind) {
             case 'physical': {
               subtitle = [options0, options1, options2]
                 .map((o) => ctx.localizer.value(o))
                 .filter(Boolean)
-                .join(', ')
+                .join(' • ')
               break
             }
             case 'digital': {
               subtitle = [options0, options1, options2]
                 .map((o) => ctx.localizer.value(o))
                 .filter(Boolean)
-                .join(', ')
+                .join(' • ')
               break
             }
             case 'bundle': {
               subtitle = [options0, options1, options2]
                 .map((o) => ctx.localizer.value(o))
                 .filter(Boolean)
-                .join(', ')
+                .join(' • ')
               break
             }
             case 'wine': {
               const liter = ctx.format.number(volume / 1000, { style: 'unit', unit: 'liter' })
-              subtitle = [liter, vintage].filter(Boolean).join(', ')
+              subtitle = [liter, vintage].filter(Boolean).join(' • ')
               break
             }
             default: {

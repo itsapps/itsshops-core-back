@@ -1,5 +1,3 @@
-import { isDev } from 'sanity'
-
 import { OrderIcon } from '../../../assets/icons'
 import { ITSDocumentDefinition } from '../../../types'
 import { buildShared } from './orderAndOrderMetaFields'
@@ -10,7 +8,7 @@ export const orderMeta: ITSDocumentDefinition = {
   icon: OrderIcon,
   feature: 'shop',
   disallowedActions: ['delete', 'duplicate'],
-  allowCreate: isDev,
+  allowCreate: false,
   hideInStructure: true,
   build: (ctx) => {
     const shared = buildShared(ctx)

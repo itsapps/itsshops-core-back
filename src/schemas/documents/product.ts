@@ -10,6 +10,7 @@ export const product: ITSDocumentDefinition = {
   type: 'document',
   icon: ProductIcon,
   feature: 'shop',
+  allowCreate: false,
   disallowedActions: ['delete', 'duplicate'],
   build: (ctx) => {
     const { f } = ctx

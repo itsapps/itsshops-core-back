@@ -1,4 +1,4 @@
-import { EditIcon, CategoryIcon } from '../assets/icons'
+import { CategoryIcon, EditIcon } from '../assets/icons'
 import type { ITSStructureComponent } from '../types'
 
 export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {

@@ -18,25 +18,37 @@ export const bundleItem: ITSSchemaDefinition = {
         to: [{ type: 'productVariant' }],
         validation: (Rule) => Rule.required(),
         options: {
-          // filter: options.to?.includes('product') ? `...your product filter...` : ''
-          filter: `
-            (active == true)
-          `,
+          filter: ({ document }: any) => {
+            // 'document' here is the parent productVariant being edited
+            const parentProductId = document.product?._ref
+
+            return {
+              filter: 'kind != "bundle" && product._ref != $parentProductId',
+              params: {
+                parentProductId: parentProductId || '',
+              },
+            }
+          }
         },
       }),
     ],
     preview: {
       select: {
         title: 'product.title',
+        productTitle: 'product.product.title',
         quantity: 'quantity',
-        image: 'product.image',
+        image: 'product.image.image',
+        productImage: 'product.product.image.image',
       },
-      prepare({ title, quantity, image }) {
+      prepare({ title, productTitle, quantity, image, productImage }) {
         return {
           // title: ctx.localizer.value(title),
-          title: title ? `${quantity}x "${ctx.localizer.value(title)}"` : '-',
+          title:
+            title || productTitle
+              ? `${quantity}x "${ctx.localizer.value(title) || ctx.localizer.value(productTitle)}"`
+              : '-',
           // subtitle: ctx.t.default('productBundleItem.preview.quantity', 'product', { count: quantity }),
-          media: ctx.localizer.value<any>(image) || BundleItemIcon,
+          media: ctx.localizer.value(image) || ctx.localizer.value(productImage) || BundleItemIcon,
           // media: ProductMediaPreview({ info: `${quantity}x` }),
         }
       },
