@@ -267,7 +267,7 @@ export const getReferenceView = (S: StructureBuilder, title: string) =>
     })
     .title(title)
 
-export const getProductReferenceView = (S: StructureBuilder, title: string) =>
+export const getProductReferenceView = (S: StructureBuilder, title: string, newTitle: string) =>
   S.view
     .component(DocumentsPane)
     // .options((childContext: any) => {
@@ -306,7 +306,7 @@ export const getProductReferenceView = (S: StructureBuilder, title: string) =>
             // the name of the schema type that should be created (required)
             schemaType: 'productVariant',
             // the title that should appear on the button - we can customize it (required)
-            title: `New variant by ${kind}`,
+            title: newTitle,
             // the name of the template that should be used (optional)
             template: 'product-variant-with-parent',
             // values for parameters that can be passed to the template referenced above (optional)

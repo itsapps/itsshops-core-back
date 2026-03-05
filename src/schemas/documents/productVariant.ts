@@ -1,5 +1,5 @@
 import { ProductVariantIcon } from '../../assets/icons'
-import { VinofactWineSelector } from '../../components/VinofactWineSelector'
+import { VinofactWineSelector } from '../../components/products/VinofactWineSelector'
 import { ITSDocumentDefinition, ProductKind } from '../../types'
 import { validateRequiredArrayIfKind, validateRequiredIfKind } from '../../utils/validation'
 
@@ -137,6 +137,7 @@ export const productVariant: ITSDocumentDefinition = {
                 ctx.f('vinofactWineId', 'string', {
                   components: { input: VinofactWineSelector },
                   hidden: ({ parent }) => parent?.kind !== 'wine',
+                  validation: (Rule) => Rule.required().warning(),
                 }),
               ]
             : []),

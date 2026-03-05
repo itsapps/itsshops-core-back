@@ -39,7 +39,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
               .documentId(productId)
               .views([
                 S.view.form(),
-                getProductReferenceView(S, 'sdf', productId),
+                getProductReferenceView(S, 'sdf'),
                 getReferenceView(S, t('views.titles.references')),
               ]),
           ),
@@ -59,6 +59,17 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
           ),
       ])
 
+  const getProductSimpleChildView = (productId: string) =>
+    S.editor()
+      .id('product')
+      .schemaType('product')
+      .documentId(productId)
+      .views([
+        S.view.form(),
+        getProductReferenceView(S, t('products.variants'), t('products.addVariant')),
+        getReferenceView(S, t('views.titles.references')),
+      ])
+
   return S.listItem()
     .title(t('products.products'))
     .icon(ProductIcon)
@@ -72,13 +83,13 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
             .icon(ProductIcon)
             .child(
               S.documentTypeList('product')
-                .title(t('products.products'))
+                .title(t('products.kinds.list.all'))
                 .apiVersion(apiVersion)
                 .filter('_type == "product"')
                 .canHandleIntent((intentName, params) => {
                   return intentName === 'edit' && params.type === 'product'
                 })
-                .child(getProductChildView),
+                .child(getProductSimpleChildView),
             ),
 
           S.divider(),
@@ -94,7 +105,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
                   .apiVersion(apiVersion)
                   .filter('_type == "product" && kind == $kind')
                   .params({ kind })
-                  .child(getProductChildView),
+                  .child(getProductSimpleChildView),
               ),
           ),
         ]),

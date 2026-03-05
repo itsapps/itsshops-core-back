@@ -8,6 +8,7 @@ export default {
     products: 'Produkte',
     variant: 'Variante',
     variants: 'Varianten',
+    addVariant: 'Neue Variante',
     kinds: {
       title: 'Produktarten',
       list: {
