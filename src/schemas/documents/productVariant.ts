@@ -23,7 +23,7 @@ export const productVariant: ITSDocumentDefinition = {
           f('title', 'i18nString'),
           f('product', 'reference', {
             to: [{ type: 'product' }],
-            hidden: !ctx.config.isDev,
+            readOnly: !ctx.config.isDev,
           }),
           f('kind', 'string', {
             options: {
@@ -53,6 +53,7 @@ export const productVariant: ITSDocumentDefinition = {
               },
             ],
             // readOnly: true,
+            hidden: ({ parent }) => !['physical', 'digital'].includes(parent?.kind),
           }),
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [

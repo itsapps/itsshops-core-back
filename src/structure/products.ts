@@ -39,7 +39,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
               .documentId(productId)
               .views([
                 S.view.form(),
-                getProductReferenceView(S, 'sdf'),
+                getProductReferenceView(S, t('products.variants'), t('products.addVariant')),
                 getReferenceView(S, t('views.titles.references')),
               ]),
           ),
