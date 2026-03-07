@@ -18,6 +18,7 @@ export const ITSCoreProvider = ({
   ctx: ITSLocaleContext
 }) => {
   const { t } = useTranslation('itsapps')
+  const { t: tStudio } = useTranslation('studio')
   const baseClient: SanityClient = useClient({ apiVersion: ctx.config.apiVersion })
   const isDev = ctx.config.isDev
 
@@ -96,12 +97,13 @@ export const ITSCoreProvider = ({
     () => ({
       ...ctx,
       t,
+      tStudio,
       sanityClient,
       imageBuilder,
       frontendClient,
       vinofactClient,
     }),
-    [ctx, t, sanityClient, imageBuilder, frontendClient, vinofactClient],
+    [ctx, t, tStudio, sanityClient, imageBuilder, frontendClient, vinofactClient],
   )
 
   return <ITSCoreContext.Provider value={value}>{children}</ITSCoreContext.Provider>

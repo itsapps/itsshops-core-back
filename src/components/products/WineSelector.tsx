@@ -13,15 +13,7 @@ import {
   useToast,
 } from '@sanity/ui'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  FormField,
-  MemberField,
-  type ObjectInputProps,
-  PatchEvent,
-  set,
-  unset,
-  useTranslation,
-} from 'sanity'
+import { FormField, type ObjectInputProps, PatchEvent, set, unset } from 'sanity'
 
 import {
   EllipsisHorizontalIcon,
@@ -41,18 +33,7 @@ interface WineOption {
 }
 
 export function WineSelector(props: ObjectInputProps): ReactElement {
-  const {
-    value,
-    onChange,
-    readOnly,
-    elementProps,
-    members,
-    renderDefault,
-    renderField,
-    renderInput,
-    renderPreview,
-    renderItem,
-  } = props
+  const { value, onChange, readOnly, elementProps, members, renderDefault, renderField } = props
 
   const wineIdMember = members.find((m) => m.kind === 'field' && m.name === 'vinofactWineId')
   // if (wineIdMember) {
@@ -84,8 +65,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
 
   // const hasError = validationErrors.length > 0
 
-  const { vinofactClient } = useITSContext()
-  const { t } = useTranslation('studio')
+  const { vinofactClient, schemaT, t, tStudio } = useITSContext()
   const toast = useToast()
 
   const [wines, setWines] = useState<VinofactWine[]>([])
@@ -221,19 +201,19 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
             menu={
               <Menu>
                 <MenuItem
-                  text={t('inputs.reference.action.clear')}
+                  text={tStudio('inputs.reference.action.clear')}
                   icon={TrashIcon}
                   tone="critical"
                   onClick={handleClearSelection}
                 />
                 <MenuItem
-                  text={t('inputs.reference.action.replace')}
+                  text={tStudio('inputs.reference.action.replace')}
                   icon={SyncIcon}
                   onClick={handleIsReplacing}
                 />
                 <MenuDivider />
                 <MenuItem
-                  text={t('inputs.reference.action.open-in-new-tab')}
+                  text={tStudio('inputs.reference.action.open-in-new-tab')}
                   icon={LaunchIcon}
                   onClick={openEditUrl}
                 />
@@ -250,7 +230,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
         {...elementProps}
         openButton
         options={options}
-        placeholder={t('inputs.reference.search-placeholder')}
+        placeholder={tStudio('inputs.reference.search-placeholder')}
         onSelect={handleSelect}
         // Custom Filter (Searches Title + Year)
         filterOption={filterOption}

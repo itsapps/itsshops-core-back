@@ -29,6 +29,7 @@ export interface ITSContext extends ITSLocaleContext {
 
 export interface ITSProviderContext extends ITSLocaleContext {
   t: TFunction
+  tStudio: TFunction
   sanityClient: SanityClient
   imageBuilder: ITSImageBuilder
   frontendClient: ITSFrontendClient

@@ -12,7 +12,7 @@ export const i18nValidators = {
   requiredDefault:
     (defaultLocale: string, isRequired: boolean, ctx: ValidatorContext) =>
     (rule: Rule): Rule => {
-      const customRule = rule.custom((value: any[]) => {
+      const customRule = rule.custom((value: (any | null)[]) => {
         const entry = value?.find((item) => item._key === defaultLocale)
         if (!entry?.value) {
           return ctx.t('validation.requiredDefault', undefined, { locale: defaultLocale })

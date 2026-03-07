@@ -135,7 +135,8 @@ export const productVariant: ITSDocumentDefinition = {
     const physicalEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.physical')
     const digitalEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.digital')
     const bundleEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.bundle')
-    const optionsEnabled = physicalEnabled || digitalEnabled
+    const optionsEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.options')
+    const optionsActuallyEnabled = optionsEnabled && (physicalEnabled || digitalEnabled)
 
     const previewSelect = {
       variantTitle: 'title',
@@ -144,7 +145,7 @@ export const productVariant: ITSDocumentDefinition = {
       productImage: 'product.image.image',
       kind: 'kind',
       // physical + digital: option ref titles
-      ...(optionsEnabled && {
+      ...(optionsActuallyEnabled && {
         options: 'options',
         optionTitle0: 'options.0->title',
         optionTitle1: 'options.1->title',
@@ -295,8 +296,9 @@ function getKindFields(ctx: FieldContext): FieldDefinition[] {
   }
 
   const optionsEnabled =
-    ctx.featureRegistry.isFeatureEnabled('shop.productKind.physical') ||
-    ctx.featureRegistry.isFeatureEnabled('shop.productKind.digital')
+    ctx.featureRegistry.isFeatureEnabled('shop.productKind.options') &&
+    (ctx.featureRegistry.isFeatureEnabled('shop.productKind.physical') ||
+      ctx.featureRegistry.isFeatureEnabled('shop.productKind.digital'))
 
   const kindFields = (Object.entries(kindFieldBuilders) as [ProductKind, () => FieldDefinition[]][])
     .filter(([kind]) => ctx.featureRegistry.isFeatureEnabled(`shop.productKind.${kind}`))
