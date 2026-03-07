@@ -292,6 +292,9 @@ export const getProductReferenceView = (S: StructureBuilder, title: string, newT
     .options({
       query: `*[ _type == "productVariant" && product._ref == $id ] | order(volume asc)`,
       params: { id: '_id' },
+      // options: {
+      //   perspective: 'raw',
+      // },
       useDraft: false,
       initialValueTemplates: ({ document }: any) => {
         const templates = []

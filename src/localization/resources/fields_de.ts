@@ -30,6 +30,7 @@ export default {
     seo: 'SEO',
     variants: 'Varianten',
     wine: 'Wein',
+    variant: 'Variante',
     bundle: 'Pakete',
     general: 'Allgemeines',
     address: 'Adresse',
@@ -49,6 +50,15 @@ export default {
   },
   fieldsets: {},
   fields: {
+    kind: {
+      title: 'Produktart',
+      options: {
+        wine: 'Wein',
+        physical: 'Waren',
+        digital: 'Digital',
+        bundle: 'Paket',
+      },
+    },
     disabled: {
       title: 'Inaktiv',
     },
@@ -281,15 +291,6 @@ export default {
         title: 'Produktvarianten',
         description: 'Alle Varianten generiert durch Produktoptionen',
       },
-      kind: {
-        title: 'Produktart',
-        options: {
-          wine: 'Wein',
-          physical: 'Physikalisch',
-          digital: 'Digital',
-          bundle: 'Paket',
-        },
-      },
     },
     preview: {
       variants_one: '{{count}} Variante',
@@ -319,6 +320,9 @@ export default {
       vintage: {
         title: 'Jahrgang',
       },
+      wine: {
+        title: 'Wein',
+      },
       status: {
         title: 'Status',
         options: {
@@ -336,19 +340,24 @@ export default {
     },
     preview: {
       variants: 'Varianten',
+      bundleItems_zero: 'Keine Produkte',
+      bundleItems_one: '{{count}} Produkt',
+      bundleItems_other: '{{count}} Produkte',
     },
   },
-  productBundle: {
-    title: 'Produktpaket',
+  wine: {
+    title: 'Wein',
     fields: {
-      items: {
-        title: 'Produkte',
+      vinofactWineId: {
+        title: 'Vinofact-Wein',
+        description: 'Verbindet dieses Produkt mit einem Vinofact Wein',
       },
-    },
-    preview: {
-      items_zero: 'Keine Produkte',
-      items_one: '{{count}} Produkt',
-      items_other: '{{count}} Produkte',
+      volume: {
+        title: 'Volumen',
+      },
+      vintage: {
+        title: 'Jahrgang',
+      },
     },
   },
   bundleItem: {
@@ -731,18 +740,10 @@ export default {
   variantOptionGroup: {
     title: 'Optionengruppe',
     fields: {
-      options: {
-        title: 'Optionen',
-      },
       sortOrder: {
         title: 'Sortierung',
         description: 'Je kleiner die Zahl, desto früher wird die Option angezeigt.',
       },
-    },
-    preview: {
-      options_zero: 'Keine Optionen',
-      options_one: '{{count}} Option',
-      options_other: '{{count}} Optionen',
     },
   },
   variantOption: {
@@ -751,6 +752,9 @@ export default {
       sortOrder: {
         title: 'Sortierung',
         description: 'Je kleiner die Zahl, desto früher wird die Option angezeigt.',
+      },
+      group: {
+        title: 'Optionengruppe',
       },
     },
   },

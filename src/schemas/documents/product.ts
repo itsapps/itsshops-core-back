@@ -17,15 +17,17 @@ export const product: ITSDocumentDefinition = {
 
     const groupedData = ctx.builders.buildGroupedSchema([
       {
-        name: 'product',
+        name: 'infos',
         fields: [
           f('title', 'i18nString', { i18n: 'atLeastOne' }),
           f('kind', 'string', {
             options: {
-              list: ctx.config.productKinds.map((type) => ({ value: type })),
+              list: ctx.config.schemaSettings.productKinds.map((type) => ({ value: type })),
               layout: 'dropdown',
               // direction: 'horizontal',
             },
+            hidden: !ctx.config.isDev,
+            validation: (Rule) => Rule.required(),
           }),
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [
@@ -62,6 +64,7 @@ export const product: ITSDocumentDefinition = {
       {
         name: 'pricing',
         fields: [
+          f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
           ctx.builders.priceField({
             validation: (Rule) => Rule.required(),
             group: 'pricing',
@@ -70,7 +73,6 @@ export const product: ITSDocumentDefinition = {
             name: 'compareAtPrice',
             validation: (Rule) => Rule.positive(),
           }),
-          f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
         ],
       },
       {

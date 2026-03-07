@@ -1,5 +1,6 @@
 import {
   AllowedDocumentReferenceTypes,
+  ProductKinds,
   CoreBackConfig,
   FeatureConfig,
   ITSCoreSchemaSettings,
@@ -19,6 +20,7 @@ const allowedDocumentReferenceTypes: AllowedDocumentReferenceTypes = [
   'category',
   'blog',
 ]
+const allowedProductKinds: ProductKinds = ['wine', 'physical', 'digital', 'bundle']
 
 export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   const isDev = config.settings.isDev || false
@@ -30,7 +32,7 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     ? i18nFieldTypes
     : [...i18nFieldTypes, ...(config.i18n?.localizedFieldTypes || [])]
 
-  const features = normalizeFeatures(config.features)
+  const features = ignoreExtensions ? allFeatures() : normalizeFeatures(config.features)
 
   const coreSchemaSettings: ITSCoreSchemaSettings = {
     links: { allowedReferences: allowedDocumentReferenceTypes },
@@ -39,10 +41,15 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
       maxDepth: 1,
       allowedReferences: allowedDocumentReferenceTypes,
     },
+    productKinds: allowedProductKinds,
   }
   const schemaSettings = ignoreExtensions
     ? coreSchemaSettings
     : deepMerge(coreSchemaSettings, config.schemaSettings || {})
+
+  if (features?.shop?.enabled && schemaSettings.productKinds.length === 0) {
+    throw new Error('At least one productKind is required in schemaSettings')
+  }
 
   const overrides = ignoreExtensions
     ? {
@@ -86,11 +93,26 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     schemaSettings,
     schemaExtensions,
     apiVersion: sanityApiVersion,
-    productKinds: ['wine', 'physical', 'digital', 'bundle'],
-    documents: config.documents || [],
-    objects: config.objects || [],
-    structure: config.structure || [],
+    documents: ignoreExtensions ? [] : config.documents || [],
+    objects: ignoreExtensions ? [] : config.objects || [],
+    structure: ignoreExtensions ? [] : config.structure || [],
   }
+}
+
+function allFeatures(): ITSFeatureConfig {
+  return {
+    shop: {
+      enabled: true,
+      manufacturer: true,
+      stock: true,
+      category: true,
+      vinofact: {
+        enabled: true,
+      },
+    },
+    blog: true,
+    users: true,
+  } as ITSFeatureConfig
 }
 
 function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
@@ -106,5 +128,5 @@ function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
     },
     blog: input?.blog ?? false,
     users: input?.users ?? false,
-  }
+  } as ITSFeatureConfig
 }

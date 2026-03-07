@@ -19,6 +19,9 @@ export type AllowedDocumentReferenceType =
   | string
 export type AllowedDocumentReferenceTypes = AllowedDocumentReferenceType[]
 
+export type ProductKind = 'wine' | 'physical' | 'digital' | 'bundle'
+export type ProductKinds = ProductKind[]
+
 export interface ITSCoreSchemaSettings {
   links: {
     allowedReferences: AllowedDocumentReferenceTypes
@@ -28,6 +31,7 @@ export interface ITSCoreSchemaSettings {
     disableSubmenus: boolean
     maxDepth: number
   }
+  productKinds: ProductKinds
 }
 export type CoreSchemaSettings = ITSCoreSchemaSettings
 export type SchemaSettingsInput = RecursivePartial<CoreSchemaSettings>
@@ -123,9 +127,6 @@ export interface ItsshopsConfig {
   structure?: ITSStructureItem[]
 }
 
-export type ProductKind = 'wine' | 'physical' | 'digital' | 'bundle'
-export type ProductKinds = ProductKind[]
-
 /** Internal version of the config used by the engine **/
 export interface CoreBackConfig {
   projectId: string
@@ -134,7 +135,6 @@ export interface CoreBackConfig {
   workspaceIcon?: ComponentType
   apiVersion: string
   isDev: boolean
-  productKinds: ProductKinds
   settings: ItsConfigSettings
   integrations: IntegrationsConfig
   localization: ITSi18nConfig

@@ -23,48 +23,38 @@ import { seo } from './objects/seo'
 import { shippingRate } from './objects/shippingRate'
 import { taxRule } from './objects/taxRule'
 import { textBlock } from './objects/textBlock'
+import { wine } from './objects/wine'
 import { youtube } from './objects/youtube'
 
 export const getCoreObjects = (
   extensions: ITSSchemaDefinition[] | undefined,
 ): ITSSchemaDefinition[] => {
   return [
-    bundleItem,
-    seo,
-    // customImage,
-    localeImage,
-    baseImage,
-    localeAltImage,
-    // titleImage,
-    // // localeImages,
-    cropImage,
-    // complexPortableText,
-    // localeComplexPortable,
-    // multiColumns,
-    youtube,
-    menuItem,
-    carousel,
-    // internalLink,
-    // shipping,
-    // shippingRate,
-    // taxCountrySettings,
-    taxRule,
-    shippingRate,
     address,
     addressStrict,
     bankAccount,
+    baseImage,
+    bundleItem,
+    carousel,
     company,
-    orderItem,
-    orderTotals,
-    orderStatusHistory,
-    orderCustomer,
+    cropImage,
     fulfillment,
-    vatBreakdownItem,
-
     hero,
+    localeAltImage,
+    localeImage,
+    menuItem,
+    orderCustomer,
+    orderItem,
+    orderStatusHistory,
+    orderTotals,
     portableText,
+    seo,
+    shippingRate,
+    taxRule,
     textBlock,
-
+    vatBreakdownItem,
+    wine,
+    youtube,
     ...(extensions ? extensions : []),
   ]
 }

@@ -26,7 +26,7 @@ export const getCoreDocuments = (
   // remove feature from extensions, if accidently added, because it makes no sense here
   const extensionsWithoutFeature =
     extensions?.map((d) => {
-      const { feature, ...rest } = d
+      const { feature: _feature, ...rest } = d
       return rest
     }) || []
 

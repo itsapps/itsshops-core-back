@@ -1,13 +1,12 @@
 import { OptionGroupIcon } from '../../assets/icons'
-import { EditGroupOptions } from '../../components/EditGroupOptions'
 import { ITSDocumentDefinition } from '../../types'
 
 export const variantOptionGroup: ITSDocumentDefinition = {
   name: 'variantOptionGroup',
   type: 'document',
   icon: OptionGroupIcon,
-  feature: 'shop',
-  disallowedActions: ['delete', 'duplicate'],
+  feature: 'shop.productKind.options',
+  disallowedActions: ['duplicate'],
   build: (ctx) => {
     const { f } = ctx
     return {
@@ -18,32 +17,14 @@ export const variantOptionGroup: ITSDocumentDefinition = {
           initialValue: 0,
           validation: (rule) => rule.required().positive(),
         }),
-        f('options', 'array', {
-          of: [
-            {
-              type: 'reference',
-              to: [
-                {
-                  type: 'variantOption',
-                },
-              ],
-            },
-          ],
-          components: {
-            input: EditGroupOptions,
-          },
-        }),
       ],
       preview: {
         select: {
           title: 'title',
-          options: 'options',
         },
-        prepare({ title, options }) {
-          const count = options?.length || 0
+        prepare({ title }) {
           return {
             title: ctx.localizer.value(title),
-            subtitle: ctx.t.default('variantOptionGroup.preview.options', 'options', { count }),
             media: OptionGroupIcon,
           }
         },

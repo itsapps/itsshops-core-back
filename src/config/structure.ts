@@ -17,6 +17,7 @@ import {
   isDocHidden,
   localizedStructure,
 } from '../structure/structure'
+import { variantOptionsMenu } from '../structure/variantOptions'
 import type { ITSContext, ITSStructureItem } from '../types'
 
 export const createStructure = (ctx: ITSContext): StructureResolver => {
@@ -43,7 +44,14 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
           component: productsMenu,
           hidden: isDocHidden(ctx, 'product'),
         },
-        ...mapItems(['productVariant', 'variantOptionGroup', 'variantOption']),
+        ...mapItems(['productVariant']),
+        {
+          type: 'custom',
+          id: 'variantOptions',
+          feature: 'shop.productKind.options',
+          component: variantOptionsMenu,
+          hidden: isDocHidden(ctx, 'variantOptionGroup'),
+        },
         {
           type: 'custom',
           id: 'categories',

@@ -13,6 +13,7 @@ import {
   PackageIcon as Package,
   SchemaIcon as Schema,
   SearchIcon as Search,
+  SparkleIcon as Sparkle,
   SparklesIcon as Sparkles,
   SyncIcon as Sync,
   TrashIcon as Trash,
@@ -73,7 +74,7 @@ export const ManufacturerIcon = Wrench
 export const MenuIcon = Olist
 export const NoteIcon = PiNote
 export const OptionGroupIcon = Sparkles
-export const OptionIcon = Sparkles
+export const OptionIcon = Sparkle
 export const OrderIcon = Trolley
 export const OrderItemIcon = Package
 export const OrderStatusHistoryIcon = Package

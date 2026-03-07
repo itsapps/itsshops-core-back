@@ -9,21 +9,28 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
   const schemas = [...docs, ...objects]
   // const allObjs: ITSObjectDefinition[] = objects.filter(obj => obj.type === 'object');
 
-  const isFeatureEnabled = (feature: ITSFeatureKey) => {
-    const { features } = config
-
-    // Logic to handle nested keys like 'shop.manufacturer'
-    if (feature === 'shop') return !!features.shop.enabled
-    if (feature === 'shop.manufacturer')
-      return !!features.shop.enabled && !!features.shop.manufacturer
-    if (feature === 'shop.stock') return !!features.shop.enabled && !!features.shop.stock
-    if (feature === 'shop.category') return !!features.shop.enabled && !!features.shop.category
-    if (feature === 'shop.vinofact') return !!features.shop.vinofact.enabled
-    if (feature === 'blog') return !!features.blog
-    if (feature === 'users') return !!features.users
-
-    return false
+  const shopEnabled = !!config.features.shop?.enabled
+  const featureMap: Record<ITSFeatureKey, boolean> = {
+    shop: shopEnabled,
+    'shop.manufacturer': shopEnabled && !!config.features.shop?.manufacturer,
+    'shop.stock': shopEnabled && !!config.features.shop?.stock,
+    'shop.category': shopEnabled && !!config.features.shop?.category,
+    'shop.vinofact': shopEnabled && !!config.features.shop?.vinofact?.enabled,
+    'shop.productKind.wine': shopEnabled && config.schemaSettings.productKinds.includes('wine'),
+    'shop.productKind.physical':
+      shopEnabled && config.schemaSettings.productKinds.includes('physical'),
+    'shop.productKind.digital':
+      shopEnabled && config.schemaSettings.productKinds.includes('digital'),
+    'shop.productKind.bundle': shopEnabled && config.schemaSettings.productKinds.includes('bundle'),
+    'shop.productKind.options':
+      shopEnabled &&
+      (config.schemaSettings.productKinds.includes('physical') ||
+        config.schemaSettings.productKinds.includes('digital')),
+    blog: !!config.features.blog,
+    users: !!config.features.users,
   }
+
+  const isFeatureEnabled = (feature: ITSFeatureKey): boolean => featureMap[feature] ?? false
 
   const featureFilter = (definition: ITSSchemaDefinition) => {
     if (!definition.feature) return true
@@ -47,5 +54,5 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
     isDocEnabled: (name: string) => enabledDocNames.includes(name),
     getEnabledDocs: () => enabledDocs,
     getEnabledObjects: () => enabledObjects,
-  };
-};
+  }
+}

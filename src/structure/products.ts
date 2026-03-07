@@ -67,7 +67,6 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
       .views([
         S.view.form(),
         getProductReferenceView(S, t('products.variants'), t('products.addVariant')),
-        getReferenceView(S, t('views.titles.references')),
       ])
 
   return S.listItem()
@@ -89,13 +88,13 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
                 .canHandleIntent((intentName, params) => {
                   return intentName === 'edit' && params.type === 'product'
                 })
-                .child(getProductSimpleChildView),
+                .child(getProductChildView),
             ),
 
           S.divider(),
 
           // Kinds
-          ...ctx.config.productKinds.map((kind) =>
+          ...ctx.config.schemaSettings.productKinds.map((kind) =>
             S.listItem()
               .title(t(`products.kinds.list.${kind}`))
               .icon(productKindIcons[kind])

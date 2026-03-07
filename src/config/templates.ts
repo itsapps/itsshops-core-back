@@ -4,7 +4,7 @@ import { ITSLocaleContext } from '../types'
 
 export function templateResolver(prev: Template[], ctx: ITSLocaleContext): Template[] {
   const templates: Template[] = []
-  if (ctx.featureRegistry.isDocEnabled('category')) {
+  if (ctx.featureRegistry.isFeatureEnabled('shop.category')) {
     const category: Template = {
       id: 'subCategory',
       title: 'Sub-category',
@@ -19,7 +19,7 @@ export function templateResolver(prev: Template[], ctx: ITSLocaleContext): Templ
     }
     templates.push(category)
   }
-  if (ctx.featureRegistry.isFeatureEnabled('shop')) {
+  if (ctx.featureRegistry.isFeatureEnabled('shop.productKind.wine')) {
     const category: Template = {
       id: 'product-variant-with-parent',
       title: 'Product Variant with Parent',
@@ -32,10 +32,23 @@ export function templateResolver(prev: Template[], ctx: ITSLocaleContext): Templ
       value: (params: any) => ({
         product: { _type: 'reference', _ref: params.productId },
         kind: params.kind,
-        ...(params.volume && { volume: params.volume }),
+        ...(params.volume && { wine: { _type: 'wine', volume: params.volume } }),
       }),
     }
     templates.push(category)
+  }
+  if (ctx.featureRegistry.isFeatureEnabled('shop.productKind.options')) {
+    const variantOption: Template = {
+      id: 'variantOption-by-group',
+      title: 'Option',
+      schemaType: 'variantOption',
+      parameters: [{ name: 'groupId', type: 'string' }],
+      value: ({ groupId }: { groupId: string }) => ({
+        group: { _type: 'reference', _ref: groupId },
+        sortOrder: 0,
+      }),
+    }
+    templates.push(variantOption)
   }
   const allowedDocs = ctx.featureRegistry.getEnabledDocs().filter((doc) => {
     // 1. Singletons are never in the "New Document" menu

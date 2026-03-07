@@ -4,6 +4,7 @@ import type { ITSStructureComponent } from '../types'
 export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
   const apiVersion = ctx.config.apiVersion
   const t = ctx.t.default
+  const tSchema = ctx.schemaT
   const client = context.getClient({ apiVersion })
 
   const getCategoryMenuItems = (id: string) => {
@@ -21,10 +22,11 @@ export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
   }
 
   const subCategoryList = async (categoryId: string) => {
-    const category = await client.getDocument(categoryId)
+    const category = await client.fetch(`*[_id == $id][0]{title}`, { id: categoryId })
+    const title = ctx.localizer.value(category?.title) || tSchema.default('category.title')
 
     return S.documentTypeList('category')
-      .title(category?.name || t('category.title'))
+      .title(title)
       .apiVersion(apiVersion)
       .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
       .filter('parent._ref == $categoryId')

@@ -6,14 +6,14 @@ import {
 } from '../components/actions/CustomDocumentAction'
 // import { OrderDocumentActions } from '../components/actions/OrderActions'
 // import { OrderMailAction } from '../components/actions/OrderDialogAction'
-import { ITSLocaleContext, ITSSanityDefinedAction } from '../types'
+import { ITSLocaleContext, ITSSanityDefinedAction, ITSFeatureKey } from '../types'
 // import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
 // import { ImportWinesAction } from '../components/actions/ImportWinesAction'
 
-type ProductVariantReferenceDoc = {
-  _type: string
-  variants?: { _ref: string }[]
-}
+// type ProductVariantReferenceDoc = {
+//   _type: string
+//   variants?: { _ref: string }[]
+// }
 
 const globallyDisallowedActions: ITSSanityDefinedAction[] = ['schedule']
 const singletonAllowedActions: ITSSanityDefinedAction[] = ['publish', 'discardChanges', 'restore']
@@ -54,24 +54,29 @@ export function actionResolver(
       context,
     })
   }
+
+  const isEnabledSchema = (schemaType: string, type: string, feature: ITSFeatureKey) => {
+    return registry.isFeatureEnabled(feature) && schemaType === type
+  }
   // if (context.schemaType === 'order') {
   //   actions.push(OrderDocumentActions)
   //   actions.push(OrderMailAction)
   // }
-  if (context.schemaType === 'variantOptionGroup') {
-    const action = prev.find((props) => props.action === 'delete')
-    if (action) {
-      const query = `count(*[_type == "variantOptionGroup" && _id == $id && defined(options) && count(options) > 0]) > 0`
-      actions.push(
-        createCustomAction<boolean>({
-          action,
-          query,
-          validateFn: (result) =>
-            result == true ? 'optionsGroups.groupDeleteNotAllowedOptionsExist' : true,
-        }),
-      )
-    }
-  } else if (context.schemaType === 'category') {
+  // if (isEnabledSchema(context.schemaType, 'variantOptionGroup', 'shop.productKind.options')) {
+  //   const action = prev.find((props) => props.action === 'delete')
+  //   if (action) {
+  //     const query = `count(*[_type == "variantOptionGroup" && _id == $id && defined(options) && count(options) > 0]) > 0`
+  //     actions.push(
+  //       createCustomAction<boolean>({
+  //         action,
+  //         query,
+  //         validateFn: (result) =>
+  //           result == true ? 'optionsGroups.groupDeleteNotAllowedOptionsExist' : true,
+  //       }),
+  //     )
+  //   }
+  // }
+  if (isEnabledSchema(context.schemaType, 'category', 'shop.category')) {
     const action = prev.find((props) => props.action === 'delete')
     if (action) {
       const query = `count(*[_type == "category" && parent._ref == $id]) > 0`

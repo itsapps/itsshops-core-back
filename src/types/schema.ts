@@ -10,19 +10,16 @@ import type {
   ImageDefinition,
   ObjectDefinition,
   PreviewConfig,
-  Reference,
   ReferenceDefinition,
   ReferenceTo,
   Rule,
-  SanityDocument,
-  SanityDocumentLike,
   Template,
 } from 'sanity'
 import { ListItemBuilder, StructureBuilder, StructureResolverContext } from 'sanity/structure'
 
 import { FieldContext, ITSContext } from './context'
 import { PriceOptions } from './fields'
-import { FieldTranslators, I18nValidationOptions, ITSi18nArray, LocaleImage } from './localization'
+import { FieldTranslators, I18nValidationOptions } from './localization'
 
 export type ITSSanityDefinedAction = NonNullable<DocumentActionComponent['action']>
 
@@ -32,6 +29,11 @@ export type ITSFeatureKey =
   | 'shop.stock'
   | 'shop.category'
   | 'shop.vinofact'
+  | 'shop.productKind.wine'
+  | 'shop.productKind.physical'
+  | 'shop.productKind.digital'
+  | 'shop.productKind.bundle'
+  | 'shop.productKind.options'
   | 'blog'
   | 'users'
 

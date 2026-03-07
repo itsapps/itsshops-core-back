@@ -8,7 +8,9 @@ import { structureTool } from 'sanity/structure'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 import { media } from 'sanity-plugin-media'
 
+import { WineIcon } from './assets/icons'
 import { CustomToolbar } from './components/CustomToolbar'
+import { CreateWineProducts } from './components/products/CreateWineProducts'
 import { actionResolver } from './config/actions'
 import { BOTTLE_VOLUMES_ML } from './config/constants/volumes'
 import { createFeatureRegistry } from './config/features'
@@ -28,26 +30,7 @@ import { createPresentations } from './presentation'
 import { buildSchemas } from './schemas'
 import type { CountryOption, ITSLocaleContext, ItsshopsConfig, VolumeOption } from './types'
 
-// interface ItsshopsConfig {
-//   /* nothing here yet */
-// }
-
-/**
- * Usage in `sanity.config.ts` (or .js)
- *
- * ```ts
- * import {defineConfig} from 'sanity'
- * import {myPlugin} from 'sanity-plugin-core-back'
- *
- * export default defineConfig({
- *   // ...
- *   plugins: [myPlugin()],
- * })
- * ```
- */
-// export const itsshops = definePlugin<ItsshopsConfig | void>((config = {}) => {
 export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
-  // console.log('context', context.locale)
   const presentationOptions = createPresentations({ ...context, t: context.structureT })
   return {
     name: '@itsapps/itsshops-core-back',
@@ -68,6 +51,14 @@ export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
       types: buildSchemas({ ...context, t: context.schemaT }),
       templates: (prev) => templateResolver(prev, context),
     },
+    tools: [
+      {
+        name: 'create-wine-product',
+        title: 'Create Wine Product',
+        icon: WineIcon,
+        component: CreateWineProducts,
+      },
+    ],
     studio: {
       components: {
         layout: ITSStudioWrapper(context),
@@ -98,12 +89,9 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
     supportedLngs: coreConfig.localization.uiLocales,
     overrides: coreConfig.localization.overrides,
   })
-  // const translationBundles = getTranslationBundles(coreConfig.localization.uiLanguages, coreConfig.localization.overrides.general)
-  // const structureOverrideBundles = getStructureOverrideBundles(coreConfig.localization.uiLanguages)
+
   const featureRegistry = createFeatureRegistry(coreConfig)
   const i18nFieldTypes = createi18nFieldTypes(coreConfig.localization.localizedFieldTypes)
-
-  // const { projectId, dataset, workspaceName } = config
 
   return coreConfig.localization.uiLanguages.map((language) => {
     const locale = language.id
@@ -141,10 +129,6 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
       structureT,
     }
 
-    // const schemaContext = {...localeContext, t: schemaT}
-    // const structureContext = {...localeContext, t: structureT}
-    // const presentationOptions = createPresentations(structureContext)
-
     return {
       name: locale,
       basePath: `/${locale}`,
@@ -152,7 +136,7 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
       dataset: config.dataset,
       title: `${language.locale.split('-')[0].toUpperCase()} - ${config.workspaceName}`,
       icon: coreConfig.workspaceIcon,
-      plugins: [itsshopsPlugin(localeContext)], // Pass the context to the plugin
+      plugins: [itsshopsPlugin(localeContext)],
     }
   })
 }

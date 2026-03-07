@@ -1,37 +1,34 @@
+import { FieldDefinition } from 'sanity'
+
 import { ProductVariantIcon } from '../../assets/icons'
-import { VinofactWineSelector } from '../../components/products/VinofactWineSelector'
-import { ITSDocumentDefinition, ProductKind } from '../../types'
-import { validateRequiredArrayIfKind, validateRequiredIfKind } from '../../utils/validation'
+import { WineSelector } from '../../components/products/WineSelector'
+import {
+  FieldContext,
+  InternationalizedArrayString,
+  ITSDocumentDefinition,
+  ProductKind,
+  ProductVariant,
+  VariantOptionReference,
+} from '../../types'
+import { validateRequiredArrayIfKind } from '../../utils/validation'
 
 export const productVariant: ITSDocumentDefinition = {
   name: 'productVariant',
   type: 'document',
   icon: ProductVariantIcon,
   feature: 'shop',
-  disallowedActions: ['delete', 'duplicate'],
   allowCreate: false,
+  disallowedActions: ['delete', 'duplicate'],
   hideInStructure: true,
   build: (ctx) => {
     const { f } = ctx
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
-    const vinofactEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vinofact')
+    const kindFields = getKindFields(ctx)
 
     const groupedData = ctx.builders.buildGroupedSchema([
       {
-        name: 'product',
+        name: 'variant',
         fields: [
-          f('title', 'i18nString'),
-          f('product', 'reference', {
-            to: [{ type: 'product' }],
-            readOnly: !ctx.config.isDev,
-          }),
-          f('kind', 'string', {
-            options: {
-              list: ctx.config.productKinds.map((type) => ({ value: type })),
-            },
-            hidden: !ctx.config.isDev,
-          }),
-          f('sku', 'string'),
           f('status', 'string', {
             options: {
               list: [
@@ -44,27 +41,14 @@ export const productVariant: ITSDocumentDefinition = {
             },
             initialValue: 'active',
           }),
-          f('featured', 'boolean', { initialValue: false }),
-          f('options', 'array', {
-            of: [
-              {
-                type: 'reference',
-                to: [{ type: 'variantOption' }],
-              },
-            ],
-            // readOnly: true,
-            hidden: ({ parent }) => !['physical', 'digital'].includes(parent?.kind),
-          }),
+
+          ...kindFields,
+
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [
                 f('categories', 'array', {
                   validation: (rule) => rule.unique(),
-                  of: [
-                    {
-                      type: 'reference',
-                      to: [{ type: 'category' }],
-                    },
-                  ],
+                  of: [{ type: 'reference', to: [{ type: 'category' }] }],
                   options: {
                     disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
                     sortable: false,
@@ -72,24 +56,43 @@ export const productVariant: ITSDocumentDefinition = {
                 }),
               ]
             : []),
+
+          f('kind', 'string', {
+            options: {
+              list: ctx.config.schemaSettings.productKinds.map((type) => ({ value: type })),
+            },
+            hidden: !ctx.config.isDev,
+            validation: (rule) => rule.required(),
+          }),
+
+          f('featured', 'boolean', { initialValue: false }),
           ...(ctx.featureRegistry.isDocEnabled('manufacturer')
             ? [
                 f('manufacturers', 'array', {
                   validation: (rule) => rule.unique(),
-                  of: [
-                    {
-                      type: 'reference',
-                      to: [{ type: 'manufacturer' }],
-                    },
-                  ],
+                  of: [{ type: 'reference', to: [{ type: 'manufacturer' }] }],
                 }),
               ]
             : []),
         ],
       },
       {
+        name: 'infos',
+        fields: [
+          f('title', 'i18nString'),
+          f('product', 'reference', {
+            to: [{ type: 'product' }],
+            readOnly: !ctx.config.isDev,
+            validation: (rule) => rule.required(),
+          }),
+
+          f('sku', 'string'),
+        ],
+      },
+      {
         name: 'pricing',
         fields: [
+          f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
           ctx.builders.priceField({
             validation: (Rule) => Rule.positive(),
             group: 'pricing',
@@ -98,7 +101,6 @@ export const productVariant: ITSDocumentDefinition = {
             name: 'compareAtPrice',
             validation: (Rule) => Rule.positive(),
           }),
-          f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
         ],
       },
       {
@@ -108,51 +110,6 @@ export const productVariant: ITSDocumentDefinition = {
       {
         name: 'seo',
         fields: [f('seo', 'seo')],
-      },
-      {
-        name: 'bundle',
-        fields: [
-          f('bundleItems', 'array', {
-            of: [
-              {
-                type: 'bundleItem',
-              },
-            ],
-            validation: validateRequiredArrayIfKind('bundle'),
-            // validation: (Rule) =>
-            //   Rule.custom((value: any, context) => {
-            //     if (context.document?.kind === 'bundle' && (!value || value.length === 0)) {
-            //       return context.i18n.t('validation:generic.required')
-            //     }
-            //     return true
-            //   }),
-            hidden: ({ parent }) => parent?.kind !== 'bundle',
-          }),
-        ],
-      },
-      {
-        name: 'wine',
-        fields: [
-          ...(vinofactEnabled
-            ? [
-                ctx.f('vinofactWineId', 'string', {
-                  components: { input: VinofactWineSelector },
-                  hidden: ({ parent }) => parent?.kind !== 'wine',
-                  validation: (Rule) => Rule.required().warning(),
-                }),
-              ]
-            : []),
-          ctx.f('volume', 'number', {
-            validation: validateRequiredIfKind('wine'),
-            options: {
-              list: ctx.constants.volumeOptions,
-            },
-            hidden: ({ parent }) => parent?.kind !== 'wine',
-          }),
-          ctx.f('vintage', 'string', {
-            hidden: ({ parent }) => parent?.kind !== 'wine',
-          }),
-        ],
       },
       ...(stockEnabled
         ? [
@@ -174,69 +131,67 @@ export const productVariant: ITSDocumentDefinition = {
         : []),
     ])
 
+    const wineEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.wine')
+    const physicalEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.physical')
+    const digitalEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.digital')
+    const bundleEnabled = ctx.featureRegistry.isFeatureEnabled('shop.productKind.bundle')
+    const optionsEnabled = physicalEnabled || digitalEnabled
+
+    const previewSelect = {
+      variantTitle: 'title',
+      productTitle: 'product.title',
+      image: 'image.image',
+      productImage: 'product.image.image',
+      kind: 'kind',
+      // physical + digital: option ref titles
+      ...(optionsEnabled && {
+        options: 'options',
+        optionTitle0: 'options.0->title',
+        optionTitle1: 'options.1->title',
+        optionTitle2: 'options.2->title',
+      }),
+      // wine: volume + vintage
+      ...(wineEnabled && {
+        wineVolume: 'wine.volume',
+        wineVintage: 'wine.vintage',
+      }),
+      // bundle: bundle item product titles
+      ...(bundleEnabled && {
+        bundleItems: 'bundleItems',
+      }),
+    }
+
     return {
       ...groupedData,
       preview: {
-        select: {
-          variantTitle: 'title',
-          productTitle: 'product.title',
-          options0: 'options.0.title',
-          options1: 'options.1.title',
-          options2: 'options.2.title',
-          image: 'image.image',
-          productImage: 'product.image.image',
-          kind: 'kind',
-          volume: 'volume',
-          vintage: 'vintage',
-        },
+        select: previewSelect,
         prepare({
           variantTitle,
           productTitle,
-          options0,
-          options1,
-          options2,
+          options,
+          optionTitle0,
+          optionTitle1,
+          optionTitle2,
           image,
           productImage,
           kind,
-          volume,
-          vintage,
+          wineVolume,
+          wineVintage,
+          bundleItems,
         }) {
           const vTitle = ctx.localizer.value(variantTitle)
           const pTitle = ctx.localizer.value(productTitle)
-          const title = vTitle || (pTitle ? `[${pTitle}]` : '')
-          let subtitle
-          switch (kind as ProductKind) {
-            case 'physical': {
-              subtitle = [options0, options1, options2]
-                .map((o) => ctx.localizer.value(o))
-                .filter(Boolean)
-                .join(' • ')
-              break
-            }
-            case 'digital': {
-              subtitle = [options0, options1, options2]
-                .map((o) => ctx.localizer.value(o))
-                .filter(Boolean)
-                .join(' • ')
-              break
-            }
-            case 'bundle': {
-              subtitle = [options0, options1, options2]
-                .map((o) => ctx.localizer.value(o))
-                .filter(Boolean)
-                .join(' • ')
-              break
-            }
-            case 'wine': {
-              const liter = ctx.format.number(volume / 1000, { style: 'unit', unit: 'liter' })
-              subtitle = [liter, vintage].filter(Boolean).join(' • ')
-              break
-            }
-            default: {
-              subtitle = 'ddd'
-            }
-          }
+          const title = vTitle ?? (pTitle ? `[${pTitle}]` : '')
 
+          const subtitle = buildSubtitle(ctx, kind, {
+            options: {
+              all: options,
+              titles: [optionTitle0, optionTitle1, optionTitle2],
+            },
+            wineVolume,
+            wineVintage,
+            bundleItemCount: bundleItems?.length ?? 0,
+          })
           return {
             title,
             subtitle,
@@ -247,4 +202,105 @@ export const productVariant: ITSDocumentDefinition = {
       },
     }
   },
+}
+
+// ─── Preview subtitle ─────────────────────────────────────────────────────────
+
+function buildSubtitle(
+  ctx: FieldContext,
+  kind: ProductKind,
+  data: {
+    options: {
+      all: VariantOptionReference[] | null
+      titles: (InternationalizedArrayString | null)[]
+    }
+    wineVolume?: number
+    wineVintage?: string
+    bundleItemCount: number
+  },
+): string {
+  switch (kind) {
+    case 'wine': {
+      const liter =
+        data.wineVolume && Number.isInteger(data.wineVolume)
+          ? ctx.format.number(data.wineVolume / 1000, { style: 'unit', unit: 'liter' })
+          : data.wineVolume
+      return [liter, data.wineVintage].filter(Boolean).join(' • ')
+    }
+    case 'physical':
+    case 'digital':
+      return data.options.titles
+        .map((o) => ctx.localizer.value(o))
+        .filter(Boolean)
+        .join(' • ')
+    case 'bundle':
+      return ctx.t.default(
+        'productVariant.preview.bundleItems',
+        `${data.bundleItemCount} Products`,
+        {
+          count: data.bundleItemCount,
+        },
+      )
+    default:
+      return ''
+  }
+}
+
+// ─── Kind field builders ──────────────────────────────────────────────────────
+
+function getWineFields(ctx: FieldContext): FieldDefinition[] {
+  return [
+    ctx.f('wine', 'wine', {
+      hidden: ({ parent }: { parent: ProductVariant }) => parent?.kind !== 'wine',
+      components: { input: WineSelector },
+      validation: (Rule) =>
+        Rule.custom((_, context) => {
+          const doc = context.document as ProductVariant
+          if (doc?.kind !== 'wine') return true
+          if (!doc?.wine?.vinofactWineId || !doc?.wine?.volume) {
+            return context.i18n.t('validation:generic.required')
+          }
+          return true
+        }),
+    }),
+  ]
+}
+
+function getPhysicalOrDigitalFields(ctx: FieldContext): FieldDefinition[] {
+  return [
+    ctx.f('options', 'array', {
+      of: [{ type: 'reference', to: [{ type: 'variantOption' }] }],
+      hidden: ({ parent }: { parent: ProductVariant }) =>
+        !parent?.kind || !['physical', 'digital'].includes(parent.kind),
+    }),
+  ]
+}
+
+function getBundleFields(ctx: FieldContext): FieldDefinition[] {
+  return [
+    ctx.f('bundleItems', 'array', {
+      of: [{ type: 'bundleItem' }],
+      validation: validateRequiredArrayIfKind('bundle'),
+      hidden: ({ parent }: { parent: ProductVariant }) => parent?.kind !== 'bundle',
+    }),
+  ]
+}
+
+function getKindFields(ctx: FieldContext): FieldDefinition[] {
+  const kindFieldBuilders: Record<ProductKind, () => FieldDefinition[]> = {
+    wine: () => getWineFields(ctx),
+    physical: () => [],
+    digital: () => [],
+    bundle: () => getBundleFields(ctx),
+  }
+
+  const optionsEnabled =
+    ctx.featureRegistry.isFeatureEnabled('shop.productKind.physical') ||
+    ctx.featureRegistry.isFeatureEnabled('shop.productKind.digital')
+
+  const kindFields = (Object.entries(kindFieldBuilders) as [ProductKind, () => FieldDefinition[]][])
+    .filter(([kind]) => ctx.featureRegistry.isFeatureEnabled(`shop.productKind.${kind}`))
+    .flatMap(([_, builder]) => builder())
+
+  return [...(optionsEnabled ? getPhysicalOrDigitalFields(ctx) : []), ...kindFields]
 }
