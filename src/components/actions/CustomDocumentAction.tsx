@@ -15,7 +15,8 @@ export function createCustomDocumentAction<T>(customAction: CustomDocumentAction
   const DocumentAction = (props: DocumentActionProps) => {
     const originalResult = customAction.action(props)
     const toast = useToast()
-    const { t, sanityClient } = useITSContext()
+    const { componentT, sanityClient } = useITSContext()
+    const t = componentT.default
 
     return {
       ...originalResult,

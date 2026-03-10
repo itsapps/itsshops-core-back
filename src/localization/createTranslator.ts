@@ -2,6 +2,8 @@ import i18next from 'i18next'
 
 import type { ITSTranslator } from '../types'
 import { flattenAndMerge } from '../utils'
+import componentsDe from './resources/components_de'
+import componentsEn from './resources/components_en'
 import fieldsDe from './resources/fields_de'
 import fieldsEn from './resources/fields_en'
 import structureDe from './resources/structure_de'
@@ -14,7 +16,7 @@ type TranslatorConfig = {
   overrides?: {
     fields?: Record<string, any>
     structure?: Record<string, any>
-    general?: Record<string, any>
+    components?: Record<string, any>
   }
 }
 
@@ -27,10 +29,12 @@ export const createTranslator = (config: TranslatorConfig): TranslatorFn => {
     de: {
       schema: flattenAndMerge(fieldsDe, config.overrides?.fields?.de || {}),
       structure: flattenAndMerge(structureDe, config.overrides?.structure?.de || {}),
+      components: flattenAndMerge(componentsDe, config.overrides?.structure?.de || {}),
     },
     en: {
       schema: flattenAndMerge(fieldsEn, config.overrides?.fields?.en || {}),
       structure: flattenAndMerge(structureEn, config.overrides?.structure?.en || {}),
+      components: flattenAndMerge(componentsEn, config.overrides?.structure?.en || {}),
     },
   }
 
@@ -40,7 +44,7 @@ export const createTranslator = (config: TranslatorConfig): TranslatorFn => {
     fallbackLng: config.fallbackLng,
     supportedLngs: config.supportedLngs,
     resources,
-    ns: ['schema', 'structure'],
+    ns: ['schema', 'structure', 'components'],
     defaultNS: 'schema',
     interpolation: { escapeValue: false },
     // This ensures i18next returns 'undefined' if a key is missing

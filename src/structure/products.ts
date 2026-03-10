@@ -1,33 +1,15 @@
-import { ComponentType } from 'react'
-
-import {
-  ProductIcon,
-  ProductKindBundleIcon,
-  ProductKindDigitalIcon,
-  ProductKindPhysicalIcon,
-  ProductKindWineIcon,
-  ProductVariantIcon,
-} from '../assets/icons'
-// import { WineImporter } from '../components/products/WineImporter'
-// import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
-import type { ITSStructureComponent, ProductKind } from '../types'
-import { getProductReferenceView, getReferenceView } from './structure'
+import { ProductIcon, productKindIcons, ProductVariantIcon } from '../assets/icons'
+import type { ITSStructureComponent } from '../types'
+import { getProductReferenceView } from './structure'
 
 export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
   const apiVersion = ctx.config.apiVersion
-  const t = ctx.t.default
-
-  const productKindIcons: Record<ProductKind, ComponentType> = {
-    wine: ProductKindWineIcon,
-    digital: ProductKindDigitalIcon,
-    bundle: ProductKindBundleIcon,
-    physical: ProductKindPhysicalIcon,
-  }
+  const t = ctx.structureT.default
 
   const getProductChildView = (productId: string) =>
     S.list()
       .id('editProduct')
-      .title(t('products.editProduct'))
+      .title(t('products.edit'))
       .items([
         S.listItem()
           .title(t('products.productContainer'))
@@ -40,7 +22,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
               .views([
                 S.view.form(),
                 getProductReferenceView(S, t('products.variants'), t('products.addVariant')),
-                getReferenceView(S, t('views.titles.references')),
+                // getReferenceView(S, t('views.titles.references')),
               ]),
           ),
         // .child(S.document().schemaType('product').documentId(productId)),
@@ -70,7 +52,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
       ])
 
   return S.listItem()
-    .title(t('products.products'))
+    .title(t('products.title'))
     .icon(ProductIcon)
     .child(
       S.list()

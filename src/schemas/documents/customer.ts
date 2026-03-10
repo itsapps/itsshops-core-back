@@ -73,8 +73,8 @@ export const customer: ITSDocumentDefinition = {
         },
         prepare: ({ address, status, newsletter }) => {
           const title = [address?.prename, address?.lastname].filter(Boolean).join(' ') || 'No Name'
-          const statusString = `${ctx.t.default('customer.fields.status.options.active')}: ${status === 'active' ? '✅' : '❌'}`
-          const newsletterString = `${ctx.t.default('customer.fields.receiveNewsletter.title')}: ${newsletter ? '✅' : '❌'}`
+          const statusString = `${ctx.schemaT.default('customer.fields.status.options.active')}: ${status === 'active' ? '✅' : '❌'}`
+          const newsletterString = `${ctx.schemaT.default('customer.fields.receiveNewsletter.title')}: ${newsletter ? '✅' : '❌'}`
           const subtitle = `${statusString}, ${newsletterString}`
           return {
             title,

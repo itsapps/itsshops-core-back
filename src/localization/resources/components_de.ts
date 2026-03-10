@@ -1,4 +1,49 @@
+/* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
+  productCreatorTool: {
+    name: 'produkt-manager',
+    title: 'Produktmanager',
+    subtitle: 'Produkte und Varianten erstellen in einem Schritt',
+    sections: {
+      variants: {
+        title: 'Varianten',
+        count_one: '{{count}} Variante',
+        count_other: '{{count}} Varianten',
+      },
+    },
+    placeholders: {
+      productTitle: {
+        wine: 'z.B. Grüner Veltliner',
+        physicalDigital: 'z.B. T-Shirt',
+        bundle: 'z.B. Geburtstagspacket',
+      },
+      productPrice: 'z.B. 12,90',
+    },
+    messages: {
+      productCreated: {
+        title: 'Produkt erstellt',
+        description_one: '{{title}} mit {{count}} Variante.',
+        description_other: '{{title}} mit {{count}} Varianten.',
+      },
+      productCreatedFail: {
+        title: 'Fehler beim Erstellen des Produkts',
+      },
+    },
+    submit_zero: 'Produkt erstellen',
+    submit_one: 'Produkt erstellen',
+    submit_other: 'Produkt mit {{count}} Varianten erstellen',
+    submitting: 'Produkt wird erstellt...',
+  },
+  vinofact: {
+    notInitialized: {
+      title: 'Vinofact client not initialized.',
+      description: 'Check your shop configuration features.',
+    },
+    winesLoadedError: {
+      title: 'Vinofact Weine konnten nicht geladen werden.',
+    },
+  },
+
   fields: {
     product: 'Produkt',
     productVariant: 'Produktvariante',

@@ -65,7 +65,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
 
   // const hasError = validationErrors.length > 0
 
-  const { vinofactClient, schemaT, t, tStudio } = useITSContext()
+  const { vinofactClient, studioT } = useITSContext()
   const toast = useToast()
 
   const [wines, setWines] = useState<VinofactWine[]>([])
@@ -201,19 +201,19 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
             menu={
               <Menu>
                 <MenuItem
-                  text={tStudio('inputs.reference.action.clear')}
+                  text={studioT('inputs.reference.action.clear')}
                   icon={TrashIcon}
                   tone="critical"
                   onClick={handleClearSelection}
                 />
                 <MenuItem
-                  text={tStudio('inputs.reference.action.replace')}
+                  text={studioT('inputs.reference.action.replace')}
                   icon={SyncIcon}
                   onClick={handleIsReplacing}
                 />
                 <MenuDivider />
                 <MenuItem
-                  text={tStudio('inputs.reference.action.open-in-new-tab')}
+                  text={studioT('inputs.reference.action.open-in-new-tab')}
                   icon={LaunchIcon}
                   onClick={openEditUrl}
                 />
@@ -230,7 +230,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
         {...elementProps}
         openButton
         options={options}
-        placeholder={tStudio('inputs.reference.search-placeholder')}
+        placeholder={studioT('inputs.reference.search-placeholder')}
         onSelect={handleSelect}
         // Custom Filter (Searches Title + Year)
         filterOption={filterOption}

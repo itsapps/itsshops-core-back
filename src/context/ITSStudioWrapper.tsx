@@ -3,9 +3,9 @@ import { studioTheme, ThemeProvider } from '@sanity/ui'
 import { LayoutProps } from 'sanity'
 
 import { ITSCoreProvider } from '../context/ITSCoreProvider'
-import { ITSLocaleContext } from '../types'
+import { ITSContext } from '../types'
 
-export const ITSStudioWrapper = (ctx: ITSLocaleContext) => {
+export const ITSStudioWrapper = (ctx: ITSContext) => {
   // We return a function that Sanity expects for the 'layout' component
   const Wrapper = (props: LayoutProps) => (
     <ThemeProvider theme={studioTheme}>

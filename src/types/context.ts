@@ -9,7 +9,7 @@ import { CoreFactory, FieldFactory, ITSBuilders } from './schema'
 import { ITSImageBuilder } from './utils'
 import { ITSVinofactClient } from './vinofact'
 
-export interface ITSLocaleContext {
+export interface ITSContext {
   config: CoreBackConfig
   featureRegistry: ITSFeatureRegistry
   locale: string
@@ -20,16 +20,14 @@ export interface ITSLocaleContext {
     volumeOptions: VolumeOption[]
   }
   i18nFieldTypes: Record<string, string>
+  t: ITSTranslator //same as schemaT
   schemaT: ITSTranslator
   structureT: ITSTranslator
-}
-export interface ITSContext extends ITSLocaleContext {
-  t: ITSTranslator
+  componentT: ITSTranslator
 }
 
-export interface ITSProviderContext extends ITSLocaleContext {
-  t: TFunction
-  tStudio: TFunction
+export interface ITSProviderContext extends ITSContext {
+  studioT: TFunction
   sanityClient: SanityClient
   imageBuilder: ITSImageBuilder
   frontendClient: ITSFrontendClient

@@ -3,22 +3,15 @@ import { type SanityClient, useClient, useTranslation } from 'sanity'
 
 import { createFrontendClient } from '../external/frontend'
 import { createVinofactClient } from '../external/vinofact'
-import { ITSLocaleContext, ITSProviderContext } from '../types'
+import { ITSContext, ITSProviderContext } from '../types'
 import { createImageBuilder } from '../utils/imageBuilder'
 
 // import { useCurrentLocale } from './your-locale-hook' // Replace with your actual hook
 
 const ITSCoreContext = createContext<ITSProviderContext | null>(null)
 
-export const ITSCoreProvider = ({
-  children,
-  ctx,
-}: {
-  children: ReactNode
-  ctx: ITSLocaleContext
-}) => {
-  const { t } = useTranslation('itsapps')
-  const { t: tStudio } = useTranslation('studio')
+export const ITSCoreProvider = ({ children, ctx }: { children: ReactNode; ctx: ITSContext }) => {
+  const { t } = useTranslation('studio')
   const baseClient: SanityClient = useClient({ apiVersion: ctx.config.apiVersion })
   const isDev = ctx.config.isDev
 
@@ -96,14 +89,13 @@ export const ITSCoreProvider = ({
   const value = useMemo(
     () => ({
       ...ctx,
-      t,
-      tStudio,
+      studioT: t,
       sanityClient,
       imageBuilder,
       frontendClient,
       vinofactClient,
     }),
-    [ctx, t, tStudio, sanityClient, imageBuilder, frontendClient, vinofactClient],
+    [ctx, t, sanityClient, imageBuilder, frontendClient, vinofactClient],
   )
 
   return <ITSCoreContext.Provider value={value}>{children}</ITSCoreContext.Provider>

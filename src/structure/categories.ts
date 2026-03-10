@@ -3,13 +3,17 @@ import type { ITSStructureComponent } from '../types'
 
 export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
   const apiVersion = ctx.config.apiVersion
-  const t = ctx.t.default
+  const t = ctx.structureT.default
   const tSchema = ctx.schemaT
   const client = context.getClient({ apiVersion })
 
   const getCategoryMenuItems = (id: string) => {
     const customEditButton = S.menuItem()
-      .title(t('actions.editType', 'Edit category', { type: t('category_single') }))
+      .title(
+        context.i18n.t('inputs.array.action.edit', {
+          itemTypeTitle: tSchema.default('category.title'),
+        }),
+      )
       .showAsAction(true)
       .icon(EditIcon)
       .intent({
@@ -40,11 +44,11 @@ export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
   }
 
   return S.listItem()
-    .title(t('categories'))
+    .title(t('categories.title'))
     .icon(CategoryIcon)
     .child(
       S.documentTypeList('category')
-        .title(t('categories'))
+        .title(t('categories.title'))
         .apiVersion(apiVersion)
         .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
         .filter('_type == "category" && !defined(parent)')

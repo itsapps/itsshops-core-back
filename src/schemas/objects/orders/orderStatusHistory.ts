@@ -48,7 +48,7 @@ export const orderStatusHistory: ITSSchemaDefinition = {
             ? ctx.format.date(timestamp, { dateStyle: 'medium', timeStyle: 'medium' })
             : 'No Date'
           const typeString = type
-            ? ctx.t.default(`orderStatusHistory.fields.type.options.${type}`, type)
+            ? ctx.schemaT.default(`orderStatusHistory.fields.type.options.${type}`, type)
             : 'No Type'
           // const statusString = status ? ctx.t.default(getStateTranslationKey(status), status) : 'No Status'
           const subtitle = [source, note].filter(Boolean).join(' - ')

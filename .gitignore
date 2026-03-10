@@ -58,3 +58,8 @@ yalc.lock
 
 # Compiled plugin
 dist
+
+# generated
+collected.ts
+schema.json
+sanity.types.ts

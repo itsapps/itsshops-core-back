@@ -10,7 +10,7 @@ import { media } from 'sanity-plugin-media'
 
 import { WineIcon } from './assets/icons'
 import { CustomToolbar } from './components/CustomToolbar'
-import { CreateWineProducts } from './components/products/CreateWineProducts'
+// import { CreateWineProducts } from './components/products/CreateWineProducts'
 import { actionResolver } from './config/actions'
 import { BOTTLE_VOLUMES_ML } from './config/constants/volumes'
 import { createFeatureRegistry } from './config/features'
@@ -18,19 +18,19 @@ import { createi18nFieldTypes } from './config/fieldTypes'
 import { mapConfig } from './config/mapper'
 import { createStructureTool } from './config/structure'
 import { templateResolver } from './config/templates'
+import { createTools } from './config/tools'
 import { ITSStudioWrapper } from './context/ITSStudioWrapper'
 import { createFormatHelpers, createI18nHelpers, createTranslator } from './localization'
 import {
   getStructureOverrideBundles,
-  getTranslationBundles,
   getTranslationPackage,
 } from './localization/sanityTranslation'
 import { createPresentations } from './presentation'
 // import { defaultTheme } from './config/theme'
 import { buildSchemas } from './schemas'
-import type { CountryOption, ITSLocaleContext, ItsshopsConfig, VolumeOption } from './types'
+import type { CountryOption, ITSContext, ItsshopsConfig, VolumeOption } from './types'
 
-export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
+export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
   const presentationOptions = createPresentations({ ...context, t: context.structureT })
   return {
     name: '@itsapps/itsshops-core-back',
@@ -41,24 +41,17 @@ export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
         buttonAddAll: false,
         languageDisplay: 'titleOnly',
       }),
-      structureTool(createStructureTool({ ...context, t: context.structureT })),
+      structureTool(createStructureTool(context)),
       visionTool(),
       media(),
       presentationTool(presentationOptions),
       ...getTranslationPackage(context.locale),
     ],
     schema: {
-      types: buildSchemas({ ...context, t: context.schemaT }),
+      types: buildSchemas(context),
       templates: (prev) => templateResolver(prev, context),
     },
-    tools: [
-      {
-        name: 'create-wine-product',
-        title: 'Create Wine Product',
-        icon: WineIcon,
-        component: CreateWineProducts,
-      },
-    ],
+    tools: createTools(context),
     studio: {
       components: {
         layout: ITSStudioWrapper(context),
@@ -70,13 +63,7 @@ export const itsshopsPlugin = definePlugin<ITSLocaleContext>((context) => {
       actions: (prev, ctx) => actionResolver(prev, ctx, context),
     },
     i18n: {
-      bundles: [
-        ...getTranslationBundles(
-          context.config.localization.uiLanguages,
-          context.config.localization.overrides.general,
-        ),
-        ...getStructureOverrideBundles(context.config.localization.uiLanguages),
-      ],
+      bundles: [...getStructureOverrideBundles(context.config.localization.uiLanguages)],
     },
   }
 })
@@ -98,6 +85,7 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
 
     const schemaT = translator('schema', locale)
     const structureT = translator('structure', locale)
+    const componentT = translator('components', locale)
 
     const localizer = createI18nHelpers(locale, coreConfig.localization.defaultLocale)
     const format = createFormatHelpers(locale)
@@ -114,7 +102,7 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
         value: volume,
       }
     })
-    const localeContext: ITSLocaleContext = {
+    const context: ITSContext = {
       config: coreConfig,
       featureRegistry,
       locale,
@@ -125,8 +113,10 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
         volumeOptions,
       },
       i18nFieldTypes,
+      t: schemaT,
       schemaT,
       structureT,
+      componentT,
     }
 
     return {
@@ -136,7 +126,7 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
       dataset: config.dataset,
       title: `${language.locale.split('-')[0].toUpperCase()} - ${config.workspaceName}`,
       icon: coreConfig.workspaceIcon,
-      plugins: [itsshopsPlugin(localeContext)],
+      plugins: [itsshopsPlugin(context)],
     }
   })
 }

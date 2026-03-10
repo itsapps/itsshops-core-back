@@ -113,8 +113,9 @@ const resolveItem = (
   // if (item.hidden) return null;
   if (item.hidden && !ctx.config.isDev) return null
 
-  const t = ctx.t.default
-  const title = item.title ? t(item.title) : t(item.id)
+  const title = item.title
+    ? ctx.structureT.default(item.title)
+    : ctx.structureT.default(`${item.id}.title`)
 
   switch (item.type) {
     case 'divider':
@@ -240,7 +241,7 @@ export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureIt
 
     return S.list()
       .id('root')
-      .title(ctx.t.default('content'))
+      .title(ctx.structureT.default('content.title'))
       .items([
         ...items,
         // S.documentTypeListItem('bla').title('pages'),

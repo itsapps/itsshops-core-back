@@ -22,6 +22,7 @@ import {
   WarningOutlineIcon as WarningOutline,
   WrenchIcon as Wrench,
 } from '@sanity/icons'
+import { ComponentType } from 'react'
 import {
   PiArrowUDownLeft,
   PiArticle,
@@ -49,6 +50,8 @@ import {
   PiWine,
   PiYoutubeLogo,
 } from 'react-icons/pi'
+
+import { ProductKind } from '../types'
 
 export const AddIcon = Add
 export const ArrowUDownLeftIcon = PiArrowUDownLeft
@@ -105,3 +108,10 @@ export const WarningOutlineIcon = WarningOutline
 export const WebsiteIcon = Home
 export const WineIcon = PiWine
 export const YoutubeLogoIcon = PiYoutubeLogo
+
+export const productKindIcons: Record<ProductKind, ComponentType> = {
+  bundle: ProductKindBundleIcon,
+  digital: ProductKindDigitalIcon,
+  physical: ProductKindPhysicalIcon,
+  wine: ProductKindWineIcon,
+}

@@ -1,9 +1,9 @@
 // import { ProductPreview } from '../../components/previews/ProductPreview'
 
-import { ProductIcon } from '../../assets/icons'
+import { ProductIcon, productKindIcons } from '../../assets/icons'
 // import { GenerateVariants } from '../../components/GenerateVariants'
 // import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
-import { ITSDocumentDefinition } from '../../types'
+import { ITSDocumentDefinition, ProductKind } from '../../types'
 
 export const product: ITSDocumentDefinition = {
   name: 'product',
@@ -96,11 +96,15 @@ export const product: ITSDocumentDefinition = {
         select: {
           title: 'title',
           image: 'image.image',
+          kind: 'kind',
         },
-        prepare({ title, image }) {
+        prepare({ title, image, kind }) {
+          const productKind: ProductKind = kind
+          const media =
+            ctx.localizer.value(image) || (kind ? productKindIcons[productKind] : ProductIcon)
           return {
             title: ctx.localizer.value(title),
-            media: ctx.localizer.value(image) || ProductIcon,
+            media,
           }
         },
       },

@@ -27,10 +27,10 @@ export const carousel: ITSSchemaDefinition = {
             // title: 'carousel.title',
             // subtitle: 'carousel.preview.slides',
             // media: "asdf"
-            title: ctx.t.default('carousel.preview.slides', `${slides?.length || 0} Slides`, {
+            title: ctx.schemaT.default('carousel.preview.slides', `${slides?.length || 0} Slides`, {
               count: slides?.length || 0,
             }),
-            subtitle: ctx.t.default('carousel.title'),
+            subtitle: ctx.schemaT.default('carousel.title'),
             media: CarouselIcon,
           }
         },

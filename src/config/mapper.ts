@@ -1,11 +1,11 @@
 import {
   AllowedDocumentReferenceTypes,
-  ProductKinds,
   CoreBackConfig,
   FeatureConfig,
   ITSCoreSchemaSettings,
   ITSFeatureConfig,
   ItsshopsConfig,
+  ProductKinds,
 } from '../types'
 import { deepMerge } from '../utils'
 import { createCountries } from './constants/countries'
@@ -55,12 +55,12 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     ? {
         fields: {},
         structure: {},
-        general: {},
+        components: {},
       }
     : {
         fields: config.i18n?.fieldTranslationOverrides || {},
         structure: config.i18n?.structureTranslationOverrides || {},
-        general: config.i18n?.translationOverrides || {},
+        components: config.i18n?.translationOverrides || {},
       }
 
   const schemaExtensions = ignoreExtensions ? {} : config.schemaExtensions || {}

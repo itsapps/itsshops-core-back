@@ -20,7 +20,7 @@ export const localeAltImage: ITSSchemaDefinition = {
         prepare: ({ alt, asset, crop, hotspot }) => {
           const img = { asset, crop, hotspot } as any
           return {
-            title: ctx.localizer.value(alt) || ctx.t.default('localeImage.title'),
+            title: ctx.localizer.value(alt) || ctx.schemaT.default('localeImage.title'),
             media: asset ? img : ImageIcon,
           }
         },

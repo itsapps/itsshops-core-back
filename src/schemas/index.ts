@@ -25,8 +25,8 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
   const fieldCtx: FieldContext = { ...ctx, f: factory.fields, factory, builders }
 
   const icon = extension?.icon ?? definition.icon
-  const title = definition.title ?? ctx.t.default(`${name}.title`)
-  const description = definition.description ?? ctx.t.strict(`${name}.description`)
+  const title = definition.title ?? ctx.schemaT.default(`${name}.title`)
+  const description = definition.description ?? ctx.schemaT.strict(`${name}.description`)
 
   const base = {
     name,

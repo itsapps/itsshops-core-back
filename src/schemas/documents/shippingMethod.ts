@@ -74,7 +74,7 @@ export const shippingMethod: ITSDocumentDefinition = {
         prepare({ title, countries }) {
           return {
             title: ctx.localizer.value(title),
-            subtitle: ctx.t.default('shippingMethod.preview.countries', 'Countries', {
+            subtitle: ctx.schemaT.default('shippingMethod.preview.countries', 'Countries', {
               count: countries?.length || 0,
             }),
           }

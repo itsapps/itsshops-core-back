@@ -89,7 +89,7 @@ export interface ITSi18nConfig {
   overrides: {
     fields: Record<string, any>
     structure: Record<string, any>
-    general: Record<string, any>
+    components: Record<string, any>
   }
   countries: Country[]
 }

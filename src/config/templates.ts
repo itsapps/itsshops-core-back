@@ -1,8 +1,8 @@
 import { Template } from 'sanity'
 
-import { ITSLocaleContext } from '../types'
+import { ITSContext } from '../types'
 
-export function templateResolver(prev: Template[], ctx: ITSLocaleContext): Template[] {
+export function templateResolver(prev: Template[], ctx: ITSContext): Template[] {
   const templates: Template[] = []
   if (ctx.featureRegistry.isFeatureEnabled('shop.category')) {
     const category: Template = {

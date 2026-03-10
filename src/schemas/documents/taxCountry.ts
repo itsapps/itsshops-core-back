@@ -32,7 +32,7 @@ export const taxCountry: ITSDocumentDefinition = {
           return {
             title: `${status} ${title}`,
             // subtitle: Array.isArray(rules) ? `${rules.length} Tax Rules defined` : 'No rules',
-            subtitle: ctx.t.default('taxCountry.preview.rules', 'Rules', {
+            subtitle: ctx.schemaT.default('taxCountry.preview.rules', 'Rules', {
               count: rules?.length || 0,
             }),
             media: country ? country.emoji : null,

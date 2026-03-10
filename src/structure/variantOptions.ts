@@ -3,20 +3,20 @@ import type { ITSStructureComponent } from '../types'
 
 export const variantOptionsMenu: ITSStructureComponent = (S, context, ctx) => {
   const apiVersion = ctx.config.apiVersion
-  const t = ctx.t.default
+  const t = ctx.structureT.default
 
   return S.listItem()
-    .title(t('variantOptions.groups'))
+    .title(t('variantOptions.title'))
     .icon(OptionGroupIcon)
     .child(
       S.documentTypeList('variantOptionGroup')
-        .title(t('variantOptions.groups'))
+        .title(t('variantOptions.title'))
         .child((groupId) =>
           S.list()
-            .title(t('variantOptions.group'))
+            .title(t('variantOptions.title'))
             .items([
               S.listItem()
-                .title(t('variantOptions.group'))
+                .title(t('variantOptions.title'))
                 .icon(OptionGroupIcon)
                 .child(S.document().schemaType('variantOptionGroup').documentId(groupId)),
               S.listItem()

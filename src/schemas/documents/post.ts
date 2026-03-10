@@ -10,6 +10,19 @@ export const post: ITSDocumentDefinition = {
     const { f } = ctx
     return {
       fields: [f('title', 'i18nString', { i18n: 'atLeastOne' })],
+      preview: {
+        select: {
+          title: 'title',
+          // image: 'image.image',
+          // kind: 'kind',
+        },
+        prepare({ title }) {
+          return {
+            title: ctx.localizer.value(title),
+            media: NoteIcon,
+          }
+        },
+      },
     }
   },
   // preview: (ctx: ITSContext) => {

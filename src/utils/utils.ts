@@ -1,3 +1,5 @@
+import { createPublishedId } from '@sanity/id-utils'
+import { uuid } from '@sanity/uuid'
 import { unflatten } from 'flat'
 import { merge } from 'lodash'
 
@@ -76,4 +78,29 @@ export const extractYouTubeId = (input: string | undefined): string | null => {
 
 export function isDefined<T>(argument: T | undefined | null | false): argument is T {
   return argument !== undefined && argument !== null && argument !== false
+}
+
+/** Generate a random short ID */
+export function uid(): string {
+  return Math.random().toString(36).slice(2)
+}
+
+export function docUid(type: string): string {
+  return createPublishedId(`${type}-${uuid()}`)
+}
+
+/** Parse display price string "24.90" to integer cents */
+export function toCents(value: string): number | undefined {
+  const n = parseFloat(value.replace(',', '.'))
+  if (isNaN(n) || n < 0) return undefined
+  return Math.round(n * 100)
+}
+
+/** Cartesian product of arrays */
+export function cartesian<T>(arrays: T[][]): T[][] {
+  if (arrays.length === 0) return [[]]
+  return arrays.reduce<T[][]>(
+    (acc, arr) => acc.flatMap((combo) => arr.map((item) => [...combo, item])),
+    [[]],
+  )
 }

@@ -235,7 +235,7 @@ function buildSubtitle(
         .filter(Boolean)
         .join(' • ')
     case 'bundle':
-      return ctx.t.default(
+      return ctx.schemaT.default(
         'productVariant.preview.bundleItems',
         `${data.bundleItemCount} Products`,
         {

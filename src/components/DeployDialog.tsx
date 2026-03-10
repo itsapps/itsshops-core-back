@@ -21,7 +21,8 @@ const statusTones: Record<string, 'positive' | 'caution' | 'critical' | 'default
 
 export function DeployDialog(): ReactElement {
   const coreContext = useITSContext()
-  const { t, config } = coreContext
+  const { componentT, config } = coreContext
+  const t = componentT.default
   const reloadInterval = 10000
   const { accessToken, siteId, projectName } = config.integrations.netlify
   const [open, setOpen] = useState(false)

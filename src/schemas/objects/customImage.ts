@@ -16,7 +16,7 @@ export const customImage: ITSSchemaDefinition = {
         },
         prepare: ({ image, alt }) => {
           return {
-            title: alt || ctx.t.default('customImage.title'),
+            title: alt || ctx.schemaT.default('customImage.title'),
             media: image || ImageIcon,
           }
         },

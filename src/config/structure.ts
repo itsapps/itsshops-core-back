@@ -78,7 +78,7 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
       id: 'settingsGroup',
       icon: SettingsIcon,
       children: [
-        ...mapItems(['settings']),
+        ...mapItems(['settings', 'blog']),
         {
           type: 'group',
           id: 'shopSettingsGroup',
@@ -92,7 +92,7 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
 }
 
 export const createDefaultDocumentNode = (ctx: ITSContext): DefaultDocumentNodeResolver => {
-  const t = ctx.t.default
+  const t = ctx.structureT.default
 
   const defaultDocumentNode: DefaultDocumentNodeResolver = (S, { schemaType }) => {
     switch (schemaType) {
@@ -146,7 +146,7 @@ export const createDefaultDocumentNode = (ctx: ITSContext): DefaultDocumentNodeR
 
 export const createStructureTool = (ctx: ITSContext): StructureToolOptions => {
   return {
-    title: ctx.t.default('structure'),
+    title: ctx.structureT.default('structure.title'),
     structure: createStructure(ctx),
     defaultDocumentNode: createDefaultDocumentNode(ctx),
   }
