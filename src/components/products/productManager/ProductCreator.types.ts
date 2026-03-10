@@ -29,7 +29,7 @@ export interface WineOption {
   payload: VinofactWine
 }
 
-export interface VariantOption {
+export interface Option {
   _id: string
   title: string
   sortOrder: number
@@ -39,7 +39,7 @@ export interface OptionGroup {
   _id: string
   title: string
   sortOrder: number
-  options: VariantOption[]
+  options: Option[]
 }
 
 export interface CombinationRow {
@@ -222,7 +222,7 @@ export interface WineRowCardProps {
 
 export interface OptionToggleCardProps {
   groupId: string
-  option: VariantOption
+  option: Option
   checked: boolean
   onToggle: (groupId: string, optionId: string, checked: boolean) => void
 }

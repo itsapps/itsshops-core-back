@@ -6,11 +6,13 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { cartesian } from '../../../../lib/shop/productVariant.tx'
+import { VariantOption, VariantOptionGroup } from '../../../../types'
 import { uid } from '../../../../utils/utils'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
 import { SectionLabel } from '../fields/SectionLabel'
 import { TaxCategoryField } from '../fields/TaxCategoryField'
+import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
   CombinationRow,
@@ -21,7 +23,6 @@ import {
   PhysicalDigitalTabProps,
 } from '../ProductCreator.types'
 import { ProductTab } from './ProductTab'
-import { VariantRow } from '../fields/VariantRow'
 
 /** Build combination rows from selected options per group */
 function buildCombinations(
@@ -189,7 +190,10 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
   // Load groups + options
   useEffect(() => {
     sanityClient
-      .fetch<{ groups: any[]; options: any[] }>(
+      .fetch<{
+        groups: Pick<VariantOptionGroup, '_id' | 'title' | 'sortOrder'>[]
+        options: (Pick<VariantOption, '_id' | 'title' | 'sortOrder'> & { groupId: string })[]
+      }>(
         `{
           "groups": *[_type == "variantOptionGroup"] | order(sortOrder asc) {
             _id, title, sortOrder
