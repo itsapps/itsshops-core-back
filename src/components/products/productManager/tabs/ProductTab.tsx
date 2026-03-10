@@ -14,7 +14,7 @@ export function ProductTab(props: ProductTabProps): ReactElement {
       <Stack>{props.content}</Stack>
 
       {/* Submit */}
-      <Flex justify="flex-end">
+      <Flex justify="flex-end" marginBottom={4}>
         <Button
           tone="primary"
           text={

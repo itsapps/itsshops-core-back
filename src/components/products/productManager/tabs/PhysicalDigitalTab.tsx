@@ -6,8 +6,11 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { cartesian, uid } from '../../../../utils/utils'
-import { I18nTitleInputs } from '../I18nTitleField'
-import { PriceField } from '../PriceField'
+import { I18nTitleInputs } from '../fields/I18nTitleField'
+import { PriceField } from '../fields/PriceField'
+import { SectionLabel } from '../fields/SectionLabel'
+import { TaxCategoryField } from '../fields/TaxCategoryField'
+import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
   CombinationRow,
   I18nTitleEntry,
@@ -16,9 +19,6 @@ import {
   OptionToggleCardProps,
   PhysicalDigitalTabProps,
 } from '../ProductCreator.types'
-import { SectionLabel } from '../SectionLabel'
-import { TaxCategoryField } from '../TaxCategoryField'
-import { VariantSectionHeader } from '../VariantSectionHeader'
 import { ProductTab } from './ProductTab'
 
 /** Build combination rows from selected options per group */
@@ -159,7 +159,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
 export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement {
   const { titles, globalPrice, taxCategories, loadingTax, defaultLocale } = props.global
   const { onSubmit, submitting } = props
-  const { sanityClient, localizer } = useITSContext()
+  const { sanityClient, localizer, componentT } = useITSContext()
   const toast = useToast()
 
   const [groups, setGroups] = useState<OptionGroup[]>([])
@@ -260,14 +260,16 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
       <VariantSectionHeader count={combinations.length} />
       <Card border radius={2} padding={4}>
         <Stack space={4}>
-          <SectionLabel>Options</SectionLabel>
+          <SectionLabel>
+            {componentT.default('productCreatorTool.combinations.options')}
+          </SectionLabel>
           {loadingGroups ? (
             <Text size={1} muted>
-              Loading option groups…
+              {componentT.default('productCreatorTool.combinations.loadingOptions')}
             </Text>
           ) : groups.length === 0 ? (
             <Text size={1} muted>
-              No option groups found. Create some in the Studio first.
+              {componentT.default('productCreatorTool.combinations.noOptionGroups')}
             </Text>
           ) : (
             <Stack space={5}>
@@ -278,7 +280,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
                   </Text>
                   {group.options.length === 0 ? (
                     <Text size={1} muted>
-                      No options in this group.
+                      {componentT.default('productCreatorTool.combinations.noOptions')}
                     </Text>
                   ) : (
                     <Flex wrap="wrap" gap={2}>
@@ -303,11 +305,20 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
         <Stack space={3}>
           <Flex align="center" justify="space-between">
             <SectionLabel>
-              Variants preview — {enabledCombinations.length} of {combinations.length}
+              {componentT.default(
+                'productCreatorTool.combinations.preview',
+                `Variants preview - ${enabledCombinations.length} of ${combinations.length}`,
+                { enabledCount: enabledCombinations.length, totalCount: combinations.length },
+              )}
             </SectionLabel>
             {showWarning && (
               <Card tone="caution" padding={2} radius={2} border>
-                <Text size={1}>⚠️ {enabledCombinations.length} variants — are you sure?</Text>
+                <Text size={1}>
+                  {componentT.default(
+                    'productCreatorTool.messages.combinations.warning',
+                    `${enabledCombinations.length} variants - are you sure?`,
+                  )}
+                </Text>
               </Card>
             )}
           </Flex>

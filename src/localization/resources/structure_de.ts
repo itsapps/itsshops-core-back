@@ -32,7 +32,6 @@ export default {
   productVariant: { title: 'Produktvarianten' },
   variantOptions: {
     title: 'Optionengruppen',
-
     group: 'Optionengruppe',
     groups: 'Optionengruppen',
     option: 'Option',

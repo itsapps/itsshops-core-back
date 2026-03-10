@@ -21,8 +21,10 @@ import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { VinofactWine } from '../../../../types'
 import { uid } from '../../../../utils/utils'
 import { WinePreview } from '../../WinePreview'
-import { I18nTitleInputs } from '../I18nTitleField'
-import { PriceField } from '../PriceField'
+import { I18nTitleInputs } from '../fields/I18nTitleField'
+import { PriceField } from '../fields/PriceField'
+import { TaxCategoryField } from '../fields/TaxCategoryField'
+import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
   I18nTitleEntry,
   WineOption,
@@ -30,14 +32,12 @@ import {
   WineRowCardProps,
   WineTabProps,
 } from '../ProductCreator.types'
-import { TaxCategoryField } from '../TaxCategoryField'
-import { VariantSectionHeader } from '../VariantSectionHeader'
 import { ProductTab } from './ProductTab'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function emptyWineRow(): WineRow {
-  return { id: uid(), wine: null, volume: '', price: '', taxCategoryId: '', titles: [] }
+  return { id: uid(), wine: null, volume: '750', price: '', taxCategoryId: '', titles: [] }
 }
 
 function stripYear(title: string): string {
@@ -389,11 +389,21 @@ export function WineTab(props: WineTabProps): ReactElement {
           <Button
             mode="ghost"
             icon={AddIcon}
-            text={`Add another ${stripYear(lastSelectedWine.title)} vintage`}
+            text={componentT.default(
+              'productCreatorTool.addVariantButton.addAnother',
+              'Add another',
+              { title: lastSelectedWine.title },
+            )}
+            // text={`Add another ${stripYear(lastSelectedWine.title)} vintage`}
             onClick={addNextVintage}
           />
         ) : (
-          <Button mode="ghost" icon={AddIcon} text="Add variant" onClick={addRow} />
+          <Button
+            mode="ghost"
+            icon={AddIcon}
+            text={componentT.default('productCreatorTool.addVariantButton.add', 'Add Variant')}
+            onClick={addRow}
+          />
         )}
       </Flex>
     </Stack>

@@ -1,41 +1,12 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Card,
-  Container,
-  Flex,
-  Grid,
-  Heading,
-  Label,
-  Select,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  Text,
-  TextInput,
-  useToast,
-} from '@sanity/ui'
+import { Card, Grid, Stack } from '@sanity/ui'
 import { ReactElement } from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import {
-  AddIcon,
-  CloseIcon,
-  ProductKindBundleIcon,
-  ProductKindDigitalIcon,
-  ProductKindPhysicalIcon,
-  ProductKindWineIcon,
-} from '../../../assets/icons'
 import { useITSContext } from '../../../context/ITSCoreProvider'
-import { ProductKind, VinofactWine } from '../../../types'
-import { WinePreview } from '../WinePreview'
-import { I18nTitleInputs } from './I18nTitleField'
-import { PriceField } from './PriceField'
-import { GlobalDefaultsProps, MainProductProps, ProductTabProps } from './ProductCreator.types'
-import { SectionLabel } from './SectionLabel'
-import { TaxCategoryField } from './TaxCategoryField'
+import { I18nTitleInputs } from './fields/I18nTitleField'
+import { PriceField } from './fields/PriceField'
+import { SectionLabel } from './fields/SectionLabel'
+import { TaxCategoryField } from './fields/TaxCategoryField'
+import { GlobalDefaultsProps, MainProductProps } from './ProductCreator.types'
 
 export function GlobalDefaults(props: GlobalDefaultsProps): ReactElement {
   const {
@@ -56,6 +27,7 @@ export function GlobalDefaults(props: GlobalDefaultsProps): ReactElement {
           taxCategories={taxCategories}
           loadingTax={loadingTax}
           onTaxChange={onTaxChange}
+          required
         />
       </Grid>
     </Stack>

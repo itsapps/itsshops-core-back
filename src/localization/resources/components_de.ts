@@ -28,11 +28,26 @@ export default {
       productCreatedFail: {
         title: 'Fehler beim Erstellen des Produkts',
       },
+      combinations: {
+        warning: '⚠️ {{count}} Variants — bist Du sicher?',
+      },
     },
     submit_zero: 'Produkt erstellen',
     submit_one: 'Produkt erstellen',
     submit_other: 'Produkt mit {{count}} Varianten erstellen',
     submitting: 'Produkt wird erstellt...',
+    addVariantButton: {
+      add: 'Variante hinzufügen',
+      addAnother: 'Noch einen {{title}} hinzufügen',
+    },
+    combinations: {
+      options: 'Eigenschaften',
+      loadingOptions: 'Optionen werden geladen...',
+      preview: 'Varianten Vorschau — {{enabledCount}} von {{totalCount}}',
+      noOptionGroups:
+        'Keine Optionengruppen gefunden. Erstelle zuerst welche in der Optionengruppen-Liste.',
+      noOptions: 'Keine Optionen in dieser Gruppe vorhanden',
+    },
   },
   vinofact: {
     notInitialized: {

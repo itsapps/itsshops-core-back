@@ -1,8 +1,8 @@
 import { Flex, Text } from '@sanity/ui'
 import { ReactElement } from 'react'
 
-import { useITSContext } from '../../../context/ITSCoreProvider'
-import { VariantSectionHeaderProps } from './ProductCreator.types'
+import { useITSContext } from '../../../../context/ITSCoreProvider'
+import { VariantSectionHeaderProps } from '../ProductCreator.types'
 import { SectionLabel } from './SectionLabel'
 
 export function VariantSectionHeader(props: VariantSectionHeaderProps): ReactElement {

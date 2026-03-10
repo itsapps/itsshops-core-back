@@ -1,12 +1,13 @@
-import { Label, Select, Stack } from '@sanity/ui'
+import { Select } from '@sanity/ui'
 import { ChangeEvent, ReactElement } from 'react'
 import { useCallback } from 'react'
 
-import { useITSContext } from '../../../context/ITSCoreProvider'
-import { TaxCategoryFieldProps } from './ProductCreator.types'
+import { useITSContext } from '../../../../context/ITSCoreProvider'
+import { TaxCategoryFieldProps } from '../ProductCreator.types'
+import { LabelField } from './Label'
 
 export function TaxCategoryField(props: TaxCategoryFieldProps): ReactElement {
-  const { value, taxCategories, loadingTax, onTaxChange } = props
+  const { value, taxCategories, loadingTax, onTaxChange, required = false } = props
   const { schemaT } = useITSContext()
   const handleTaxChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => onTaxChange(e.currentTarget.value),
@@ -14,8 +15,7 @@ export function TaxCategoryField(props: TaxCategoryFieldProps): ReactElement {
   )
 
   return (
-    <Stack space={2}>
-      <Label size={1}>{schemaT.default('taxCategory.title')}</Label>
+    <LabelField title={schemaT.default('taxCategory.title')} required={required}>
       <Select value={value} onChange={handleTaxChange} disabled={loadingTax}>
         <option value="">-</option>
         {taxCategories.map((tc) => (
@@ -24,6 +24,6 @@ export function TaxCategoryField(props: TaxCategoryFieldProps): ReactElement {
           </option>
         ))}
       </Select>
-    </Stack>
+    </LabelField>
   )
 }

@@ -144,10 +144,16 @@ export interface BundleVariantRowProps {
 // ─── Shared: i18n Title Inputs ────────────────────────────────────────────────
 export interface LocaleTitleInputProps {
   locale: string
-  required: boolean
+  required?: boolean
   value: string
   onChange: (locale: string, value: string) => void
   placeholder?: string
+}
+
+export interface LabelFieldProps {
+  title: string
+  required?: boolean
+  children: ReactNode
 }
 
 export interface I18nTitleInputsProps {
@@ -163,7 +169,7 @@ export interface I18nTitleInputsProps {
 export interface PriceFieldProps {
   value: string
   onChange: (val: string) => void
-  required: boolean
+  required?: boolean
 }
 
 export interface TaxCategoryFieldProps {
@@ -171,6 +177,7 @@ export interface TaxCategoryFieldProps {
   taxCategories: TaxCategory[]
   loadingTax: boolean
   onTaxChange: (val: string) => void
+  required?: boolean
 }
 
 export interface GlobalDefaultsProps {

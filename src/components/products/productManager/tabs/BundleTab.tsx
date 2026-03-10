@@ -14,13 +14,15 @@ import {
   useToast,
 } from '@sanity/ui'
 import { ChangeEvent, ReactElement } from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { AddIcon, CloseIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { uid } from '../../../../utils/utils'
-import { I18nTitleInputs } from '../I18nTitleField'
-import { PriceField } from '../PriceField'
+import { I18nTitleInputs } from '../fields/I18nTitleField'
+import { PriceField } from '../fields/PriceField'
+import { TaxCategoryField } from '../fields/TaxCategoryField'
+import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
   BundleTabProps,
   BundleVariantResult,
@@ -29,8 +31,6 @@ import {
   BundleVariantRowProps,
   I18nTitleEntry,
 } from '../ProductCreator.types'
-import { TaxCategoryField } from '../TaxCategoryField'
-import { VariantSectionHeader } from '../VariantSectionHeader'
 import { ProductTab } from './ProductTab'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -45,6 +45,7 @@ export const BundleVariantRowItem = memo(function BundleVariantRowItem({
   onRemove,
   onQuantityChange,
 }: BundleVariantRowItemProps) {
+  const { schemaT } = useITSContext()
   const handleRemove = useCallback(
     () => onRemove(rowId, item.variantId),
     [onRemove, rowId, item.variantId],
@@ -63,7 +64,7 @@ export const BundleVariantRowItem = memo(function BundleVariantRowItem({
           <Text size={1}>{item.variantLabel}</Text>
         </Box>
         <Flex align="center" gap={2} style={{ flexShrink: 0 }}>
-          <Label size={0}>Qty</Label>
+          <Label size={0}>{schemaT.default('bundleItem.fields.quantity.title')}</Label>
           <Box style={{ width: 64 }}>
             <TextInput type="number" value={item.quantity} onChange={handleQuantityChange} />
           </Box>
@@ -101,6 +102,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
     onQuantityChange,
     onUpdateRow,
   } = props
+  const { studioT, structureT, schemaT } = useITSContext()
   const [query, setQuery] = useState('')
 
   const handleRemoveRow = useCallback(() => onRemoveRow(row.id), [onRemoveRow, row.id])
@@ -162,7 +164,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
         {/* Row header */}
         <Flex align="center" justify="space-between">
           <Text size={1} muted>
-            Bundle variant {index + 1}
+            {structureT.default('products.variant')} {index + 1}
           </Text>
           {canRemove && (
             <Button
@@ -192,14 +194,14 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
 
         {/* Variant search */}
         <Stack space={2}>
-          <Label size={1}>Add variant</Label>
+          <Label size={1}>{schemaT.default('productVariant.title')}</Label>
           <Autocomplete
             id={`bundle-picker-${row.id}`}
             loading={loadingVariants}
             openButton
             options={filteredOptions}
             value=""
-            placeholder="Search variants…"
+            placeholder={studioT('inputs.reference.search-placeholder')}
             onSelect={handleAddItem}
             onQueryChange={handleQueryChange}
             renderOption={renderOption}
@@ -411,117 +413,14 @@ export function BundleTab(props: BundleTabProps): ReactElement {
             onQuantityChange={updateItemQuantity}
             onUpdateRow={updateRow}
           />
-          // <Card key={row.id} border radius={2} padding={4}>
-          //   <Stack space={4}>
-          //     {/* Row header */}
-          //     <Flex align="center" justify="space-between">
-          //       <Text size={1} muted>
-          //         Bundle variant {index + 1}
-          //       </Text>
-          //       {rows.length > 1 && (
-          //         <Button
-          //           mode="bleed"
-          //           tone="critical"
-          //           icon={CloseIcon}
-          //           onClick={() => removeRow(row.id)}
-          //           padding={2}
-          //         />
-          //       )}
-          //     </Flex>
-
-          //     {/* Selected items */}
-          //     {row.items.length > 0 && (
-          //       <Stack space={2}>
-          //         {row.items.map((item) => (
-          //           <Card key={item.variantId} border radius={2} padding={2}>
-          //             <Flex align="center" gap={3}>
-          //               <Box flex={1}>
-          //                 <Text size={1}>{item.variantLabel}</Text>
-          //               </Box>
-          //               <Flex align="center" gap={2} style={{ flexShrink: 0 }}>
-          //                 <Label size={0}>Qty</Label>
-          //                 <Box style={{ width: 64 }}>
-          //                   <TextInput
-          //                     type="number"
-          //                     value={item.quantity}
-          //                     onChange={(e) =>
-          //                       updateItemQuantity(row.id, item.variantId, e.currentTarget.value)
-          //                     }
-          //                   />
-          //                 </Box>
-          //                 <Button
-          //                   mode="bleed"
-          //                   tone="critical"
-          //                   icon={CloseIcon}
-          //                   padding={1}
-          //                   onClick={() => removeItemFromRow(row.id, item.variantId)}
-          //                 />
-          //               </Flex>
-          //             </Flex>
-          //           </Card>
-          //         ))}
-          //       </Stack>
-          //     )}
-
-          //     {/* Variant search */}
-          //     <Stack space={2}>
-          //       <Label size={1}>Add variant</Label>
-          //       <Autocomplete
-          //         id={`bundle-picker-${row.id}`}
-          //         loading={loadingVariants}
-          //         openButton
-          //         options={variantOptions.filter(
-          //           (opt) => !row.items.some((i) => i.variantId === opt.value),
-          //         )}
-          //         value=""
-          //         placeholder="Search variants…"
-          //         onSelect={(id) => addItemToRow(row.id, id)}
-          //         onQueryChange={(q) => setQuery(q ?? '')}
-          //         renderOption={(opt) => (
-          //           <Card padding={3} radius={0} borderBottom>
-          //             <Text size={1}>{getVariantLabel(opt.payload)}</Text>
-          //           </Card>
-          //         )}
-          //         renderValue={() => ''}
-          //       />
-          //     </Stack>
-
-          //     {/* Price + tax per bundle variant */}
-          //     <Grid columns={2} gap={3}>
-          //       <PriceField
-          //         value={row.price}
-          //         onChange={(value) => updateRow(row.id, 'price', value)}
-          //         required={false}
-          //       />
-          //       <TaxCategoryField
-          //         value={row.taxCategoryId}
-          //         taxCategories={taxCategories}
-          //         loadingTax={loadingTax}
-          //         onTaxChange={(value) => updateRow(row.id, 'taxCategoryId', value)}
-          //       />
-          //       {/* <Stack space={2}>
-          //         <Label size={1}>Tax Category override</Label>
-          //         <Select
-          //           value={row.taxCategoryId}
-          //           onChange={(e) => updateRow(row.id, 'taxCategoryId', e.currentTarget.value)}
-          //           disabled={loadingTax}
-          //         >
-          //           <option value="">
-          //             {globalTaxCategoryId ? '— using default —' : '— none —'}
-          //           </option>
-          //           {taxCategories.map((tc) => (
-          //             <option key={tc._id} value={tc._id}>
-          //               {tc.title} ({tc.code})
-          //             </option>
-          //           ))}
-          //         </Select>
-          //       </Stack> */}
-          //     </Grid>
-          //   </Stack>
-          // </Card>
         ))}
 
-        <Button mode="ghost" icon={AddIcon} text="Add bundle variant" onClick={addRow} />
+        <Button
+          mode="ghost"
+          icon={AddIcon}
+          text={componentT.default('productCreatorTool.addVariantButton.add', 'Add Variant')}
+          onClick={addRow}
+        />
       </Stack>
     </Stack>
   )

@@ -1,12 +1,13 @@
-import { Label, Stack, TextInput } from '@sanity/ui'
+import { TextInput } from '@sanity/ui'
 import { ChangeEvent, ReactElement } from 'react'
 import { useCallback } from 'react'
 
-import { useITSContext } from '../../../context/ITSCoreProvider'
-import { PriceFieldProps } from './ProductCreator.types'
+import { useITSContext } from '../../../../context/ITSCoreProvider'
+import { PriceFieldProps } from '../ProductCreator.types'
+import { LabelField } from './Label'
 
 export function PriceField(props: PriceFieldProps): ReactElement {
-  const { value, onChange, required } = props
+  const { value, onChange, required = false } = props
   const { schemaT, componentT } = useITSContext()
   const handlePriceChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value),
@@ -14,14 +15,13 @@ export function PriceField(props: PriceFieldProps): ReactElement {
   )
 
   return (
-    <Stack space={2}>
-      <Label size={1}>{`${schemaT.default('fields.price.title')}${required ? ' *' : ''}`}</Label>
+    <LabelField title={schemaT.default('fields.price.title')} required={required}>
       <TextInput
         type="number"
         value={value}
         onChange={handlePriceChange}
         placeholder={componentT.default('productCreatorTool.placeholders.productPrice')}
       />
-    </Stack>
+    </LabelField>
   )
 }

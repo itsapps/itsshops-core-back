@@ -2,30 +2,21 @@ import { Checkbox, Flex, Label, Stack, TextInput } from '@sanity/ui'
 import { ChangeEvent, ReactElement } from 'react'
 import { memo, useCallback, useState } from 'react'
 
-import { useITSContext } from '../../../context/ITSCoreProvider'
-import { I18nTitleInputsProps, LocaleTitleInputProps } from './ProductCreator.types'
+import { useITSContext } from '../../../../context/ITSCoreProvider'
+import { I18nTitleInputsProps, LocaleTitleInputProps } from '../ProductCreator.types'
+import { LabelField } from './Label'
 
 const LocaleTitleInput = memo(function LocaleTitleInput(props: LocaleTitleInputProps) {
-  const { locale, required, value, onChange, placeholder } = props
+  const { locale, required = false, value, onChange, placeholder } = props
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => onChange(locale, e.currentTarget.value),
     [locale, onChange],
   )
 
-  const label = `${locale.toUpperCase()}${required ? ' *' : ''}`
   return (
-    <Stack space={2}>
-      <Label size={1}>
-        {label}
-        {/* {locale === defaultLocale && ( *
-          // <Text as="span" size={0} muted>
-          //   {' '}
-          //   (required)
-          // </Text>
-        } */}
-      </Label>
+    <LabelField title={locale.toUpperCase()} required={required}>
       <TextInput value={value} onChange={handleChange} placeholder={placeholder} />
-    </Stack>
+    </LabelField>
   )
 })
 
