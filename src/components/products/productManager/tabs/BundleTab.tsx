@@ -22,6 +22,7 @@ import { uid } from '../../../../utils/utils'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
 import { TaxCategoryField } from '../fields/TaxCategoryField'
+import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
   BundleTabProps,
@@ -36,7 +37,7 @@ import { ProductTab } from './ProductTab'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function emptyBundleRow(): BundleVariantRow {
-  return { id: uid(), items: [], price: '', taxCategoryId: '', titles: [] }
+  return { id: uid(), items: [], price: undefined, taxCategoryId: '', titles: [] }
 }
 
 export const BundleVariantRowItem = memo(function BundleVariantRowItem({
@@ -118,7 +119,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
   const handleQueryChange = useCallback((q: string | null) => setQuery(q ?? ''), [])
 
   const handlePriceChange = useCallback(
-    (value: string) => onUpdateRow(row.id, 'price', value),
+    (value: number | undefined) => onUpdateRow(row.id, 'price', value),
     [onUpdateRow, row.id],
   )
 
@@ -159,7 +160,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
   )
 
   return (
-    <Card border radius={2} padding={4}>
+    <VariantRow index={index}>
       <Stack space={4}>
         {/* Row header */}
         <Flex align="center" justify="space-between">
@@ -231,7 +232,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
           />
         </Grid>
       </Stack>
-    </Card>
+    </VariantRow>
   )
 })
 
@@ -245,7 +246,7 @@ export function BundleTab(props: BundleTabProps): ReactElement {
     locales,
     titlePlaceholder,
   } = props.global
-  const { onSubmit, submitting } = props
+  const { onSubmit, submitting, hideProductSection } = props
   const { sanityClient, localizer, format, componentT } = useITSContext()
   const toast = useToast()
 
@@ -364,21 +365,15 @@ export function BundleTab(props: BundleTabProps): ReactElement {
   }, [])
 
   const canSubmit = useMemo(() => {
-    const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
-    if (!defaultTitle?.trim()) return false
+    if (!hideProductSection) {
+      const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
+      if (!defaultTitle?.trim()) return false
+      if (!globalPrice && rows.some((r) => !r.price)) return false
+    }
     if (rows.length === 0) return false
     if (rows.some((r) => r.items.length === 0)) return false
-    if (
-      !globalPrice &&
-      rows.some(
-        (r) =>
-          !r.price &&
-          r.items.some((i) => !parseInt(i.quantity, 10) || parseInt(i.quantity, 10) < 1),
-      )
-    )
-      return false
     return true
-  }, [titles, defaultLocale, rows, globalPrice])
+  }, [hideProductSection, titles, defaultLocale, globalPrice, rows])
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return
@@ -433,6 +428,7 @@ export function BundleTab(props: BundleTabProps): ReactElement {
       canSubmit={canSubmit}
       handleSubmit={handleSubmit}
       content={content}
+      hideProductSection={props.hideProductSection}
     />
   )
 }

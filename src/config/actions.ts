@@ -4,6 +4,7 @@ import {
   createCustomDocumentAction,
   type CustomDocumentAction,
 } from '../components/actions/CustomDocumentAction'
+import { AddVariantsAction } from '../components/products/AddVariantsAction'
 // import { OrderDocumentActions } from '../components/actions/OrderActions'
 // import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import { ITSContext, ITSFeatureKey, ITSSanityDefinedAction } from '../types'
@@ -76,6 +77,9 @@ export function actionResolver(
   //     )
   //   }
   // }
+  if (isEnabledSchema(context.schemaType, 'product', 'shop')) {
+    actions.push(AddVariantsAction)
+  }
   if (isEnabledSchema(context.schemaType, 'category', 'shop.category')) {
     const action = prev.find((props) => props.action === 'delete')
     if (action) {

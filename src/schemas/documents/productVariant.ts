@@ -147,9 +147,9 @@ export const productVariant: ITSDocumentDefinition = {
       // physical + digital: option ref titles
       ...(optionsActuallyEnabled && {
         options: 'options',
-        optionTitle0: 'options.0->title',
-        optionTitle1: 'options.1->title',
-        optionTitle2: 'options.2->title',
+        optionTitle0: 'options.0.title',
+        optionTitle1: 'options.1.title',
+        optionTitle2: 'options.2.title',
       }),
       // wine: volume + vintage
       ...(wineEnabled && {

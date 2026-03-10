@@ -20,7 +20,7 @@ export function templateResolver(prev: Template[], ctx: ITSContext): Template[] 
     templates.push(category)
   }
   if (ctx.featureRegistry.isFeatureEnabled('shop.productKind.wine')) {
-    const category: Template = {
+    const variant: Template = {
       id: 'product-variant-with-parent',
       title: 'Product Variant with Parent',
       schemaType: 'productVariant',
@@ -35,7 +35,7 @@ export function templateResolver(prev: Template[], ctx: ITSContext): Template[] 
         ...(params.volume && { wine: { _type: 'wine', volume: params.volume } }),
       }),
     }
-    templates.push(category)
+    templates.push(variant)
   }
   if (ctx.featureRegistry.isFeatureEnabled('shop.productKind.options')) {
     const variantOption: Template = {

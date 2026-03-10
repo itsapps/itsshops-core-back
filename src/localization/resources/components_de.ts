@@ -28,6 +28,7 @@ export default {
       productCreatedFail: {
         title: 'Fehler beim Erstellen des Produkts',
       },
+      variantExists: 'Diese Variante existieren bereits.',
       combinations: {
         warning: '⚠️ {{count}} Variants — bist Du sicher?',
       },

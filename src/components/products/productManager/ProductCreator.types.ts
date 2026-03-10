@@ -19,7 +19,7 @@ export interface WineRow {
   id: string
   wine: VinofactWine | null
   volume: string
-  price: string // display euros e.g. "24.90" — converted to cents on submit
+  price: number | undefined // display euros e.g. "24.90" — converted to cents on submit
   taxCategoryId: string
   titles: I18nTitleEntry[]
 }
@@ -47,9 +47,10 @@ export interface CombinationRow {
   // one optionId per group, parallel to selectedGroups order
   optionIds: string[]
   enabled: boolean
-  price: string
+  price: number | undefined
   taxCategoryId: string
   titles: I18nTitleEntry[]
+  alreadyExists?: boolean
 }
 
 export interface BundleVariantResult {
@@ -70,7 +71,7 @@ export interface BundleItem {
 export interface BundleVariantRow {
   id: string
   items: BundleItem[]
-  price: string
+  price: number | undefined
   taxCategoryId: string
   titles: I18nTitleEntry[]
 }
@@ -78,14 +79,14 @@ export interface BundleVariantRow {
 export interface MainProductProps {
   titlePlaceholder: string
   titles: I18nTitleEntry[]
-  globalPrice: string
+  globalPrice: number | undefined
   globalTaxCategoryId: string
   taxCategories: TaxCategory[]
   loadingTax: boolean
   locales: string[]
   defaultLocale: string
   onTitlesChange: (titles: I18nTitleEntry[]) => void
-  onGlobalPriceChange: (val: string) => void
+  onGlobalPriceChange: (val: number | undefined) => void
   onGlobalTaxChange: (val: string) => void
 }
 
@@ -96,18 +97,22 @@ export interface ProductTabProps {
   rows: number
   canSubmit: boolean
   handleSubmit: () => void
+  hideProductSection?: boolean
 }
 export interface ProductKindTabProps {
   global: MainProductProps
   submitting: boolean
+  hideProductSection?: boolean
 }
 
 export interface WineTabProps extends ProductKindTabProps {
   onSubmit: (rows: WineRow[]) => Promise<void>
+  existingWineKeys?: Set<string>
 }
 
 export interface PhysicalDigitalTabProps extends ProductKindTabProps {
-  onSubmit: (combinations: CombinationRow[], groups: OptionGroup[]) => Promise<void>
+  onSubmit: (combinations: CombinationRow[]) => Promise<void>
+  existingOptionSets?: Set<string>
 }
 
 export interface BundleTabProps extends ProductKindTabProps {
@@ -132,7 +137,7 @@ export interface BundleVariantRowProps {
   locales: string[]
   defaultLocale: string
   titlePlaceholder: string
-  globalPrice: string
+  globalPrice: number | undefined
   getVariantLabel: (v: BundleVariantResult) => string
   onRemoveRow: (id: string) => void
   onAddItem: (rowId: string, variantId: string) => void
@@ -167,8 +172,10 @@ export interface I18nTitleInputsProps {
 }
 
 export interface PriceFieldProps {
-  value: string
-  onChange: (val: string) => void
+  value: number | undefined
+  onChange: (cents: number | undefined) => void
+  readOnly?: boolean
+  disabled?: boolean
   required?: boolean
 }
 
@@ -181,11 +188,11 @@ export interface TaxCategoryFieldProps {
 }
 
 export interface GlobalDefaultsProps {
-  globalPrice: string
+  globalPrice: number | undefined
   globalTaxCategoryId: string
   taxCategories: TaxCategory[]
   loadingTax: boolean
-  onPriceChange: (val: string) => void
+  onPriceChange: (val: number | undefined) => void
   onTaxChange: (val: string) => void
 }
 
@@ -202,11 +209,12 @@ export interface WineRowCardProps {
   loadingTax: boolean
   taxCategories: TaxCategory[]
   volumeOptions: VolumeOption[]
-  globalPrice: string
+  globalPrice: number | undefined
   globalTaxCategoryId: string
   locales: string[]
   defaultLocale: string
   titlePlaceholder: string
+  existingWineKeys?: Set<string>
   onUpdate: (id: string, key: keyof WineRow, val: any) => void
   onRemove: (id: string) => void
   onQueryChange: (id: string, query: string) => void
@@ -221,6 +229,7 @@ export interface OptionToggleCardProps {
 
 export interface OptionComboCardProps {
   row: CombinationRow
+  index: number
   label: string
   loadingTax: boolean
   taxCategories: TaxCategory[]

@@ -4,7 +4,7 @@ import { ToolMenuProps } from 'sanity'
 
 import { useITSContext } from '../context/ITSCoreProvider'
 import { DeployDialog } from './DeployDialog'
-import { CreateProductFromWines } from './products/CreateProductFromWines'
+// import { CreateProductFromWines } from './products/CreateProductFromWines'
 
 export function CustomToolbar(props: ToolMenuProps): ReactElement {
   const { tools, renderDefault } = props
@@ -21,7 +21,7 @@ export function CustomToolbar(props: ToolMenuProps): ReactElement {
       <Box>
         <Flex padding={1} gap={2} align={'center'}>
           <DeployDialog />
-          <CreateProductFromWines />
+          {/* <CreateProductFromWines /> */}
         </Flex>
       </Box>
     </Flex>

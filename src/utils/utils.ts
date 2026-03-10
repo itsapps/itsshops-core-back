@@ -88,19 +88,3 @@ export function uid(): string {
 export function docUid(type: string): string {
   return createPublishedId(`${type}-${uuid()}`)
 }
-
-/** Parse display price string "24.90" to integer cents */
-export function toCents(value: string): number | undefined {
-  const n = parseFloat(value.replace(',', '.'))
-  if (isNaN(n) || n < 0) return undefined
-  return Math.round(n * 100)
-}
-
-/** Cartesian product of arrays */
-export function cartesian<T>(arrays: T[][]): T[][] {
-  if (arrays.length === 0) return [[]]
-  return arrays.reduce<T[][]>(
-    (acc, arr) => acc.flatMap((combo) => arr.map((item) => [...combo, item])),
-    [[]],
-  )
-}

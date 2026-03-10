@@ -1,11 +1,12 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import { Card, Flex, Grid, Stack, Text, useToast } from '@sanity/ui'
+import { Badge, Card, Flex, Grid, Stack, Text, useToast } from '@sanity/ui'
 import { ReactElement } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useITSContext } from '../../../../context/ITSCoreProvider'
-import { cartesian, uid } from '../../../../utils/utils'
+import { cartesian } from '../../../../lib/shop/productVariant.tx'
+import { uid } from '../../../../utils/utils'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
 import { SectionLabel } from '../fields/SectionLabel'
@@ -20,11 +21,13 @@ import {
   PhysicalDigitalTabProps,
 } from '../ProductCreator.types'
 import { ProductTab } from './ProductTab'
+import { VariantRow } from '../fields/VariantRow'
 
 /** Build combination rows from selected options per group */
 function buildCombinations(
   groups: OptionGroup[],
   selectedOptions: Record<string, string[]>,
+  existingOptionSets?: Set<string>,
 ): CombinationRow[] {
   // Only groups that have at least one option selected
   const activeGroups = groups.filter((g) => (selectedOptions[g._id] ?? []).length > 0)
@@ -33,14 +36,19 @@ function buildCombinations(
   const optionSets = activeGroups.map((g) => selectedOptions[g._id] ?? [])
   const combos = cartesian(optionSets)
 
-  return combos.map((optionIds) => ({
-    id: uid(),
-    optionIds,
-    enabled: true,
-    price: '',
-    taxCategoryId: '',
-    titles: [],
-  }))
+  return combos.map((optionIds) => {
+    const key = [...optionIds].sort().join('|')
+    const alreadyExists = existingOptionSets?.has(key) ?? false
+    return {
+      id: uid(),
+      optionIds,
+      enabled: !alreadyExists, // pre-disabled if already exists
+      alreadyExists, // new field on CombinationRow
+      price: undefined,
+      taxCategoryId: '',
+      titles: [],
+    }
+  })
 }
 
 const OptionToggleCard = memo(function OptionToggleCard({
@@ -72,6 +80,7 @@ const OptionToggleCard = memo(function OptionToggleCard({
 const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProps) {
   const {
     row,
+    index,
     label,
     loadingTax,
     taxCategories,
@@ -81,7 +90,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
     onUpdate,
     onToggleCombination,
   } = props
-  // const { schemaT } = useITSContext()
+  const { componentT } = useITSContext()
 
   const handleCombinationToggle = useCallback(
     () => onToggleCombination(row.id),
@@ -89,7 +98,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
   )
 
   const handlePriceChange = useCallback(
-    (value: string) => onUpdate(row.id, 'price', value),
+    (value: number | undefined) => onUpdate(row.id, 'price', value),
     [onUpdate, row.id],
   )
 
@@ -104,7 +113,10 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
   )
 
   return (
-    <Card border radius={2} padding={3} tone={row.enabled ? 'default' : 'transparent'}>
+    <VariantRow
+      index={index}
+      tone={row.alreadyExists ? 'caution' : row.enabled ? 'default' : 'transparent'}
+    >
       <Stack space={3}>
         <Grid columns={[1, 1, 4]} gap={3}>
           {/* Toggle + label */}
@@ -113,7 +125,8 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
               type="checkbox"
               checked={row.enabled}
               onChange={handleCombinationToggle}
-              style={{ cursor: 'pointer' }}
+              disabled={row.alreadyExists}
+              style={{ cursor: row.alreadyExists ? 'not-allowed' : 'pointer' }}
             />
             <Text
               size={1}
@@ -125,10 +138,14 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
             >
               {label}
             </Text>
+            {row.alreadyExists && (
+              <Badge tone="caution" size={1}>
+                {componentT.default('productCreatorTool.messages.variantExists')}
+              </Badge>
+            )}
           </Flex>
 
-          {/* Price override */}
-          {row.enabled && (
+          {row.enabled && !row.alreadyExists && (
             <>
               <PriceField value={row.price} onChange={handlePriceChange} required={false} />
               <TaxCategoryField
@@ -140,7 +157,8 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
             </>
           )}
         </Grid>
-        {row.enabled && (
+
+        {row.enabled && !row.alreadyExists && (
           <I18nTitleInputs
             locales={locales}
             defaultLocale={defaultLocale}
@@ -152,13 +170,13 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
           />
         )}
       </Stack>
-    </Card>
+    </VariantRow>
   )
 })
 
 export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement {
   const { titles, globalPrice, taxCategories, loadingTax, defaultLocale } = props.global
-  const { onSubmit, submitting } = props
+  const { onSubmit, submitting, existingOptionSets, hideProductSection } = props
   const { sanityClient, localizer, componentT } = useITSContext()
   const toast = useToast()
 
@@ -210,8 +228,8 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
 
   // Recompute combinations whenever selections change — always reset overrides
   useEffect(() => {
-    setCombinations(buildCombinations(groups, selectedOptions))
-  }, [groups, selectedOptions])
+    setCombinations(buildCombinations(groups, selectedOptions, existingOptionSets))
+  }, [groups, selectedOptions, existingOptionSets])
 
   const toggleOption = useCallback((groupId: string, optionId: string, checked: boolean) => {
     setSelectedOptions((prev) => {
@@ -235,25 +253,30 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
     [groups, selectedOptions],
   )
 
-  const enabledCombinations = useMemo(() => combinations.filter((c) => c.enabled), [combinations])
+  const enabledCombinations = useMemo(
+    () => combinations.filter((c) => c.enabled && !c.alreadyExists),
+    [combinations],
+  )
 
   const showWarning = enabledCombinations.length > 50
 
   const canSubmit = useMemo(() => {
-    const defaultTitle = titles.find((ts) => ts.locale === defaultLocale)?.value
-    if (!defaultTitle?.trim()) return false
+    if (!hideProductSection) {
+      const defaultTitle = titles.find((ts) => ts.locale === defaultLocale)?.value
+      if (!defaultTitle?.trim()) return false
+      if (!globalPrice && enabledCombinations.some((c) => !c.price)) return false
+    }
     if (enabledCombinations.length === 0) return false
-    if (!globalPrice && enabledCombinations.some((c) => !c.price)) return false
     return true
-  }, [titles, defaultLocale, enabledCombinations, globalPrice])
+  }, [hideProductSection, titles, defaultLocale, globalPrice, enabledCombinations])
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return
-    await onSubmit(enabledCombinations, activeGroups)
+    await onSubmit(enabledCombinations)
     // Reset local state
     setSelectedOptions({})
     setCombinations([])
-  }, [canSubmit, onSubmit, enabledCombinations, activeGroups])
+  }, [canSubmit, onSubmit, enabledCombinations])
 
   const content = (
     <Stack space={3}>
@@ -324,7 +347,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
           </Flex>
 
           <Stack space={2}>
-            {combinations.map((combo) => {
+            {combinations.map((combo, index) => {
               const label = combo.optionIds
                 .map((optId, i) => {
                   const group = activeGroups[i]
@@ -336,6 +359,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
                 <OptionComboCard
                   key={combo.id}
                   row={combo}
+                  index={index}
                   label={label}
                   loadingTax={loadingTax}
                   taxCategories={taxCategories}
@@ -361,6 +385,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
       canSubmit={canSubmit}
       handleSubmit={handleSubmit}
       content={content}
+      hideProductSection={props.hideProductSection}
     />
   )
 }

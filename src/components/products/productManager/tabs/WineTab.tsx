@@ -2,6 +2,7 @@
 /* eslint-disable no-nested-ternary */
 import {
   Autocomplete,
+  Badge,
   Box,
   Button,
   Card,
@@ -24,6 +25,7 @@ import { WinePreview } from '../../WinePreview'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
 import { TaxCategoryField } from '../fields/TaxCategoryField'
+import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
   I18nTitleEntry,
@@ -37,7 +39,7 @@ import { ProductTab } from './ProductTab'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function emptyWineRow(): WineRow {
-  return { id: uid(), wine: null, volume: '750', price: '', taxCategoryId: '', titles: [] }
+  return { id: uid(), wine: null, volume: '750', price: undefined, taxCategoryId: '', titles: [] }
 }
 
 function stripYear(title: string): string {
@@ -57,11 +59,12 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
     locales,
     defaultLocale,
     titlePlaceholder,
+    existingWineKeys,
     onUpdate,
     onRemove,
     onQueryChange,
   } = props
-  const { schemaT, structureT, studioT } = useITSContext()
+  const { schemaT, structureT, studioT, componentT } = useITSContext()
   const handleRemove = useCallback(() => onRemove(row.id), [onRemove, row.id])
   const handleClearWine = useCallback(() => onUpdate(row.id, 'wine', null), [onUpdate, row.id])
 
@@ -84,7 +87,7 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
   )
 
   const handlePriceChange = useCallback(
-    (value: string) => onUpdate(row.id, 'price', value),
+    (value: number | undefined) => onUpdate(row.id, 'price', value),
     [onUpdate, row.id],
   )
 
@@ -117,14 +120,24 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
     [],
   )
 
+  const isExisting = useMemo(() => {
+    if (!row.wine || !row.volume) return false
+    return existingWineKeys?.has(`${row.wine.id}:${row.volume}`) ?? false
+  }, [row.wine, row.volume, existingWineKeys])
+
   return (
-    <Card border radius={2} padding={4}>
+    <VariantRow index={index}>
       <Stack space={4}>
         {/* Row header */}
         <Flex align="center" justify="space-between">
           <Text size={1} muted>
             {structureT.default('products.variant')} {index + 1}
           </Text>
+          {isExisting && (
+            <Badge tone="caution">
+              {componentT.default('productCreatorTool.messages.variantExists')}
+            </Badge>
+          )}
           {canRemove && (
             <Button
               mode="bleed"
@@ -198,20 +211,9 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
             loadingTax={loadingTax}
             onTaxChange={handleTaxChange}
           />
-          {/* <Stack space={2}>
-            <Label size={1}>Tax Category override</Label>
-            <Select value={row.taxCategoryId} onChange={handleTaxChange} disabled={loadingTax}>
-              <option value="">-</option>
-              {taxCategories.map((tc) => (
-                <option key={tc._id} value={tc._id}>
-                  {tc.title} ({tc.code})
-                </option>
-              ))}
-            </Select>
-          </Stack> */}
         </Grid>
       </Stack>
-    </Card>
+    </VariantRow>
   )
 })
 // ─── Wine Tab ─────────────────────────────────────────────────────────────────
@@ -227,7 +229,7 @@ export function WineTab(props: WineTabProps): ReactElement {
     defaultLocale,
     onTitlesChange,
   } = props.global
-  const { onSubmit, submitting } = props
+  const { onSubmit, submitting, existingWineKeys, hideProductSection } = props
   const { vinofactClient, constants, componentT } = useITSContext()
   const toast = useToast()
 
@@ -336,14 +338,24 @@ export function WineTab(props: WineTabProps): ReactElement {
     )
   }, [wines, selectedWineIds, queries, rows])
 
+  const submittableRows = useMemo(
+    () =>
+      rows.filter((r) => {
+        if (!r.wine || !r.volume) return false
+        return !existingWineKeys?.has(`${r.wine.id}:${r.volume}`)
+      }),
+    [rows, existingWineKeys],
+  )
+
   const canSubmit = useMemo(() => {
-    const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
-    if (!defaultTitle?.trim()) return false
-    if (!globalPrice && rows.some((r) => !r.price)) return false
-    if (rows.length === 0) return false
-    if (rows.some((r) => !r.wine || !r.volume)) return false
+    if (!hideProductSection) {
+      const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
+      if (!defaultTitle?.trim()) return false
+      if (!globalPrice && submittableRows.some((r) => !r.price)) return false
+    }
+    if (submittableRows.length === 0) return false
     return true
-  }, [titles, defaultLocale, globalPrice, rows])
+  }, [hideProductSection, titles, defaultLocale, globalPrice, submittableRows])
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return
@@ -377,6 +389,7 @@ export function WineTab(props: WineTabProps): ReactElement {
           locales={props.global.locales}
           defaultLocale={props.global.defaultLocale}
           titlePlaceholder={props.global.titlePlaceholder}
+          existingWineKeys={props.existingWineKeys}
           onUpdate={updateRow}
           onRemove={removeRow}
           onQueryChange={handleQueryChange}
@@ -417,6 +430,7 @@ export function WineTab(props: WineTabProps): ReactElement {
       canSubmit={canSubmit}
       handleSubmit={handleSubmit}
       content={content}
+      hideProductSection={props.hideProductSection}
     />
   )
 }

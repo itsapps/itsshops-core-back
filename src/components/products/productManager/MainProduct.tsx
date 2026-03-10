@@ -51,7 +51,7 @@ export function MainProduct(props: MainProductProps): ReactElement {
   const { schemaT } = useITSContext()
 
   return (
-    <Card border radius={2} padding={4}>
+    <Card border radius={2} padding={4} style={{ borderLeft: '3px solid var(--card-focus-ring-color)' }}>
       <Stack space={4}>
         <SectionLabel>{schemaT.default('product.title')}</SectionLabel>
         <I18nTitleInputs
