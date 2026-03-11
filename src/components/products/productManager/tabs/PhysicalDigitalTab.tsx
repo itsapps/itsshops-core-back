@@ -14,6 +14,7 @@ import { SectionLabel } from '../fields/SectionLabel'
 import { TaxCategoryField } from '../fields/TaxCategoryField'
 import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
+import { WeightField } from '../fields/WeightField'
 import {
   CombinationRow,
   I18nTitleEntry,
@@ -46,6 +47,7 @@ function buildCombinations(
       enabled: !alreadyExists, // pre-disabled if already exists
       alreadyExists, // new field on CombinationRow
       price: undefined,
+      weight: undefined,
       taxCategoryId: '',
       titles: [],
     }
@@ -88,6 +90,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
     locales,
     defaultLocale,
     titlePlaceholder,
+    showWeight,
     onUpdate,
     onToggleCombination,
   } = props
@@ -113,13 +116,18 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
     [onUpdate, row.id],
   )
 
+  const handleWeightChange = useCallback(
+    (value: number | undefined) => onUpdate(row.id, 'weight', value),
+    [onUpdate, row.id],
+  )
+
   return (
     <VariantRow
       index={index}
       tone={row.alreadyExists ? 'caution' : row.enabled ? 'default' : 'transparent'}
     >
       <Stack space={3}>
-        <Grid columns={[1, 1, 4]} gap={3}>
+        <Grid columns={[1, 1, showWeight ? 5 : 4]} gap={3}>
           {/* Toggle + label */}
           <Flex align="center" gap={3} style={{ gridColumn: 'span 1' }}>
             <input
@@ -149,6 +157,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
           {row.enabled && !row.alreadyExists && (
             <>
               <PriceField value={row.price} onChange={handlePriceChange} required={false} />
+              {showWeight && <WeightField value={row.weight} onChange={handleWeightChange} />}
               <TaxCategoryField
                 value={row.taxCategoryId}
                 taxCategories={taxCategories}
@@ -177,7 +186,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
 
 export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement {
   const { titles, globalPrice, taxCategories, loadingTax, defaultLocale } = props.global
-  const { onSubmit, submitting, existingOptionSets, hideProductSection } = props
+  const { onSubmit, submitting, existingOptionSets, hideProductSection, activeKind } = props
   const { sanityClient, localizer, componentT } = useITSContext()
   const toast = useToast()
 
@@ -370,6 +379,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
                   locales={props.global.locales}
                   defaultLocale={props.global.defaultLocale}
                   titlePlaceholder={props.global.titlePlaceholder}
+                  showWeight={activeKind === 'physical'}
                   onUpdate={updateCombination}
                   onToggleCombination={toggleCombination}
                 />

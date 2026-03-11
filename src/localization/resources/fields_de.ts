@@ -170,8 +170,7 @@ export default {
       title: 'SKU',
     },
     weight: {
-      title: 'Gewicht (kg)',
-      description: 'Standard 0.75L Flasche hat ca. 1,3kg',
+      title: 'Gewicht (g)',
     },
     taxCategory: {
       title: 'Steuerklasse',
@@ -291,6 +290,11 @@ export default {
         title: 'Produktvarianten',
         description: 'Alle Varianten generiert durch Produktoptionen',
       },
+      weight: {
+        title: 'Gewicht',
+        description:
+          'Gewicht in Gramm. Wird verwendet, wenn eine Variante kein Gewicht gesetzt hat.',
+      },
     },
     preview: {
       variants_one: '{{count}} Variante',
@@ -322,6 +326,11 @@ export default {
       },
       wine: {
         title: 'Wein',
+      },
+      weight: {
+        title: 'Gewicht',
+        description:
+          'Gewicht in Gramm. Wenn gesetzt, wird es statt dem Gewicht des Produkts verwendet.',
       },
       status: {
         title: 'Status',

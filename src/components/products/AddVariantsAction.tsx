@@ -35,6 +35,7 @@ type ExistingVariant = Pick<ProductVariant, '_id'> & {
   vinofactWineId: Wine['vinofactWineId']
   volume: Wine['volume']
   optionRefs: VariantOptionReference['_ref'][] | undefined
+  weight: number | undefined
 }
 type ProductWithKind = Pick<Product, '_id'> & { kind: ProductKind }
 // interface ProductDoc {
@@ -88,7 +89,8 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
             _id, kind,
             "vinofactWineId": wine.vinofactWineId,
             "volume": wine.volume,
-            "optionRefs": options[]._ref
+            "optionRefs": options[]._ref,
+            weight
           },
           "categories": *[_type == "taxCategory"]{
             _id,
@@ -175,19 +177,22 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
   // Shared global props — no titles in add-variants mode, no global price
   const globalProps = useMemo(
     () => ({
+      kind: product?.kind || 'wine',
       titles: [],
       globalPrice: undefined,
       globalTaxCategoryId: '',
       taxCategories,
       loadingTax,
+      globalWeight: undefined,
       locales: fieldLocales,
       defaultLocale,
       titlePlaceholder: '',
       onTitlesChange: () => {},
       onGlobalPriceChange: () => {},
       onGlobalTaxChange: () => {},
+      onGlobalWeightChange: () => {},
     }),
-    [taxCategories, loadingTax, fieldLocales, defaultLocale],
+    [product?.kind, taxCategories, loadingTax, fieldLocales, defaultLocale],
   )
 
   const renderContent = () => {
@@ -227,6 +232,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
             hideProductSection
             onSubmit={handlePhysicalDigitalSubmit}
             submitting={submitting}
+            activeKind={product.kind}
           />
         )
       case 'bundle':

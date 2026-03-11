@@ -71,6 +71,7 @@ export function ProductCreator(): ReactElement {
   const [titles, setTitles] = useState<I18nTitleEntry[]>([])
   const [globalPrice, setGlobalPrice] = useState<number | undefined>(undefined)
   const [globalTaxCategoryId, setGlobalTaxCategoryId] = useState('')
+  const [globalWeight, setGlobalWeight] = useState<number | undefined>(undefined)
   const [taxCategories, setTaxCategories] = useState<TaxCategory[]>([])
   const [loadingTax, setLoadingTax] = useState(true)
 
@@ -110,6 +111,9 @@ export function ProductCreator(): ReactElement {
   const handleTitlesChange = useCallback((ts: I18nTitleEntry[]) => setTitles(ts), [])
   const handleGlobalPriceChange = useCallback((val: number | undefined) => setGlobalPrice(val), [])
   const handleGlobalTaxChange = useCallback((val: string) => setGlobalTaxCategoryId(val), [])
+  const handleGlobalWeightChange = useCallback((val: number | undefined) => {
+    setGlobalWeight(val)
+  }, [])
 
   // Build i18nString array for Sanity from titles state
   const resetShared = useCallback(() => {
@@ -133,13 +137,22 @@ export function ProductCreator(): ReactElement {
         titles,
         price: globalPrice,
         taxId: globalTaxCategoryId,
+        weight: globalWeight,
       })
       for (const row of rows) {
         addWineVariantToTx(tx, productId, row)
       }
       await commitTransaction(tx, rows.length, resetShared)
     },
-    [client, titles, globalPrice, globalTaxCategoryId, commitTransaction, resetShared],
+    [
+      client,
+      titles,
+      globalPrice,
+      globalTaxCategoryId,
+      globalWeight,
+      commitTransaction,
+      resetShared,
+    ],
   )
 
   const handlePhysicalDigitalSubmit = useCallback(
@@ -151,13 +164,23 @@ export function ProductCreator(): ReactElement {
         titles,
         price: globalPrice,
         taxId: globalTaxCategoryId,
+        weight: globalWeight,
       })
       for (const combo of combinations) {
         addPhysicalDigitalVariantToTx(tx, productId, activeKind as 'physical' | 'digital', combo)
       }
       await commitTransaction(tx, combinations.length, resetShared)
     },
-    [client, activeKind, titles, globalPrice, globalTaxCategoryId, commitTransaction, resetShared],
+    [
+      client,
+      activeKind,
+      titles,
+      globalPrice,
+      globalTaxCategoryId,
+      globalWeight,
+      commitTransaction,
+      resetShared,
+    ],
   )
 
   const handleBundleSubmit = useCallback(
@@ -169,13 +192,22 @@ export function ProductCreator(): ReactElement {
         titles,
         price: globalPrice,
         taxId: globalTaxCategoryId,
+        weight: globalWeight,
       })
       for (const row of rows) {
         addBundleVariantToTx(tx, productId, row)
       }
       await commitTransaction(tx, rows.length, resetShared)
     },
-    [client, titles, globalPrice, globalTaxCategoryId, resetShared, commitTransaction],
+    [
+      client,
+      titles,
+      globalPrice,
+      globalTaxCategoryId,
+      globalWeight,
+      resetShared,
+      commitTransaction,
+    ],
   )
 
   const showTabs = enabledKinds.length > 1
@@ -184,12 +216,14 @@ export function ProductCreator(): ReactElement {
     globalPrice,
     globalTaxCategoryId,
     taxCategories,
+    globalWeight,
     loadingTax,
     locales: fieldLocales,
     defaultLocale,
     onTitlesChange: handleTitlesChange,
     onGlobalPriceChange: handleGlobalPriceChange,
     onGlobalTaxChange: handleGlobalTaxChange,
+    onGlobalWeightChange: handleGlobalWeightChange,
   }
 
   return (
@@ -235,6 +269,7 @@ export function ProductCreator(): ReactElement {
                 <WineTab
                   global={{
                     ...globalProps,
+                    kind,
                     titlePlaceholder: componentT.default(
                       'productCreatorTool.placeholders.productTitle.wine',
                     ),
@@ -247,10 +282,12 @@ export function ProductCreator(): ReactElement {
                 <PhysicalDigitalTab
                   global={{
                     ...globalProps,
+                    kind,
                     titlePlaceholder: componentT.default(
                       'productCreatorTool.placeholders.productTitle.physicalDigital',
                     ),
                   }}
+                  activeKind={kind}
                   onSubmit={handlePhysicalDigitalSubmit}
                   submitting={submitting}
                 />
@@ -259,6 +296,7 @@ export function ProductCreator(): ReactElement {
                 <BundleTab
                   global={{
                     ...globalProps,
+                    kind,
                     titlePlaceholder: componentT.default(
                       'productCreatorTool.placeholders.productTitle.bundle',
                     ),

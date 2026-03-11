@@ -29,6 +29,10 @@ export const product: ITSDocumentDefinition = {
             hidden: !ctx.config.isDev,
             validation: (Rule) => Rule.required(),
           }),
+          f('weight', 'number', {
+            validation: (rule) => rule.positive().integer(),
+            hidden: ({ document }) => document?.kind !== 'physical',
+          }),
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [
                 f('categories', 'array', {

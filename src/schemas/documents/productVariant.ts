@@ -267,12 +267,21 @@ function getWineFields(ctx: FieldContext): FieldDefinition[] {
   ]
 }
 
-function getPhysicalOrDigitalFields(ctx: FieldContext): FieldDefinition[] {
+function getOptionsFields(ctx: FieldContext): FieldDefinition[] {
   return [
     ctx.f('options', 'array', {
       of: [{ type: 'reference', to: [{ type: 'variantOption' }] }],
       hidden: ({ parent }: { parent: ProductVariant }) =>
         !parent?.kind || !['physical', 'digital'].includes(parent.kind),
+    }),
+  ]
+}
+
+function getPhysicalFields(ctx: FieldContext): FieldDefinition[] {
+  return [
+    ctx.f('weight', 'number', {
+      validation: (rule) => rule.positive().integer(),
+      hidden: ({ parent }) => parent?.kind !== 'physical',
     }),
   ]
 }
@@ -290,7 +299,7 @@ function getBundleFields(ctx: FieldContext): FieldDefinition[] {
 function getKindFields(ctx: FieldContext): FieldDefinition[] {
   const kindFieldBuilders: Record<ProductKind, () => FieldDefinition[]> = {
     wine: () => getWineFields(ctx),
-    physical: () => [],
+    physical: () => getPhysicalFields(ctx),
     digital: () => [],
     bundle: () => getBundleFields(ctx),
   }
@@ -304,5 +313,5 @@ function getKindFields(ctx: FieldContext): FieldDefinition[] {
     .filter(([kind]) => ctx.featureRegistry.isFeatureEnabled(`shop.productKind.${kind}`))
     .flatMap(([_, builder]) => builder())
 
-  return [...(optionsEnabled ? getPhysicalOrDigitalFields(ctx) : []), ...kindFields]
+  return [...(optionsEnabled ? getOptionsFields(ctx) : []), ...kindFields]
 }

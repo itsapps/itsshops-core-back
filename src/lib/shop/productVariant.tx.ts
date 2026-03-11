@@ -29,10 +29,11 @@ type ProductTxProps = {
   kind: ProductKind
   titles: I18nTitleEntry[]
   price: number | undefined
+  weight: number | undefined
   taxId?: string
 }
 export function addProductToTx(props: ProductTxProps): string {
-  const { tx, kind, titles, price, taxId } = props
+  const { tx, kind, titles, price, taxId, weight } = props
   const productId = docUid('product')
 
   tx.create({
@@ -42,6 +43,7 @@ export function addProductToTx(props: ProductTxProps): string {
     kind,
     ...(price !== undefined && { price }),
     ...(taxId && { taxCategory: { _type: 'reference', _ref: taxId } }),
+    ...(weight !== undefined && { weight }),
   })
 
   return productId
@@ -96,6 +98,7 @@ export function addPhysicalDigitalVariantToTx(
       _type: 'reference',
       _ref: optId,
     })),
+    ...(combo.weight !== undefined && { weight: combo.weight }),
   })
 }
 

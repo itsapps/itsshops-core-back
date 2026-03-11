@@ -48,6 +48,7 @@ export interface CombinationRow {
   optionIds: string[]
   enabled: boolean
   price: number | undefined
+  weight: number | undefined
   taxCategoryId: string
   titles: I18nTitleEntry[]
   alreadyExists?: boolean
@@ -77,10 +78,12 @@ export interface BundleVariantRow {
 }
 
 export interface MainProductProps {
+  kind: ProductKind
   titlePlaceholder: string
   titles: I18nTitleEntry[]
   globalPrice: number | undefined
   globalTaxCategoryId: string
+  globalWeight: number | undefined
   taxCategories: TaxCategory[]
   loadingTax: boolean
   locales: string[]
@@ -88,6 +91,7 @@ export interface MainProductProps {
   onTitlesChange: (titles: I18nTitleEntry[]) => void
   onGlobalPriceChange: (val: number | undefined) => void
   onGlobalTaxChange: (val: string) => void
+  onGlobalWeightChange: (val: number | undefined) => void
 }
 
 export interface ProductTabProps {
@@ -111,6 +115,7 @@ export interface WineTabProps extends ProductKindTabProps {
 }
 
 export interface PhysicalDigitalTabProps extends ProductKindTabProps {
+  activeKind: ProductKind
   onSubmit: (combinations: CombinationRow[]) => Promise<void>
   existingOptionSets?: Set<string>
 }
@@ -179,6 +184,12 @@ export interface PriceFieldProps {
   required?: boolean
 }
 
+export interface WeightFieldProps {
+  value: number | undefined
+  onChange: (val: number | undefined) => void
+  required?: boolean
+}
+
 export interface TaxCategoryFieldProps {
   value: string
   taxCategories: TaxCategory[]
@@ -188,12 +199,15 @@ export interface TaxCategoryFieldProps {
 }
 
 export interface GlobalDefaultsProps {
+  kind: ProductKind
   globalPrice: number | undefined
   globalTaxCategoryId: string
   taxCategories: TaxCategory[]
   loadingTax: boolean
+  globalWeight: number | undefined
   onPriceChange: (val: number | undefined) => void
   onTaxChange: (val: string) => void
+  onWeightChange: (val: number | undefined) => void
 }
 
 export interface VariantSectionHeaderProps {
@@ -236,6 +250,7 @@ export interface OptionComboCardProps {
   locales: string[]
   defaultLocale: string
   titlePlaceholder: string
+  showWeight: boolean
   onUpdate: (id: string, key: keyof CombinationRow, val: any) => void
   onToggleCombination: (id: string) => void
 }
