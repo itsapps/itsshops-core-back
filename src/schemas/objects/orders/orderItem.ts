@@ -59,6 +59,12 @@ export const orderItem: ITSSchemaDefinition = {
         readOnly: !ctx.config.isDev,
       }),
 
+      f('weight', 'number', {
+        description: 'Weight in grams at time of order',
+        validation: (rule) => rule.min(0).integer(),
+        readOnly: !ctx.config.isDev,
+      }),
+
       f('sku', 'string', {
         readOnly: !ctx.config.isDev,
       }),
@@ -123,13 +129,15 @@ export const orderItem: ITSSchemaDefinition = {
           quantity: 'quantity',
           price: 'price',
           packed: 'packed',
+          weight: 'weight',
         },
-        prepare({ title, variantTitle, kind, quantity, price, packed }) {
+        prepare({ title, variantTitle, kind, quantity, price, packed, weight }) {
           const label = [title, variantTitle].filter(Boolean).join(' — ')
           const priceStr = typeof price === 'number' ? ctx.format.currency(price / 100) : '—'
+          const weightStr = typeof weight === 'number' ? `${weight}g` : null
           return {
             title: `${quantity}× ${label}`,
-            subtitle: `${priceStr} · ${kind}${packed ? ' ✓' : ''}`,
+            subtitle: [priceStr, weightStr, kind, packed ? '✓' : null].filter(Boolean).join(' · '),
             media: OrderItemIcon,
           }
         },
