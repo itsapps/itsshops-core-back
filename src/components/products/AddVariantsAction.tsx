@@ -30,12 +30,12 @@ import { WineTab } from './productManager/tabs/WineTab'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ExistingVariant = Pick<ProductVariant, '_id'> & {
+type ExistingVariant = Pick<ProductVariant, '_id' | 'weight'> & {
   kind: ProductKind
   vinofactWineId: Wine['vinofactWineId']
   volume: Wine['volume']
   optionRefs: VariantOptionReference['_ref'][] | undefined
-  weight: number | undefined
+  // weight: number | undefined
 }
 type ProductWithKind = Pick<Product, '_id'> & { kind: ProductKind }
 // interface ProductDoc {
