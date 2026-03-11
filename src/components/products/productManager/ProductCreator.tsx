@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import { Container, Flex, Heading, Stack, Tab, TabList, TabPanel, Text } from '@sanity/ui'
+import { Container, Flex, Heading, Stack, Tab, TabList, TabPanel, Text, useToast } from '@sanity/ui'
 import { ComponentType, ReactElement } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
@@ -18,7 +18,7 @@ import {
   addProductToTx,
   addWineVariantToTx,
 } from '../../../lib/shop/productVariant.tx'
-import { ProductKind } from '../../../types'
+import { ProductKind, TaxCategory as CoreTaxCategory } from '../../../types'
 import {
   BundleVariantRow,
   CombinationRow,
@@ -60,6 +60,7 @@ const KindTab = memo(function KindTab(props: KindTabProps) {
 
 export function ProductCreator(): ReactElement {
   const ctx = useITSContext()
+  const toast = useToast()
   const { config, sanityClient, componentT, schemaT } = ctx
   const client = sanityClient
 
@@ -76,7 +77,10 @@ export function ProductCreator(): ReactElement {
   // Load tax categories once — shared across all tabs
   useEffect(() => {
     client
-      .fetch<{ categories: TaxCategory[]; defaultCategoryId: string | null }>(
+      .fetch<{
+        categories: (Pick<CoreTaxCategory, '_id'> & { title: string | undefined; code: string })[]
+        defaultCategoryId: string | null
+      }>(
         `{
           "categories": *[_type == "taxCategory"]{
             _id,
@@ -92,14 +96,16 @@ export function ProductCreator(): ReactElement {
       )
       .then((data) => {
         const { categories, defaultCategoryId } = data
-        setTaxCategories(categories)
+        setTaxCategories(categories.map((t) => ({ ...t, title: t.title || '' })))
         if (defaultCategoryId) {
           setGlobalTaxCategoryId(defaultCategoryId)
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        toast.push({ status: 'error', title: 'Failed to load data', description: err.message })
+      })
       .finally(() => setLoadingTax(false))
-  }, [client, defaultLocale])
+  }, [client, defaultLocale, toast])
 
   const handleTitlesChange = useCallback((ts: I18nTitleEntry[]) => setTitles(ts), [])
   const handleGlobalPriceChange = useCallback((val: number | undefined) => setGlobalPrice(val), [])

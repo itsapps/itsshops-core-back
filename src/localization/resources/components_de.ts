@@ -22,15 +22,15 @@ export default {
     messages: {
       productCreated: {
         title: 'Produkt erstellt',
-        description_one: '{{title}} mit {{count}} Variante.',
+        description_one: '{{title}} mit einer Variante.',
         description_other: '{{title}} mit {{count}} Varianten.',
       },
       productCreatedFail: {
         title: 'Fehler beim Erstellen des Produkts',
       },
-      variantExists: 'Diese Variante existieren bereits.',
+      variantExists: 'Diese Variante existiert bereits.',
       combinations: {
-        warning: '⚠️ {{count}} Variants — bist Du sicher?',
+        warning: '⚠️ {{count}} Varianten — bist Du sicher?',
       },
     },
     submit_zero: 'Produkt erstellen',
@@ -44,7 +44,7 @@ export default {
     combinations: {
       options: 'Eigenschaften',
       loadingOptions: 'Optionen werden geladen...',
-      preview: 'Varianten Vorschau — {{enabledCount}} von {{totalCount}}',
+      preview: 'Varianten-Vorschau — {{enabledCount}} von {{totalCount}}',
       noOptionGroups:
         'Keine Optionengruppen gefunden. Erstelle zuerst welche in der Optionengruppen-Liste.',
       noOptions: 'Keine Optionen in dieser Gruppe vorhanden',

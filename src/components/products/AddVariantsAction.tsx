@@ -10,7 +10,14 @@ import {
   addPhysicalDigitalVariantToTx,
   addWineVariantToTx,
 } from '../../lib/shop/productVariant.tx'
-import { ProductKind } from '../../types'
+import {
+  Product,
+  ProductKind,
+  ProductVariant,
+  TaxCategory as CoreTaxCategory,
+  VariantOptionReference,
+  Wine,
+} from '../../types'
 import {
   BundleVariantRow,
   CombinationRow,
@@ -23,23 +30,17 @@ import { WineTab } from './productManager/tabs/WineTab'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface ExistingVariant {
-  _id: string
+type ExistingVariant = Pick<ProductVariant, '_id'> & {
   kind: ProductKind
-  // wine
-  vinofactWineId?: string
-  volume?: number
-  // physical/digital
-  optionRefs?: string[]
+  vinofactWineId: Wine['vinofactWineId']
+  volume: Wine['volume']
+  optionRefs: VariantOptionReference['_ref'][] | undefined
 }
-
-interface ProductDoc {
-  _id: string
-  kind: ProductKind
-  title: any
-  price?: number
-  taxCategory?: { _ref: string }
-}
+type ProductWithKind = Pick<Product, '_id'> & { kind: ProductKind }
+// interface ProductDoc {
+//   _id: string
+//   kind: ProductKind
+// }
 
 interface AddVariantsDialogProps {
   productId: string
@@ -65,7 +66,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
 
   const { fieldLocales, defaultLocale } = config.localization
 
-  const [product, setProduct] = useState<ProductDoc | null>(null)
+  const [product, setProduct] = useState<ProductWithKind | null>(null)
   const [existingVariants, setExistingVariants] = useState<ExistingVariant[]>([])
   const [taxCategories, setTaxCategories] = useState<TaxCategory[]>([])
   const [loadingTax, setLoadingTax] = useState(true)
@@ -73,42 +74,38 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
 
   // Fetch product + existing variants + tax categories in one go
   useEffect(() => {
-    Promise.all([
-      client.fetch<ProductDoc>(
-        `*[_type == "product" && _id == $id][0]{
-          _id, kind, title, price,
-          "taxCategory": taxCategory{ _ref }
-        }`,
-        { id: productId },
-      ),
-      client.fetch<ExistingVariant[]>(
-        `*[_type == "productVariant" && product._ref == $id]{
-          _id, kind,
-          "vinofactWineId": wine.vinofactWineId,
-          "volume": wine.volume,
-          "optionRefs": options[]._ref
-        }`,
-        { id: productId },
-      ),
-      client.fetch<{ taxCategories: TaxCategory[]; defaultTaxCategoryId: string | null }>(
+    client
+      .fetch<{
+        product: ProductWithKind
+        variants: ExistingVariant[]
+        categories: (Pick<CoreTaxCategory, '_id'> & { title: string | undefined; code: string })[]
+      }>(
         `{
-          "taxCategories": *[_type == "taxCategory"]{
+          "product": *[_type == "product" && _id == $productId][0]{
+            _id, kind,
+          },
+          "variants": *[_type == "productVariant" && product._ref == $productId]{
+            _id, kind,
+            "vinofactWineId": wine.vinofactWineId,
+            "volume": wine.volume,
+            "optionRefs": options[]._ref
+          },
+          "categories": *[_type == "taxCategory"]{
             _id,
             "title": coalesce(
               title[_key == $locale][0].value,
               title[0].value
             ),
             "code": code.current
-          },
-          "defaultTaxCategoryId": *[_type == "shopSettings"][0].defaultTaxCategory._ref
+          }
         }`,
-        { locale: defaultLocale },
-      ),
-    ])
-      .then(([productDoc, variants, { taxCategories: cats }]) => {
-        setProduct(productDoc)
+        { locale: defaultLocale, productId },
+      )
+      .then((data) => {
+        const { product: p, categories, variants } = data
+        setProduct(p)
         setExistingVariants(variants)
-        setTaxCategories(cats)
+        setTaxCategories(categories.map((t) => ({ ...t, title: t.title || '' })))
       })
       .catch((err) => {
         toast.push({ status: 'error', title: 'Failed to load product', description: err.message })
