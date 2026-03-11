@@ -54,7 +54,9 @@
     "prepublishOnly": "npm run build",
     "watch": "pkg-utils watch --strict",
     "prepare": "npm run build",
-    "test": "vitest"
+    "test": "vitest",
+    "extract": "sanity schema extract --workspace de",
+    "typegen": "sanity typegen generate"
   },
   "dependencies": {
     "@portabletext/block-tools": "^5.0.0",

@@ -63,3 +63,4 @@ dist
 collected.ts
 schema.json
 sanity.types.ts
+.env
