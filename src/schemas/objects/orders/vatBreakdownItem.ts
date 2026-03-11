@@ -16,11 +16,13 @@ export const vatBreakdownItem: ITSSchemaDefinition = {
         }),
         f('net', 'number', {
           title: 'Net Amount',
+          validation: (rule) => rule.required().min(0).integer(),
         }),
         f('vat', 'number', {
           title: 'Vat Amount',
+          validation: (rule) => rule.required().min(0).integer(),
         }),
-        f('label', 'i18nString', {
+        f('label', 'string', {
           title: 'Label (e.g., "VAT 20%")',
         }),
       ],

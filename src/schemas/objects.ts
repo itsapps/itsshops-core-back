@@ -16,6 +16,9 @@ import { menuItem } from './objects/menuItem'
 import { fulfillment } from './objects/orders/fulfillment'
 import { orderCustomer } from './objects/orders/orderCustomer'
 import { orderItem } from './objects/orders/orderItem'
+import { orderItemBundle } from './objects/orders/orderItemBundle'
+import { orderItemOption } from './objects/orders/orderItemOption'
+import { orderItemWine } from './objects/orders/orderItemWine'
 import { orderStatusHistory } from './objects/orders/orderStatusHistory'
 import { orderTotals } from './objects/orders/orderTotals'
 import { vatBreakdownItem } from './objects/orders/vatBreakdownItem'
@@ -45,6 +48,9 @@ export const getCoreObjects = (
     menuItem,
     orderCustomer,
     orderItem,
+    orderItemBundle,
+    orderItemOption,
+    orderItemWine,
     orderStatusHistory,
     orderTotals,
     portableText,

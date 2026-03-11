@@ -15,24 +15,25 @@ export const orderTotals: ITSSchemaDefinition = {
         f('grandTotal', 'number', {
           title: 'Grand Total (Gross)',
           description: 'The final amount the customer paid',
-          validation: (Rule) => Rule.required().precision(2),
+          validation: (rule) => rule.required().min(0).integer(),
         }),
         f('subtotal', 'number', {
           title: 'Items Subtotal',
           description: 'Sum of all order items (Gross)',
-          validation: (Rule) => Rule.required(),
+          validation: (rule) => rule.required().min(0).integer(),
         }),
         f('shipping', 'number', {
           title: 'Shipping/Fulfillment Cost',
-          validation: (Rule) => Rule.required(),
+          validation: (rule) => rule.required().min(0).integer(),
         }),
         f('discount', 'number', {
           initialValue: 0,
+          validation: (rule) => rule.required().min(0).integer(),
         }),
         f('totalVat', 'number', {
           title: 'Total VAT Amount',
           description: 'The sum of all VAT from items and shipping',
-          validation: (Rule) => Rule.required(),
+          validation: (rule) => rule.required().min(0).integer(),
         }),
 
         // --- The Audit Trail (Crucial for Austria/EU) ---

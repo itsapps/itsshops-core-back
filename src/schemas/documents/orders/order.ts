@@ -46,7 +46,7 @@ export const order: ITSDocumentDefinition = {
           },
           initialValue: 'created',
           validation: (rule) => rule.required(),
-          hidden: !ctx.config.isDev,
+          readOnly: !ctx.config.isDev,
         }),
         f('paymentStatus', 'string', {
           options: {
@@ -55,7 +55,7 @@ export const order: ITSDocumentDefinition = {
           },
           initialValue: 'succeeded',
           validation: (rule) => rule.required(),
-          hidden: !ctx.config.isDev,
+          readOnly: !ctx.config.isDev,
         }),
       ],
       history: [

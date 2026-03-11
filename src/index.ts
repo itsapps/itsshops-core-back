@@ -8,7 +8,6 @@ import { structureTool } from 'sanity/structure'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 import { media } from 'sanity-plugin-media'
 
-import { WineIcon } from './assets/icons'
 import { CustomToolbar } from './components/CustomToolbar'
 // import { CreateWineProducts } from './components/products/CreateWineProducts'
 import { actionResolver } from './config/actions'

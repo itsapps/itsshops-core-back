@@ -14,7 +14,7 @@ export const fulfillment: ITSSchemaDefinition = {
     // }));
 
     const all = [
-      f('methodTitle', 'i18nString', {
+      f('methodTitle', 'string', {
         description: 'Snapshotted title (e.g., "DHL Express" or "Self-Pickup")',
       }),
       f('methodType', 'string', {
@@ -25,6 +25,7 @@ export const fulfillment: ITSSchemaDefinition = {
       // 2. Financials: What was the cost and tax for this specific service?
       f('shippingCost', 'number', {
         description: 'The fee charged to the customer',
+        validation: (rule) => rule.required().min(0).integer(),
       }),
 
       // This handles the tax on the shipping fee itself
