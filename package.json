@@ -21,6 +21,11 @@
       "import": "./dist/external/index.js",
       "default": "./dist/external/index.js"
     },
+    "./assets": {
+      "source": "./src/assets/index.ts",
+      "import": "./dist/assets/index.js",
+      "default": "./dist/assets/index.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -33,6 +38,10 @@
       "./external": {
         "import": "./dist/external/index.js",
         "default": "./dist/external/index.js"
+      },
+      "./assets": {
+        "import": "./dist/assets/index.js",
+        "default": "./dist/assets/index.js"
       },
       "./package.json": "./package.json"
     }
