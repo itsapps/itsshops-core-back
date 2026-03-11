@@ -22,7 +22,7 @@ export function OrderDataError({ error, isDev = false }: OrderDataErrorProps): R
       <Card padding={4} radius={3} tone="caution" shadow={1} border>
         <Stack space={4}>
           <Flex align="center" gap={3}>
-            <WarningCircleIcon size={24} weight="bold" />
+            <WarningCircleIcon size={24} />
             <Text weight="bold" size={2}>
               Order Data Inconsistent
             </Text>

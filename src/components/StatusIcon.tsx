@@ -11,7 +11,10 @@ import {
   TruckIcon,
   WarningIcon,
 } from '../assets/icons'
-import { OrderPaymentStatus, OrderStatus } from '../types'
+import { Order } from '../types'
+
+export type OrderStatus = Order['status']
+export type OrderPaymentStatus = Order['paymentStatus']
 
 const StyledSpan = styled.span<{ $color: string }>`
   > svg {

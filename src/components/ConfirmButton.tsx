@@ -52,11 +52,15 @@ export function ConfirmButton({
                 </Text>
               )}
               <Flex gap={3} justify="center">
-                <Button tone="critical" text={t('ui.dialog.confirm')} onClick={handleConfirm} />
+                <Button
+                  tone="critical"
+                  text={t.default('ui.dialog.confirm')}
+                  onClick={handleConfirm}
+                />
                 <Button
                   tone="default"
                   mode="ghost"
-                  text={t('ui.dialog.cancel')}
+                  text={t.default('ui.dialog.cancel')}
                   onClick={handleClose}
                 />
               </Flex>

@@ -45,7 +45,7 @@ export const CustomerGroupView: UserViewComponent = (props) => {
         </Flex>
         <Stack marginTop={4} space={2}>
           <Box padding={2}>
-            <Heading as="h3">{t('customerGroup.items')}</Heading>
+            <Heading as="h3">{t.default('customerGroup.items')}</Heading>
           </Box>
           {customers.map((item) => (
             <div key={item._id}>{item.email}</div>
