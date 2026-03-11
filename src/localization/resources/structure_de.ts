@@ -29,7 +29,9 @@ export default {
       },
     },
   },
-  productVariant: { title: 'Produktvarianten' },
+  productVariant: {
+    title: 'Produktvarianten',
+  },
   variantOptions: {
     title: 'Optionengruppen',
     group: 'Optionengruppe',

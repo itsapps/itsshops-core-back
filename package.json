@@ -56,7 +56,8 @@
     "prepare": "npm run build",
     "test": "vitest",
     "extract": "sanity schema extract --workspace de",
-    "typegen": "sanity typegen generate"
+    "typegen": "sanity typegen generate",
+    "start": "sanity dev --host 0.0.0.0 --port 3331"
   },
   "dependencies": {
     "@portabletext/block-tools": "^5.0.0",
