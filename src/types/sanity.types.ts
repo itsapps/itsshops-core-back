@@ -654,6 +654,7 @@ export type OrderItem = {
   parentId?: string
   title?: string
   variantTitle?: string
+  weight?: number
   sku?: string
   quantity?: number
   price?: number
@@ -923,6 +924,7 @@ export type ProductVariant = {
     } & VariantOptionReference
   >
   wine?: Wine
+  weight?: number
   bundleItems?: Array<
     {
       _key: string
@@ -960,6 +962,7 @@ export type Product = {
   _rev: string
   title?: InternationalizedArrayString
   kind?: 'wine' | 'physical' | 'digital' | 'bundle'
+  weight?: number
   categories?: Array<
     {
       _key: string
