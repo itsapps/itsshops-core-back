@@ -1,6 +1,6 @@
 import { FieldDefinition } from 'sanity'
 
-import { ProductVariantIcon } from '../../assets/icons'
+import { productKindIcons, ProductVariantIcon } from '../../assets/icons'
 import { WineSelector } from '../../components/products/WineSelector'
 import {
   FieldContext,
@@ -197,7 +197,9 @@ export const productVariant: ITSDocumentDefinition = {
             title,
             subtitle,
             media:
-              ctx.localizer.value(image) || ctx.localizer.value(productImage) || ProductVariantIcon,
+              ctx.localizer.value(image) ||
+              ctx.localizer.value(productImage) ||
+              (kind ? productKindIcons[kind] : ProductVariantIcon),
           }
         },
       },
