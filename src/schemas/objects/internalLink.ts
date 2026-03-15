@@ -4,6 +4,6 @@ export const internalLink: ITSSchemaDefinition = {
   name: 'internalLink',
   type: 'object',
   build: (ctx) => ({
-    fields: ctx.builders.internalLink({ includeTitle: true, includeDisplayType: true }),
+    fields: ctx.builders.internalLinkFields({ includeTitle: true, includeDisplayType: true }),
   }),
 }

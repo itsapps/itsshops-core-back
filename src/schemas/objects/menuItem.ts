@@ -1,4 +1,4 @@
-import { LinkIcon } from '../../assets/icons'
+import { LinkIcon, InternalLinkIcon, ExternalLinkIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
 export const menuItem: ITSSchemaDefinition = {
@@ -38,7 +38,7 @@ export const menuItem: ITSSchemaDefinition = {
 
         // Internal Reference (Page, Post, etc.)
         ...ctx.builders
-          .internalLink({
+          .internalLinkFields({
             includeTitle: false,
             includeDisplayType: false,
             to: ctx.config.schemaSettings.menus.allowedReferences,
@@ -119,7 +119,8 @@ export const menuItem: ITSSchemaDefinition = {
           const localUrl = ctx.localizer.value(url)
 
           const displayTitle = localTitle || localRefTitle || localUrl || 'Untitled'
-          let subtitle = `[${linkType}]`
+          const linkTypeLabel = linkType ? ctx.t.default(`global.linkTypes.${linkType}`) : '-'
+          let subtitle = `[${linkTypeLabel}]`
 
           if (linkType === 'submenu') {
             subtitle += ` 📂 ${children?.length || 0} items`
@@ -127,10 +128,16 @@ export const menuItem: ITSSchemaDefinition = {
             subtitle += ` 🌐 ${localUrl || 'No URL'}` // Snapshot of first i18n entry
           }
 
+          const linkIcons = {
+            internal: InternalLinkIcon,
+            external: ExternalLinkIcon,
+            submenu: LinkIcon,
+          }
+          const media = linkIcons[linkType as keyof typeof linkIcons] || LinkIcon
           return {
             title: displayTitle,
             subtitle,
-            media: LinkIcon,
+            media,
           }
         },
         // prepare: ({ title, linkType, url, refTitle, children }) => {

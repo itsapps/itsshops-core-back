@@ -10,11 +10,12 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
   const apiVersion = config.apiVersion
 
   return {
-    externalLink: (options = {}) => {
+    externalLinkFields: (options = {}) => {
       const fieldName = options.name || 'externalLink'
       // const required = options.required || true
 
       return [
+        ...(options.includeTitle ? [f(`${fieldName}Title`, 'i18nString')] : []),
         f(`${fieldName}Url`, 'url', {
           validation: (Rule) =>
             Rule.uri({
@@ -34,7 +35,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
         // },
       ]
     },
-    internalLink: (options = {}) => {
+    internalLinkFields: (options = {}) => {
       const fieldName = options.name || 'internalLink'
       const required = options.required ?? true
 
@@ -74,6 +75,19 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
               ((!defined(variants) || count(variants) == 0) && _type == "product")
             `,
           },
+          // preview: {
+          //   select: {
+          //     type: 'internalLinkReference._type',
+          //     title: 'internalLinkTitle',
+          //   },
+          //   prepare({ type, title }: any) {
+          //     return {
+          //       title: 'asdf',
+          //       // title: type ? ctx.t.default(`${type}.title`) : '',
+          //       subtitle: ctx.localizer.value(title),
+          //     }
+          //   },
+          // },
         }),
         ...(options.includeDisplayType && displayTypes.length
           ? [
@@ -184,7 +198,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
                       name: 'internalLink',
                       type: 'object',
                       // Recursively call the link builder!
-                      fields: createBuilders(factory, ctx).internalLink({
+                      fields: createBuilders(factory, ctx).internalLinkFields({
                         includeDisplayType: true,
                       }),
                     },
@@ -208,7 +222,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             // We use the internalLink builder INSIDE the array item
             fields: [
               // f('label', 'i18nString', { i18n: 'requiredDefault' }),
-              ...createBuilders(factory, ctx).internalLink({ includeDisplayType: true }),
+              ...createBuilders(factory, ctx).internalLinkFields({ includeDisplayType: true }),
             ],
             // Preview so the editor sees the label in the list
             preview: {

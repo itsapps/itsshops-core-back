@@ -15,7 +15,7 @@ export const hero: ITSSchemaDefinition = {
           {
             type: 'object',
             name: 'action',
-            fields: builders.internalLink({
+            fields: builders.internalLinkFields({
               required: true,
               includeTitle: true,
               includeDisplayType: true,

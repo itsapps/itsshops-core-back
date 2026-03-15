@@ -24,6 +24,8 @@ import {
 } from '@sanity/icons'
 import { ComponentType } from 'react'
 import {
+  PiArrowSquareIn,
+  PiArrowSquareOut,
   PiArrowUDownLeft,
   PiArticle,
   PiBarcode,
@@ -68,9 +70,11 @@ export const DeployIcon = PiRocketLaunch
 export const EditIcon = Edit
 export const EllipsisHorizontalIcon = EllipsisHorizontal
 export const ErrorOutlineIcon = ErrorOutline
+export const ExternalLinkIcon = PiArrowSquareOut
 export const FulfillmentIcon = Package
 export const HeroIcon = PiStar
 export const ImageIcon = PiImage
+export const InternalLinkIcon = PiArrowSquareIn
 export const LaunchIcon = Launch
 export const LinkIcon = PiLink
 export const ManufacturerIcon = Wrench

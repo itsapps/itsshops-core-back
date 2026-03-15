@@ -21,6 +21,13 @@ export default {
       '15000': 'Nebuchadnezzar',
     },
   },
+  global: {
+    linkTypes: {
+      internal: 'Interne Verlinkung',
+      external: 'Externe Verlinkung',
+      submenu: 'Untermenü',
+    },
+  },
   groups: {
     product: 'Produkt',
     description: 'Beschreibung',
@@ -67,6 +74,9 @@ export default {
     },
     internalLinkReference: {
       title: 'Referenz',
+    },
+    externalLinkTitle: {
+      title: 'Titel',
     },
     externalLinkUrl: {
       title: 'Link',

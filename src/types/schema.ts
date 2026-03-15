@@ -150,7 +150,7 @@ export interface ITSInternalLinkOptions {
 export interface ITSExternalLinkOptions {
   name?: string
   // to?: string[]
-  // includeTitle?: boolean
+  includeTitle?: boolean
   // includeDisplayType?: boolean
   // displayTypes?: string[]
   required?: boolean
@@ -190,8 +190,8 @@ export type GroupFieldsOutput = {
 }
 
 export interface ITSBuilders {
-  externalLink: (options?: ITSExternalLinkOptions) => FieldDefinition[]
-  internalLink: (options?: ITSInternalLinkOptions) => FieldDefinition[]
+  externalLinkFields: (options?: ITSExternalLinkOptions) => FieldDefinition[]
+  internalLinkFields: (options?: ITSInternalLinkOptions) => FieldDefinition[]
   module: (options: ITSModuleOptions) => any
   // portableText: (options?: ITSPTOptions) => any;
   // portableText: (options?: ITSPTOptions) => Partial<ArrayDefinition>;
