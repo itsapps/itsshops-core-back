@@ -1,17 +1,17 @@
-import replace from '@rollup/plugin-replace'
+// import replace from '@rollup/plugin-replace'
 import {defineConfig} from '@sanity/pkg-utils'
 
 export default defineConfig({
   dist: 'dist',
   tsconfig: 'tsconfig.dist.json',
-  rollup: {
-    plugins: [
-      replace({
-        preventAssignment: true,
-        __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-      }),
-    ],
-  },
+  // rollup: {
+  //   plugins: [
+  //     replace({
+  //       preventAssignment: true,
+  //       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  //     }),
+  //   ],
+  // },
 
   babel: {
     styledComponents: true, 

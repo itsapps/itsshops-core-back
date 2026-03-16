@@ -8,7 +8,7 @@ import { structureTool } from 'sanity/structure'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 import { media } from 'sanity-plugin-media'
 
-import pkg from '../package.json'
+// import pkg from '../package.json'
 import { CustomToolbar } from './components/CustomToolbar'
 // import { CreateWineProducts } from './components/products/CreateWineProducts'
 import { actionResolver } from './config/actions'
@@ -30,11 +30,11 @@ import { createPresentations } from './presentation'
 import { buildSchemas } from './schemas'
 import type { CountryOption, ITSContext, ItsshopsConfig, VolumeOption } from './types'
 
-declare const __BUILD_TIME__: string
+// declare const __BUILD_TIME__: string
 
 export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
-  // eslint-disable-next-line no-console
-  console.info(`[itsshops-core-back] v${pkg.version} built: ${__BUILD_TIME__}`)
+  // // eslint-disable-next-line no-console
+  // console.info(`[itsshops-core-back] v${pkg.version} built: ${__BUILD_TIME__}`)
   const presentationOptions = createPresentations({ ...context, t: context.structureT })
   return {
     name: '@itsapps/itsshops-core-back',
