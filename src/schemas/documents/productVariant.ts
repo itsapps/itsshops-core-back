@@ -199,7 +199,7 @@ export const productVariant: ITSDocumentDefinition = {
             media:
               ctx.localizer.value(image) ||
               ctx.localizer.value(productImage) ||
-              (kind ? productKindIcons[kind] : ProductVariantIcon),
+              (kind ? productKindIcons[kind as ProductKind] : ProductVariantIcon),
           }
         },
       },
