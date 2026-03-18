@@ -17,6 +17,7 @@ import type {
 } from 'sanity'
 import { ListItemBuilder, StructureBuilder, StructureResolverContext } from 'sanity/structure'
 
+import { ITSBlockDefinition } from './blocks'
 import { FieldContext, ITSContext } from './context'
 import { PriceOptions } from './fields'
 import { FieldTranslators, I18nValidationOptions } from './localization'
@@ -94,8 +95,9 @@ export type ITSStructureComponent = (
   ctx: ITSContext,
 ) => ListItemBuilder
 
+export type ITSStructureItemType = 'document' | 'singleton' | 'group' | 'divider' | 'custom'
 export interface ITSStructureItem {
-  type: 'document' | 'singleton' | 'group' | 'divider' | 'custom'
+  type: ITSStructureItemType
   id: string
   title?: string
   icon?: ComponentType | ReactNode
@@ -114,7 +116,7 @@ export type CoreFieldOptions = Omit<Partial<FieldDefinition>, 'validation' | 'to
   i18n?: I18nValidationOptions
   validation?: (rule: Rule) => any
   to?: ReferenceTo[]
-  of?: ArrayOfType[]
+  of?: (ArrayOfType | ITSBlockDefinition)[]
   [key: string]: any
 }
 
@@ -162,11 +164,6 @@ export interface ITSModuleOptions {
   allowTheme?: boolean
 }
 
-export interface ITSPTOptions {
-  name?: string
-  allowLinks?: boolean
-  styles?: string[]
-}
 export interface ITSActionGroupOptions {
   name?: string
   max?: number
@@ -189,15 +186,31 @@ export type GroupFieldsOutput = {
   fields: FieldDefinition[]
 }
 
+export interface ITSVariantReferenceOptions {
+  name?: string
+  multiple?: boolean
+}
+
+export interface ITSVariantReferenceMemberOptions {
+  name?: string
+  icon?: ComponentType
+}
+
 export interface ITSBuilders {
   externalLinkFields: (options?: ITSExternalLinkOptions) => FieldDefinition[]
   internalLinkFields: (options?: ITSInternalLinkOptions) => FieldDefinition[]
   module: (options: ITSModuleOptions) => any
-  // portableText: (options?: ITSPTOptions) => any;
-  // portableText: (options?: ITSPTOptions) => Partial<ArrayDefinition>;
-  // block: (options: ITSBlockOptions) => ArrayOfType<'block'>
-  // block: (options: ITSArrayBlock) => ArrayOfType<'block'>;
-  portableText: (options?: ITSPTOptions) => Pick<ArrayDefinition, 'of'>
+  /**
+   * Standalone reference field (or array field) pointing to productVariant.
+   * Automatically applies `disableNew` and filters out archived variants.
+   * Use `multiple: true` for an array of variant references.
+   */
+  variantReference: (options?: ITSVariantReferenceOptions) => FieldDefinition
+  /**
+   * ProductVariant reference definition for use as a member inside a mixed `of` array.
+   * Use when productVariant is one of several types in an array (e.g. alongside external links).
+   */
+  variantReferenceMember: (options?: ITSVariantReferenceMemberOptions) => ArrayOfType<'reference'>
   actionGroup: (options: ITSActionGroupOptions) => any
   countryCodeField: (options: ITSCountryCodeOptions) => FieldDefinition
   countryCodesField: (options: ITSCountryCodesOptions) => FieldDefinition

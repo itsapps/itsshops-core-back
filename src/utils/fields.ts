@@ -7,21 +7,21 @@ import { i18nValidators } from './validation'
 const SANITY_INTERNAL_TYPES = ['block', 'string', 'number', 'boolean', 'image', 'file', 'date']
 
 const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName: string) => {
-  if (type in SANITY_INTERNAL_TYPES) return true
+  if (SANITY_INTERNAL_TYPES.includes(type)) return true
   const schemaDef = ctx.featureRegistry.getSchema(type)
   if (!schemaDef) {
-    console.warn(
-      `Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`,
-    )
-    return false
-  } else if (!ctx.featureRegistry.isSchemaEnabled(type)) {
-    // console.warn(`Schema type "${type}" is disabled for reference in "${namespace}.${fieldName}".`);
+    console.warn(`Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`)
     return false
   }
-  return true
+  return ctx.featureRegistry.isSchemaEnabled(type)
 }
 
-// Map simple types to your internationalized plugin types
+const isNoCreate = (ctx: ITSContext, type: string) => {
+  const schemaDef = ctx.featureRegistry.getDoc(type)
+  return schemaDef?.allowCreate === false
+}
+
+
 export const createFieldFactory = (
   namespace: string,
   ctx: ITSContext,
@@ -31,102 +31,71 @@ export const createFieldFactory = (
   const defaultLocale = config.localization.defaultLocale
   const allLocales = config.localization.fieldLocales
 
-  // const bla: FieldDefinition = {
-  //   type: 'image'
-  // }
   const runShortcut = (shortcut: I18nRuleShortcut, rule: Rule, fieldName: string) => {
     const vCtx = { t: t.default, fieldName }
-
     switch (shortcut) {
-      case 'requiredDefault':
-        return i18nValidators.requiredDefault(defaultLocale, true, vCtx)(rule)
-      case 'requiredDefaultWarning':
-        return i18nValidators.requiredDefault(defaultLocale, false, vCtx)(rule)
-      case 'requiredAll':
-        return i18nValidators.requiredAll(allLocales, vCtx)(rule)
-      case 'atLeastOne':
-        return i18nValidators.atLeastOneExists(true, vCtx)(rule)
-      case 'atLeastOneWarning':
-        return i18nValidators.atLeastOneExists(false, vCtx)(rule)
+      case 'requiredDefault': return i18nValidators.requiredDefault(defaultLocale, true, vCtx)(rule)
+      case 'requiredDefaultWarning': return i18nValidators.requiredDefault(defaultLocale, false, vCtx)(rule)
+      case 'requiredAll':            return i18nValidators.requiredAll(allLocales, vCtx)(rule)
+      case 'atLeastOne':             return i18nValidators.atLeastOneExists(true, vCtx)(rule)
+      case 'atLeastOneWarning':      return i18nValidators.atLeastOneExists(false, vCtx)(rule)
       default:
-        if (typeof shortcut === 'object') {
-          return i18nValidators.contentLimits(shortcut, vCtx)(rule)
-        }
+        if (typeof shortcut === 'object') return i18nValidators.contentLimits(shortcut, vCtx)(rule)
         return null
     }
   }
 
   return (fieldName, type = 'string', overrides = {}) => {
     let { to, of } = overrides
-    const { input, i18n, validation, ...rest } = overrides
+    const { i18n, validation, ...rest } = overrides
 
-    // remove references to disabled docs
     if (type === 'reference' && Array.isArray(to)) {
-      to = to.filter((tRef) => {
-        const target = tRef as TypeReference
-        const valid = isValidRef(ctx, namespace, target.type, fieldName)
-        return valid
-      })
+      to = to.filter((tRef) => isValidRef(ctx, namespace, (tRef as TypeReference).type, fieldName))
+      if (to.some((tRef) => isNoCreate(ctx, (tRef as TypeReference).type))) {
+        rest.options = { ...(rest.options as object), disableNew: true }
+      }
     }
-    if (type === 'array' && Array.isArray(of)) {
-      of = of.filter((item) => {
-        // 1. Check if the item is an object with a 'type' property
-        if (typeof item !== 'object' || item === null) return true
 
-        // Use a type cast to 'any' locally to perform the check safely
+    if (type === 'array' && Array.isArray(of)) {
+      of = of.reduce<typeof of>((acc, item) => {
+        if (typeof item !== 'object' || item === null) return [...acc, item]
         const itemDef = item as any
 
-        // 2. Handle References inside the array
+        if (itemDef.type === 'block') {
+          fieldTranslators.block({ fieldName, block: itemDef as BlockDefinition })
+          return [...acc, itemDef]
+        }
+
         if (itemDef.type === 'reference' && Array.isArray(itemDef.to)) {
-          // TODO: autotranslate reference titles
-
-          // 'target' was implicitly 'any', so we type it here
-          return itemDef.to.every((target: { type: string }) => {
-            return isValidRef(ctx, namespace, target.type, fieldName)
-            // if (!docDef) {
-            //   console.warn(`Structure Error: Schema type "${target.type}" not found for reference in "${namespace}.${fieldName}".`);
-            //   return false;
-            // } else if (!ctx.featureRegistry.isDocEnabled(target.type)) {
-            //   console.warn(`Structure Error: Schema type "${target.type}" is disabled for reference in "${namespace}.${fieldName}".`);
-            //   return false;
-            // }
-            // return ctx.featureRegistry.isDocEnabled(target.type);
-          })
+          const disableNew = itemDef.to.some((target: { type: string }) =>
+            isNoCreate(ctx, target.type),
+          )
+          const validTargets = itemDef.to.filter((target: { type: string }) =>
+            isValidRef(ctx, namespace, target.type, fieldName),
+          )
+          if (validTargets.length === 0) return acc
+          return [
+            ...acc,
+            {
+              ...itemDef,
+              to: validTargets,
+              ...(disableNew && { options: { ...itemDef.options, disableNew: true } }),
+            },
+          ]
         }
 
-        // 3. Handle Custom Objects or Named Types inside the array
-        // e.g. of: [{ type: 'product' }]
         if (itemDef.type && typeof itemDef.type === 'string') {
-          if (itemDef.type === 'object' || itemDef.type === 'string') return true
-          return isValidRef(ctx, namespace, itemDef.type, fieldName)
+          if (itemDef.type === 'object' || itemDef.type === 'string') return [...acc, item]
+          if (!isValidRef(ctx, namespace, itemDef.type, fieldName)) return acc
         }
 
-        return true // Keep standard types like 'string', 'number', etc.
-
-        // const schemaDef = item as SchemaTypeDefinition;
-        // // If the array item is a reference, check its 'to' target
-        // if (schemaDef.type === 'reference' && Array.isArray(schemaDef.to)) {
-        //   return item.to.every(target => ctx.featureRegistry.isDocEnabled(target.type));
-        // }
-        // return true; // Keep non-reference items (or add logic for custom objects)
-      })
-    }
-
-    //input
-    if (type === 'array' && input && input.of && Array.isArray(input.of)) {
-      const ofs = input.of as any[]
-      ofs.forEach((item) => {
-        if (item.type === 'block') {
-          const block = item as BlockDefinition
-          fieldTranslators.block({ fieldName, block })
-        }
-      })
+        return [...acc, item]
+      }, [])
     }
 
     if (type === 'string' && rest.options) {
       const ops = rest.options as any
       if (ops.list && Array.isArray(ops.list)) {
-        // find title if not already set
         ops.list.forEach((option: { title?: string; value: string }) => {
           option.title = option.title || fieldTranslators.option({ fieldName, value: option.value })
         })
@@ -140,7 +109,7 @@ export const createFieldFactory = (
       rest.description ||
       fieldTranslators.strict({ fieldGroup: 'fields', fieldName, attribute: 'description' })
 
-    const field = defineField({
+    return defineField({
       name: fieldName,
       type: ctx.i18nFieldTypes[type] || type,
       title,
@@ -160,10 +129,7 @@ export const createFieldFactory = (
       ...rest,
       ...(to && { to }),
       ...(of && { of }),
-      ...(input && { ...input }),
     })
-
-    return field
   }
 }
 
@@ -172,21 +138,9 @@ export const createFactory = (namespace: string, ctx: ITSContext): CoreFactory =
   const f = createFieldFactory(namespace, ctx, fieldTranslators)
 
   const extendField = <T extends FieldDefinition>(field: T): T => {
-    const title = fieldTranslators.default({
-      fieldGroup: 'fields',
-      fieldName: field.name,
-      attribute: 'title',
-    })
-    const description = fieldTranslators.default({
-      fieldGroup: 'fields',
-      fieldName: field.name,
-      attribute: 'description',
-    })
-    return {
-      title,
-      ...(description && { description }),
-      ...field,
-    }
+    const title = fieldTranslators.default({ fieldGroup: 'fields', fieldName: field.name, attribute: 'title' })
+    const description = fieldTranslators.default({ fieldGroup: 'fields', fieldName: field.name, attribute: 'description' })
+    return { title, ...(description && { description }), ...field }
   }
 
   return {
@@ -194,35 +148,8 @@ export const createFactory = (namespace: string, ctx: ITSContext): CoreFactory =
     fieldTranslators,
     reference: (name, options) => {
       const toArray = Array.isArray(options.to) ? options.to : [options.to]
-
-      const filteredTo = toArray.filter((t) => {
-        return isValidRef(ctx, namespace, t.type, name)
-      })
-
-      return extendField(
-        defineField({
-          type: 'reference',
-          name,
-          ...options,
-          to: filteredTo,
-        }),
-      )
+      const filteredTo = toArray.filter((t) => isValidRef(ctx, namespace, t.type, name))
+      return extendField(defineField({ type: 'reference', name, ...options, to: filteredTo }))
     },
-    // array: (name, options) => {
-    //   const filteredOf = options.of.filter((item) => {
-    //     if (typeof item !== 'object' || item === null) return true;
-
-    //     // return isValidRef(ctx, namespace, t.type, name);
-    //     if (item.type === 'reference') {
-    //       const to = Array.isArray(item.to) ? item.to : [item.to];
-    //     }
-    //   });
-    //   return extendField(defineField({
-    //     type: 'array',
-    //     name,
-    //     ...options,
-    //     // of: filteredOf,
-    //   }))
-    // }
   }
 }

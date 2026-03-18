@@ -1,6 +1,5 @@
 import { ITSSchemaDefinition } from '../types'
 import { hero } from './modules/hero'
-import { portableText } from './modules/portableText'
 import { address } from './objects/address'
 import { addressStrict } from './objects/addressStrict'
 import { bankAccount } from './objects/bankAccount'
@@ -9,7 +8,7 @@ import { bundleItem } from './objects/bundleItem'
 import { carousel } from './objects/carousel'
 import { company } from './objects/company'
 import { cropImage } from './objects/cropImage'
-// import { internalLink } from './objects/internalLink'
+import { internalLink } from './objects/internalLink'
 import { localeAltImage } from './objects/localeAltImage'
 import { localeImage } from './objects/localeImage'
 import { menuItem } from './objects/menuItem'
@@ -25,7 +24,6 @@ import { vatBreakdownItem } from './objects/orders/vatBreakdownItem'
 import { seo } from './objects/seo'
 import { shippingRate } from './objects/shippingRate'
 import { taxRule } from './objects/taxRule'
-import { textBlock } from './objects/textBlock'
 import { wine } from './objects/wine'
 import { youtube } from './objects/youtube'
 
@@ -39,6 +37,7 @@ export const getCoreObjects = (
     baseImage,
     bundleItem,
     carousel,
+    internalLink,
     company,
     cropImage,
     fulfillment,
@@ -53,11 +52,9 @@ export const getCoreObjects = (
     orderItemWine,
     orderStatusHistory,
     orderTotals,
-    portableText,
     seo,
     shippingRate,
     taxRule,
-    textBlock,
     vatBreakdownItem,
     wine,
     youtube,

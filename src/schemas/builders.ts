@@ -171,46 +171,28 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     //     // }
     //   };
     // },
+    variantReference: (options = {}) => {
+      const name = options.name || 'products'
+      const variantTo = [{ type: 'productVariant' }]
+      const variantOptions = { disableNew: true, filter: 'status != "archived"' }
 
-    // annotation: () => {
-    //   return {
-    //     type: 'annotation',
-    //   }
-    // },
-    /**
-     * PORTABLE TEXT BUILDER
-     * Context-aware text editor configuration.
-     */
-    portableText: (options = {}) => {
-      return {
-        of: [
-          {
-            type: 'block',
-            styles: options.styles?.map((s) => ({ title: s, value: s })) || [
-              { title: 'Normal', value: 'normal' },
-              { title: 'H2', value: 'h2' },
-              { title: 'H3', value: 'h3' },
-            ],
-            marks: {
-              annotations: options.allowLinks
-                ? [
-                    {
-                      name: 'internalLink',
-                      type: 'object',
-                      // Recursively call the link builder!
-                      fields: createBuilders(factory, ctx).internalLinkFields({
-                        includeDisplayType: true,
-                      }),
-                    },
-                  ]
-                : [],
-            },
-          },
-          // f('image', 'baseImage')
-          { type: 'image', title: 'bidlle' },
-        ],
+      if (options.multiple) {
+        return f(name, 'array', {
+          of: [{ type: 'reference', to: variantTo, options: variantOptions }],
+        })
       }
+
+      return f(name, 'reference', { to: variantTo, options: variantOptions })
     },
+
+    variantReferenceMember: (options = {}) => ({
+      name: options.name || 'variantLink',
+      type: 'reference' as const,
+      ...(options.icon && { icon: options.icon }),
+      to: [{ type: 'productVariant' }],
+      options: { disableNew: true, filter: 'status != "archived"' },
+    }),
+
     actionGroup: (options = {}) => {
       const name = options.name || 'actions'
 
@@ -227,7 +209,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             // Preview so the editor sees the label in the list
             preview: {
               select: { title: 'label' },
-              prepare({ title }) {
+              prepare({ title }: any) {
                 return { title: ctx.localizer.value(title) || 'Untitled Action' }
               },
             },
