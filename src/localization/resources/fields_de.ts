@@ -311,6 +311,13 @@ export default {
       variants_other: '{{count}} Varianten',
     },
   },
+  productGrid: {
+    title: 'Produktraster',
+    fields: {
+      title: { title: 'Titel' },
+      products: { title: 'Produkte' },
+    },
+  },
   productVariant: {
     title: 'Produktvariante',
     fields: {
@@ -1179,6 +1186,13 @@ export default {
         title: 'Kategorie',
         description: 'Wenn keine Kategorie ausgewählt wird, werden alle Hauptkategorien angezeigt.',
       },
+    },
+  },
+  categoryGrid: {
+    title: 'Kategorieraster',
+    fields: {
+      title: { title: 'Titel' },
+      categories: { title: 'Kategorien' },
     },
   },
   carousel: {

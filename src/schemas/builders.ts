@@ -321,6 +321,15 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
         ...(of && { of }),
       })
     },
+    coreModules: (names) => {
+      return names
+        .filter((name) => {
+          const feature = ctx.featureRegistry.getSchema(name)?.feature
+          return !feature || ctx.featureRegistry.isFeatureEnabled(feature)
+        })
+        .map((name) => ({ type: name }))
+    },
+
     buildGroupedSchema: (props) => {
       const groups = props.map((item, index) => ({
         name: item.name,

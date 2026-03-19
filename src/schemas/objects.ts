@@ -1,4 +1,6 @@
 import { ITSSchemaDefinition } from '../types'
+import { categoryGrid } from './modules/categoryGrid'
+import { productGrid } from './modules/productGrid'
 import { address } from './objects/address'
 import { addressStrict } from './objects/addressStrict'
 import { bankAccount } from './objects/bankAccount'
@@ -36,6 +38,8 @@ export const getCoreObjects = (
     baseImage,
     bundleItem,
     carousel,
+    categoryGrid,
+    productGrid,
     internalLink,
     company,
     cropImage,

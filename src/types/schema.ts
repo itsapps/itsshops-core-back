@@ -196,6 +196,8 @@ export interface ITSVariantReferenceMemberOptions {
   icon?: ComponentType
 }
 
+export type CoreModuleName = 'carousel' | 'youtube' | 'productGrid' | 'categoryGrid'
+
 export interface ITSBuilders {
   externalLinkFields: (options?: ITSExternalLinkOptions) => FieldDefinition[]
   internalLinkFields: (options?: ITSInternalLinkOptions) => FieldDefinition[]
@@ -217,4 +219,10 @@ export interface ITSBuilders {
   priceField: (options: PriceOptions) => FieldDefinition<'number'>
   defineArrayField(props: Omit<ArrayDefinition, 'type'>): ArrayDefinition
   buildGroupedSchema: (props: GroupFieldsInput[]) => GroupFieldsOutput
+  /**
+   * Returns `ArrayOfType[]` for the requested core module names.
+   * Feature-gated modules (productGrid, categoryGrid) are silently omitted
+   * when the required feature is not enabled.
+   */
+  coreModules: (names: CoreModuleName[]) => ArrayOfType[]
 }

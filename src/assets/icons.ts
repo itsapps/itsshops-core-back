@@ -44,6 +44,7 @@ import {
   PiQuestion,
   PiRocketLaunch,
   PiSlidersHorizontal,
+  PiSquaresFour,
   PiStack,
   PiStar,
   PiTruck,
@@ -60,6 +61,7 @@ export const ArrowUDownLeftIcon = PiArrowUDownLeft
 export const ArticleIcon = PiArticle
 export const BundleItemIcon = Package
 export const CarouselIcon = PiImages
+export const CategoryGridIcon = PiSquaresFour
 export const CategoryIcon = Schema
 export const CheckIcon = PiCheck
 export const CircleIcon = PiCircle
@@ -88,6 +90,7 @@ export const OrderStatusHistoryIcon = Package
 export const OrderTotalsIcon = PiCalculator
 export const PackageIcon = PiPackage
 export const PageIcon = Document
+export const ProductGridIcon = PiSquaresFour
 export const ProductIcon = PiCube
 export const ProductKindBundleIcon = PiStack
 export const ProductKindDigitalIcon = PiDownloadSimple

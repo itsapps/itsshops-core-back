@@ -69,6 +69,13 @@ export default {
       ...productAndVariantFields,
     },
   },
+  productGrid: {
+    title: 'Product Grid',
+    fields: {
+      title: { title: 'Title' },
+      products: { title: 'Products' },
+    },
+  },
   productVariant: {
     title: 'Product Variant',
     fields: {
@@ -874,6 +881,13 @@ export default {
     category: {
       title: 'Category',
       description: 'If no category is selected, all main categories will be shown.',
+    },
+  },
+  categoryGrid: {
+    title: 'Category Grid',
+    fields: {
+      title: { title: 'Title' },
+      categories: { title: 'Categories' },
     },
   },
   carousel: {
