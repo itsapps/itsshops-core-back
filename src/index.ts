@@ -46,7 +46,7 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
         languageDisplay: 'titleOnly',
       }),
       structureTool(createStructureTool(context)),
-      visionTool(),
+      ...(context.config.isDev ? [visionTool()] : []),
       media(),
       presentationTool(presentationOptions),
       ...getTranslationPackage(context.locale),

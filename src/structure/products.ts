@@ -86,7 +86,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
                   .apiVersion(apiVersion)
                   .filter('_type == "product" && kind == $kind')
                   .params({ kind })
-                  .child(getProductSimpleChildView),
+                  .child(getProductChildView),
               ),
           ),
         ]),

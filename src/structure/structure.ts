@@ -291,42 +291,39 @@ export const getProductReferenceView = (S: StructureBuilder, title: string, newT
     //   }
     // })
     .options({
-      query: `*[ _type == "productVariant" && product._ref == $id ] | order(volume asc)`,
+      query: `*[ _type == "productVariant" && product._ref == $id ] | order(_updatedAt asc)`,
       params: { id: '_id' },
       // options: {
       //   perspective: 'raw',
       // },
       useDraft: false,
-      initialValueTemplates: ({ document }: any) => {
-        const templates = []
+      // initialValueTemplates: ({ document }: any) => {
+      //   const templates = []
 
-        // references must point to a non-draft ID, so if using the ID in the template,
-        // be sure it doesn't start with `drafts.`
-        const id = document?.displayed?._id.replace('drafts.', '')
-        const kind = document?.displayed?.kind || 'wine'
+      //   // references must point to a non-draft ID, so if using the ID in the template,
+      //   // be sure it doesn't start with `drafts.`
+      //   const id = document?.displayed?._id.replace('drafts.', '')
+      //   const kind = document?.displayed?.kind || 'wine'
 
-        if (id) {
-          templates.push({
-            // the name of the schema type that should be created (required)
-            schemaType: 'productVariant',
-            // the title that should appear on the button - we can customize it (required)
-            title: newTitle,
-            // the name of the template that should be used (optional)
-            template: 'product-variant-with-parent',
-            // values for parameters that can be passed to the template referenced above (optional)
-            parameters: {
-              productId: id,
-              kind,
-              ...(kind === 'wine' && { volume: 750 }),
-            },
-          })
+      //   if (id) {
+      //     templates.push({
+      //       // the name of the schema type that should be created (required)
+      //       schemaType: 'productVariant',
+      //       // the title that should appear on the button - we can customize it (required)
+      //       title: newTitle,
+      //       // the name of the template that should be used (optional)
+      //       template: 'product-variant-with-parent',
+      //       // values for parameters that can be passed to the template referenced above (optional)
+      //       parameters: {
+      //         productId: id,
+      //         kind,
+      //         ...(kind === 'wine' && { volume: 750 }),
+      //       },
+      //     })
+      //   }
 
-          // we could push more templates if needed.
-        }
-
-        // must always return a list, even if empty
-        return templates
-      },
+      //   return templates
+      // },
       // initialValueTemplates: [
       //   {
       //     template: 'product-variant-with-parent',
