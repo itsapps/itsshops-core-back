@@ -1,5 +1,4 @@
 import { ITSSchemaDefinition } from '../types'
-import { hero } from './modules/hero'
 import { address } from './objects/address'
 import { addressStrict } from './objects/addressStrict'
 import { bankAccount } from './objects/bankAccount'
@@ -41,7 +40,6 @@ export const getCoreObjects = (
     company,
     cropImage,
     fulfillment,
-    hero,
     localeAltImage,
     localeImage,
     menuItem,

@@ -805,33 +805,6 @@ export default {
       },
     },
   },
-  hero: {
-    title: 'Hero',
-    preview: {
-      actions_one: '{{count}} Verlinkung',
-      actions_other: '{{count}} Verlinkungen',
-    },
-    fields: {
-      title: {
-        title: 'Überschrift',
-      },
-      bgImage: {
-        title: 'Hintergrundbild',
-      },
-      actions: {
-        title: 'Interne Verlinkungen',
-      },
-      actionTitle: {
-        title: 'Titel',
-      },
-      actionReference: {
-        title: 'Referenz',
-      },
-      actionDisplayType: {
-        title: 'Anzeigetyp',
-      },
-    },
-  },
   link: {
     title: 'Link',
     fields: {
@@ -910,14 +883,6 @@ export default {
       },
       translations: {
         title: 'Übersetzungen',
-      },
-    },
-  },
-  customImage: {
-    title: 'Bild',
-    fields: {
-      altText: {
-        title: 'Alternativer Text',
       },
     },
   },

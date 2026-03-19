@@ -427,21 +427,6 @@ export default {
       title: 'Posts per Page',
     },
   },
-  hero: {
-    schemaTitle: 'Hero',
-    headline: {
-      title: 'Headline',
-    },
-    image: {
-      title: 'Image',
-    },
-    backgroundImage: {
-      title: 'Background Image',
-    },
-    actions: {
-      title: 'Internal Links',
-    },
-  },
   link: {
     schemaTitle: 'Link',
     href: {
@@ -525,15 +510,6 @@ export default {
     annotations: {
       link: 'Link',
       internalLink: 'Internal Link',
-    },
-  },
-  customImage: {
-    schemaTitle: 'Image',
-    title: {
-      title: 'Title',
-    },
-    altText: {
-      title: 'Alternative Text',
     },
   },
   menu: {

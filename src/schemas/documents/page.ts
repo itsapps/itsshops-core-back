@@ -19,7 +19,6 @@ export const page: ITSDocumentDefinition = {
         // f('textili', 'portableText'),
         // f('modules', 'array', {
         //   of: [
-        //     { type: 'hero' },
         //     // { type: 'portableText' },
         //     { type: 'textBlock' },
         //     // { type: 'textModule' },
