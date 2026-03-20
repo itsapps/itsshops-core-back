@@ -582,6 +582,15 @@ export default {
       address: {
         title: 'Adresse',
       },
+      email: {
+        title: 'E-Mail',
+      },
+      phone: {
+        title: 'Telefon',
+      },
+      vatId: {
+        title: 'UID-Nummer',
+      },
     },
   },
   taxRule: {
@@ -621,6 +630,10 @@ export default {
         title: 'Voller Name',
       },
     },
+  },
+  businessAddress: {
+    title: 'Adresse',
+    fields: {},
   },
   orderTotals: {
     title: 'Kosten',

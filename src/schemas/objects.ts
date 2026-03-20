@@ -4,6 +4,7 @@ import { productGrid } from './modules/productGrid'
 import { address } from './objects/address'
 import { addressStrict } from './objects/addressStrict'
 import { bankAccount } from './objects/bankAccount'
+import { businessAddress } from './objects/businessAddress'
 import { baseImage } from './objects/baseImage'
 import { bundleItem } from './objects/bundleItem'
 import { carousel } from './objects/carousel'
@@ -35,6 +36,7 @@ export const getCoreObjects = (
     address,
     addressStrict,
     bankAccount,
+    businessAddress,
     baseImage,
     bundleItem,
     carousel,
