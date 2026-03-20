@@ -14,7 +14,18 @@ export default defineConfig({
   // },
 
   babel: {
-    styledComponents: true, 
+    styledComponents: true,
+  },
+
+  rollup: {
+    plugins: [
+      {
+        name: 'silence-use-client',
+        onLog(_level: any, log: any) {
+          if (log.code === 'MODULE_LEVEL_DIRECTIVE') return false
+        },
+      },
+    ],
   },
 
   // Remove this block to enable strict export validation
