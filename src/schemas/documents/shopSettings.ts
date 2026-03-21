@@ -52,7 +52,7 @@ export const shopSettings: ITSDocumentDefinition = {
           initialValue: 0,
         }),
       ],
-      billing: [f('billingAddress', 'businessAddress'), f('billing', 'billing')],
+      billing: [f('billingAddress', 'businessAddress'), f('bankAccount', 'bankAccount')],
     }
     const fields = groups
       .map(({ name }) => [...fieldsMap[name].map((field) => ({ ...field, group: name }))])
