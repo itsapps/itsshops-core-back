@@ -524,6 +524,10 @@ export default {
         description:
           'Erhalte eine Benachrichtigung mit dem Lagerbestand eines Produktes unter diesem Limit.',
       },
+      billingAddress: {
+        title: 'Rechnungsadresse',
+        description: 'Falls abweichend von der Unternehmensadresse',
+      },
       bankAccount: {
         title: 'Bankdaten',
         description: 'Werden für Rechnungen verwendet',
@@ -552,7 +556,7 @@ export default {
       stock: 'Lagerbestand',
       tax: 'Steuern',
       orders: 'Bestellungen',
-      bankAccount: 'Bankdaten',
+      billing: 'Abrechnung',
     },
     preview: {},
   },

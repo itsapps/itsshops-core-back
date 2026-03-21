@@ -10,7 +10,7 @@ export const shopSettings: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f } = ctx
 
-    const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'bankAccount'].map(
+    const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'billing'].map(
       (name, index) => ({
         name,
         ...(index === 0 && { default: true }),
@@ -52,7 +52,7 @@ export const shopSettings: ITSDocumentDefinition = {
           initialValue: 0,
         }),
       ],
-      bankAccount: [f('bankAccount', 'bankAccount')],
+      billing: [f('billingAddress', 'businessAddress'), f('billing', 'billing')],
     }
     const fields = groups
       .map(({ name }) => [...fieldsMap[name].map((field) => ({ ...field, group: name }))])
