@@ -255,6 +255,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
             </Text>
           )} */}
           <FormField
+            path={wineIdMember?.field.path ?? []}
             title={wineIdMember?.field.schemaType.title}
             description={wineIdMember?.field.schemaType.description}
             validation={wineIdMember?.field.validation} // This renders the red error text below the input
