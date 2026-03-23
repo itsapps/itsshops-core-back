@@ -10,6 +10,9 @@ export const category: ITSDocumentDefinition = {
   build: (ctx) => {
     const {
       f,
+      t,
+      featureRegistry,
+      builders,
       config: { apiVersion },
     } = ctx
     return {
@@ -72,6 +75,7 @@ export const category: ITSDocumentDefinition = {
             }),
         }),
         f('image', 'localeImage'),
+        ...builders.filterField(),
         f('seo', 'seo'),
       ],
       preview: {

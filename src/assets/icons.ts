@@ -91,6 +91,7 @@ export const OrderTotalsIcon = PiCalculator
 export const PackageIcon = PiPackage
 export const PageIcon = Document
 export const ProductGridIcon = PiSquaresFour
+export const ProductListIcon = PiSlidersHorizontal
 export const ProductIcon = PiCube
 export const ProductKindBundleIcon = PiStack
 export const ProductKindDigitalIcon = PiDownloadSimple

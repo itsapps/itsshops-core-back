@@ -1,5 +1,12 @@
 import type { ComponentType } from 'react'
-import { NoteIcon, OrderIcon, PackageIcon, TruckIcon, VatBreakdownIcon, WebsiteIcon } from '../../assets/icons'
+import {
+  NoteIcon,
+  OrderIcon,
+  PackageIcon,
+  TruckIcon,
+  VatBreakdownIcon,
+  WebsiteIcon,
+} from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const shopSettings: ITSDocumentDefinition = {

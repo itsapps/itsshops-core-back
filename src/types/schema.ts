@@ -196,7 +196,7 @@ export interface ITSVariantReferenceMemberOptions {
   icon?: ComponentType
 }
 
-export type CoreModuleName = 'carousel' | 'youtube' | 'productGrid' | 'categoryGrid'
+export type CoreModuleName = 'carousel' | 'youtube' | 'productGrid' | 'categoryGrid' | 'productList'
 
 export interface ITSBuilders {
   externalLinkFields: (options?: ITSExternalLinkOptions) => FieldDefinition[]
@@ -225,4 +225,5 @@ export interface ITSBuilders {
    * when the required feature is not enabled.
    */
   coreModules: (names: CoreModuleName[]) => ArrayOfType[]
+  filterField: () => FieldDefinition[]
 }

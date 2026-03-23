@@ -1,5 +1,5 @@
 import { defineField, isReference } from 'sanity'
-
+import { WineIcon } from '../assets/icons'
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
 
@@ -345,6 +345,75 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       )
 
       return { groups, fields }
+    },
+    filterField: () => {
+      const hasWine = ctx.featureRegistry.isFeatureEnabled('shop.productKind.wine')
+      const hasOptions = ctx.featureRegistry.isFeatureEnabled('shop.productKind.options')
+
+      const wft = (key: string) => ctx.t.strict(`productList.wineFieldFilter.${key}`)
+
+      const of = [
+        ...(hasWine
+          ? [
+              {
+                type: 'object' as const,
+                name: 'wineFieldFilter',
+                title: wft('title') || 'Wine Field Filter',
+                icon: WineIcon,
+                fields: [
+                  {
+                    name: 'field',
+                    type: 'string',
+                    title: wft('fields.field.title') || 'Field',
+                    options: {
+                      list: [
+                        {
+                          value: 'vintage',
+                          title: wft('fields.field.options.vintage') || 'Vintage',
+                        },
+                        {
+                          value: 'varietal',
+                          title: wft('fields.field.options.varietal') || 'Varietal',
+                        },
+                        { value: 'color', title: wft('fields.field.options.color') || 'Color' },
+                        {
+                          value: 'classification',
+                          title: wft('fields.field.options.classification') || 'Classification',
+                        },
+                      ],
+                      layout: 'radio',
+                      direction: 'horizontal',
+                    },
+                    validation: (rule: any) => rule.required(),
+                  },
+                ],
+                preview: {
+                  select: {
+                    field: 'field',
+                  },
+                  prepare({ field }: any) {
+                    return {
+                      title: wft(`fields.field.options.${field}`) || '—',
+                    }
+                  },
+                },
+              },
+            ]
+          : []),
+        ...(hasOptions
+          ? [
+              {
+                type: 'reference' as const,
+                to: [{ type: 'variantOptionGroup' }],
+                title: ctx.schemaT.strict('variantOptionGroup.title') || 'Option Group',
+                options: { disableNew: true },
+              },
+            ]
+          : []),
+      ]
+
+      if (!of.length) return []
+      return [f('filters', 'array', { of })]
     },
   }
 }

@@ -76,6 +76,27 @@ export default {
       products: { title: 'Products' },
     },
   },
+  productList: {
+    title: 'Product List',
+    fields: {
+      title: { title: 'Title' },
+      filters: { title: 'Filters' },
+    },
+    wineFieldFilter: {
+      title: 'Wine Field Filter',
+      fields: {
+        field: {
+          title: 'Field',
+          options: {
+            vintage: 'Vintage',
+            varietal: 'Varietal',
+            color: 'Color',
+            classification: 'Classification',
+          },
+        },
+      },
+    },
+  },
   productVariant: {
     title: 'Product Variant',
     fields: {
@@ -118,6 +139,9 @@ export default {
     },
     image: {
       title: 'Image',
+    },
+    filters: {
+      title: 'Filters',
     },
   },
   manufacturer: {

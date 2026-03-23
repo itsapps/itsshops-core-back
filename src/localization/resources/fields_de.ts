@@ -318,6 +318,32 @@ export default {
       products: { title: 'Produkte' },
     },
   },
+  productList: {
+    title: 'Produktliste',
+    fields: {
+      title: { title: 'Titel' },
+      filters: { title: 'Filter' },
+    },
+    wineFieldFilter: {
+      title: 'Wein-Filter',
+      fields: {
+        field: {
+          title: 'Feld',
+          options: {
+            vintage: 'Jahrgang',
+            varietal: 'Rebsorte',
+            color: 'Farbe',
+            classification: 'Klassifikation',
+          },
+        },
+      },
+    },
+    preview: {
+      filter: 'Filter',
+      filters_zero: 'Keine Filter',
+      filters_other: '{{count}} Filter',
+    },
+  },
   productVariant: {
     title: 'Produktvariante',
     fields: {
@@ -412,6 +438,7 @@ export default {
         title: 'Reihenfolge',
         description: 'Umso niedriger die Zahl, desto höher die Kategorie in der Navigation',
       },
+      filters: { title: 'Filter' },
     },
   },
   manufacturer: {

@@ -10,7 +10,9 @@ const isValidRef = (ctx: ITSContext, namespace: string, type: string, fieldName:
   if (SANITY_INTERNAL_TYPES.includes(type)) return true
   const schemaDef = ctx.featureRegistry.getSchema(type)
   if (!schemaDef) {
-    console.warn(`Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`)
+    console.warn(
+      `Structure Error: Schema type "${type}" not found for reference in "${namespace}.${fieldName}".`,
+    )
     return false
   }
   return ctx.featureRegistry.isSchemaEnabled(type)
@@ -20,7 +22,6 @@ const isNoCreate = (ctx: ITSContext, type: string) => {
   const schemaDef = ctx.featureRegistry.getDoc(type)
   return schemaDef?.allowCreate === false
 }
-
 
 export const createFieldFactory = (
   namespace: string,
