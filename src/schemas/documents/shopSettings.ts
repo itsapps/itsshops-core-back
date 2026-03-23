@@ -16,15 +16,15 @@ export const shopSettings: ITSDocumentDefinition = {
   feature: 'shop',
   isSingleton: true,
   build: (ctx) => {
-    const { f } = ctx
+    const { f, builders } = ctx
 
     const groupIcons: Record<string, ComponentType> = {
       displays: WebsiteIcon,
       shipping: TruckIcon,
-      stock:    PackageIcon,
-      tax:      VatBreakdownIcon,
-      orders:   OrderIcon,
-      billing:  NoteIcon,
+      stock: PackageIcon,
+      tax: VatBreakdownIcon,
+      orders: OrderIcon,
+      billing: NoteIcon,
     }
 
     const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'billing'].map(
@@ -40,6 +40,7 @@ export const shopSettings: ITSDocumentDefinition = {
         f('shopPage', 'reference', {
           to: [{ type: 'page' }],
         }),
+        ...builders.filterField(),
       ],
       shipping: [
         f('defaultCountry', 'reference', {

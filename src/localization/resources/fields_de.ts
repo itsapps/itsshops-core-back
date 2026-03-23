@@ -532,6 +532,7 @@ export default {
   shopSettings: {
     title: 'Allgemeine Shop-Einstellungen',
     fields: {
+      filters: { title: 'Globale Filter' },
       defaultCountry: {
         title: 'Standard Land',
         description: 'Welches Land soll beim Checkout standardmäßig verwendet werden?',

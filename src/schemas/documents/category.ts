@@ -10,8 +10,6 @@ export const category: ITSDocumentDefinition = {
   build: (ctx) => {
     const {
       f,
-      t,
-      featureRegistry,
       builders,
       config: { apiVersion },
     } = ctx
@@ -24,31 +22,6 @@ export const category: ITSDocumentDefinition = {
           initialValue: 0,
           validation: (rule) => rule.required().positive(),
         }),
-        // factory.reference('parent', {
-        //   to: { type: 'category' },
-        //   options: { disableNew: true },
-        //   validation: (rule) =>
-        //     rule.custom((parent, context) => {
-        //       // parent = the selected parent ref
-        //       // context.document = the category being edited
-
-        //       // If parent is empty → this is a main category → always allowed
-        //       if (!parent) return true
-
-        //       // Count how many categories have no parent
-        //       return context
-        //         .getClient({ apiVersion })
-        //         .fetch('count(*[_type == "category" && !defined(parent) && _id != $id])', {
-        //           id: context.document?._id,
-        //         })
-        //         .then((mainCount) => {
-        //           if (mainCount === 0) {
-        //             return 'At least one category must remain a main category (without a parent).'
-        //           }
-        //           return true
-        //         })
-        //     }),
-        // }),
         f('parent', 'reference', {
           to: [{ type: 'category' }],
           options: { disableNew: true },
