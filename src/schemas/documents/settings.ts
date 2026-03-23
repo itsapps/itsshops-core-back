@@ -1,4 +1,4 @@
-import { SettingsIcon } from '../../assets/icons'
+import { MenuIcon, SearchIcon, SettingsIcon, UserIcon, WebsiteIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const settings: ITSDocumentDefinition = {
@@ -11,15 +11,16 @@ export const settings: ITSDocumentDefinition = {
     return ctx.builders.buildGroupedSchema([
       {
         name: 'site',
-        icon: SettingsIcon,
+        icon: WebsiteIcon,
         fields: [
           f('siteTitle', 'i18nString'),
           f('siteShortDescription', 'i18nString'),
-          f('siteDescription', 'i18nText'),
+          f('defaultShareImage', 'image'),
         ],
       },
       {
         name: 'displays',
+        icon: MenuIcon,
         fields: [
           f('homePage', 'reference', {
             to: [{ type: 'page' }],
@@ -37,10 +38,12 @@ export const settings: ITSDocumentDefinition = {
       },
       {
         name: 'analytics',
+        icon: SearchIcon,
         fields: [f('gtmId', 'string')],
       },
       {
         name: 'company',
+        icon: UserIcon,
         fields: [f('company', 'company')],
       },
     ])

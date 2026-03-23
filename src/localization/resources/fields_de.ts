@@ -961,15 +961,15 @@ export default {
     fields: {
       siteTitle: {
         title: 'Seitentitel',
-        description: 'Name deiner Seite, normalerweise dein Brand- oder Firmenname',
-      },
-      siteDescription: {
-        title: 'Beschreibung',
-        description: 'Beschreibung deiner Seite.',
+        description: 'Name deiner Seite, normalerweise dein Brand- oder Firmenname. Wird im Browser-Tab, in Social-Media-Vorschauen und im Web-App-Manifest verwendet.',
       },
       siteShortDescription: {
         title: 'Kurzbeschreibung',
-        description: 'Kurzbeschreibung deiner Seite.',
+        description: 'Wird als Meta-Description in Suchergebnissen verwendet, wenn keine seitenspezifische SEO-Beschreibung gesetzt ist.',
+      },
+      defaultShareImage: {
+        title: 'Standard-Vorschaubild',
+        description: 'Wird in Social-Media-Vorschauen (og:image) verwendet, wenn weder ein seitenspezifisches SEO-Bild noch ein Seitenbild vorhanden ist. Empfohlene Größe: 1200×630px.',
       },
       homePage: {
         title: 'Startseite',

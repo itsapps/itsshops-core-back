@@ -558,15 +558,15 @@ export default {
       },
       siteTitle: {
         title: 'Site Title',
-        description: 'The name of your site, usually your company/brand name',
-      },
-      siteDescription: {
-        title: 'Description',
-        description: 'The description of your site.',
+        description: 'The name of your site, usually your company/brand name. Used in the browser tab, social media previews, and the web app manifest.',
       },
       siteShortDescription: {
         title: 'Short Description',
-        description: 'A short description of your site.',
+        description: 'Used as the meta description in search results when no page-specific SEO description is set.',
+      },
+      defaultShareImage: {
+        title: 'Default Share Image',
+        description: 'Used in social media previews (og:image) when no page-specific SEO image or page image is available. Recommended size: 1200×630px.',
       },
       companyName: {
         title: 'Company Name',

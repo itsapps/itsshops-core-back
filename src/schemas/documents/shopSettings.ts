@@ -1,4 +1,5 @@
-import { PackageIcon } from '../../assets/icons'
+import type { ComponentType } from 'react'
+import { NoteIcon, OrderIcon, PackageIcon, TruckIcon, VatBreakdownIcon, WebsiteIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const shopSettings: ITSDocumentDefinition = {
@@ -10,9 +11,19 @@ export const shopSettings: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f } = ctx
 
+    const groupIcons: Record<string, ComponentType> = {
+      displays: WebsiteIcon,
+      shipping: TruckIcon,
+      stock:    PackageIcon,
+      tax:      VatBreakdownIcon,
+      orders:   OrderIcon,
+      billing:  NoteIcon,
+    }
+
     const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'billing'].map(
       (name, index) => ({
         name,
+        icon: groupIcons[name],
         ...(index === 0 && { default: true }),
       }),
     )
