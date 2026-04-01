@@ -4,6 +4,20 @@ import type { ITSStructureComponent } from '../types'
 export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
   const apiVersion = ctx.config.apiVersion
   const t = ctx.structureT.default
+  const hasSubcategories = ctx.featureRegistry.isFeatureEnabled('shop.category.subcategories')
+
+  if (!hasSubcategories) {
+    return S.listItem()
+      .title(t('categories.title'))
+      .icon(CategoryIcon)
+      .child(
+        S.documentTypeList('category')
+          .title(t('categories.title'))
+          .apiVersion(apiVersion)
+          .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }]),
+      )
+  }
+
   const tSchema = ctx.schemaT
   const client = context.getClient({ apiVersion })
 

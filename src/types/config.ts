@@ -50,7 +50,7 @@ export interface FeatureConfig {
     enabled: boolean
     manufacturer?: boolean
     stock?: boolean
-    category?: boolean
+    category?: boolean | { subcategories?: boolean }
     vinofact?: VinofactConfig
   }>
   blog?: boolean

@@ -10,11 +10,15 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
   // const allObjs: ITSObjectDefinition[] = objects.filter(obj => obj.type === 'object');
 
   const shopEnabled = !!config.features.shop?.enabled
+  const categoryConfig = config.features.shop?.category
+  const categoryEnabled = shopEnabled && !!categoryConfig
+  const subcategoriesEnabled = categoryEnabled && typeof categoryConfig === 'object' && !!(categoryConfig as Record<string, unknown>).subcategories
   const featureMap: Record<ITSFeatureKey, boolean> = {
     shop: shopEnabled,
     'shop.manufacturer': shopEnabled && !!config.features.shop?.manufacturer,
     'shop.stock': shopEnabled && !!config.features.shop?.stock,
-    'shop.category': shopEnabled && !!config.features.shop?.category,
+    'shop.category': categoryEnabled,
+    'shop.category.subcategories': subcategoriesEnabled,
     'shop.vinofact': shopEnabled && !!config.features.shop?.vinofact?.enabled,
     'shop.productKind.wine': shopEnabled && config.schemaSettings.productKinds.includes('wine'),
     'shop.productKind.physical':

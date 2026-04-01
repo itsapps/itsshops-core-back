@@ -80,7 +80,7 @@ export function actionResolver(
   if (isEnabledSchema(context.schemaType, 'product', 'shop')) {
     actions.push(AddVariantsAction)
   }
-  if (isEnabledSchema(context.schemaType, 'category', 'shop.category')) {
+  if (isEnabledSchema(context.schemaType, 'category', 'shop.category.subcategories')) {
     const action = prev.find((props) => props.action === 'delete')
     if (action) {
       const query = `count(*[_type == "category" && parent._ref == $id]) > 0`

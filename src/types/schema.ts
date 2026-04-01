@@ -29,6 +29,7 @@ export type ITSFeatureKey =
   | 'shop.manufacturer'
   | 'shop.stock'
   | 'shop.category'
+  | 'shop.category.subcategories'
   | 'shop.vinofact'
   | 'shop.productKind.wine'
   | 'shop.productKind.physical'

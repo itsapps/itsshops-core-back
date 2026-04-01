@@ -14,6 +14,8 @@ export const category: ITSDocumentDefinition = {
       config: { apiVersion },
     } = ctx
 
+    const hasSubcategories = ctx.featureRegistry.isFeatureEnabled('shop.category.subcategories')
+
     const groupedData = ctx.builders.buildGroupedSchema([
       {
         name: 'infos',
@@ -25,31 +27,29 @@ export const category: ITSDocumentDefinition = {
             initialValue: 0,
             validation: (rule) => rule.required().positive(),
           }),
-          f('parent', 'reference', {
-            to: [{ type: 'category' }],
-            options: { disableNew: true },
-            validation: (rule) =>
-              rule.custom((parent, context) => {
-                // parent = the selected parent ref
-                // context.document = the category being edited
-
-                // If parent is empty → this is a main category → always allowed
-                if (!parent) return true
-
-                // Count how many categories have no parent
-                return context
-                  .getClient({ apiVersion })
-                  .fetch('count(*[_type == "category" && !defined(parent) && _id != $id])', {
-                    id: context.document?._id,
-                  })
-                  .then((mainCount) => {
-                    if (mainCount === 0) {
-                      return 'At least one category must remain a main category (without a parent).'
-                    }
-                    return true
-                  })
-              }),
-          }),
+          ...(hasSubcategories
+            ? [
+                f('parent', 'reference', {
+                  to: [{ type: 'category' }],
+                  options: { disableNew: true },
+                  validation: (rule) =>
+                    rule.custom((parent, context) => {
+                      if (!parent) return true
+                      return context
+                        .getClient({ apiVersion })
+                        .fetch('count(*[_type == "category" && !defined(parent) && _id != $id])', {
+                          id: context.document?._id,
+                        })
+                        .then((mainCount) => {
+                          if (mainCount === 0) {
+                            return 'At least one category must remain a main category (without a parent).'
+                          }
+                          return true
+                        })
+                    }),
+                }),
+              ]
+            : []),
         ],
       },
       {

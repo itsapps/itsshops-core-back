@@ -4,7 +4,7 @@ import { ITSContext } from '../types'
 
 export function templateResolver(prev: Template[], ctx: ITSContext): Template[] {
   const templates: Template[] = []
-  if (ctx.featureRegistry.isFeatureEnabled('shop.category')) {
+  if (ctx.featureRegistry.isFeatureEnabled('shop.category.subcategories')) {
     const category: Template = {
       id: 'subCategory',
       title: 'Sub-category',
