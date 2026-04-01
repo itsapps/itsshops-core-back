@@ -380,6 +380,10 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
                           value: 'classification',
                           title: wft('fields.field.options.classification') || 'Classification',
                         },
+                        {
+                          value: 'volume',
+                          title: wft('fields.field.options.volume') || 'Volume',
+                        },
                       ],
                       layout: 'radio',
                       direction: 'horizontal',

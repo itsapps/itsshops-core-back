@@ -92,6 +92,7 @@ export default {
             varietal: 'Varietal',
             color: 'Color',
             classification: 'Classification',
+            volume: 'Bottle size',
           },
         },
       },

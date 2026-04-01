@@ -319,24 +319,17 @@ export function WineTab(props: WineTabProps): ReactElement {
     setQueries((prev) => ({ ...prev, [id]: q }))
   }, [])
 
-  // Exclude already-selected wines from other rows' options
-  const selectedWineIds = useMemo(
-    () => new Set(rows.map((r) => r.wine?.id).filter(Boolean)),
-    [rows],
-  )
-
   const optionsPerRow = useMemo(() => {
     return Object.fromEntries(
       rows.map((row) => {
         const q = (queries[row.id] ?? '').toLowerCase()
         const opts = wines
-          .filter((w) => !selectedWineIds.has(w.id) || w.id === row.wine?.id)
           .filter((w) => `${w.title} ${w.year ?? ''}`.toLowerCase().includes(q))
           .map((w): WineOption => ({ value: w.id, payload: w }))
         return [row.id, opts]
       }),
     )
-  }, [wines, selectedWineIds, queries, rows])
+  }, [wines, queries, rows])
 
   const submittableRows = useMemo(
     () =>
