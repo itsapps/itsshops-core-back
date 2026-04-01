@@ -1254,6 +1254,11 @@ export default {
       title: { title: 'Titel' },
       categories: { title: 'Kategorien' },
     },
+    preview: {
+      categories_zero: 'Keine Kategorien',
+      categories_one: '{{count}} Kategorie',
+      categories_other: '{{count}} Kategorien',
+    },
   },
   carousel: {
     title: 'Karussell',
