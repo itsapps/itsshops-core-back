@@ -61,7 +61,8 @@ export const shippingMethod: ITSDocumentDefinition = {
           to: [{ type: 'taxCategory' }],
           validation: (Rule) => Rule.required(),
         }),
-        f('freeShippingThreshold', 'number', {
+        ctx.builders.priceField({
+          name: 'freeShippingThreshold',
           validation: (Rule) => Rule.positive(),
           hidden: ({ parent }) => parent && parent.methodType !== 'delivery',
         }),
