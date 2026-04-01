@@ -51,6 +51,24 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
         getProductReferenceView(S, t('products.variants'), t('products.addVariant')),
       ])
 
+  const kinds = ctx.config.schemaSettings.productKinds
+
+  if (kinds.length <= 1) {
+    return S.listItem()
+      .title(t('products.title'))
+      .icon(ProductIcon)
+      .child(
+        S.documentTypeList('product')
+          .title(t('products.title'))
+          .apiVersion(apiVersion)
+          .filter('_type == "product"')
+          .canHandleIntent((intentName, params) => {
+            return intentName === 'edit' && params.type === 'product'
+          })
+          .child(getProductChildView),
+      )
+  }
+
   return S.listItem()
     .title(t('products.title'))
     .icon(ProductIcon)
@@ -76,7 +94,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
           S.divider(),
 
           // Kinds
-          ...ctx.config.schemaSettings.productKinds.map((kind) =>
+          ...kinds.map((kind) =>
             S.listItem()
               .title(t(`products.kinds.list.${kind}`))
               .icon(productKindIcons[kind])
