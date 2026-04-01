@@ -1,4 +1,4 @@
-import { LinkIcon, InternalLinkIcon, ExternalLinkIcon } from '../../assets/icons'
+import { linkIcons, LinkIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
 export const menuItem: ITSSchemaDefinition = {
@@ -15,7 +15,7 @@ export const menuItem: ITSSchemaDefinition = {
           rule.custom((value: any[] | undefined, context) => {
             const parent = context.parent as any
             if (parent?.linkType === 'submenu' && (!value || value.length === 0)) {
-              return 'A title is required for submenus.'
+              return context.i18n.t('validation:generic.required')
             }
             return true
           }),
@@ -57,7 +57,7 @@ export const menuItem: ITSSchemaDefinition = {
           rule.custom((value: any[] | undefined, context) => {
             const parent = context.parent as any
             if (parent?.linkType === 'external' && (!value || value.length === 0)) {
-              return 'An external URL is required.'
+              return context.i18n.t('validation:generic.required')
             }
             return true
           }),
@@ -77,7 +77,9 @@ export const menuItem: ITSSchemaDefinition = {
                   const path = context.path || []
                   // 1. Logic: If it's a submenu, it MUST have at least one child
                   if (parent?.linkType === 'submenu' && (!value || value.length === 0)) {
-                    return 'A submenu must contain at least one menu item.'
+                    return context.i18n.t('validation:array.minimum-length', {
+                      minLength: 1,
+                    })
                   }
 
                   // 2. Depth Logic: Check nesting limit
@@ -85,22 +87,15 @@ export const menuItem: ITSSchemaDefinition = {
                   const maxDepth = ctx.config.schemaSettings.menus.maxDepth
 
                   if (depth > maxDepth) {
-                    return `Nesting is limited to ${maxDepth} levels.`
+                    return ctx.t.default(
+                      'validation.menuMaxDepthExceeded',
+                      `Maximum depth is ${maxDepth}`,
+                      { maxDepth },
+                    )
                   }
 
                   return true
                 }),
-              // validation: (Rule) => Rule.custom((value, context) => {
-              //   // We walk up the document tree to see how many parents we have
-              //   // context.path looks like ['items', 0, 'children', 2, 'children']
-              //   const depth = context.path?.filter(p => p === 'children').length || 0;
-              //   const maxDepth = ctx.config.schemaSettings.menus.maxDepth;
-
-              //   if (depth > maxDepth) {
-              //     return `Nesting is limited to ${maxDepth} levels.`;
-              //   }
-              //   return true;
-              // })
             }),
           ]
         : []),
@@ -116,63 +111,29 @@ export const menuItem: ITSSchemaDefinition = {
           title: 'title',
           linkType: 'linkType',
           url: 'url',
-          refTitle: 'linkReference.title',
+          refTitle: 'internalLinkReference.title',
           children: 'children',
         },
         prepare: ({ title, linkType, url, refTitle, children }) => {
           const localTitle = ctx.localizer.value(title)
           const localRefTitle = ctx.localizer.value(refTitle)
           const localUrl = ctx.localizer.value(url)
-
-          const displayTitle = localTitle || localRefTitle || localUrl || 'Untitled'
-          const linkTypeLabel = linkType ? ctx.t.default(`global.linkTypes.${linkType}`) : '-'
-          let subtitle = `[${linkTypeLabel}]`
-
+          let subtitle = ''
           if (linkType === 'submenu') {
-            subtitle += ` 📂 ${children?.length || 0} items`
+            const childrenCount = children?.length || 0
+            subtitle = `${ctx.t.default('menuItem.preview.submenuItems', `${childrenCount} entries`, { count: childrenCount })}`
           } else if (linkType === 'external') {
-            subtitle += ` 🌐 ${localUrl || 'No URL'}` // Snapshot of first i18n entry
-          }
-
-          const linkIcons = {
-            internal: InternalLinkIcon,
-            external: ExternalLinkIcon,
-            submenu: LinkIcon,
+            subtitle = `${localUrl || ctx.t.default('menuItem.preview.noUrl')}`
+          } else if (linkType === 'internal') {
+            subtitle = `${localRefTitle || ctx.t.default('menuItem.preview.noReference')}`
           }
           const media = linkIcons[linkType as keyof typeof linkIcons] || LinkIcon
           return {
-            title: displayTitle,
+            title: localTitle,
             subtitle,
             media,
           }
         },
-        // prepare: ({ title, linkType, url, refTitle, children }) => {
-        //   const localTitle = ctx.localizer.value(title);
-
-        //   let sub = '';
-        //   if (linkType === 'submenu') {
-        //     const count = children?.length || 0;
-        //     sub = count === 0 ? '⚠️ Empty Submenu' : `📂 ${count} items`;
-        //   } else if (linkType === 'internal') {
-        //     sub = ctx.localizer.value(refTitle) || 'No reference';
-        //   } else if (linkType === 'external') {
-        //     sub = url || 'No link';
-        //   }
-
-        //   return {
-        //     title: localTitle || (linkType === 'submenu' ? 'Untitled Submenu' : 'Untitled Link'),
-        //     subtitle: `[${linkType.toUpperCase()}] ${sub}`,
-        //     media: Link
-        //   };
-        // }
-        // prepare: ({ title, linkType, url, refTitle, children }) => {
-        //   const sub = children?.length ? `${children.length} items` : (url || ctx.localizer.value(refTitle) || 'No link');
-        //   return {
-        //     title: ctx.localizer.value(title),
-        //     subtitle: `[${linkType}] ${sub}`,
-        //     media: Link
-        //   };
-        // }
       },
     }
   },

@@ -27,13 +27,14 @@ export const shopSettings: ITSDocumentDefinition = {
       billing: NoteIcon,
     }
 
-    const groups = ['displays', 'shipping', 'stock', 'tax', 'orders', 'billing'].map(
-      (name, index) => ({
-        name,
-        icon: groupIcons[name],
-        ...(index === 0 && { default: true }),
-      }),
-    )
+    const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
+
+    const groupNames = ['displays', 'shipping', ...(stockEnabled ? ['stock'] : []), 'tax', 'orders', 'billing']
+    const groups = groupNames.map((name, index) => ({
+      name,
+      icon: groupIcons[name],
+      ...(index === 0 && { default: true }),
+    }))
 
     const fieldsMap: Record<string, any[]> = {
       displays: [
@@ -52,12 +53,11 @@ export const shopSettings: ITSDocumentDefinition = {
             list: [{ value: 'beforeDiscount' }, { value: 'afterDiscount' }],
           },
           initialValue: 'afterDiscount',
-          // validation: (Rule) => Rule.required()
         }),
       ],
-      stock: [
-        f('stockThreshold', 'number', { validation: (Rule) => Rule.positive(), group: 'stock' }),
-      ],
+      ...(stockEnabled
+        ? { stock: [f('stockThreshold', 'number', { validation: (Rule) => Rule.positive() })] }
+        : {}),
       tax: [
         f('defaultTaxCategory', 'reference', {
           to: [{ type: 'taxCategory' }],

@@ -36,6 +36,7 @@ import {
   PiClock,
   PiCube,
   PiDownloadSimple,
+  PiFolder,
   PiImage,
   PiImages,
   PiLink,
@@ -103,6 +104,7 @@ export const SearchIcon = Search
 export const SettingsIcon = Cog
 export const ShippingRateIcon = PiBoat
 export const ShopIcon = Basket
+export const SubmenuIcon = PiFolder
 export const SyncIcon = Sync
 export const TaxRuleIcon = PiPackage
 export const TrashIcon = Trash
@@ -122,4 +124,10 @@ export const productKindIcons: Record<ProductKind, ComponentType> = {
   digital: ProductKindDigitalIcon,
   physical: ProductKindPhysicalIcon,
   wine: ProductKindWineIcon,
+}
+
+export const linkIcons = {
+  internal: InternalLinkIcon,
+  external: ExternalLinkIcon,
+  submenu: SubmenuIcon,
 }

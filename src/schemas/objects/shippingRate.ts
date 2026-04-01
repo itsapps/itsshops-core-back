@@ -24,8 +24,8 @@ export const shippingRate: ITSSchemaDefinition = {
         },
         prepare({ maxWeight, price }) {
           return {
-            title: `<= ${maxWeight} kg`,
-            subtitle: ctx.format.currency(price / 100),
+            title: maxWeight ? `<= ${maxWeight} kg` : '',
+            subtitle: price ? ctx.format.currency(price / 100) : '',
             media: ShippingRateIcon,
           }
         },

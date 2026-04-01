@@ -26,7 +26,8 @@ export const taxRule: ITSSchemaDefinition = {
         },
         prepare({ title, rate }) {
           return {
-            title: `${ctx.localizer.value(title) || 'New Rule'}: ${rate || '-'}%`,
+            title: ctx.localizer.value(title),
+            subtitle: rate ? `${ctx.t.default('taxRule.preview.rate')}: ${rate}%` : '',
             media: TaxRuleIcon,
           }
         },

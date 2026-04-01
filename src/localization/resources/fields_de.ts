@@ -35,6 +35,7 @@ export default {
     pricing: 'Preise',
     media: 'Medien',
     seo: 'SEO',
+    filters: 'Produktfilter',
     variants: 'Varianten',
     wine: 'Wein',
     variant: 'Variante',
@@ -288,6 +289,8 @@ export default {
     minLength: 'Wert muss mindestens {{min}} Zeichen enthalten',
     oneFieldMustExist: 'Mindestens eines erforderlich',
     requiredField: 'Erforderlich',
+    deliveryMethodsAtLeastOneRate: 'Es muss zumindest eine Regel definiert sein.',
+    menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
   },
 
   productFieldsets: {
@@ -512,7 +515,7 @@ export default {
     },
   },
   taxCountry: {
-    title: 'Steuereinstellungen',
+    title: 'Land',
     fields: {
       rules: {
         title: 'Regeln',
@@ -635,6 +638,9 @@ export default {
       exciseDuty: {
         title: 'Verbrauchssteuer in %',
       },
+    },
+    preview: {
+      rate: ' Steuersatz',
     },
   },
   taxCategory: {
@@ -962,6 +968,13 @@ export default {
         title: 'Einträge',
       },
     },
+    preview: {
+      noUrl: 'Keine URL',
+      noReference: 'Keine Referenz',
+      submenuItems_zero: 'Keine Einträge',
+      submenuItems_one: '{{count}} Eintrag',
+      submenuItems_other: '{{count}} Einträge',
+    },
   },
   navPage: {
     title: 'Seite',
@@ -1277,6 +1290,9 @@ export default {
   },
   localeImage: {
     title: 'Bild (Mehrsprachig)',
+  },
+  localeAltImage: {
+    title: 'Bild',
   },
   baseImage: {
     title: 'Bild',

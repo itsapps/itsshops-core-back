@@ -105,7 +105,7 @@ export const productVariant: ITSDocumentDefinition = {
       },
       {
         name: 'media',
-        fields: [f('image', 'localeImage')],
+        fields: [f('image', 'localeAltImage')],
       },
       {
         name: 'seo',
@@ -141,8 +141,8 @@ export const productVariant: ITSDocumentDefinition = {
     const previewSelect = {
       variantTitle: 'title',
       productTitle: 'product.title',
-      image: 'image.image',
-      productImage: 'product.image.image',
+      image: 'image',
+      productImage: 'product.image',
       kind: 'kind',
       // physical + digital: option ref titles
       ...(optionsActuallyEnabled && {

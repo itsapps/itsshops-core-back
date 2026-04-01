@@ -7,7 +7,7 @@ export const shippingMethod: ITSDocumentDefinition = {
   icon: PackageIcon,
   feature: 'shop',
   build: (ctx) => {
-    const { f } = ctx
+    const { f, t } = ctx
     return {
       fields: [
         // f('isDefault', 'boolean', { initialValue: false }),
@@ -30,6 +30,8 @@ export const shippingMethod: ITSDocumentDefinition = {
               type: 'reference',
               to: [{ type: 'taxCountry' }],
               options: { filter: 'enabled == true' },
+              title: t.default('taxCountry.title'),
+              validation: (Rule) => Rule.required(),
             },
           ],
           validation: (Rule) => Rule.required().min(1).unique(),
@@ -49,7 +51,7 @@ export const shippingMethod: ITSDocumentDefinition = {
               // 2. Only enforce rates if it's explicitly 'delivery'
               if (parent.methodType === 'delivery') {
                 if (!rates || rates.length === 0) {
-                  return 'Delivery methods must have at least one weight rate defined.'
+                  return t.default('validation.deliveryMethodsAtLeastOneRate')
                 }
               }
 

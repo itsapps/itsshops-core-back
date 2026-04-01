@@ -81,7 +81,7 @@ export const product: ITSDocumentDefinition = {
       },
       {
         name: 'media',
-        fields: [f('image', 'localeImage')],
+        fields: [f('image', 'localeAltImage')],
       },
       {
         name: 'seo',
@@ -99,13 +99,12 @@ export const product: ITSDocumentDefinition = {
       preview: {
         select: {
           title: 'title',
-          image: 'image.image',
+          image: 'image',
           kind: 'kind',
         },
         prepare({ title, image, kind }) {
           const productKind: ProductKind = kind
-          const media =
-            ctx.localizer.value(image) || (kind ? productKindIcons[productKind] : ProductIcon)
+          const media = image || (kind ? productKindIcons[productKind] : ProductIcon)
           return {
             title: ctx.localizer.value(title),
             media,

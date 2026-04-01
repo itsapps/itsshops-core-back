@@ -13,17 +13,15 @@ export const manufacturer: ITSDocumentDefinition = {
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
         f('description', 'i18nText'),
         f('link', 'url'),
-        f('image', 'localeImage'),
       ],
       preview: {
         select: {
           title: 'title',
-          image: 'image',
         },
-        prepare({ title, image }) {
+        prepare({ title }) {
           return {
             title: ctx.localizer.value(title),
-            media: ctx.localizer.value(image) || ManufacturerIcon,
+            media: ManufacturerIcon,
           }
         },
       },
