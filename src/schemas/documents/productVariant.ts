@@ -18,7 +18,7 @@ export const productVariant: ITSDocumentDefinition = {
   icon: ProductVariantIcon,
   feature: 'shop',
   allowCreate: false,
-  disallowedActions: ['delete', 'duplicate'],
+  disallowedActions: ['duplicate'],
   hideInStructure: true,
   build: (ctx) => {
     const { f } = ctx
