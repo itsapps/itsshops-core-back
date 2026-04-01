@@ -42,7 +42,7 @@ export const menuItem: ITSSchemaDefinition = {
           includeTitle: false,
           includeDisplayType: false,
           to: ctx.config.schemaSettings.menus.allowedReferences,
-          required: false,
+          required: true,
         })
         .map((field) => ({
           ...field,

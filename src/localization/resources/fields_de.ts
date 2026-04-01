@@ -291,6 +291,7 @@ export default {
     requiredField: 'Erforderlich',
     deliveryMethodsAtLeastOneRate: 'Es muss zumindest eine Regel definiert sein.',
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
+    countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',
   },
 
   productFieldsets: {

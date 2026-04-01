@@ -61,7 +61,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
 
               // If it IS an internal link, we require the reference
               if (!value && required) {
-                return 'A reference is required for internal links.'
+                return ctx.t.default('validation.requiredField')
               }
 
               return true
@@ -244,7 +244,13 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             ][0]`
             const alreadyExists = await client.fetch(query, params)
 
-            return alreadyExists ? `A configuration for ${value} already exists.` : true
+            return alreadyExists
+              ? ctx.t.default(
+                  'validation.countryCodeNoDuplicates',
+                  `A configuration for ${value} already exists.`,
+                  { countryCode: value as string },
+                )
+              : true
           }),
       })
     },
