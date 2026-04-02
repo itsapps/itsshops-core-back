@@ -7,6 +7,7 @@ import {
   EditIcon as Edit,
   EllipsisHorizontalIcon as EllipsisHorizontal,
   ErrorOutlineIcon as ErrorOutline,
+  FilterIcon as Filter,
   HomeIcon as Home,
   LaunchIcon as Launch,
   OlistIcon as Olist,
@@ -74,6 +75,7 @@ export const EditIcon = Edit
 export const EllipsisHorizontalIcon = EllipsisHorizontal
 export const ErrorOutlineIcon = ErrorOutline
 export const ExternalLinkIcon = PiArrowSquareOut
+export const FilterIcon = Filter
 export const FulfillmentIcon = Package
 export const HeroIcon = PiStar
 export const ImageIcon = PiImage

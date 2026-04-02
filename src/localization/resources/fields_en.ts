@@ -97,6 +97,24 @@ export default {
         },
       },
     },
+    productFieldFilter: {
+      title: 'Product-Filter',
+      fields: {
+        field: {
+          title: 'Field',
+          options: {
+            price: 'Price',
+            category: 'Category',
+          },
+        },
+      },
+    },
+    preview: {
+      filter: 'Filter',
+      filters_zero: 'No filters',
+      filters_one: '{{count}} filter',
+      filters_other: '{{count}} filters',
+    },
   },
   productVariant: {
     title: 'Product Variant',

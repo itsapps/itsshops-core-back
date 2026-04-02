@@ -343,6 +343,18 @@ export default {
         },
       },
     },
+    productFieldFilter: {
+      title: 'Produkt-Filter',
+      fields: {
+        field: {
+          title: 'Feld',
+          options: {
+            price: 'Preis',
+            category: 'Kategorie',
+          },
+        },
+      },
+    },
     preview: {
       filter: 'Filter',
       filters_zero: 'Keine Filter',

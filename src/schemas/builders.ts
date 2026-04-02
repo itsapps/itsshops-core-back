@@ -1,5 +1,5 @@
 import { defineField, isReference } from 'sanity'
-import { WineIcon } from '../assets/icons'
+import { WineIcon, FilterIcon } from '../assets/icons'
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
 
@@ -358,7 +358,38 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
 
       const wft = (key: string) => ctx.t.strict(`productList.wineFieldFilter.${key}`)
 
+      const pft = (key: string) => ctx.t.strict(`productList.productFieldFilter.${key}`)
+
       const of = [
+        // Generic product field filters (always available)
+        {
+          type: 'object' as const,
+          name: 'productFieldFilter',
+          title: pft('title') || 'Product Filter',
+          icon: FilterIcon,
+          fields: [
+            {
+              name: 'field',
+              type: 'string',
+              title: pft('fields.field.title') || 'Field',
+              options: {
+                list: [
+                  { value: 'price', title: pft('fields.field.options.price') || 'Price' },
+                  { value: 'category', title: pft('fields.field.options.category') || 'Category' },
+                ],
+                layout: 'radio',
+                direction: 'horizontal',
+              },
+              validation: (rule: any) => rule.required(),
+            },
+          ],
+          preview: {
+            select: { field: 'field' },
+            prepare({ field }: any) {
+              return { title: pft(`fields.field.options.${field}`) || '—' }
+            },
+          },
+        },
         ...(hasWine
           ? [
               {
