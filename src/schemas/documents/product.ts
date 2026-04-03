@@ -70,7 +70,7 @@ export const product: ITSDocumentDefinition = {
         fields: [
           f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
           ctx.builders.priceField({
-            validation: (Rule) => Rule.required(),
+            validation: (Rule) => Rule.positive(),
             group: 'pricing',
           }),
           ctx.builders.priceField({

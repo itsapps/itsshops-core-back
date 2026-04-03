@@ -11,6 +11,7 @@ export default {
       '750': 'Standard Flasche',
       '1000': 'Liter',
       '1500': 'Magnum',
+      '2000': 'Doppler',
       '2250': 'Marie-Jeanne',
       '3000': 'Doppelmagnum',
       '4500': 'Rehoboam',
