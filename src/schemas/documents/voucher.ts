@@ -5,7 +5,7 @@ export const voucher: ITSDocumentDefinition = {
   name: 'voucher',
   type: 'document',
   icon: VoucherIcon,
-  feature: 'shop',
+  feature: 'shop.vouchers',
   build: (ctx) => {
     const { f } = ctx
     return {

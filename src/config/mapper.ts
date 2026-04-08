@@ -109,6 +109,7 @@ function allFeatures(): ITSFeatureConfig {
       vinofact: {
         enabled: true,
       },
+      vouchers: true,
     },
     blog: true,
     users: true,
@@ -125,6 +126,7 @@ function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
       vinofact: input?.shop?.vinofact ?? {
         enabled: false,
       },
+      vouchers: input?.shop?.vouchers ?? false,
     },
     blog: input?.blog ?? false,
     users: input?.users ?? false,

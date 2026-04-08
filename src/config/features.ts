@@ -30,6 +30,7 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
       shopEnabled &&
       (config.schemaSettings.productKinds.includes('physical') ||
         config.schemaSettings.productKinds.includes('digital')),
+    'shop.vouchers': shopEnabled && !!config.features.shop?.vouchers,
     blog: !!config.features.blog,
     users: !!config.features.users,
   }

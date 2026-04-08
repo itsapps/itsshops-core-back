@@ -36,6 +36,7 @@ export type ITSFeatureKey =
   | 'shop.productKind.digital'
   | 'shop.productKind.bundle'
   | 'shop.productKind.options'
+  | 'shop.vouchers'
   | 'blog'
   | 'users'
 

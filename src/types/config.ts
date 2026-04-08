@@ -52,6 +52,7 @@ export interface FeatureConfig {
     stock?: boolean
     category?: boolean | { subcategories?: boolean }
     vinofact?: VinofactConfig
+    vouchers?: boolean
   }>
   blog?: boolean
   users?: boolean
@@ -64,6 +65,7 @@ export interface ITSFeatureConfig {
     stock: boolean
     category: boolean
     vinofact: VinofactConfig
+    vouchers: boolean
   }
   blog: boolean
   users: boolean
