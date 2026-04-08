@@ -1,4 +1,5 @@
 import {
+  ComponentViewBuilder,
   ListBuilder,
   ListItem,
   ListItemBuilder,
@@ -31,20 +32,6 @@ const sortItems = (items: ITSStructureItem[]): ITSStructureItem[] => {
   // 3. Iteratively place anchored items (handles dependencies)
   let remaining = [...anchoredItems]
   let changed = true
-
-  // while (changed && remaining.length > 0) {
-  //   changed = false
-  //   remaining = remaining.filter((item) => {
-  //     const anchorIndex = sorted.findIndex((s) => s.id === item.position?.anchor)
-  //     if (anchorIndex !== -1) {
-  //       const insertAt = item.position?.placement === 'before' ? anchorIndex : anchorIndex + 1;
-  //       sorted.splice(insertAt, 0, item);
-  //       changed = true;
-  //       return false; // Remove from remaining, it's now sorted
-  //     }
-  //     return true; // Keep in remaining for next pass
-  //   });
-  // }
   while (changed && remaining.length > 0) {
     changed = false
     const nextRemaining: typeof remaining = []
@@ -151,49 +138,7 @@ const resolveItem = (
     }
     // document
     default: {
-      // if (item.id === 'product') {
-      //   return S.listItem()
-      //     // .id(item.id)
-      //     .title(title)
-      //     .icon(item.icon)
-      //     .child(
-      //       S.list()
-      //         .id(item.id)
-      //         .title(title)
-      //         .items([
-      //           S.listItem({
-      //             id: 'product-price',
-      //             title: 'Books by author',
-      //             schemaType: 'product',
-      //             child: () =>
-      //               S.documentTypeList('product').child(price =>
-      //                 S.documentTypeList('product')
-      //                   .title('Books by author')
-      //                   .filter('_type == $type && price == $price')
-      //                   .params({type: 'product', price})
-      //                   .initialValueTemplates([
-      //                     S.initialValueTemplateItem('product-price', {price})
-      //                   ])
-      //               )
-      //           }),
-      //           // ...S.documentTypeListItems()
-      //         ])
-      //     );
-      // }
       return S.documentTypeListItem(item.id).title(title).icon(item.icon)
-      // return S.documentTypeListItem(item.id)
-      //   .title(title)
-      //   .icon(item.icon)
-      //   .child(
-      //     S.documentTypeList(item.id)
-      //       .title(title)
-      //       // This is the missing piece:
-      //       // .initialValueTemplates([
-      //       //   S.initialValueTemplateItem('product-with-title'),
-      //       //   S.initialValueTemplateItem('product-price'),
-      //       //   // S.initialValueTemplateItem('product-price', { price: 100 }),
-      //       // ])
-      //   );
     }
   }
 }
@@ -239,24 +184,11 @@ export const localizedStructure = (ctx: ITSContext, coreManifest: ITSStructureIt
     // 3. Resolve to Sanity UI
     const items = fullManifest.map((item) => resolveItem(item, S, context, ctx)).filter(isDefined)
 
-    return S.list()
-      .id('root')
-      .title(ctx.structureT.default('content.title'))
-      .items([
-        ...items,
-        // S.documentTypeListItem('bla').title('pages'),
-        // S.listItem()
-        //   .title('Wine Import')
-        //   .id('wineImport')
-        //   .child(S.component(CreateProductFromWines).title('Import Wines')),
-        // S.listItem()
-        //   .title('Create Product From Wines')
-        //   .child(S.component(CreateProductFromWines).title('Wine Import')),
-      ])
+    return S.list().id('root').title(ctx.structureT.default('content.title')).items(items)
   }
 }
 
-export const getReferenceView = (S: StructureBuilder, title: string) =>
+export const getReferenceView = (S: StructureBuilder, title: string): ComponentViewBuilder =>
   S.view
     .component(DocumentsPane)
     .options({
@@ -268,74 +200,12 @@ export const getReferenceView = (S: StructureBuilder, title: string) =>
     })
     .title(title)
 
-export const getProductReferenceView = (S: StructureBuilder, title: string, newTitle: string) =>
+export const getProductReferenceView = (S: StructureBuilder, title: string): ComponentViewBuilder =>
   S.view
     .component(DocumentsPane)
-    // .options((childContext: any) => {
-    //   // 'childContext' contains the data of the document currently open in the pane
-    //   const parentKind = childContext?.displayed?.kind || 'wine'
-
-    //   return {
-    //     query: `*[ _type == "productVariant" && product._ref == $id ]`,
-    //     params: { id: productId },
-    //     initialValueTemplates: [
-    //       {
-    //         template: 'product-variant-with-parent',
-    //         parameters: {
-    //           productId,
-    //           kind: parentKind, // Inherit from the product!
-    //         },
-    //         title: `New ${parentKind} Variant`,
-    //       },
-    //     ],
-    //   }
-    // })
     .options({
       query: `*[ _type == "productVariant" && product._ref == $id ] | order(_updatedAt asc)`,
       params: { id: '_id' },
-      // options: {
-      //   perspective: 'raw',
-      // },
       useDraft: false,
-      // initialValueTemplates: ({ document }: any) => {
-      //   const templates = []
-
-      //   // references must point to a non-draft ID, so if using the ID in the template,
-      //   // be sure it doesn't start with `drafts.`
-      //   const id = document?.displayed?._id.replace('drafts.', '')
-      //   const kind = document?.displayed?.kind || 'wine'
-
-      //   if (id) {
-      //     templates.push({
-      //       // the name of the schema type that should be created (required)
-      //       schemaType: 'productVariant',
-      //       // the title that should appear on the button - we can customize it (required)
-      //       title: newTitle,
-      //       // the name of the template that should be used (optional)
-      //       template: 'product-variant-with-parent',
-      //       // values for parameters that can be passed to the template referenced above (optional)
-      //       parameters: {
-      //         productId: id,
-      //         kind,
-      //         ...(kind === 'wine' && { volume: 750 }),
-      //       },
-      //     })
-      //   }
-
-      //   return templates
-      // },
-      // initialValueTemplates: [
-      //   {
-      //     template: 'product-variant-with-parent',
-      //     parameters: {
-      //       productId,
-      //       kind: 'wine', // You can hardcode this or make it dynamic
-      //     },
-      //     title: 'Create New Variant',
-      //   },
-      // ],
-      // options: {
-      //   perspective: 'published',
-      // },
     })
     .title(title)

@@ -71,7 +71,14 @@ export const shopSettings: ITSDocumentDefinition = {
           initialValue: 0,
         }),
       ],
-      billing: [f('billingAddress', 'businessAddress'), f('bankAccount', 'bankAccount')],
+      billing: [
+        f('billingAddress', 'businessAddress'),
+        f('bankAccount', 'bankAccount'),
+        f('senderName', 'string'),
+        f('senderEmail', 'string', {
+          validation: (rule) => rule.email(),
+        }),
+      ],
     }
     const fields = groups
       .map(({ name }) => [...fieldsMap[name].map((field) => ({ ...field, group: name }))])

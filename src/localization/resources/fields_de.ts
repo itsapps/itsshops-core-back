@@ -578,6 +578,14 @@ export default {
         title: 'Bankdaten',
         description: 'Werden für Rechnungen verwendet',
       },
+      senderName: {
+        title: 'Absendername',
+        description: 'Wird als Absender bei Bestell- und Versand-E-Mails an Kunden verwendet',
+      },
+      senderEmail: {
+        title: 'Absender-E-Mail',
+        description: 'Wird als Absenderadresse bei Bestell- und Versand-E-Mails an Kunden verwendet',
+      },
       orderNumberPrefix: {
         title: 'Bestellnummer-Präfix',
         description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-20250315-123456',
@@ -695,19 +703,26 @@ export default {
     },
     fields: {
       grandTotal: {
-        title: 'Gesamtsumme',
+        title: 'Gesamtsumme (brutto)',
+        description: 'Der vom Kunden bezahlte Endbetrag',
       },
       subtotal: {
         title: 'Zwischensumme',
+        description: 'Summe aller Bestellpositionen (brutto)',
       },
       shipping: {
-        title: 'Versand',
+        title: 'Versandkosten',
       },
       discount: {
         title: 'Rabatt',
       },
       totalVat: {
         title: 'Steuern Gesamt',
+        description: 'Summe aller Steuern aus Positionen und Versand',
+      },
+      vatBreakdown: {
+        title: 'Steueraufstellung',
+        description: 'Steuern gruppiert nach Steuersatz (z.B. 10% vs. 20%)',
       },
       currency: {
         title: 'Währung',
@@ -719,6 +734,13 @@ export default {
     groups: {
       order: 'Bestellung',
       history: 'Statusverlauf',
+      orderPayment: 'Zahlung',
+      orderItems: 'Positionen',
+      orderCustomer: 'Kunde',
+      orderTotals: 'Kosten',
+      fulfillment: 'Versand',
+      orderVouchers: 'Gutscheine',
+      orderFreeProducts: 'Geschenke',
     },
     fields: {
       orderNumber: {
@@ -748,33 +770,22 @@ export default {
       },
       statusHistory: {
         title: 'Statusverlauf',
-        options: {
-          payment: 'Zahlung',
-          fulfillment: 'Versand',
-        },
       },
-      billingAddress: {
-        title: 'Rechnungsadresse',
+      paymentIntentId: {
+        title: 'Stripe Payment Intent ID',
       },
-      trackingNumber: {
-        title: 'Sendungsnummer',
+      orderItems: {
+        title: 'Positionen',
       },
-    },
-  },
-  orderCustomer: {
-    title: 'Kundendaten',
-    fields: {
-      locale: {
-        title: 'Sprache',
+      customer: {
+        title: 'Kunde',
       },
-      contactEmail: {
-        title: 'Kontakt-Email',
+      totals: {
+        title: 'Kosten',
       },
-    },
-    groups: {
-      general: 'Allgemeines',
-      billing: 'Rechnungsadresse',
-      shipping: 'Versandadresse',
+      fulfillment: {
+        title: 'Versand',
+      },
     },
   },
   orderStatusHistory: {
@@ -798,6 +809,183 @@ export default {
       },
       note: {
         title: 'Notiz',
+      },
+    },
+  },
+  orderCustomer: {
+    title: 'Kundendaten',
+    groups: {
+      general: 'Allgemeines',
+      billing: 'Rechnungsadresse',
+      shipping: 'Versandadresse',
+    },
+    fields: {
+      locale: {
+        title: 'Sprache',
+      },
+      contactEmail: {
+        title: 'Kontakt-Email',
+      },
+      supabaseId: {
+        title: 'Supabase Benutzer-ID',
+      },
+      billingAddress: {
+        title: 'Rechnungsadresse',
+      },
+      shippingAddress: {
+        title: 'Versandadresse',
+      },
+    },
+  },
+  orderItem: {
+    title: 'Bestellposition',
+    fields: {
+      kind: {
+        title: 'Art',
+      },
+      variantId: {
+        title: 'Varianten-ID',
+      },
+      productId: {
+        title: 'Produkt-ID',
+      },
+      parentId: {
+        title: 'Übergeordnete Position',
+        description:
+          'Bei Bundle-Unterpositionen gesetzt — verweist auf den orderItem._key des übergeordneten Bundles',
+      },
+      title: {
+        title: 'Produkttitel',
+        description: 'Bei der Bestellung gespeicherter Produkttitel',
+      },
+      variantTitle: {
+        title: 'Variantentitel',
+        description: 'Bei der Bestellung gespeicherter Variantentitel',
+      },
+      displayTitle: {
+        title: 'Anzeigetitel',
+        description:
+          'Eingefrorener Anzeigetext, den der Kunde bei der Bestellung gesehen hat — verbindlich für Rechnungen, E-Mails, Bestellhistorie und WC-API. Niemals neu zusammensetzen.',
+      },
+      displaySubtitle: {
+        title: 'Anzeige-Untertitel',
+        description:
+          'Eingefrorener Untertitel, den der Kunde bei der Bestellung gesehen hat (optional).',
+      },
+      weight: {
+        title: 'Gewicht',
+        description: 'Gewicht in Gramm zum Bestellzeitpunkt',
+      },
+      sku: {
+        title: 'SKU',
+      },
+      quantity: {
+        title: 'Menge',
+      },
+      price: {
+        title: 'Einzelpreis',
+        description: 'Einzelpreis in Cent',
+      },
+      vatRate: {
+        title: 'Steuersatz',
+        description: 'Steuersatz in Prozent, z.B. 20 für 20%',
+      },
+      vatAmount: {
+        title: 'Steuerbetrag',
+        description: 'Gesamte Steuer dieser Position in Cent (Menge × Einzelsteuer)',
+      },
+      packed: {
+        title: 'Verpackt',
+      },
+      wine: {
+        title: 'Weindaten',
+      },
+      options: {
+        title: 'Optionen',
+        description: 'Eingefrorene Optionsgruppe/Wert-Paare',
+      },
+      bundle: {
+        title: 'Bundle',
+      },
+    },
+  },
+  orderItemWine: {
+    title: 'Wein',
+    fields: {
+      vintage: {
+        title: 'Jahrgang',
+      },
+      volume: {
+        title: 'Volumen',
+        description: 'Volumen in ml',
+      },
+    },
+  },
+  orderItemBundle: {
+    title: 'Bundle',
+    fields: {
+      itemCount: {
+        title: 'Anzahl Positionen',
+        description: 'Gesamtmenge aller untergeordneten Positionen',
+      },
+    },
+  },
+  orderItemOption: {
+    title: 'Option',
+    fields: {
+      groupTitle: {
+        title: 'Gruppe',
+      },
+      optionTitle: {
+        title: 'Option',
+      },
+    },
+  },
+  fulfillment: {
+    title: 'Versand',
+    fields: {
+      methodTitle: {
+        title: 'Versandart',
+        description: 'Eingefrorener Titel (z.B. "DHL Express" oder "Selbstabholung")',
+      },
+      methodType: {
+        title: 'Typ',
+        options: {
+          delivery: 'Lieferung',
+          pickup: 'Abholung',
+        },
+      },
+      shippingCost: {
+        title: 'Versandkosten',
+        description: 'Die dem Kunden verrechneten Versandkosten',
+      },
+      taxSnapshot: {
+        title: 'Versandsteuer',
+      },
+      method: {
+        title: 'Versandart-Referenz',
+        description: 'Verweis auf die ursprüngliche Konfiguration (kann sich später ändern)',
+      },
+      trackingCode: {
+        title: 'Sendungsnummer',
+      },
+      pickupLocation: {
+        title: 'Abholort',
+        description: 'Adresse, an der die Ware abgeholt werden kann',
+      },
+    },
+  },
+  vatBreakdownItem: {
+    title: 'Steueraufstellung',
+    fields: {
+      rate: {
+        title: 'Satz %',
+      },
+      net: {
+        title: 'Nettobetrag',
+      },
+      vat: {
+        title: 'Steuerbetrag',
       },
     },
   },

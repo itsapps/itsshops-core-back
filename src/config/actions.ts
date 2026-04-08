@@ -1,20 +1,12 @@
 import { DocumentActionComponent, DocumentActionsContext } from 'sanity'
-
 import {
   createCustomDocumentAction,
   type CustomDocumentAction,
 } from '../components/actions/CustomDocumentAction'
+import { OrderDocumentAction } from '../components/actions/OrderActions'
+import { OrderMailDocumentAction } from '../components/actions/OrderMailAction'
 import { AddVariantsAction } from '../components/products/AddVariantsAction'
-// import { OrderDocumentActions } from '../components/actions/OrderActions'
-// import { OrderMailAction } from '../components/actions/OrderDialogAction'
 import { ITSContext, ITSFeatureKey, ITSSanityDefinedAction } from '../types'
-// import { CreateProductFromWines } from '../components/products/CreateProductFromWines'
-// import { ImportWinesAction } from '../components/actions/ImportWinesAction'
-
-// type ProductVariantReferenceDoc = {
-//   _type: string
-//   variants?: { _ref: string }[]
-// }
 
 const globallyDisallowedActions: ITSSanityDefinedAction[] = ['schedule']
 const singletonAllowedActions: ITSSanityDefinedAction[] = ['publish', 'discardChanges', 'restore']
@@ -59,24 +51,10 @@ export function actionResolver(
   const isEnabledSchema = (schemaType: string, type: string, feature: ITSFeatureKey) => {
     return registry.isFeatureEnabled(feature) && schemaType === type
   }
-  // if (context.schemaType === 'order') {
-  //   actions.push(OrderDocumentActions)
-  //   actions.push(OrderMailAction)
-  // }
-  // if (isEnabledSchema(context.schemaType, 'variantOptionGroup', 'shop.productKind.options')) {
-  //   const action = prev.find((props) => props.action === 'delete')
-  //   if (action) {
-  //     const query = `count(*[_type == "variantOptionGroup" && _id == $id && defined(options) && count(options) > 0]) > 0`
-  //     actions.push(
-  //       createCustomAction<boolean>({
-  //         action,
-  //         query,
-  //         validateFn: (result) =>
-  //           result == true ? 'optionsGroups.groupDeleteNotAllowedOptionsExist' : true,
-  //       }),
-  //     )
-  //   }
-  // }
+  if (context.schemaType === 'order') {
+    actions.push(OrderDocumentAction)
+    actions.push(OrderMailDocumentAction)
+  }
   if (isEnabledSchema(context.schemaType, 'product', 'shop')) {
     actions.push(AddVariantsAction)
   }
@@ -93,40 +71,6 @@ export function actionResolver(
         }),
       )
     }
-    // } else if (context.schemaType === 'product') {
-    //   const action = prev.find((props) => props.action === 'delete')
-    //   if (action) {
-    //     const query = `count(*[_type == "product" && _id == $id && defined(variants) && count(variants) > 0]) > 0`
-    //     actions.push(
-    //       createCustomAction<boolean>({
-    //         action,
-    //         query,
-    //         validateFn: (result) => (result == true ? 'product.deleteNotAllowedVariantsExist' : true),
-    //       }),
-    //     )
-    //   }
-    // } else if (context.schemaType === 'productVariant') {
-    //   const action = prev.find((props) => props.action === 'publish')
-    //   if (action) {
-    //     // disallow publishing if variant.active will change to false, but is referenced by documents (except product.variants)
-    //     // const query = `*[references($id)]`
-    //     const query = `*[references($id) && !(_type == "product" && references($id))]`
-    //     const publish = createCustomAction<ProductVariantReferenceDoc[]>({
-    //       action,
-    //       query,
-    //       validateFn: (result) => {
-    //         // If the query returns anything, it means there are "illegal"
-    //         // references (docs that aren't the parent product)
-    //         return result.length > 0 ? 'productVariant.setInactiveNotAllowedReferencesExist' : true
-    //       },
-    //       shouldValidateFn: (props) => props.draft?.active === false,
-    //       // allowActionFn: (props) => props.published === null ? 'productVariant.publishNotAllowedButByGenerating' : true,
-    //       allowActionFn: (props) =>
-    //         props.published ? true : 'productVariant.publishNotAllowedButByGenerating',
-    //     })
-    //     // put action at first position in actions array
-    //     actions.unshift(publish)
-    //   }
   }
 
   return actions

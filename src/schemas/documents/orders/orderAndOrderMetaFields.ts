@@ -6,22 +6,39 @@ export const buildShared = (ctx: FieldContext) => {
   const { f } = ctx
 
   const groups = [
-    'orderPayment',
-    'orderItems',
-    'orderCustomer',
-    'orderTotals',
     'fulfillment',
+    'orderCustomer',
+    'orderPayment',
+    'orderTotals',
+    'orderItems',
     'orderVouchers',
     'orderFreeProducts',
-  ].map((name) => ({
+  ].map((name, index) => ({
     name,
+    ...(index === 0 && { default: true }),
   }))
 
   const fieldsMap: Record<string, FieldDefinition[]> = {
+    fulfillment: [
+      f('fulfillment', 'fulfillment', {
+        validation: (rule) => rule.required(),
+      }),
+    ],
+    orderCustomer: [
+      f('customer', 'orderCustomer', {
+        validation: (rule) => rule.required(),
+      }),
+    ],
+    orderTotals: [
+      f('totals', 'orderTotals', {
+        validation: (rule) => rule.required(),
+        hidden: !ctx.config.isDev,
+      }),
+    ],
     orderPayment: [
       f('paymentIntentId', 'string', {
         validation: (rule) => rule.required(),
-        readOnly: !ctx.config.isDev,
+        hidden: !ctx.config.isDev,
       }),
     ],
     orderItems: [
@@ -34,23 +51,7 @@ export const buildShared = (ctx: FieldContext) => {
           }),
           sortable: false,
         },
-      }),
-    ],
-    orderCustomer: [
-      f('customer', 'orderCustomer', {
-        validation: (rule) => rule.required(),
-      }),
-    ],
-    orderTotals: [
-      f('totals', 'orderTotals', {
-        validation: (rule) => rule.required(),
-        readOnly: !ctx.config.isDev,
-      }),
-    ],
-    fulfillment: [
-      f('fulfillment', 'fulfillment', {
-        validation: (rule) => rule.required(),
-        readOnly: !ctx.config.isDev,
+        hidden: !ctx.config.isDev,
       }),
     ],
     orderVouchers: [

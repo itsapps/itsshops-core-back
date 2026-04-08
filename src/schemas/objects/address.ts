@@ -11,7 +11,6 @@ export const address: ITSSchemaDefinition = {
       fields: [
         f('prename', 'string'),
         f('lastname', 'string'),
-        f('phone', 'string'),
         f('line1', 'string'),
         f('line2', 'string'),
         f('zip', 'string'),
@@ -22,6 +21,7 @@ export const address: ITSSchemaDefinition = {
           },
         }),
         f('state', 'string'),
+        f('phone', 'string'),
       ],
     }
   },

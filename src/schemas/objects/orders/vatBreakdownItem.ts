@@ -11,19 +11,14 @@ export const vatBreakdownItem: ITSSchemaDefinition = {
 
     return {
       fields: [
-        f('rate', 'number', {
-          title: 'Rate %',
-        }),
-        f('net', 'number', {
-          title: 'Net Amount',
+        f('rate', 'number'),
+        ctx.builders.priceField({
+          name: 'net',
           validation: (rule) => rule.required().min(0).integer(),
         }),
-        f('vat', 'number', {
-          title: 'Vat Amount',
+        ctx.builders.priceField({
+          name: 'vat',
           validation: (rule) => rule.required().min(0).integer(),
-        }),
-        f('label', 'string', {
-          title: 'Label (e.g., "VAT 20%")',
         }),
       ],
     }

@@ -18,6 +18,9 @@ export const orderCustomer: ITSSchemaDefinition = {
 
     const fieldsMap: Record<string, FieldDefinition[]> = {
       general: [
+        f('contactEmail', 'string', {
+          validation: (rule) => rule.required(),
+        }),
         f('locale', 'string', {
           options: {
             list: ctx.config.localization.uiLanguages.map((language) => ({
@@ -27,10 +30,7 @@ export const orderCustomer: ITSSchemaDefinition = {
           },
           validation: (rule) => rule.required(),
         }),
-        f('contactEmail', 'string', {
-          validation: (rule) => rule.required(),
-        }),
-        f('supabaseId', 'string'),
+        f('supabaseId', 'string', { hidden: !ctx.config.isDev }),
       ],
       billing: [
         f('billingAddress', 'addressStrict', {

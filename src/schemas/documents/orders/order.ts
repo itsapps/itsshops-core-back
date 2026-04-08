@@ -14,22 +14,17 @@ export const order: ITSDocumentDefinition = {
   allowCreate: false,
   build: (ctx) => {
     const { f } = ctx
-
-    const groups = ['order', 'history'].map((name, index) => ({
-      name,
-      ...(index === 0 && { default: true }),
-    }))
-
+    const groups = ['order', 'history'].map((name) => ({ name }))
     const fieldsMap: Record<string, FieldDefinition[]> = {
       order: [
         f('orderNumber', 'string', {
-          // validation: (rule) => rule.required(),
-          readOnly: !ctx.config.isDev,
+          validation: (rule) => rule.required(),
+          hidden: !ctx.config.isDev,
         }),
 
         f('invoiceNumber', 'string', {
-          // validation: (rule) => rule.required(),
-          readOnly: !ctx.config.isDev,
+          validation: (rule) => rule.required(),
+          hidden: !ctx.config.isDev,
         }),
 
         f('status', 'string', {
@@ -46,7 +41,7 @@ export const order: ITSDocumentDefinition = {
           },
           initialValue: 'created',
           validation: (rule) => rule.required(),
-          readOnly: !ctx.config.isDev,
+          hidden: !ctx.config.isDev,
         }),
         f('paymentStatus', 'string', {
           options: {
@@ -55,12 +50,13 @@ export const order: ITSDocumentDefinition = {
           },
           initialValue: 'succeeded',
           validation: (rule) => rule.required(),
-          readOnly: !ctx.config.isDev,
+          hidden: !ctx.config.isDev,
         }),
       ],
       history: [
         f('statusHistory', 'array', {
           of: [{ type: 'orderStatusHistory' }],
+          hidden: !ctx.config.isDev,
         }),
       ],
     }
@@ -70,12 +66,11 @@ export const order: ITSDocumentDefinition = {
       .flat()
 
     const shared = buildShared(ctx)
-    fields.push(...shared.fields)
-    groups.push(...shared.groups)
+    shared.fields.push(...fields)
+    shared.groups.push(...groups)
 
     return {
-      groups,
-      fields,
+      ...shared,
       preview: {
         select: {
           // stripeId: 'paymentIntentId',

@@ -1,5 +1,5 @@
-import { ITSi18nArray } from './localization';
-import { SendMailType } from './mail';
+import { ITSi18nArray } from './localization'
+import { MailType } from './mail'
 
 import { SanityDocument } from 'sanity'
 
@@ -103,8 +103,8 @@ export type StatusHistoryEntry =
     }
 
 export type StatusAction =
-  | { type: 'fulfillment'; newState: OrderStatus; label: string; mailType?: SendMailType }
-  | { type: 'payment'; newState: OrderPaymentStatus; label: string; mailType?: SendMailType }
+  | { type: 'fulfillment'; newState: OrderStatus; label: string; mailType?: MailType }
+  | { type: 'payment'; newState: OrderPaymentStatus; label: string; mailType?: MailType }
 
 export interface Order extends SanityDocument {
   orderNumber: string

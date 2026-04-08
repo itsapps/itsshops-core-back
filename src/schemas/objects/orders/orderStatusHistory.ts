@@ -1,6 +1,6 @@
 // import { getStateTranslationKey } from '../../../utils/orders';
 import { OrderStatusHistoryIcon } from '../../../assets/icons'
-
+import { getStateTranslationKey } from '../../../utils/orderTransitions'
 import { ITSSchemaDefinition } from '../../../types'
 
 export const orderStatusHistory: ITSSchemaDefinition = {
@@ -53,7 +53,7 @@ export const orderStatusHistory: ITSSchemaDefinition = {
           // const statusString = status ? ctx.t.default(getStateTranslationKey(status), status) : 'No Status'
           const subtitle = [source, note].filter(Boolean).join(' - ')
           return {
-            title: `${dateTime}: ${typeString} - ${'statusString'}`,
+            title: `${dateTime}: ${typeString} - ${ctx.t.default(getStateTranslationKey(status), status)}`,
             subtitle,
           }
         },

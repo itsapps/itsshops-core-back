@@ -9,7 +9,6 @@ export const orderItemBundle: ITSSchemaDefinition = {
     return {
       fields: [
         f('itemCount', 'number', {
-          description: 'Total quantity of all child items combined',
           validation: (rule) => rule.required().positive().integer(),
         }),
       ],

@@ -10,7 +10,6 @@ export const orderItemWine: ITSSchemaDefinition = {
       fields: [
         f('vintage', 'string'),
         f('volume', 'number', {
-          description: 'Volume in ml',
           validation: (rule) => rule.positive().integer(),
         }),
       ],

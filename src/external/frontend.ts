@@ -1,74 +1,70 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { ITSFrontendClient, SendMailType } from '../types'
+import type {
+  FrontendResponse,
+  ITSFrontendClient,
+  MailType,
+  NotifyResult,
+  RefundResult,
+} from '../types'
 
+/**
+ * Studio-side client for the customer's deployed core-front server functions.
+ *
+ * Both endpoints are authenticated via the `x-server-secret` header — `secret`
+ * must match `SERVER_FUNCTIONS_SECRET` in the core-front Netlify environment.
+ *
+ * The endpoint paths assume the customer has wired the core-front handlers
+ * under `/api/payment/refund` and `/api/order/notify`.
+ */
 export const createFrontendClient = (
   locale: string,
   endpoint: string,
   secret: string,
 ): ITSFrontendClient => {
-  const requestData = async (accept: string, path: string, payload?: Record<string, any>) => {
+  const post = async <T>(path: string, payload: unknown): Promise<FrontendResponse<T>> => {
     const requestId = uuidv4().replaceAll('-', '')
-    const merged = {
-      requestId,
-      secret,
-      ...payload,
-    }
-
     try {
       const response = await fetch(endpoint + path, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: accept,
+          Accept: 'application/json',
           'Accept-Language': locale,
           'X-Request-ID': requestId,
+          'x-server-secret': secret,
         },
-        body: JSON.stringify(merged),
+        body: JSON.stringify(payload),
       })
 
-      if (accept === 'application/json') {
-        const data = await response.json()
-        if (response.ok) {
-          return { data }
-        }
-        return { error: data.meta?.details || data.message || response.statusText }
-      }
+      const data = await response.json().catch(() => null)
       if (response.ok) {
-        return { data: response }
+        return { data: data as T }
       }
-      return { error: response.statusText }
+      const message =
+        (data && typeof data === 'object' && 'error' in data && (data as any).error?.message) ||
+        (data && typeof data === 'object' && 'message' in data && (data as any).message) ||
+        response.statusText
+      return { error: message }
     } catch (err) {
-      const error = err as Error
-      // Network error or thrown above
-      console.error('API call failed:', err)
-      // throw err
-      return { error: error.message }
+      const message = err instanceof Error ? err.message : 'Network error'
+      // eslint-disable-next-line no-console
+      console.error('Frontend client request failed:', err)
+      return { error: message }
     }
   }
 
-  const post = async (path: string, payload: any) => {
-    return await requestData('application/json', path, payload)
-  }
-  const postPdf = async (path: string, payload: any) => {
-    return await requestData('application/pdf', path, payload)
-  }
-  const postXlsx = async (path: string, payload: any) => {
-    return await requestData(
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      path,
-      payload,
-    )
-  }
-
   return {
-    sendMail: (mailType: SendMailType, orderId: string) => post(`/mail`, { mailType, orderId }),
-    sendRefund: (paymentIntentId: string, options: { amount?: number } = {}) =>
-      post(`/payment/refund`, {
-        paymentIntentId,
-        ...(options.amount && { amount: options.amount }),
+    notifyOrder: (mailType: MailType, orderId: string, options = {}) =>
+      post<NotifyResult>('/api/order/notify', {
+        mailType,
+        orderId,
+        ...(options.attachInvoice !== undefined && { attachInvoice: options.attachInvoice }),
       }),
-    getOrderInvoicePdf: (orderId: string) => postPdf(`/pdf/invoice`, { orderId }),
-    getExportXlsx: (kind: string) => postXlsx(`/export`, { format: 'xlsx', kind }),
+    refundPayment: (paymentIntentId: string, options = {}) =>
+      post<RefundResult>('/api/payment/refund', {
+        paymentIntentId,
+        ...(options.amount !== undefined && { amount: options.amount }),
+      }),
   }
 }

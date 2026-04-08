@@ -44,23 +44,28 @@ export const orderItem: ITSSchemaDefinition = {
       }),
 
       f('parentId', 'string', {
-        description: 'Set on bundle child items — points to the parent bundle orderItem._key',
         readOnly: !ctx.config.isDev,
       }),
 
       f('title', 'string', {
-        description: 'Snapshotted product title, resolved at checkout',
         validation: (rule) => rule.required(),
         readOnly: !ctx.config.isDev,
       }),
 
       f('variantTitle', 'string', {
-        description: 'Snapshotted variant subtitle, resolved at checkout',
+        readOnly: !ctx.config.isDev,
+      }),
+
+      f('displayTitle', 'string', {
+        validation: (rule) => rule.required(),
+        readOnly: !ctx.config.isDev,
+      }),
+
+      f('displaySubtitle', 'string', {
         readOnly: !ctx.config.isDev,
       }),
 
       f('weight', 'number', {
-        description: 'Weight in grams at time of order',
         validation: (rule) => rule.min(0).integer(),
         readOnly: !ctx.config.isDev,
       }),
@@ -75,19 +80,16 @@ export const orderItem: ITSSchemaDefinition = {
       }),
 
       f('price', 'number', {
-        description: 'Unit price in cents',
         validation: (rule) => rule.required().min(0).integer(),
         readOnly: !ctx.config.isDev,
       }),
 
       f('vatRate', 'number', {
-        description: 'VAT rate as a percentage, e.g. 20 for 20%',
         validation: (rule) => rule.required().min(0),
         readOnly: !ctx.config.isDev,
       }),
 
       f('vatAmount', 'number', {
-        description: 'Total VAT for this line in cents (quantity × unit vat)',
         validation: (rule) => rule.required().min(0).integer(),
         readOnly: !ctx.config.isDev,
       }),
@@ -104,7 +106,6 @@ export const orderItem: ITSSchemaDefinition = {
 
       f('options', 'array', {
         of: [{ type: 'orderItemOption' }],
-        description: 'Snapshotted option group/value pairs',
         hidden: isNotKind('physical', 'digital'),
         options: {
           ...(!ctx.config.isDev && {
@@ -123,6 +124,8 @@ export const orderItem: ITSSchemaDefinition = {
       fields,
       preview: {
         select: {
+          displayTitle: 'displayTitle',
+          displaySubtitle: 'displaySubtitle',
           title: 'title',
           variantTitle: 'variantTitle',
           kind: 'kind',
@@ -131,13 +134,15 @@ export const orderItem: ITSSchemaDefinition = {
           packed: 'packed',
           weight: 'weight',
         },
-        prepare({ title, variantTitle, kind, quantity, price, packed, weight }) {
-          const label = [title, variantTitle].filter(Boolean).join(' — ')
+        prepare({ displayTitle, displaySubtitle, title, variantTitle, kind, quantity, price, packed, weight }) {
+          // Prefer the frozen display string. Fall back to structural fields for older orders
+          // that pre-date the displayTitle field.
+          const headline = displayTitle || [title, variantTitle].filter(Boolean).join(' — ')
           const priceStr = typeof price === 'number' ? ctx.format.currency(price / 100) : '—'
           const weightStr = typeof weight === 'number' ? `${weight}g` : null
           return {
-            title: `${quantity}× ${label}`,
-            subtitle: [priceStr, weightStr, kind, packed ? '✓' : null].filter(Boolean).join(' · '),
+            title: `${quantity}× ${headline}`,
+            subtitle: [displaySubtitle, priceStr, weightStr, kind, packed ? '✓' : null].filter(Boolean).join(' · '),
             media: OrderItemIcon,
           }
         },

@@ -101,7 +101,11 @@ export interface NetlifyConfig {
   endpoint: string
   secret: string
 }
+
 export interface IntegrationsConfig {
+  // The customer's deployed core-front. `endpoint` is the public URL,
+  // `secret` must match SERVER_FUNCTIONS_SECRET in the core-front Netlify env.
+  // Studio document actions (refund, notify) call /api/* paths under endpoint.
   netlify: NetlifyConfig
 }
 

@@ -10,9 +10,8 @@ export const addressStrict: ITSSchemaDefinition = {
     return {
       fields: [
         f('name', 'string', { validation: (Rule) => Rule.required() }),
-        f('prename', 'string', { validation: (Rule) => Rule.required() }),
-        f('lastname', 'string', { validation: (Rule) => Rule.required() }),
-        f('phone', 'string'),
+        f('prename', 'string'),
+        f('lastname', 'string'),
         f('line1', 'string', { validation: (Rule) => Rule.required() }),
         f('line2', 'string'),
         f('zip', 'string', { validation: (Rule) => Rule.required() }),
@@ -24,6 +23,7 @@ export const addressStrict: ITSSchemaDefinition = {
           validation: (Rule) => Rule.required(),
         }),
         f('state', 'string'),
+        f('phone', 'string'),
       ],
     }
   },

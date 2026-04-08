@@ -226,62 +226,125 @@ export default {
     },
   },
   orderTotals: {
-    schemaTitle: 'Order Totals',
+    title: 'Order Totals',
     fieldsets: {
       vat: 'VAT',
     },
-    subtotal: {
-      title: 'Subtotal',
-    },
-    total: {
-      title: 'Total',
-    },
-    vat: {
-      title: 'Included VAT in subtotal',
-    },
-    vatRate: {
-      title: 'VAT Rate',
-      placeholder: '20',
-    },
-    currency: {
-      title: 'Currency',
-    },
-    discount: {
-      title: 'Discount',
+    fields: {
+      grandTotal: {
+        title: 'Grand Total (Gross)',
+        description: 'The final amount the customer paid',
+      },
+      subtotal: {
+        title: 'Items Subtotal',
+        description: 'Sum of all order items (Gross)',
+      },
+      shipping: {
+        title: 'Shipping/Fulfillment Cost',
+      },
+      discount: {
+        title: 'Discount',
+      },
+      totalVat: {
+        title: 'Total VAT Amount',
+        description: 'The sum of all VAT from items and shipping',
+      },
+      vatBreakdown: {
+        title: 'VAT Breakdown',
+        description: 'Taxes grouped by rate (e.g., 10% vs 20%)',
+      },
+      currency: {
+        title: 'Currency',
+      },
     },
   },
   order: {
-    schemaTitle: 'Order',
+    title: 'Order',
     groups: {
       order: 'Order',
-      customer: 'Customer data',
-      totals: 'Totals',
-      vouchers: 'Vouchers',
+      history: 'Status History',
+      orderPayment: 'Payment',
+      orderItems: 'Items',
+      orderCustomer: 'Customer',
+      orderTotals: 'Totals',
+      fulfillment: 'Fulfillment',
+      orderVouchers: 'Vouchers',
+      orderFreeProducts: 'Gifts',
     },
-    total: {
-      title: 'Total Price',
-    },
-    status: {
-      title: 'Status',
-      options: {
-        created: 'Created',
-        processing: 'Processing',
-        shipped: 'Shipped',
-        delivered: 'Delivered',
-        canceled: 'Canceled',
-        returned: 'Returned',
+    fields: {
+      orderNumber: {
+        title: 'Order Number',
+      },
+      invoiceNumber: {
+        title: 'Invoice Number',
+      },
+      status: {
+        title: 'Status',
+        options: {
+          created: 'Created',
+          processing: 'Processing',
+          shipped: 'Shipped',
+          delivered: 'Delivered',
+          canceled: 'Canceled',
+          returned: 'Returned',
+        },
+      },
+      paymentStatus: {
+        title: 'Payment Status',
+        options: {
+          succeeded: 'Successfully paid',
+          refunded: 'Refunded',
+          partiallyRefunded: 'Partially refunded',
+        },
+      },
+      statusHistory: {
+        title: 'Status History',
+      },
+      paymentIntentId: {
+        title: 'Stripe Payment Intent ID',
+      },
+      orderItems: {
+        title: 'Items',
+      },
+      customer: {
+        title: 'Customer',
+      },
+      totals: {
+        title: 'Totals',
+      },
+      fulfillment: {
+        title: 'Fulfillment',
       },
     },
-    paymentStatus: {
-      title: 'Payment Status',
-      options: {
-        succeeded: 'Successfully paid',
-        refunded: 'Refunded',
-        partiallyRefunded: 'Partially refunded',
+  },
+  orderCustomer: {
+    title: 'Customer',
+    groups: {
+      general: 'General',
+      billing: 'Billing Address',
+      shipping: 'Shipping Address',
+    },
+    fields: {
+      locale: {
+        title: 'Language',
+      },
+      contactEmail: {
+        title: 'Contact Email',
+      },
+      supabaseId: {
+        title: 'Supabase User ID',
+      },
+      billingAddress: {
+        title: 'Billing Address',
+      },
+      shippingAddress: {
+        title: 'Shipping Address',
       },
     },
-    statusHistory: {
-      name: 'Status History',
+  },
+  orderStatusHistory: {
+    title: 'Status History Entry',
+    fields: {
       type: {
         title: 'Type',
         options: {
@@ -289,7 +352,7 @@ export default {
           fulfillment: 'Fulfillment',
         },
       },
-      state: {
+      status: {
         title: 'Status',
       },
       timestamp: {
@@ -302,32 +365,155 @@ export default {
         title: 'Note',
       },
     },
-    contactEmail: {
-      title: 'Contact-Email',
+  },
+  orderItem: {
+    title: 'Order Item',
+    fields: {
+      kind: {
+        title: 'Kind',
+      },
+      variantId: {
+        title: 'Variant ID',
+      },
+      productId: {
+        title: 'Product ID',
+      },
+      parentId: {
+        title: 'Parent Item Key',
+        description: 'Set on bundle child items — points to the parent bundle orderItem._key',
+      },
+      title: {
+        title: 'Product Title',
+        description: 'Snapshotted product title, resolved at checkout',
+      },
+      variantTitle: {
+        title: 'Variant Title',
+        description: 'Snapshotted variant subtitle, resolved at checkout',
+      },
+      displayTitle: {
+        title: 'Display Title',
+        description:
+          'Frozen display string the customer saw at order time — canonical for invoices, emails, customer order history, WC API. Never recompose.',
+      },
+      displaySubtitle: {
+        title: 'Display Subtitle',
+        description: 'Frozen display subtitle the customer saw at order time (optional).',
+      },
+      weight: {
+        title: 'Weight',
+        description: 'Weight in grams at time of order',
+      },
+      sku: {
+        title: 'SKU',
+      },
+      quantity: {
+        title: 'Quantity',
+      },
+      price: {
+        title: 'Unit Price',
+        description: 'Unit price in cents',
+      },
+      vatRate: {
+        title: 'VAT Rate',
+        description: 'VAT rate as a percentage, e.g. 20 for 20%',
+      },
+      vatAmount: {
+        title: 'VAT Amount',
+        description: 'Total VAT for this line in cents (quantity × unit vat)',
+      },
+      packed: {
+        title: 'Packed',
+      },
+      wine: {
+        title: 'Wine Details',
+      },
+      options: {
+        title: 'Options',
+        description: 'Snapshotted option group/value pairs',
+      },
+      bundle: {
+        title: 'Bundle',
+      },
     },
-    shipping: {
-      title: 'Shipping',
+  },
+  orderItemWine: {
+    title: 'Wine',
+    fields: {
+      vintage: {
+        title: 'Vintage',
+      },
+      volume: {
+        title: 'Volume',
+        description: 'Volume in ml',
+      },
     },
-    billingAddress: {
-      title: 'Billing Address',
+  },
+  orderItemBundle: {
+    title: 'Bundle',
+    fields: {
+      itemCount: {
+        title: 'Item Count',
+        description: 'Total quantity of all child items combined',
+      },
     },
-    trackingNumber: {
-      title: 'Tracking Number',
+  },
+  orderItemOption: {
+    title: 'Option',
+    fields: {
+      groupTitle: {
+        title: 'Group',
+      },
+      optionTitle: {
+        title: 'Option',
+      },
     },
-    orderNumber: {
-      title: 'Order Number',
+  },
+  fulfillment: {
+    title: 'Fulfillment',
+    fields: {
+      methodTitle: {
+        title: 'Shipping Method',
+        description: 'Snapshotted title (e.g., "DHL Express" or "Self-Pickup")',
+      },
+      methodType: {
+        title: 'Type',
+        options: {
+          delivery: 'Delivery',
+          pickup: 'Pickup',
+        },
+      },
+      shippingCost: {
+        title: 'Shipping Cost',
+        description: 'The fee charged to the customer',
+      },
+      taxSnapshot: {
+        title: 'Shipping Tax',
+      },
+      method: {
+        title: 'Shipping Method Reference',
+        description: 'Link to the original config (may change over time)',
+      },
+      trackingCode: {
+        title: 'Tracking Code',
+      },
+      pickupLocation: {
+        title: 'Pickup Location',
+        description: 'The address where the customer will collect the goods',
+      },
     },
-    invoiceNumber: {
-      title: 'Invoice Number',
-    },
-    vouchers: {
-      title: 'Vouchers',
-    },
-    freeProducts: {
-      title: 'Gifts',
-    },
-    locale: {
-      title: 'Language',
+  },
+  vatBreakdownItem: {
+    title: 'VAT Breakdown',
+    fields: {
+      rate: {
+        title: 'Rate %',
+      },
+      net: {
+        title: 'Net Amount',
+      },
+      vat: {
+        title: 'VAT Amount',
+      },
     },
   },
   tag: {

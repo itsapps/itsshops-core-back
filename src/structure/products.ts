@@ -19,13 +19,8 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
               .id('product')
               .schemaType('product')
               .documentId(productId)
-              .views([
-                S.view.form(),
-                getProductReferenceView(S, t('products.variants'), t('products.addVariant')),
-                // getReferenceView(S, t('views.titles.references')),
-              ]),
+              .views([S.view.form(), getProductReferenceView(S, t('products.variants'))]),
           ),
-        // .child(S.document().schemaType('product').documentId(productId)),
         S.listItem()
           .title(t('products.variants'))
           .icon(ProductVariantIcon)
@@ -34,21 +29,8 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
               .title(t('products.variants'))
               .apiVersion(apiVersion)
               .filter('_type == "productVariant" && product._ref == $productId')
-              // .canHandleIntent((intentName, params) => {
-              //   return intentName === 'edit' && params.type === 'productVariant'
-              // })
               .params({ productId }),
           ),
-      ])
-
-  const getProductSimpleChildView = (productId: string) =>
-    S.editor()
-      .id('product')
-      .schemaType('product')
-      .documentId(productId)
-      .views([
-        S.view.form(),
-        getProductReferenceView(S, t('products.variants'), t('products.addVariant')),
       ])
 
   const kinds = ctx.config.schemaSettings.productKinds

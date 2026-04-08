@@ -13,39 +13,40 @@ export const fulfillment: ITSSchemaDefinition = {
     //   name, ...index === 0 && { default: true }
     // }));
 
+    // Snapshotted fields (taken at order time) are read-only outside dev.
+    // trackingCode and pickupLocation are intentionally writable so admins can
+    // add them after dispatch / pickup.
+    const lockSnapshot = !ctx.config.isDev
+
     const all = [
-      f('methodTitle', 'string', {
-        description: 'Snapshotted title (e.g., "DHL Express" or "Self-Pickup")',
+      f('trackingCode', 'string', {
+        hidden: ({ parent }) => parent?.methodType === 'pickup',
       }),
+      f('pickupLocation', 'string', {
+        hidden: ({ parent }) => parent?.methodType !== 'pickup',
+      }),
+
+      f('methodTitle', 'string', { hidden: lockSnapshot }),
       f('methodType', 'string', {
         options: { list: [{ value: 'delivery' }, { value: 'pickup' }] },
         validation: (Rule) => Rule.required(),
+        hidden: lockSnapshot,
       }),
 
       // 2. Financials: What was the cost and tax for this specific service?
       f('shippingCost', 'number', {
-        description: 'The fee charged to the customer',
         validation: (rule) => rule.required().min(0).integer(),
+        hidden: lockSnapshot,
       }),
 
       // This handles the tax on the shipping fee itself
-      f('taxSnapshot', 'vatBreakdownItem'),
+      f('taxSnapshot', 'vatBreakdownItem', { hidden: lockSnapshot }),
 
       // 3. Tracking & References
       f('method', 'reference', {
         to: [{ type: 'shippingMethod' }],
         weak: true,
-        description: 'Link to the original config (may change over time)',
-      }),
-
-      f('trackingCode', 'string', {
-        hidden: ({ parent }) => parent?.methodType === 'pickup',
-      }),
-
-      // 4. Pickup Specifics
-      f('pickupLocation', 'string', {
-        description: 'The address where the customer will collect the goods',
-        hidden: ({ parent }) => parent?.methodType !== 'pickup',
+        hidden: lockSnapshot,
       }),
     ]
 
