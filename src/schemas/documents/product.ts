@@ -36,6 +36,7 @@ export const product: ITSDocumentDefinition = {
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [
                 f('categories', 'array', {
+                  title: ctx.t.default('category.title'),
                   validation: (rule) => rule.unique(),
                   of: [
                     {

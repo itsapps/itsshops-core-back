@@ -41,6 +41,10 @@ export const fulfillment: ITSSchemaDefinition = {
 
       // This handles the tax on the shipping fee itself
       f('taxSnapshot', 'vatBreakdownItem', { hidden: lockSnapshot }),
+      f('packagingLines', 'array', {
+        of: [{ type: 'fulfillmentPackagingLine' }],
+        hidden: lockSnapshot,
+      }),
 
       // 3. Tracking & References
       f('method', 'reference', {

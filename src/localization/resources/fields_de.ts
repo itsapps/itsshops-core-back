@@ -494,6 +494,9 @@ export default {
           pickup: 'Abholung',
         },
       },
+      packagingConfigs: {
+        title: 'Weinverpackung',
+      },
       pickupFee: {
         title: 'Kosten für die Abholung',
         description: 'Auf 0 setzen, um die Abholung kostenlos zu machen.',
@@ -506,6 +509,20 @@ export default {
       countries_zero: 'Keine Länder ausgewählt',
       countries_one: '{{count}} Land',
       countries_other: '{{count}} Länder',
+    },
+  },
+  winePackage: {
+    title: 'Paket',
+    fields: {
+      count: { title: 'Flaschen pro Paket' },
+      price: { title: 'Preis', description: 'Brutto-Preis' },
+    },
+  },
+  winePackagingConfig: {
+    title: 'Volumen-Konfiguration',
+    fields: {
+      volume: { title: 'Flaschengröße' },
+      packages: { title: 'Pakete' },
     },
   },
   shippingRate: {

@@ -482,6 +482,9 @@ export default {
           pickup: 'Pickup',
         },
       },
+      packagingConfigs: {
+        title: 'Wine Packaging',
+      },
       shippingCost: {
         title: 'Shipping Cost',
         description: 'The fee charged to the customer',
@@ -1009,6 +1012,20 @@ export default {
     },
     rates: {
       title: 'Shipping Rates',
+    },
+  },
+  winePackage: {
+    title: 'Package',
+    fields: {
+      count: { title: 'Bottles per package' },
+      price: { title: 'Price', description: 'Gross price' },
+    },
+  },
+  winePackagingConfig: {
+    title: 'Volume configuration',
+    fields: {
+      volume: { title: 'Bottle size' },
+      packages: { title: 'Packages' },
     },
   },
   shippingRate: {

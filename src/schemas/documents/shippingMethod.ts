@@ -38,26 +38,24 @@ export const shippingMethod: ITSDocumentDefinition = {
         }),
         f('rates', 'array', {
           of: [{ type: 'shippingRate' }],
-          // validation: (Rule) => Rule.required(),
           hidden: ({ parent }) => parent?.methodType === 'pickup',
           validation: (Rule) =>
             Rule.custom((value, context) => {
-              const rates = value as unknown[]
-              const parent = context.parent as { methodType?: string } | undefined
-
-              // 1. If we don't know the method type yet, don't throw an error
+              const rates = value as unknown[] | undefined
+              const parent = context.parent as { methodType?: string; packagingConfigs?: unknown[] } | undefined
               if (!parent?.methodType) return true
-
-              // 2. Only enforce rates if it's explicitly 'delivery'
               if (parent.methodType === 'delivery') {
-                if (!rates || rates.length === 0) {
+                const hasPackaging = (parent.packagingConfigs ?? []).length > 0
+                if (!hasPackaging && (!rates || rates.length === 0)) {
                   return t.default('validation.deliveryMethodsAtLeastOneRate')
                 }
               }
-
-              // 3. For everything else (like 'pickup'), it's valid
               return true
             }),
+        }),
+        f('packagingConfigs', 'array', {
+          of: [{ type: 'winePackagingConfig' }],
+          hidden: ({ parent }) => parent?.methodType === 'pickup',
         }),
         f('taxCategory', 'reference', {
           to: [{ type: 'taxCategory' }],

@@ -76,6 +76,7 @@ export default {
     total: 'Total',
     subtotal: 'Subtotal',
     trackingNumber: 'Tracking Number',
+    packaging: 'Packaging',
     loading: 'Loading Order...',
     orderNumber: 'Order Number',
     invoiceNumber: 'Invoice Number',

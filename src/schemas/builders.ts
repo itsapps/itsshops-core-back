@@ -279,7 +279,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     //     },
     //   }),
     // },
-    priceField: (options) => {
+    priceField: (options = {}) => {
       const { name, validation, ...rest } = options
 
       const field = f(name || 'price', 'number', {

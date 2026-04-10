@@ -16,6 +16,7 @@ import { localeAltImage } from './objects/localeAltImage'
 import { localeImage } from './objects/localeImage'
 import { menuItem } from './objects/menuItem'
 import { fulfillment } from './objects/orders/fulfillment'
+import { fulfillmentPackagingLine } from './objects/orders/fulfillmentPackagingLine'
 import { orderCustomer } from './objects/orders/orderCustomer'
 import { orderItem } from './objects/orders/orderItem'
 import { orderItemBundle } from './objects/orders/orderItemBundle'
@@ -26,6 +27,8 @@ import { orderTotals } from './objects/orders/orderTotals'
 import { vatBreakdownItem } from './objects/orders/vatBreakdownItem'
 import { seo } from './objects/seo'
 import { shippingRate } from './objects/shippingRate'
+import { winePackage } from './objects/winePackage'
+import { winePackagingConfig } from './objects/winePackagingConfig'
 import { taxRule } from './objects/taxRule'
 import { wine } from './objects/wine'
 import { youtube } from './objects/youtube'
@@ -48,6 +51,7 @@ export const getCoreObjects = (
     company,
     cropImage,
     fulfillment,
+    fulfillmentPackagingLine,
     localeAltImage,
     localeImage,
     menuItem,
@@ -60,6 +64,8 @@ export const getCoreObjects = (
     orderTotals,
     seo,
     shippingRate,
+    winePackage,
+    winePackagingConfig,
     taxRule,
     vatBreakdownItem,
     wine,
