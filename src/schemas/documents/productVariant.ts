@@ -144,6 +144,8 @@ export const productVariant: ITSDocumentDefinition = {
       image: 'image',
       productImage: 'product.image',
       kind: 'kind',
+      status: 'status',
+      featured: 'featured',
       // physical + digital: option ref titles
       ...(optionsActuallyEnabled && {
         options: 'options',
@@ -176,6 +178,8 @@ export const productVariant: ITSDocumentDefinition = {
           image,
           productImage,
           kind,
+          status,
+          featured,
           wineVolume,
           wineVintage,
           bundleItems,
@@ -184,7 +188,7 @@ export const productVariant: ITSDocumentDefinition = {
           const pTitle = ctx.localizer.value(productTitle)
           const title = vTitle ?? (pTitle ? `[${pTitle}]` : '')
 
-          const subtitle = buildSubtitle(ctx, kind, {
+          const kindSubtitle = buildSubtitle(ctx, kind, {
             options: {
               all: options,
               titles: [optionTitle0, optionTitle1, optionTitle2],
@@ -193,6 +197,12 @@ export const productVariant: ITSDocumentDefinition = {
             wineVintage,
             bundleItemCount: bundleItems?.length ?? 0,
           })
+
+          const statusIcons: Record<string, string> = { comingSoon: '🟡', soldOut: '🔴', archived: '⚪' }
+          const statusIcon = statusIcons[status] ?? ''
+          const featuredIcon = featured ? ' ★' : ''
+          const subtitle = [statusIcon + featuredIcon, kindSubtitle].filter(Boolean).join(' ')
+
           return {
             title,
             subtitle,
