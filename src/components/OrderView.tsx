@@ -42,9 +42,7 @@ type OrderItem = {
   productId: string
   parentId?: string
   title: string
-  variantTitle?: string
-  displayTitle: string
-  displaySubtitle?: string
+  subtitle?: string
   sku?: string
   quantity: number
   price: number
@@ -376,11 +374,6 @@ function OrderItemRow({
   money: (cents: number | undefined) => string
   t: TranslatorFunction
 }) {
-  // Structural fallback subtitle for admin display — composed from the same
-  // structural fields that the WC API mimic uses, so the studio view stays in
-  // sync with what integrations see. The frozen displayTitle/displaySubtitle
-  // are also shown so admins can confirm what the customer actually saw.
-  const structuralSubtitle = composeStructuralSubtitle(item)
   const lineTotal = item.price * item.quantity
 
   return (
@@ -389,21 +382,11 @@ function OrderItemRow({
         <Stack space={2} flex={1}>
           <Flex gap={2} align="center" wrap="wrap">
             <Text weight="semibold">
-              {item.quantity}× {item.displayTitle}
+              {item.quantity}× {item.title}
             </Text>
-            {/* {item.kind !== 'physical' && (
-              <Badge fontSize={0} tone="default">
-                {item.kind}
-              </Badge>
-            )} */}
           </Flex>
-          {/* {item.displaySubtitle && (
-            <Text size={1} muted>
-              {item.displaySubtitle}
-            </Text>
-          )} */}
-          {structuralSubtitle && structuralSubtitle !== item.displaySubtitle && (
-            <Text muted>{structuralSubtitle}</Text>
+          {item.subtitle && (
+            <Text muted>{item.subtitle}</Text>
           )}
           <Flex gap={3} wrap="wrap">
             {item.sku && (
@@ -432,22 +415,3 @@ function OrderItemRow({
   )
 }
 
-function composeStructuralSubtitle(item: OrderItem): string | null {
-  if (item.kind === 'wine' && item.wine) {
-    const parts: string[] = []
-    if (item.wine.vintage) parts.push(item.wine.vintage)
-    if (item.wine.volume) {
-      parts.push(
-        item.wine.volume >= 1000 ? `${item.wine.volume / 1000} l` : `${item.wine.volume} ml`,
-      )
-    }
-    return parts.length > 0 ? parts.join(' · ') : null
-  }
-  if ((item.kind === 'physical' || item.kind === 'digital') && item.options?.length) {
-    return item.options.map((o) => `${o.groupTitle}: ${o.optionTitle}`).join(' · ')
-  }
-  if (item.kind === 'bundle' && item.bundle) {
-    return `${item.bundle.itemCount} items`
-  }
-  return null
-}

@@ -52,16 +52,7 @@ export const orderItem: ITSSchemaDefinition = {
         readOnly: !ctx.config.isDev,
       }),
 
-      f('variantTitle', 'string', {
-        readOnly: !ctx.config.isDev,
-      }),
-
-      f('displayTitle', 'string', {
-        validation: (rule) => rule.required(),
-        readOnly: !ctx.config.isDev,
-      }),
-
-      f('displaySubtitle', 'string', {
+      f('subtitle', 'string', {
         readOnly: !ctx.config.isDev,
       }),
 
@@ -124,25 +115,20 @@ export const orderItem: ITSSchemaDefinition = {
       fields,
       preview: {
         select: {
-          displayTitle: 'displayTitle',
-          displaySubtitle: 'displaySubtitle',
           title: 'title',
-          variantTitle: 'variantTitle',
+          subtitle: 'subtitle',
           kind: 'kind',
           quantity: 'quantity',
           price: 'price',
           packed: 'packed',
           weight: 'weight',
         },
-        prepare({ displayTitle, displaySubtitle, title, variantTitle, kind, quantity, price, packed, weight }) {
-          // Prefer the frozen display string. Fall back to structural fields for older orders
-          // that pre-date the displayTitle field.
-          const headline = displayTitle || [title, variantTitle].filter(Boolean).join(' — ')
+        prepare({ title, subtitle, kind, quantity, price, packed, weight }) {
           const priceStr = typeof price === 'number' ? ctx.format.currency(price / 100) : '—'
           const weightStr = typeof weight === 'number' ? `${weight}g` : null
           return {
-            title: `${quantity}× ${headline}`,
-            subtitle: [displaySubtitle, priceStr, weightStr, kind, packed ? '✓' : null].filter(Boolean).join(' · '),
+            title: `${quantity}× ${title}`,
+            subtitle: [subtitle, priceStr, weightStr, kind, packed ? '✓' : null].filter(Boolean).join(' · '),
             media: OrderItemIcon,
           }
         },
