@@ -96,7 +96,6 @@ export const product: ITSDocumentDefinition = {
 
     return {
       ...groupedData,
-      fieldsets: [],
       preview: {
         select: {
           title: 'title',

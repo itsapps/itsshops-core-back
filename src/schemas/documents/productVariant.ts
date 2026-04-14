@@ -21,7 +21,7 @@ export const productVariant: ITSDocumentDefinition = {
   disallowedActions: ['duplicate'],
   hideInStructure: true,
   build: (ctx) => {
-    const { f } = ctx
+    const { f, t } = ctx
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
     const kindFields = getKindFields(ctx)
 
@@ -164,6 +164,28 @@ export const productVariant: ITSDocumentDefinition = {
 
     return {
       ...groupedData,
+      orderings: [
+        {
+          title: `${t.default('productVariant.fields.vintage.title')} (${t.default('orderings.desc')})`,
+          name: 'vintageDesc',
+          by: [{ field: 'wine.vintage', direction: 'desc' }],
+        },
+        {
+          title: `${t.default('productVariant.fields.vintage.title')} (${t.default('orderings.asc')})`,
+          name: 'vintageAsc',
+          by: [{ field: 'wine.vintage', direction: 'asc' }],
+        },
+        {
+          title: `${t.default('productVariant.fields.volume.title')} (${t.default('orderings.desc')})`,
+          name: 'volumeDesc',
+          by: [{ field: 'wine.volume', direction: 'desc' }],
+        },
+        {
+          title: `${t.default('productVariant.fields.volume.title')} (${t.default('orderings.asc')})`,
+          name: 'volumeAsc',
+          by: [{ field: 'wine.volume', direction: 'asc' }],
+        },
+      ],
       preview: {
         select: previewSelect,
         prepare({
@@ -195,7 +217,11 @@ export const productVariant: ITSDocumentDefinition = {
             bundleItemCount: bundleItems?.length ?? 0,
           })
 
-          const statusIcons: Record<string, string> = { comingSoon: '🟡', soldOut: '🔴', archived: '⚪' }
+          const statusIcons: Record<string, string> = {
+            comingSoon: '🟡',
+            soldOut: '🔴',
+            archived: '⚪',
+          }
           const statusIcon = statusIcons[status] ?? ''
           const subtitle = [statusIcon, kindSubtitle].filter(Boolean).join(' ')
 

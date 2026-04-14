@@ -17,7 +17,6 @@ export const taxRule: ITSSchemaDefinition = {
         f('rate', 'number', {
           validation: (Rule) => Rule.required().positive().max(100),
         }),
-        f('exciseDuty', 'number'),
       ],
       preview: {
         select: {

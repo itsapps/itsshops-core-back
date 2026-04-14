@@ -63,7 +63,7 @@ export interface ITSFeatureConfig {
     enabled: boolean
     manufacturer: boolean
     stock: boolean
-    category: boolean
+    category: boolean | { subcategories?: boolean }
     vinofact: VinofactConfig
     vouchers: boolean
   }

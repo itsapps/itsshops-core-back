@@ -147,10 +147,6 @@ export default {
     parent: {
       title: 'Parent Category',
     },
-    sortOrder: {
-      title: 'Sort Order',
-      description: 'The lower the number, the higher the category in the navigation',
-    },
     image: {
       title: 'Image',
     },

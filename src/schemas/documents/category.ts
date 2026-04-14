@@ -23,10 +23,6 @@ export const category: ITSDocumentDefinition = {
           f('title', 'i18nString', { i18n: 'atLeastOne' }),
           f('description', 'i18nString'),
           f('level', 'number', { hidden: true }),
-          f('sortOrder', 'number', {
-            initialValue: 0,
-            validation: (rule) => rule.required().positive(),
-          }),
           ...(hasSubcategories
             ? [
                 f('parent', 'reference', {

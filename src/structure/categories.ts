@@ -11,10 +11,7 @@ export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
       .title(t('categories.title'))
       .icon(CategoryIcon)
       .child(
-        S.documentTypeList('category')
-          .title(t('categories.title'))
-          .apiVersion(apiVersion)
-          .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }]),
+        S.documentTypeList('category').title(t('categories.title')).apiVersion(apiVersion),
       )
   }
 
@@ -46,7 +43,6 @@ export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
     return S.documentTypeList('category')
       .title(title)
       .apiVersion(apiVersion)
-      .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
       .filter('parent._ref == $categoryId')
       .params({ categoryId })
       .menuItems(getCategoryMenuItems(categoryId))
@@ -64,7 +60,6 @@ export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
       S.documentTypeList('category')
         .title(t('categories.title'))
         .apiVersion(apiVersion)
-        .defaultOrdering([{ field: 'sortOrder', direction: 'asc' }])
         .filter('_type == "category" && !defined(parent)')
         .canHandleIntent(() => false)
         .child(subCategoryList),

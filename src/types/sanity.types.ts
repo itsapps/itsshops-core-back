@@ -13,6 +13,8 @@
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol
+
 // Source: schema.json
 export type Voucher = {
   _id: string
@@ -57,13 +59,6 @@ export type VariantOptionGroup = {
   sortOrder?: number
 }
 
-export type PageReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'page'
-}
-
 export type TaxCountryReference = {
   _ref: string
   _type: 'reference'
@@ -78,28 +73,46 @@ export type TaxCategoryReference = {
   [internalGroqTypeReferenceTo]?: 'taxCategory'
 }
 
+export type PageReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'page'
+}
+
 export type ShopSettings = {
   _id: string
   _type: 'shopSettings'
   _createdAt: string
   _updatedAt: string
   _rev: string
-  shopPage?: PageReference
-  defaultCountry?: TaxCountryReference
-  freeShippingCalculation?: 'beforeDiscount' | 'afterDiscount'
-  stockThreshold?: number
-  defaultTaxCategory?: TaxCategoryReference
+  billingAddress?: BusinessAddress
+  bankAccount?: BankAccount
+  lastInvoiceNumber?: number
   orderNumberPrefix?: string
   invoiceNumberPrefix?: string
-  lastInvoiceNumber?: number
-  bankAccount?: BankAccount
-}
-
-export type BankAccount = {
-  _type: 'bankAccount'
-  name?: string
-  bic?: string
-  iban?: string
+  defaultCountry?: TaxCountryReference
+  freeShippingCalculation?: 'beforeDiscount' | 'afterDiscount'
+  defaultTaxCategory?: TaxCategoryReference
+  senderName?: string
+  senderEmail?: string
+  stockThreshold?: number
+  shopPage?: PageReference
+  filters?: Array<
+    | {
+        field?: 'price' | 'category'
+        _type: 'productFieldFilter'
+        _key: string
+      }
+    | {
+        field?: 'vintage' | 'varietal' | 'color' | 'classification' | 'volume'
+        _type: 'wineFieldFilter'
+        _key: string
+      }
+    | ({
+        _key: string
+      } & VariantOptionGroupReference)
+  >
 }
 
 export type TaxCountry = {
@@ -169,6 +182,81 @@ export type TaxCountry = {
   >
 }
 
+export type BankAccount = {
+  _type: 'bankAccount'
+  name?: string
+  bic?: string
+  iban?: string
+}
+
+export type BusinessAddress = {
+  _type: 'businessAddress'
+  line1?: string
+  line2?: string
+  zip?: string
+  city?: InternationalizedArrayString
+  country?:
+    | 'AD'
+    | 'AL'
+    | 'AT'
+    | 'AX'
+    | 'BA'
+    | 'BE'
+    | 'BG'
+    | 'BY'
+    | 'CH'
+    | 'CY'
+    | 'CZ'
+    | 'DE'
+    | 'DK'
+    | 'EE'
+    | 'ES'
+    | 'FI'
+    | 'FO'
+    | 'FR'
+    | 'GB'
+    | 'GG'
+    | 'GI'
+    | 'GR'
+    | 'HR'
+    | 'HU'
+    | 'IE'
+    | 'IM'
+    | 'IS'
+    | 'IT'
+    | 'JE'
+    | 'LI'
+    | 'LT'
+    | 'LU'
+    | 'LV'
+    | 'MC'
+    | 'MD'
+    | 'ME'
+    | 'MK'
+    | 'MT'
+    | 'NL'
+    | 'NO'
+    | 'PL'
+    | 'PT'
+    | 'RO'
+    | 'RS'
+    | 'SE'
+    | 'SI'
+    | 'SJ'
+    | 'SK'
+    | 'SM'
+    | 'UA'
+    | 'VA'
+    | 'XK'
+}
+
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+}
+
 export type MenuReference = {
   _ref: string
   _type: 'reference'
@@ -184,7 +272,13 @@ export type Settings = {
   _rev: string
   siteTitle?: InternationalizedArrayString
   siteShortDescription?: InternationalizedArrayString
-  siteDescription?: InternationalizedArrayText
+  defaultShareImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
   homePage?: PageReference
   privacyPage?: PageReference
   mainMenus?: Array<
@@ -205,14 +299,27 @@ export type Company = {
   _type: 'company'
   name?: InternationalizedArrayString
   owner?: string
-  address?: Address
+  address?: BusinessAddress
+  email?: string
+  phone?: string
+  vatId?: string
 }
 
-export type InternationalizedArrayText = Array<
-  {
-    _key: string
-  } & InternationalizedArrayTextValue
->
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
 
 export type OrderMeta = {
   _id: string
@@ -220,33 +327,15 @@ export type OrderMeta = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  fulfillment?: Fulfillment
+  customer?: OrderCustomer
   paymentIntentId?: string
+  totals?: OrderTotals
   orderItems?: Array<
     {
       _key: string
     } & OrderItem
   >
-  customer?: OrderCustomer
-  totals?: OrderTotals
-  fulfillment?: Fulfillment
-}
-
-export type ShippingMethodReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'shippingMethod'
-}
-
-export type Fulfillment = {
-  _type: 'fulfillment'
-  methodTitle?: string
-  methodType?: 'delivery' | 'pickup'
-  shippingCost?: number
-  taxSnapshot?: VatBreakdownItem
-  method?: ShippingMethodReference
-  trackingCode?: string
-  pickupLocation?: string
 }
 
 export type OrderTotals = {
@@ -266,11 +355,34 @@ export type OrderTotals = {
 
 export type OrderCustomer = {
   _type: 'orderCustomer'
-  locale?: 'en' | 'de'
   contactEmail?: string
+  locale?: 'en' | 'de'
   supabaseId?: string
   billingAddress?: AddressStrict
   shippingAddress?: AddressStrict
+}
+
+export type ShippingMethodReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'shippingMethod'
+}
+
+export type Fulfillment = {
+  _type: 'fulfillment'
+  trackingCode?: string
+  pickupLocation?: string
+  methodTitle?: string
+  methodType?: 'delivery' | 'pickup'
+  shippingCost?: number
+  taxSnapshot?: VatBreakdownItem
+  packagingLines?: Array<
+    {
+      _key: string
+    } & FulfillmentPackagingLine
+  >
+  method?: ShippingMethodReference
 }
 
 export type Order = {
@@ -279,6 +391,15 @@ export type Order = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  fulfillment?: Fulfillment
+  customer?: OrderCustomer
+  paymentIntentId?: string
+  totals?: OrderTotals
+  orderItems?: Array<
+    {
+      _key: string
+    } & OrderItem
+  >
   orderNumber?: string
   invoiceNumber?: string
   status?: 'created' | 'processing' | 'shipped' | 'delivered' | 'canceled' | 'returned'
@@ -288,15 +409,6 @@ export type Order = {
       _key: string
     } & OrderStatusHistory
   >
-  paymentIntentId?: string
-  orderItems?: Array<
-    {
-      _key: string
-    } & OrderItem
-  >
-  customer?: OrderCustomer
-  totals?: OrderTotals
-  fulfillment?: Fulfillment
 }
 
 export type Menu = {
@@ -322,14 +434,13 @@ export type Manufacturer = {
   title?: InternationalizedArrayString
   description?: InternationalizedArrayText
   link?: string
-  image?: LocaleImage
 }
 
-export type LocaleImage = {
-  _type: 'localeImage'
-  image?: InternationalizedArrayCropImage
-  alt?: InternationalizedArrayString
-}
+export type InternationalizedArrayText = Array<
+  {
+    _key: string
+  } & InternationalizedArrayTextValue
+>
 
 export type CustomerGroup = {
   _id: string
@@ -371,7 +482,6 @@ export type Address = {
   _type: 'address'
   prename?: string
   lastname?: string
-  phone?: string
   line1?: string
   line2?: string
   zip?: string
@@ -430,6 +540,7 @@ export type Address = {
     | 'VA'
     | 'XK'
   state?: string
+  phone?: string
 }
 
 export type Youtube = {
@@ -454,6 +565,7 @@ export type Wine = {
     | 750
     | 1000
     | 1500
+    | 2000
     | 2250
     | 3000
     | 4500
@@ -470,103 +582,46 @@ export type VatBreakdownItem = {
   rate?: number
   net?: number
   vat?: number
-  label?: string
-}
-
-export type ProductVariantReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'productVariant'
-}
-
-export type PostReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'post'
-}
-
-export type CategoryReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'category'
-}
-
-export type BlogReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'blog'
-}
-
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-}
-
-export type TextBlock = {
-  _type: 'textBlock'
-  content?: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>
-          text?: string
-          _type: 'span'
-          _key: string
-        }>
-        style?: 'normal' | 'h2' | 'h3'
-        listItem?: 'bullet' | 'number'
-        markDefs?: Array<{
-          internalLinkReference?:
-            | ProductVariantReference
-            | PageReference
-            | PostReference
-            | CategoryReference
-            | BlogReference
-          internalLinkDisplayType?: 'link' | 'button' | 'ghost'
-          _type: 'internalLink'
-          _key: string
-        }>
-        level?: number
-        _type: 'block'
-        _key: string
-      }
-    | {
-        asset?: SanityImageAssetReference
-        media?: unknown
-        hotspot?: SanityImageHotspot
-        crop?: SanityImageCrop
-        _type: 'image'
-        _key: string
-      }
-  >
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x?: number
-  y?: number
-  height?: number
-  width?: number
 }
 
 export type TaxRule = {
   _type: 'taxRule'
   taxCategory?: TaxCategoryReference
   rate?: number
-  exciseDuty?: number
+}
+
+export type WinePackagingConfig = {
+  _type: 'winePackagingConfig'
+  volume?:
+    | 100
+    | 187
+    | 200
+    | 250
+    | 375
+    | 500
+    | 750
+    | 1000
+    | 1500
+    | 2000
+    | 2250
+    | 3000
+    | 4500
+    | 5000
+    | 6000
+    | 9000
+    | 12000
+    | 15000
+  packages?: Array<
+    {
+      _key: string
+    } & WinePackage
+  >
+}
+
+export type WinePackage = {
+  _type: 'winePackage'
+  count?: number
+  price?: number
 }
 
 export type ShippingRate = {
@@ -581,44 +636,9 @@ export type Seo = {
   metaDescription?: InternationalizedArrayString
   shareTitle?: InternationalizedArrayString
   shareDescription?: InternationalizedArrayString
-  shareImage?: LocaleImage
+  shareImage?: LocaleAltImage
   keywords?: InternationalizedArrayString
 }
-
-export type PortableText = Array<
-  | {
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal' | 'h2' | 'h3'
-      listItem?: 'bullet' | 'number'
-      markDefs?: Array<{
-        internalLinkReference?:
-          | ProductVariantReference
-          | PageReference
-          | PostReference
-          | CategoryReference
-          | BlogReference
-        internalLinkDisplayType?: 'link' | 'button' | 'ghost'
-        _type: 'internalLink'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }
-  | {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: 'image'
-      _key: string
-    }
->
 
 export type OrderStatusHistory = {
   _type: 'orderStatusHistory'
@@ -653,7 +673,7 @@ export type OrderItem = {
   productId?: string
   parentId?: string
   title?: string
-  variantTitle?: string
+  subtitle?: string
   weight?: number
   sku?: string
   quantity?: number
@@ -675,7 +695,6 @@ export type AddressStrict = {
   name?: string
   prename?: string
   lastname?: string
-  phone?: string
   line1?: string
   line2?: string
   zip?: string
@@ -734,6 +753,35 @@ export type AddressStrict = {
     | 'VA'
     | 'XK'
   state?: string
+  phone?: string
+}
+
+export type ProductVariantReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'productVariant'
+}
+
+export type PostReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'post'
+}
+
+export type CategoryReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'category'
+}
+
+export type BlogReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'blog'
 }
 
 export type MenuItem = {
@@ -760,6 +808,18 @@ export type InternationalizedArrayUrl = Array<
   } & InternationalizedArrayUrlValue
 >
 
+export type LocaleImage = {
+  _type: 'localeImage'
+  image?: InternationalizedArrayCropImage
+  alt?: InternationalizedArrayString
+}
+
+export type InternationalizedArrayCropImage = Array<
+  {
+    _key: string
+  } & InternationalizedArrayCropImageValue
+>
+
 export type LocaleAltImage = {
   _type: 'localeAltImage'
   asset?: SanityImageAssetReference
@@ -769,22 +829,60 @@ export type LocaleAltImage = {
   alt?: InternationalizedArrayString
 }
 
-export type Hero = {
-  _type: 'hero'
+export type FulfillmentPackagingLine = {
+  _type: 'fulfillmentPackagingLine'
+  volume?: number
+  packSize?: number
+  quantity?: number
+  price?: number
+}
+
+export type ShippingMethod = {
+  _id: string
+  _type: 'shippingMethod'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
   title?: InternationalizedArrayString
-  bgImage?: LocaleImage
-  actions?: Array<{
-    internalLinkTitle?: InternationalizedArrayString
-    internalLinkReference?:
-      | ProductVariantReference
-      | PageReference
-      | PostReference
-      | CategoryReference
-      | BlogReference
-    internalLinkDisplayType?: 'link' | 'button' | 'ghost'
-    _type: 'action'
-    _key: string
-  }>
+  methodType?: 'delivery' | 'pickup'
+  pickupFee?: number
+  eligibleCountries?: Array<
+    {
+      _key: string
+    } & TaxCountryReference
+  >
+  rates?: Array<
+    {
+      _key: string
+    } & ShippingRate
+  >
+  packagingConfigs?: Array<
+    {
+      _key: string
+    } & WinePackagingConfig
+  >
+  taxCategory?: TaxCategoryReference
+  freeShippingThreshold?: number
+}
+
+export type CropImage = {
+  _type: 'cropImage'
+  asset?: SanityImageAssetReference
+  media?: unknown
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+}
+
+export type InternalLink = {
+  _type: 'internalLink'
+  internalLinkTitle?: InternationalizedArrayString
+  internalLinkReference?:
+    | ProductVariantReference
+    | PageReference
+    | PostReference
+    | CategoryReference
+    | BlogReference
+  internalLinkDisplayType?: 'link' | 'button' | 'ghost'
 }
 
 export type Blog = {
@@ -810,7 +908,21 @@ export type Category = {
   level?: number
   sortOrder?: number
   parent?: CategoryReference
-  image?: LocaleImage
+  filters?: Array<
+    | {
+        field?: 'price' | 'category'
+        _type: 'productFieldFilter'
+        _key: string
+      }
+    | {
+        field?: 'vintage' | 'varietal' | 'color' | 'classification' | 'volume'
+        _type: 'wineFieldFilter'
+        _key: string
+      }
+    | ({
+        _key: string
+      } & VariantOptionGroupReference)
+  >
   seo?: Seo
 }
 
@@ -840,35 +952,47 @@ export type InternationalizedArraySlug = Array<
   } & InternationalizedArraySlugValue
 >
 
-export type ShippingMethod = {
-  _id: string
-  _type: 'shippingMethod'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
+export type ProductList = {
+  _type: 'productList'
   title?: InternationalizedArrayString
-  methodType?: 'delivery' | 'pickup'
-  pickupFee?: number
-  eligibleCountries?: Array<
-    {
-      _key: string
-    } & TaxCountryReference
+  filters?: Array<
+    | {
+        field?: 'price' | 'category'
+        _type: 'productFieldFilter'
+        _key: string
+      }
+    | {
+        field?: 'vintage' | 'varietal' | 'color' | 'classification' | 'volume'
+        _type: 'wineFieldFilter'
+        _key: string
+      }
+    | ({
+        _key: string
+      } & VariantOptionGroupReference)
   >
-  rates?: Array<
-    {
-      _key: string
-    } & ShippingRate
-  >
-  taxCategory?: TaxCategoryReference
-  freeShippingThreshold?: number
+  disabled?: boolean
 }
 
-export type CropImage = {
-  _type: 'cropImage'
-  asset?: SanityImageAssetReference
-  media?: unknown
-  hotspot?: SanityImageHotspot
-  crop?: SanityImageCrop
+export type ProductGrid = {
+  _type: 'productGrid'
+  title?: InternationalizedArrayString
+  products?: Array<
+    {
+      _key: string
+    } & ProductVariantReference
+  >
+  disabled?: boolean
+}
+
+export type CategoryGrid = {
+  _type: 'categoryGrid'
+  title?: InternationalizedArrayString
+  categories?: Array<
+    {
+      _key: string
+    } & CategoryReference
+  >
+  disabled?: boolean
 }
 
 export type Carousel = {
@@ -947,7 +1071,7 @@ export type ProductVariant = {
   taxCategory?: TaxCategoryReference
   price?: number
   compareAtPrice?: number
-  image?: LocaleImage
+  image?: LocaleAltImage
   seo?: Seo
   stock?: number
   stockThreshold?: number
@@ -975,15 +1099,9 @@ export type Product = {
   taxCategory?: TaxCategoryReference
   price?: number
   compareAtPrice?: number
-  image?: LocaleImage
+  image?: LocaleAltImage
   seo?: Seo
 }
-
-export type InternationalizedArrayCropImage = Array<
-  {
-    _key: string
-  } & InternationalizedArrayCropImageValue
->
 
 export type TaxCategory = {
   _id: string
@@ -1158,25 +1276,28 @@ export type AllSanitySchemaTypes =
   | VariantOptionGroupReference
   | VariantOption
   | VariantOptionGroup
-  | PageReference
   | TaxCountryReference
   | TaxCategoryReference
+  | PageReference
   | ShopSettings
-  | BankAccount
   | TaxCountry
+  | BankAccount
+  | BusinessAddress
+  | SanityImageAssetReference
   | MenuReference
   | Settings
   | Company
-  | InternationalizedArrayText
+  | SanityImageCrop
+  | SanityImageHotspot
   | OrderMeta
-  | ShippingMethodReference
-  | Fulfillment
   | OrderTotals
   | OrderCustomer
+  | ShippingMethodReference
+  | Fulfillment
   | Order
   | Menu
   | Manufacturer
-  | LocaleImage
+  | InternationalizedArrayText
   | CustomerGroup
   | CustomerGroupReference
   | Customer
@@ -1184,35 +1305,38 @@ export type AllSanitySchemaTypes =
   | Youtube
   | Wine
   | VatBreakdownItem
-  | ProductVariantReference
-  | PostReference
-  | CategoryReference
-  | BlogReference
-  | SanityImageAssetReference
-  | TextBlock
-  | SanityImageCrop
-  | SanityImageHotspot
   | TaxRule
+  | WinePackagingConfig
+  | WinePackage
   | ShippingRate
   | Seo
-  | PortableText
   | OrderStatusHistory
   | OrderItemWine
   | OrderItemOption
   | OrderItemBundle
   | OrderItem
   | AddressStrict
+  | ProductVariantReference
+  | PostReference
+  | CategoryReference
+  | BlogReference
   | MenuItem
   | InternationalizedArrayUrl
+  | LocaleImage
+  | InternationalizedArrayCropImage
   | LocaleAltImage
-  | Hero
+  | FulfillmentPackagingLine
+  | ShippingMethod
+  | CropImage
+  | InternalLink
   | Blog
   | Category
   | Post
   | Page
   | InternationalizedArraySlug
-  | ShippingMethod
-  | CropImage
+  | ProductList
+  | ProductGrid
+  | CategoryGrid
   | Carousel
   | BundleItem
   | VariantOptionReference
@@ -1220,7 +1344,6 @@ export type AllSanitySchemaTypes =
   | ProductReference
   | ProductVariant
   | Product
-  | InternationalizedArrayCropImage
   | TaxCategory
   | Slug
   | BaseImage
@@ -1240,5 +1363,3 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint
-
-export declare const internalGroqTypeReferenceTo: unique symbol

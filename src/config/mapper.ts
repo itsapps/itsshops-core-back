@@ -105,7 +105,7 @@ function allFeatures(): ITSFeatureConfig {
       enabled: true,
       manufacturer: true,
       stock: true,
-      category: true,
+      category: { subcategories: true },
       vinofact: {
         enabled: true,
       },

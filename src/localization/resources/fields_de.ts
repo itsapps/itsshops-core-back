@@ -447,10 +447,6 @@ export default {
       parent: {
         title: 'Übergeordnete Kategorie',
       },
-      sortOrder: {
-        title: 'Reihenfolge',
-        description: 'Umso niedriger die Zahl, desto höher die Kategorie in der Navigation',
-      },
       filters: { title: 'Filter' },
     },
   },
@@ -480,7 +476,7 @@ export default {
     title: 'Versandart',
     fields: {
       rates: {
-        title: 'Preistabelle',
+        title: 'Preistabelle (Gewicht)',
       },
       methodType: {
         title: 'Typ',
@@ -544,7 +540,7 @@ export default {
     title: 'Land',
     fields: {
       rules: {
-        title: 'Regeln',
+        title: 'Steuersätze',
       },
       freeShippingCalculation: {
         options: {
@@ -554,9 +550,9 @@ export default {
       },
     },
     preview: {
-      rules_zero: 'Keine Regeln ausgewählt',
-      rules_one: '{{count}} Regel',
-      rules_other: '{{count}} Regeln',
+      rules_zero: 'Keine Steuersätze ausgewählt',
+      rules_one: '{{count}} Steuersatz',
+      rules_other: '{{count}} Steuersätze',
     },
   },
   shopSettings: {
@@ -670,9 +666,6 @@ export default {
     fields: {
       rate: {
         title: 'Steuersatz in %',
-      },
-      exciseDuty: {
-        title: 'Verbrauchssteuer in %',
       },
     },
     preview: {

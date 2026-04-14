@@ -2,6 +2,12 @@ import { defineConfig } from 'sanity'
 
 import { createItsshopsWorkspaces, type ItsshopsConfig } from './src'
 
+// This workspace exists only for local schema dev and `sanity typegen`.
+// Customer Studios declare their own feature subsets — this config is
+// disconnected from them. `ignoreExtensions: true` forces `allFeatures()`
+// (see src/config/mapper.ts) so the generated schema is the full superset,
+// regardless of what's set here. To enable a new feature in typegen, add
+// it to `allFeatures()` — not here.
 const config: ItsshopsConfig = {
   workspaceName: process.env.SANITY_STUDIO_WORKSPACE_NAME!,
   // workspaceIcon: WineIcon,
@@ -10,24 +16,6 @@ const config: ItsshopsConfig = {
   settings: {
     isDev: true,
     ignoreExtensions: true,
-  },
-  features: {
-    shop: {
-      enabled: true,
-      manufacturer: true,
-      stock: true,
-      category: true,
-      vinofact: {
-        enabled: true,
-        integration: {
-          endpoint: process.env.SANITY_STUDIO_VINOFACT_API_URL!,
-          accessToken: process.env.SANITY_STUDIO_VINOFACT_API_TOKEN!,
-          profileSlug: process.env.SANITY_STUDIO_VINOFACT_PROFILE_SLUG!,
-        },
-      },
-    },
-    blog: true,
-    users: true,
   },
   integrations: {
     netlify: {

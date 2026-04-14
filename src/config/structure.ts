@@ -12,7 +12,6 @@ import { categoriesMenu } from '../structure/categories'
 import { productsMenu } from '../structure/products'
 import {
   fromRegistry,
-  getProductReferenceView,
   getReferenceView,
   isDocHidden,
   localizedStructure,
@@ -104,7 +103,7 @@ export const createDefaultDocumentNode = (ctx: ITSContext): DefaultDocumentNodeR
       default:
         return S.document().views([
           S.view.form(),
-          ...(schemaType === `product` ? [getProductReferenceView(S, t('products.variants'))] : []),
+          // ...(schemaType === `product` ? [getProductReferenceView(S, t('products.variants'))] : []),
           getReferenceView(S, t('views.titles.references')),
         ])
     }

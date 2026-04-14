@@ -1,6 +1,6 @@
 import { ProductIcon, productKindIcons, ProductVariantIcon } from '../assets/icons'
 import type { ITSStructureComponent } from '../types'
-import { getProductReferenceView } from './structure'
+import { getReferenceView } from './structure'
 
 export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
   const apiVersion = ctx.config.apiVersion
@@ -19,7 +19,7 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
               .id('product')
               .schemaType('product')
               .documentId(productId)
-              .views([S.view.form(), getProductReferenceView(S, t('products.variants'))]),
+              .views([S.view.form(), getReferenceView(S, t('views.titles.references'))]),
           ),
         S.listItem()
           .title(t('products.variants'))
@@ -27,6 +27,12 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
           .child(
             S.documentTypeList('productVariant')
               .title(t('products.variants'))
+              .defaultOrdering([
+                { field: 'wine.vintage', direction: 'desc' },
+                { field: 'wine.vintage', direction: 'asc' },
+                { field: 'wine.volume', direction: 'desc' },
+                { field: 'wine.volume', direction: 'asc' },
+              ])
               .apiVersion(apiVersion)
               .filter('_type == "productVariant" && product._ref == $productId')
               .params({ productId }),
