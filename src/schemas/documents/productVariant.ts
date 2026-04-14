@@ -48,7 +48,13 @@ export const productVariant: ITSDocumentDefinition = {
             ? [
                 f('categories', 'array', {
                   validation: (rule) => rule.unique(),
-                  of: [{ type: 'reference', to: [{ type: 'category' }] }],
+                  of: [
+                    {
+                      type: 'reference',
+                      title: ctx.t.default('category.title'),
+                      to: [{ type: 'category' }],
+                    },
+                  ],
                   options: {
                     disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
                     sortable: false,
