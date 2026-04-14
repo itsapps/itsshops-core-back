@@ -328,6 +328,7 @@ export default {
     fields: {
       title: { title: 'Titel' },
       filters: { title: 'Filter' },
+      products: { title: 'Produkte' },
     },
     wineFieldFilter: {
       title: 'Wein-Filter',
@@ -360,6 +361,10 @@ export default {
       filter: 'Filter',
       filters_zero: 'Keine Filter',
       filters_other: '{{count}} Filter',
+      product: 'Produkt',
+      products_zero: 'Keine Produkte',
+      products_one: '{{count}} Produkt',
+      products_other: '{{count}} Produkte',
     },
   },
   productVariant: {

@@ -1,61 +1,299 @@
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */
-const productAndVariantFields = {
-  title: {
-    title: 'Title',
-  },
-  sku: {
-    title: 'SKU',
-  },
-  manufacturer: {
-    title: 'Manufacturer',
-  },
-  categories: {
-    title: 'Categories',
-  },
-  tags: {
-    title: 'Tags',
-  },
-  seo: {
-    title: 'SEO',
-  },
-  stock: {
-    title: 'Stock',
-  },
-  stockThreshold: {
-    title: 'Product Stock Level Notification Threshold',
-    description:
-      'Receive a notification when the stock level of the product is below this threshold.',
-  },
-  compareAtPrice: {
-    title: 'Compare At Price',
-  },
-  price: {
-    title: 'Price',
-  },
-  images: {
-    title: 'Images',
-  },
-  description: {
-    title: 'Description',
-  },
-  modules: {
-    title: 'Module',
-  },
-  vinofactWineId: {
-    title: 'Wein',
-    description: 'Verbindet dieses Produkt mit einem Vinofact Wein',
-  },
-}
-
 export default {
-  productGroups: {
+  constants: {
+    bottleVolume: {
+      '100': 'Tenth Litre',
+      '187': 'Quarter Litre-Split',
+      '200': 'Piccolo',
+      '250': 'Quarter Litre',
+      '375': 'Half Bottle',
+      '500': 'Half Litre',
+      '750': 'Standard Bottle',
+      '1000': 'Litre',
+      '1500': 'Magnum',
+      '2000': 'Double Litre',
+      '2250': 'Marie-Jeanne',
+      '3000': 'Double Magnum',
+      '4500': 'Rehoboam',
+      '5000': 'Jeroboam',
+      '6000': 'Imperial / Methuselah',
+      '9000': 'Salmanazar',
+      '12000': 'Balthazar',
+      '15000': 'Nebuchadnezzar',
+    },
+  },
+  global: {
+    linkTypes: {
+      internal: 'Internal Link',
+      external: 'External Link',
+      submenu: 'Submenu',
+    },
+  },
+  groups: {
     product: 'Product',
     description: 'Description',
+    stock: 'Stock',
     pricing: 'Pricing',
     media: 'Media',
     seo: 'SEO',
+    filters: 'Product Filters',
     variants: 'Variants',
+    wine: 'Wine',
+    variant: 'Variant',
+    bundle: 'Bundles',
+    general: 'General',
+    address: 'Address',
+    vinofact: 'Vinofact',
+    content: 'Content',
+    images: 'Images',
+    settings: 'Settings',
+    vat: 'VAT',
+    order: 'Order',
+    orderPayment: 'Payment',
+    orderItems: 'Items',
+    orderCustomer: 'Customer',
+    orderTotals: 'Totals',
+    orderVouchers: 'Vouchers',
+    orderFreeProducts: 'Gifts',
+    infos: 'Information',
   },
+  fieldsets: {},
+  fields: {
+    kind: {
+      title: 'Product Kind',
+      options: {
+        wine: 'Wine',
+        physical: 'Physical',
+        digital: 'Digital',
+        bundle: 'Bundle',
+      },
+    },
+    disabled: {
+      title: 'Inactive',
+    },
+    internalLinkTitle: {
+      title: 'Title',
+    },
+    internalLinkReference: {
+      title: 'Reference',
+    },
+    externalLinkTitle: {
+      title: 'Title',
+    },
+    externalLinkUrl: {
+      title: 'Link',
+      description:
+        'For emails use "mailto:hello@example.com", for phone numbers use "tel:+4365012345678"',
+    },
+    externalLinkBlank: {
+      title: 'Open in new window',
+    },
+    url: {
+      title: 'URL',
+    },
+    internalLinkDisplayType: {
+      title: 'Display type',
+      options: {
+        link: 'Link',
+        button: 'Button',
+        ghost: 'Ghost',
+      },
+    },
+    locale: {
+      title: 'Language',
+    },
+    contactEmail: {
+      title: 'Contact email',
+    },
+    email: {
+      title: 'Email',
+    },
+    supabaseId: {
+      title: 'External user ID (Supabase)',
+    },
+    prename: {
+      title: 'First name',
+    },
+    lastname: {
+      title: 'Last name',
+    },
+    phone: {
+      title: 'Phone',
+    },
+    line1: {
+      title: 'Address line 1',
+    },
+    line2: {
+      title: 'Address line 2',
+    },
+    city: {
+      title: 'City',
+    },
+    zip: {
+      title: 'Postal code',
+    },
+    country: {
+      title: 'Country',
+    },
+    state: {
+      title: 'State',
+    },
+    countries: {
+      title: 'Countries',
+    },
+    address: {
+      title: 'Address',
+    },
+    enabled: {
+      title: 'Enabled',
+    },
+    countryCode: {
+      title: 'Country',
+    },
+    freeShippingThreshold: {
+      title: 'Free shipping',
+      description: 'Orders with a value above this gross amount qualify for free shipping.',
+    },
+    freeShippingCalculation: {
+      title: 'Free shipping calculation',
+      description: 'Should free shipping be calculated before or after the discount?',
+    },
+    title: {
+      title: 'Title',
+    },
+    description: {
+      title: 'Description',
+    },
+    image: {
+      title: 'Image',
+    },
+    alt: {
+      title: 'Alternative text',
+    },
+    slug: {
+      title: 'URL name',
+      validation: 'Allowed characters: "a-z" "A-Z" "0-9" "-" "_"',
+    },
+    modules: {
+      title: 'Content',
+    },
+    sku: {
+      title: 'SKU',
+    },
+    weight: {
+      title: 'Weight (g)',
+    },
+    taxCategory: {
+      title: 'Tax category',
+    },
+    manufacturers: {
+      title: 'Manufacturers',
+    },
+    categories: {
+      title: 'Categories',
+    },
+    tags: {
+      title: 'Tags',
+    },
+    seo: {
+      title: 'SEO',
+    },
+    stock: {
+      title: 'Stock',
+    },
+    stockThreshold: {
+      title: 'Lower stock notification threshold',
+      description:
+        'Receive a notification when the stock level of the product drops below this threshold.',
+    },
+    compareAtPrice: {
+      title: 'Compare-at price',
+    },
+    price: {
+      title: 'Price',
+    },
+    images: {
+      title: 'Images',
+    },
+    vinofactWineId: {
+      title: 'Wine',
+      description: 'Links this product to a Vinofact wine',
+    },
+    content: {
+      title: 'Content',
+    },
+    paymentIntentId: {
+      title: 'Stripe Payment Intent ID',
+    },
+    totals: {
+      title: 'Totals',
+    },
+    customer: {
+      title: 'Customer',
+    },
+    orderItems: {
+      title: 'Items',
+    },
+    billingAddress: {
+      title: 'Billing address',
+    },
+    shippingAddress: {
+      title: 'Shipping address',
+    },
+    vouchers: {
+      title: 'Vouchers',
+    },
+    freeProducts: {
+      title: 'Gifts',
+    },
+  },
+  block: {
+    styles: {
+      normal: 'Normal',
+      h1: 'Heading 1',
+      h2: 'Heading 2',
+      h3: 'Heading 3',
+      h4: 'Heading 4',
+      h5: 'Heading 5',
+      h6: 'Heading 6',
+    },
+    marks: {
+      decorators: {
+        strong: 'Bold',
+        em: 'Italic',
+        underline: 'Underline',
+        'strike-through': 'Strikethrough',
+        code: 'Code',
+        internalLink: 'Internal link',
+        externalLink: 'External link',
+        highlight: 'Highlight',
+      },
+      annotations: {
+        underline: 'Underline',
+        strikethrough: 'Strikethrough',
+        code: 'Code',
+        link: 'Link',
+        highlight: 'Highlight',
+        internalLink: 'Internal link',
+        externalLink: 'External link',
+      },
+    },
+  },
+  orderings: {
+    asc: 'Ascending',
+    desc: 'Descending',
+  },
+  validation: {
+    assetRequired: 'Image is required',
+    maxLength: 'Value must not contain more than {{max}} characters',
+    minLength: 'Value must contain at least {{min}} characters',
+    oneFieldMustExist: 'At least one is required',
+    requiredField: 'Required',
+    deliveryMethodsAtLeastOneRate: 'At least one rule must be defined.',
+    menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
+    countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
+  },
+
   productFieldsets: {
     states: 'States',
   },
@@ -63,10 +301,17 @@ export default {
     title: 'Product',
     fields: {
       variants: {
-        title: 'Product Variants',
+        title: 'Product variants',
         description: 'All variants generated from product options',
       },
-      ...productAndVariantFields,
+      weight: {
+        title: 'Weight',
+        description: 'Weight in grams. Used when a variant has no weight set.',
+      },
+    },
+    preview: {
+      variants_one: '{{count}} variant',
+      variants_other: '{{count}} variants',
     },
   },
   productGrid: {
@@ -81,9 +326,10 @@ export default {
     fields: {
       title: { title: 'Title' },
       filters: { title: 'Filters' },
+      products: { title: 'Products' },
     },
     wineFieldFilter: {
-      title: 'Wine Field Filter',
+      title: 'Wine filter',
       fields: {
         field: {
           title: 'Field',
@@ -98,7 +344,7 @@ export default {
       },
     },
     productFieldFilter: {
-      title: 'Product-Filter',
+      title: 'Product filter',
       fields: {
         field: {
           title: 'Field',
@@ -114,135 +360,367 @@ export default {
       filters_zero: 'No filters',
       filters_one: '{{count}} filter',
       filters_other: '{{count}} filters',
+      product: 'Product',
+      products_zero: 'No products',
+      products_one: '{{count}} product',
+      products_other: '{{count}} products',
     },
   },
   productVariant: {
-    title: 'Product Variant',
+    title: 'Product variant',
     fields: {
-      ...productAndVariantFields,
       coverImage: {
-        title: 'Cover Image',
+        title: 'Cover image',
         description:
-          "Select the cover image for this variant. Has no effect if the variant uses it's own images.",
+          'Choose the cover image for this variant. Has no effect if the variant uses its own images.',
       },
       options: {
         title: 'Options',
       },
-      active: {
-        title: 'Active',
+      product: {
+        title: 'Product',
+      },
+      bundleItems: {
+        title: 'Bundle products',
+      },
+      volume: {
+        title: 'Volume',
+      },
+      vintage: {
+        title: 'Vintage',
+      },
+      wine: {
+        title: 'Wine',
+      },
+      weight: {
+        title: 'Weight',
+        description: 'Weight in grams. If set, used instead of the product weight.',
+      },
+      status: {
+        title: 'Status',
+        options: {
+          active: '🟢 Active',
+          comingSoon: '🟡 Coming soon/Teaser',
+          soldOut: '🔴 Sold out (Visible)',
+          archived: '⚪ Archived',
+        },
       },
     },
     preview: {
       variants: 'Variants',
+      bundleItems_zero: 'No products',
+      bundleItems_one: '{{count}} product',
+      bundleItems_other: '{{count}} products',
+    },
+  },
+  wine: {
+    title: 'Wine',
+    fields: {
+      vinofactWineId: {
+        title: 'Vinofact wine',
+        description: 'Links this product to a Vinofact wine',
+      },
+      volume: {
+        title: 'Volume',
+      },
+      vintage: {
+        title: 'Vintage',
+      },
+    },
+  },
+  bundleItem: {
+    title: 'Product',
+    fields: {
+      quantity: {
+        title: 'Quantity',
+      },
+      product: {
+        title: 'Product',
+      },
+    },
+    preview: {
+      quantity_zero: 'No products',
+      quantity_one: '{{count}} product',
+      items_other: '{{count}} products',
     },
   },
   category: {
-    schemaTitle: 'Categorie',
-    title: {
-      title: 'Title',
-    },
-    description: {
-      title: 'Description',
-    },
-    parent: {
-      title: 'Parent Category',
-    },
-    image: {
-      title: 'Image',
-    },
-    filters: {
-      title: 'Filters',
+    title: 'Category',
+    fields: {
+      parent: {
+        title: 'Parent category',
+      },
+      filters: { title: 'Filters' },
     },
   },
   manufacturer: {
-    schemaTitle: 'Manufacturer',
-    title: {
-      title: 'Title',
+    title: 'Manufacturer',
+    fields: {
+      link: {
+        title: 'Link',
+      },
     },
-    description: {
-      title: 'Description',
+  },
+  textBlock: {
+    title: 'Text block',
+    fields: {
+      content: {
+        title: 'Content',
+      },
+      content2: {
+        title: 'Content 2',
+        block: {
+          styles: {},
+        },
+      },
     },
-    image: {
-      title: 'Image',
+  },
+  shippingMethod: {
+    title: 'Shipping method',
+    fields: {
+      rates: {
+        title: 'Rate table (weight)',
+      },
+      methodType: {
+        title: 'Type',
+        options: {
+          delivery: 'Delivery',
+          pickup: 'Pickup',
+        },
+      },
+      packagingConfigs: {
+        title: 'Wine packaging',
+      },
+      pickupFee: {
+        title: 'Pickup fee',
+        description: 'Set to 0 to make pickup free of charge.',
+      },
+      eligibleCountries: {
+        title: 'Countries',
+      },
     },
-    link: {
-      title: 'Link',
+    preview: {
+      countries_zero: 'No countries selected',
+      countries_one: '{{count}} country',
+      countries_other: '{{count}} countries',
     },
+  },
+  winePackage: {
+    title: 'Package',
+    fields: {
+      count: { title: 'Bottles per package' },
+      price: { title: 'Price', description: 'Gross price' },
+    },
+  },
+  winePackagingConfig: {
+    title: 'Volume configuration',
+    fields: {
+      volume: { title: 'Bottle size' },
+      packages: { title: 'Packages' },
+    },
+  },
+  shippingRate: {
+    title: 'Cost',
+    fields: {
+      price: {
+        description: 'Gross price',
+      },
+      maxWeight: {
+        title: 'Maximum weight',
+        description: 'Up to weight (kg)',
+      },
+    },
+  },
+  taxCountry: {
+    title: 'Country',
+    fields: {
+      rules: {
+        title: 'Tax rates',
+      },
+      freeShippingCalculation: {
+        options: {
+          beforeDiscount: 'Before discount',
+          afterDiscount: 'After discount',
+        },
+      },
+    },
+    preview: {
+      rules_zero: 'No tax rates selected',
+      rules_one: '{{count}} tax rate',
+      rules_other: '{{count}} tax rates',
+    },
+  },
+  shopSettings: {
+    title: 'General shop settings',
+    fields: {
+      filters: { title: 'Global filters' },
+      defaultCountry: {
+        title: 'Default country',
+        description: 'Which country should be used by default at checkout?',
+      },
+      defaultTaxCategory: {
+        title: 'Default tax category',
+        description: 'If a product has no tax category, this one is used.',
+      },
+      freeShippingCalculation: {
+        options: {
+          beforeDiscount: 'Before discount',
+          afterDiscount: 'After discount',
+        },
+      },
+      stockThreshold: {
+        title: 'Global lower stock notification threshold',
+        description: "Receive a notification when a product's stock drops below this threshold.",
+      },
+      billingAddress: {
+        title: 'Billing address',
+        description: 'If different from the company address',
+      },
+      bankAccount: {
+        title: 'Bank details',
+        description: 'Used on invoices',
+      },
+      senderName: {
+        title: 'Sender name',
+        description: 'Used as the sender for order and shipping emails to customers',
+      },
+      senderEmail: {
+        title: 'Sender email',
+        description: 'Used as the sender address for order and shipping emails to customers',
+      },
+      orderNumberPrefix: {
+        title: 'Order number prefix',
+        description: 'Used as a prefix for the order number, e.g. "ORD-00000001"',
+      },
+      invoiceNumberPrefix: {
+        title: 'Invoice number prefix',
+        description: 'Used as a prefix for the invoice number, e.g. "INV-00000001"',
+      },
+      lastInvoiceNumber: {
+        title: 'Last invoice number',
+        description:
+          'Caution! This value is incremented automatically and should not be changed manually.',
+      },
+      shopPage: {
+        title: 'Shop page',
+        description: 'This page is used as the main page of the shop.',
+      },
+    },
+    groups: {
+      displays: 'Displays',
+      shipping: 'Shipping',
+      stock: 'Stock',
+      tax: 'Tax',
+      orders: 'Orders',
+      billing: 'Billing',
+      notifications: 'Notifications',
+    },
+    preview: {},
+  },
+  bankAccount: {
+    title: 'Bank',
+    fields: {
+      name: {
+        title: 'Bank name',
+      },
+      iban: {
+        title: 'IBAN',
+      },
+      bic: {
+        title: 'BIC',
+      },
+    },
+  },
+  company: {
+    title: 'Organization',
+    fields: {
+      name: {
+        title: 'Company name',
+      },
+      owner: {
+        title: 'Company owner',
+      },
+      address: {
+        title: 'Address',
+      },
+      email: {
+        title: 'Email',
+      },
+      phone: {
+        title: 'Phone',
+      },
+      vatId: {
+        title: 'VAT ID',
+      },
+    },
+  },
+  taxRule: {
+    title: 'Rule',
+    fields: {
+      rate: {
+        title: 'Tax rate in %',
+      },
+    },
+    preview: {
+      rate: ' Tax rate',
+    },
+  },
+  taxCategory: {
+    title: 'Tax category',
+    fields: {
+      title: {
+        description: 'Name of the category (e.g. "Standard, Alcohol, ...")',
+      },
+      code: {
+        title: 'Code',
+        description: 'The code is used to identify the tax category.',
+      },
+    },
+    preview: {},
   },
   address: {
-    schemaTitle: 'Address',
-    name: {
-      title: 'Name',
-    },
-    prename: {
-      title: 'Prename',
-    },
-    lastname: {
-      title: 'Lastname',
-    },
-    phone: {
-      title: 'Phone',
-    },
-    line1: {
-      title: 'Address Line 1',
-    },
-    line2: {
-      title: 'Address Line 2',
-    },
-    city: {
-      title: 'City',
-    },
-    zip: {
-      title: 'Zip',
-    },
-    country: {
-      title: 'Country',
-    },
-    state: {
-      title: 'State',
+    title: 'Address',
+    fields: {},
+  },
+  addressStrict: {
+    title: 'Address',
+    fields: {
+      name: {
+        title: 'Full name',
+      },
     },
   },
-  shipping: {
-    fieldsets: {
-      rate: 'Shippingtype',
-    },
-    rateId: {
-      title: 'Shipping ID',
-    },
-    rateTitle: {
-      title: 'Title',
-    },
-    rateCost: {
-      title: 'Shipping Cost',
-    },
+  businessAddress: {
+    title: 'Address',
+    fields: {},
   },
   orderTotals: {
-    title: 'Order Totals',
+    title: 'Totals',
     fieldsets: {
       vat: 'VAT',
     },
     fields: {
       grandTotal: {
-        title: 'Grand Total (Gross)',
+        title: 'Grand total (gross)',
         description: 'The final amount the customer paid',
       },
       subtotal: {
-        title: 'Items Subtotal',
-        description: 'Sum of all order items (Gross)',
+        title: 'Subtotal',
+        description: 'Sum of all order items (gross)',
       },
       shipping: {
-        title: 'Shipping/Fulfillment Cost',
+        title: 'Shipping cost',
       },
       discount: {
         title: 'Discount',
       },
       totalVat: {
-        title: 'Total VAT Amount',
-        description: 'The sum of all VAT from items and shipping',
+        title: 'Total VAT',
+        description: 'Sum of all VAT from items and shipping',
       },
       vatBreakdown: {
-        title: 'VAT Breakdown',
-        description: 'Taxes grouped by rate (e.g., 10% vs 20%)',
+        title: 'VAT breakdown',
+        description: 'VAT grouped by rate (e.g. 10% vs 20%)',
       },
       currency: {
         title: 'Currency',
@@ -253,7 +731,7 @@ export default {
     title: 'Order',
     groups: {
       order: 'Order',
-      history: 'Status History',
+      history: 'Status history',
       orderPayment: 'Payment',
       orderItems: 'Items',
       orderCustomer: 'Customer',
@@ -264,10 +742,10 @@ export default {
     },
     fields: {
       orderNumber: {
-        title: 'Order Number',
+        title: 'Order number',
       },
       invoiceNumber: {
-        title: 'Invoice Number',
+        title: 'Invoice number',
       },
       status: {
         title: 'Status',
@@ -281,15 +759,15 @@ export default {
         },
       },
       paymentStatus: {
-        title: 'Payment Status',
+        title: 'Payment status',
         options: {
-          succeeded: 'Successfully paid',
+          succeeded: 'Paid',
           refunded: 'Refunded',
           partiallyRefunded: 'Partially refunded',
         },
       },
       statusHistory: {
-        title: 'Status History',
+        title: 'Status history',
       },
       paymentIntentId: {
         title: 'Stripe Payment Intent ID',
@@ -308,33 +786,8 @@ export default {
       },
     },
   },
-  orderCustomer: {
-    title: 'Customer',
-    groups: {
-      general: 'General',
-      billing: 'Billing Address',
-      shipping: 'Shipping Address',
-    },
-    fields: {
-      locale: {
-        title: 'Language',
-      },
-      contactEmail: {
-        title: 'Contact Email',
-      },
-      supabaseId: {
-        title: 'Supabase User ID',
-      },
-      billingAddress: {
-        title: 'Billing Address',
-      },
-      shippingAddress: {
-        title: 'Shipping Address',
-      },
-    },
-  },
   orderStatusHistory: {
-    title: 'Status History Entry',
+    title: 'Status history',
     fields: {
       type: {
         title: 'Type',
@@ -357,8 +810,33 @@ export default {
       },
     },
   },
+  orderCustomer: {
+    title: 'Customer',
+    groups: {
+      general: 'General',
+      billing: 'Billing address',
+      shipping: 'Shipping address',
+    },
+    fields: {
+      locale: {
+        title: 'Language',
+      },
+      contactEmail: {
+        title: 'Contact email',
+      },
+      supabaseId: {
+        title: 'Supabase user ID',
+      },
+      billingAddress: {
+        title: 'Billing address',
+      },
+      shippingAddress: {
+        title: 'Shipping address',
+      },
+    },
+  },
   orderItem: {
-    title: 'Order Item',
+    title: 'Order item',
     fields: {
       kind: {
         title: 'Kind',
@@ -370,29 +848,29 @@ export default {
         title: 'Product ID',
       },
       parentId: {
-        title: 'Parent Item Key',
-        description: 'Set on bundle child items — points to the parent bundle orderItem._key',
+        title: 'Parent item key',
+        description: "Set on bundle child items — points to the parent bundle's orderItem._key",
       },
       title: {
-        title: 'Product Title',
-        description: 'Snapshotted product title, resolved at checkout',
+        title: 'Product title',
+        description: 'Snapshotted product title at the time of order',
       },
       variantTitle: {
-        title: 'Variant Title',
-        description: 'Snapshotted variant subtitle, resolved at checkout',
+        title: 'Variant title',
+        description: 'Snapshotted variant title at the time of order',
       },
       displayTitle: {
-        title: 'Display Title',
+        title: 'Display title',
         description:
           'Frozen display string the customer saw at order time — canonical for invoices, emails, customer order history, WC API. Never recompose.',
       },
       displaySubtitle: {
-        title: 'Display Subtitle',
-        description: 'Frozen display subtitle the customer saw at order time (optional).',
+        title: 'Display subtitle',
+        description: 'Frozen subtitle the customer saw at order time (optional).',
       },
       weight: {
         title: 'Weight',
-        description: 'Weight in grams at time of order',
+        description: 'Weight in grams at the time of order',
       },
       sku: {
         title: 'SKU',
@@ -401,22 +879,22 @@ export default {
         title: 'Quantity',
       },
       price: {
-        title: 'Unit Price',
+        title: 'Unit price',
         description: 'Unit price in cents',
       },
       vatRate: {
-        title: 'VAT Rate',
+        title: 'VAT rate',
         description: 'VAT rate as a percentage, e.g. 20 for 20%',
       },
       vatAmount: {
-        title: 'VAT Amount',
+        title: 'VAT amount',
         description: 'Total VAT for this line in cents (quantity × unit vat)',
       },
       packed: {
         title: 'Packed',
       },
       wine: {
-        title: 'Wine Details',
+        title: 'Wine details',
       },
       options: {
         title: 'Options',
@@ -443,7 +921,7 @@ export default {
     title: 'Bundle',
     fields: {
       itemCount: {
-        title: 'Item Count',
+        title: 'Item count',
         description: 'Total quantity of all child items combined',
       },
     },
@@ -463,8 +941,8 @@ export default {
     title: 'Fulfillment',
     fields: {
       methodTitle: {
-        title: 'Shipping Method',
-        description: 'Snapshotted title (e.g., "DHL Express" or "Self-Pickup")',
+        title: 'Shipping method',
+        description: 'Snapshotted title (e.g. "DHL Express" or "Self-pickup")',
       },
       methodType: {
         title: 'Type',
@@ -473,651 +951,500 @@ export default {
           pickup: 'Pickup',
         },
       },
-      packagingConfigs: {
-        title: 'Wine Packaging',
-      },
       shippingCost: {
-        title: 'Shipping Cost',
+        title: 'Shipping cost',
         description: 'The fee charged to the customer',
       },
       taxSnapshot: {
-        title: 'Shipping Tax',
+        title: 'Shipping tax',
       },
       method: {
-        title: 'Shipping Method Reference',
+        title: 'Shipping method reference',
         description: 'Link to the original config (may change over time)',
       },
       trackingCode: {
-        title: 'Tracking Code',
+        title: 'Tracking code',
       },
       pickupLocation: {
-        title: 'Pickup Location',
+        title: 'Pickup location',
         description: 'The address where the customer will collect the goods',
       },
     },
   },
   vatBreakdownItem: {
-    title: 'VAT Breakdown',
+    title: 'VAT breakdown',
     fields: {
       rate: {
         title: 'Rate %',
       },
       net: {
-        title: 'Net Amount',
+        title: 'Net amount',
       },
       vat: {
-        title: 'VAT Amount',
+        title: 'VAT amount',
       },
     },
   },
   tag: {
-    schemaTitle: 'Tag',
-    title: {
-      title: 'Title',
-    },
+    title: 'Tag',
   },
-  user: {
-    schemaTitle: 'Customer',
-    customerNumber: {
-      title: 'Customer Number',
-    },
-    customerGroups: {
-      title: 'Customer Groups',
-    },
-    prename: {
-      title: 'Prename',
-    },
-    lastname: {
-      title: 'Lastname',
-    },
-    email: {
-      title: 'Email',
-    },
-    street: {
-      title: 'Street',
-    },
-    city: {
-      title: 'City',
-    },
-    zip: {
-      title: 'Zip',
-    },
-    country: {
-      title: 'Country',
-    },
-    phone: {
-      title: 'Phone',
-    },
-    receiveNewsletter: {
-      title: 'Newsletter',
-    },
-    externalUserId: {
-      title: 'Supabase User ID',
-    },
-    portal: {
-      title: 'Portal',
-    },
-    status: {
-      title: 'Registration Status',
-      options: {
-        registered: 'Registered',
-        invited: 'Invited',
-        active: 'Active',
+  customer: {
+    title: 'Customer',
+    fields: {
+      customerNumber: {
+        title: 'Customer number',
       },
-    },
-    locale: {
-      title: 'Language',
+      customerGroups: {
+        title: 'Customer groups',
+      },
+      receiveNewsletter: {
+        title: 'Newsletter',
+      },
+      status: {
+        title: 'Registration status',
+        options: {
+          registered: 'Registered',
+          invited: 'Invited',
+          active: 'Active',
+        },
+      },
+      locale: {
+        title: 'Language',
+      },
     },
   },
   variantOptionGroup: {
-    schemaTitle: 'Option Group',
-    title: {
-      title: 'Title',
-    },
-    description: {
-      title: 'Description',
-    },
-    options: {
-      title: 'Options',
-    },
-    sortOrder: {
-      title: 'Sort Order',
-      description: 'The lower the number, the higher the sort order',
+    title: 'Option group',
+    fields: {
+      sortOrder: {
+        title: 'Sort order',
+        description: 'The lower the number, the earlier the option appears.',
+      },
     },
   },
   variantOption: {
-    schemaTitle: 'Option',
-    title: {
-      title: 'Title',
-    },
-    image: {
-      title: 'Image',
-    },
-    sortOrder: {
-      title: 'Sort Order',
-      description: 'The lower the number, the higher the sort order',
+    title: 'Option',
+    fields: {
+      sortOrder: {
+        title: 'Sort order',
+        description: 'The lower the number, the earlier the option appears.',
+      },
+      group: {
+        title: 'Option group',
+      },
     },
   },
   page: {
-    schemaTitle: 'Page',
+    title: 'Page',
     groups: {
       page: 'General',
-      seo: 'SEO',
-      content: 'Content',
-    },
-    title: {
-      title: 'Title',
-    },
-    slug: {
-      title: 'URL-Name',
-      validation: 'Allowed characters: "a-z" "A-Z" "0-9" "-"',
-    },
-    modules: {
-      title: 'Content',
     },
   },
   post: {
-    schemaTitle: 'Blog Post',
+    title: 'Blog post',
     groups: {
       post: 'General',
-      seo: 'SEO',
-      content: 'Content',
     },
-    title: {
-      title: 'Title',
-    },
-    preview: {
-      title: 'Preview',
-    },
-    slug: {
-      title: 'URL-Name',
-      validation: 'Allowed characters: "a-z" "A-Z" "0-9" "-"',
-    },
-    image: {
-      title: 'Image',
-    },
-    modules: {
-      title: 'Content',
+    fields: {
+      preview: {
+        title: 'Preview',
+      },
     },
   },
   blog: {
-    schemaTitle: 'Blog',
+    title: 'Blog',
     groups: {
       blog: 'General',
-      seo: 'SEO',
-      settings: 'Settings',
     },
-    title: {
-      title: 'Title',
-    },
-    description: {
-      title: 'Description',
-    },
-    postsPerPage: {
-      title: 'Posts per Page',
+    fields: {
+      postsPerPage: {
+        title: 'Posts per page',
+      },
     },
   },
   link: {
-    schemaTitle: 'Link',
-    href: {
-      title: 'URL',
-      description:
-        'For Emails, use "mailto:hello@example.com", for Phone Numbers, use "tel:+4365012345678"',
-    },
-    displayType: {
-      title: 'Display Type',
-      options: {
-        text: 'Text',
-        button: 'Button',
+    title: 'Link',
+    fields: {
+      href: {
+        title: 'URL',
+        description:
+          'For emails use "mailto:hello@example.com", for phone numbers use "tel:+4365012345678"',
+      },
+      displayType: {
+        title: 'Display type',
+        options: {
+          text: 'Text',
+          button: 'Button',
+        },
       },
     },
   },
   internalLink: {
-    schemaTitle: 'Internal Link',
-    reference: {
-      title: 'Reference',
-    },
-    displayType: {
-      title: 'Display Type',
-      options: {
-        link: 'Link',
-        button: 'Button',
+    title: 'Internal link',
+    fields: {
+      reference: {
+        title: 'Reference',
+      },
+      displayType: {
+        title: 'Display type',
+        options: {
+          link: 'Link',
+          button: 'Button',
+        },
       },
     },
   },
   action: {
-    schemaTitle: 'Action',
-    title: {
-      title: 'Text',
-    },
-    internalLink: {
-      title: 'Link',
+    title: 'Action',
+    fields: {
+      title: {
+        title: 'Text',
+      },
+      internalLink: {
+        title: 'Link',
+      },
     },
   },
   multiColumns: {
-    schemaTitle: 'Multiple Columns',
+    title: 'Columns',
     preview: {
       columns: 'Column(s)',
     },
-    headline: {
-      title: 'Headline',
-    },
-    backgroundImage: {
-      title: 'Background Image',
-    },
-    columns: {
-      title: 'Columns',
+    fields: {
+      headline: {
+        title: 'Headline',
+      },
+      backgroundImage: {
+        title: 'Background image',
+      },
+      columns: {
+        title: 'Columns',
+      },
     },
   },
   localeComplexPortable: {
-    schemaTitle: 'Content',
+    title: 'Content',
     preview: {
-      noContent: 'No Content',
+      noContent: 'No content',
       image: 'Image',
     },
-    headline: {
-      title: 'Headline',
-    },
-    backgroundImage: {
-      title: 'Background Image',
-    },
-    columns: {
-      title: 'Columns',
-    },
-    translations: {
-      title: 'Translations',
-    },
-  },
-  complexPortableText: {
-    schemaTitle: 'Content',
-    decorators: {
-      strong: 'Bold',
-      emphasis: 'Emphasis',
-      left: 'Align left',
-      right: 'Align right',
-      center: 'Align center',
-    },
-    annotations: {
-      link: 'Link',
-      internalLink: 'Internal Link',
+    fields: {
+      headline: {
+        title: 'Headline',
+      },
+      backgroundImage: {
+        title: 'Background image',
+      },
+      columns: {
+        title: 'Columns',
+      },
+      translations: {
+        title: 'Translations',
+      },
     },
   },
   menu: {
-    schemaTitle: 'Menu',
-    title: {
-      title: 'Title',
+    title: 'Menu',
+    fields: {
+      items: {
+        title: 'Entries',
+      },
     },
-    items: {
-      title: 'Entries',
+  },
+  menuItem: {
+    title: 'Menu entry',
+    fields: {
+      linkType: {
+        title: 'Type',
+        options: {
+          internal: 'Internal link',
+          external: 'External link',
+          submenu: 'Submenu',
+        },
+      },
+      children: {
+        title: 'Entries',
+      },
+    },
+    preview: {
+      noUrl: 'No URL',
+      noReference: 'No reference',
+      submenuItems_zero: 'No entries',
+      submenuItems_one: '{{count}} entry',
+      submenuItems_other: '{{count}} entries',
     },
   },
   navPage: {
-    schemaTitle: 'Page',
-    title: {
-      title: 'Title',
-    },
-    page: {
-      title: 'Page',
+    title: 'Page',
+    fields: {
+      page: {
+        title: 'Page',
+      },
     },
   },
   navLink: {
-    schemaTitle: 'Link',
-    title: {
-      title: 'Title',
-    },
-    url: {
-      title: 'Url',
+    title: 'Link',
+    fields: {
+      url: {
+        title: 'Url',
+      },
     },
   },
   settings: {
-    general: {
-      schemaTitle: 'General Settings',
-      groups: {
-        siteDetails: 'Descriptions',
-        company: 'Company',
-        bank: 'Bankaccount',
-        displays: 'Displays',
-        advanced: 'Advanced',
-      },
+    title: 'General settings',
+    groups: {
+      site: 'Website',
+      displays: 'Displays',
+      analytics: 'Analytics',
+      company: 'Company',
+    },
+    fields: {
       siteTitle: {
-        title: 'Site Title',
-        description: 'The name of your site, usually your company/brand name. Used in the browser tab, social media previews, and the web app manifest.',
+        title: 'Site title',
+        description:
+          'The name of your site, usually your brand or company name. Used in the browser tab, social media previews, and the web app manifest.',
       },
       siteShortDescription: {
-        title: 'Short Description',
-        description: 'Used as the meta description in search results when no page-specific SEO description is set.',
+        title: 'Short description',
+        description:
+          'Used as the meta description in search results when no page-specific SEO description is set.',
       },
       defaultShareImage: {
-        title: 'Default Share Image',
-        description: 'Used in social media previews (og:image) when no page-specific SEO image or page image is available. Recommended size: 1200×630px.',
+        title: 'Default share image',
+        description:
+          'Used in social media previews (og:image) when neither a page-specific SEO image nor a page image is available. Recommended size: 1200×630px.',
       },
-      companyName: {
-        title: 'Company Name',
+      homePage: {
+        title: 'Home page',
+        description: 'This page is shown as the home page',
       },
-      companyOwner: {
-        title: 'Company Owner',
-      },
-      companyPhone: {
-        title: 'Phone',
-      },
-      companyStreet: {
-        title: 'Street',
-      },
-      companyZip: {
-        title: 'Zip',
-      },
-      companyCity: {
-        title: 'City',
-      },
-      companyCountry: {
-        title: 'Country',
-      },
-      companyState: {
-        title: 'State',
-      },
-      companyEmail: {
-        title: 'Email',
-      },
-      companyUID: {
-        title: 'UID',
-      },
-      bankName: {
-        title: 'Bank name',
-      },
-      bankIBAN: {
-        title: 'IBAN',
-      },
-      bankBIC: {
-        title: 'BIC',
-      },
-      orderNumberPrefix: {
-        title: 'Order Number Prefix',
-        description: 'Used as a prefix for the order number, e.g. "ORD-20250315-123456',
-      },
-      invoiceNumberPrefix: {
-        title: 'Invoice Number Prefix',
-        description: 'Used as a prefix for the invoice number, e.g. "INV-20250315-123456',
-      },
-      home: {
-        title: 'Home Page',
-        description: 'This page will show at the root of your domain',
-      },
-      privacy: {
-        title: 'Privacy Policy',
-        description: 'This page contains the privacy policy of your site',
+      privacyPage: {
+        title: 'Privacy policy',
+        description: 'This page contains the privacy policy',
       },
       mainMenus: {
-        title: 'Main Menus',
-        description: 'These menus will be displayed in the main navigation',
+        title: 'Main menus',
+        description: 'These menus are shown in the main navigation',
       },
       footerMenus: {
-        title: 'Footer Menus',
-        description: 'These menus will be displayed in the footer',
+        title: 'Footer menus',
+        description: 'These menus are shown in the footer',
       },
-      gtmID: {
+      gtmId: {
         title: 'Google Tag Manager (GTM)',
-        description: 'To enable GTM enter your Container ID',
+        description: 'To enable GTM, enter your container ID',
       },
-      stockThreshold: {
-        title: 'Global Product Stock Notification Threshold',
-        description: 'Receive a notification when a product is below this threshold.',
-      },
-      lastInvoiceNumber: {
-        title: 'Last Invoice Number',
-        description:
-          'Caution! This value is automatically incremented and should not be changed manually.',
+      company: {
+        title: 'Company',
       },
     },
   },
   customerGroup: {
-    schemaTitle: 'Customer Group',
-    title: {
-      title: 'Title',
-    },
+    title: 'Customer group',
   },
   voucher: {
-    schemaTitle: 'Voucher',
+    title: 'Voucher',
     validation: {
-      mustHaveDiscountOrReward: 'Vouchers must have a discount or a reward.',
+      mustHaveDiscountOrReward: 'Vouchers must include a discount or a reward.',
     },
-    title: {
-      title: 'Title',
-    },
-    description: {
-      title: 'Description',
-    },
-    active: {
-      title: 'Active',
-    },
-    code: {
-      title: 'Voucher Code',
-      description:
-        'Code that must be entered by user to apply the voucher. If no code is used, the voucher will be applied automatically.',
-    },
-    autoApply: {
-      title: 'Auto Apply',
-      description: 'Voucher is applied automatically when all conditions match.',
-    },
-    discountType: {
-      title: 'Discount Type',
-      options: {
-        none: 'None',
-        fixed: 'Fixed Amount',
-        percentage: 'Percentage',
+    fields: {
+      active: {
+        title: 'Active',
       },
-    },
-    discountFixed: {
-      title: 'Amount',
-      description: 'Fixed amount to be subtracted from the total.',
-    },
-    discountPercentage: {
-      title: 'Percentage',
-      description: 'Percentage to be subtracted from the total.',
-    },
-    stackable: {
-      title: 'Stackable',
-      description: 'Can be used together with other vouchers.',
-    },
-    validFrom: {
-      title: 'Valid From',
-    },
-    validUntil: {
-      title: 'Valid Until',
-    },
-    customerGroups: {
-      title: 'Customer Groups',
-      description: 'Restrict to specific customer groups (optional).',
-    },
-    newCustomersOnly: {
-      title: 'Only for New Customers',
-    },
-    registeredCustomersOnly: {
-      title: 'Only for Registered Customers',
-    },
-    conditions: {
-      title: 'Conditions',
-    },
-    rewards: {
-      title: 'Rewards',
-      description: 'Reward products when conditions are met.',
-      product: {
-        title: 'Product',
+      code: {
+        title: 'Voucher code',
+        description:
+          'Code that must be entered by the user to redeem the voucher. If no code is used, the voucher is applied automatically.',
       },
-      quantity: {
-        title: 'Quantity',
+      autoApply: {
+        title: 'Auto apply',
+        description: 'The voucher is applied automatically when all conditions are met.',
+      },
+      discountType: {
+        title: 'Discount type',
+        options: {
+          none: 'None',
+          fixed: 'Fixed amount',
+          percentage: 'Percentage',
+        },
+      },
+      discountFixed: {
+        title: 'Amount',
+        description: 'The voucher amount is subtracted from the cart.',
+      },
+      discountPercentage: {
+        title: 'Percentage',
+        description: 'The percentage is subtracted from the cart.',
+      },
+      stackable: {
+        title: 'Stackable',
+        description: 'Can be combined with other vouchers.',
+      },
+      validFrom: {
+        title: 'Valid from',
+      },
+      validUntil: {
+        title: 'Valid until',
+      },
+      customerGroups: {
+        title: 'Customer groups',
+        description: 'Restrict to specific customer groups.',
+      },
+      newCustomersOnly: {
+        title: 'Only for new customers',
+      },
+      registeredCustomersOnly: {
+        title: 'Only for registered customers',
+      },
+      conditions: {
+        title: 'Conditions',
+      },
+      rewards: {
+        title: 'Rewards',
+        product: {
+          title: 'Product',
+        },
+        quantity: {
+          title: 'Quantity',
+        },
       },
     },
   },
   voucherCondition: {
-    schemaTitle: 'Voucher Condition',
-    type: {
-      title: 'Condition Type',
-      options: {
-        product: 'Specific Product',
-        category: 'Product Category',
-        totalValue: 'Minimum Cart Value',
-        quantity: 'Minimum Quantity',
-        userStatus: 'User Status',
-      },
-    },
-    product: {
-      title: 'Product',
-    },
-    category: {
-      title: 'Category',
-    },
-    minValue: {
-      title: 'Minimum Cart Value',
-    },
-    minQuantity: {
-      title: 'Minimum Quantity',
-    },
-    userStatus: {
-      title: 'Customer Status',
-      options: {
-        registeredCustomer: 'Registerd Customer',
-        newCustomer: 'New Customer',
-      },
-    },
-    messages: {
-      productRequired: 'A product is required',
-      categoryRequired: 'A category is required',
-      minValueRequired: 'The minimum value must be set',
-      quantityRequired: 'The minimum quantity must be set',
-      userStatusRequired: 'The customer status must be set',
-    },
-  },
-  shippingCountry: {
-    schemaTitle: 'Shipping Country',
-    isDefault: {
-      title: 'Default',
-    },
-    title: {
-      title: 'Title',
-    },
-    code: {
-      title: 'Country Code',
-    },
-    taxRate: {
-      title: 'Tax Rate',
-    },
-    rates: {
-      title: 'Shipping Rates',
-    },
-  },
-  winePackage: {
-    title: 'Package',
+    title: 'Voucher condition',
     fields: {
-      count: { title: 'Bottles per package' },
-      price: { title: 'Price', description: 'Gross price' },
-    },
-  },
-  winePackagingConfig: {
-    title: 'Volume configuration',
-    fields: {
-      volume: { title: 'Bottle size' },
-      packages: { title: 'Packages' },
-    },
-  },
-  shippingRate: {
-    schemaTitle: 'Shipping Rate',
-    title: {
-      title: 'Title',
-    },
-    amount: {
-      title: 'Amount',
-    },
-    trackingUrl: {
-      title: 'Tracking URL',
-      description: 'URL to tracking service.',
+      type: {
+        title: 'Condition type',
+        options: {
+          product: 'Specific product',
+          category: 'Product category',
+          totalValue: 'Minimum cart value',
+          quantity: 'Minimum quantity',
+          userStatus: 'Customer status',
+        },
+      },
+      product: {
+        title: 'Product',
+      },
+      category: {
+        title: 'Category',
+      },
+      minValue: {
+        title: 'Minimum cart value',
+      },
+      minQuantity: {
+        title: 'Minimum quantity',
+      },
+      userStatus: {
+        title: 'Customer status',
+        options: {
+          registeredCustomer: 'Registered customer',
+          newCustomer: 'New customer',
+        },
+      },
+      messages: {
+        productRequired: 'A product must be selected',
+        categoryRequired: 'A category must be selected',
+        minValueRequired: 'The minimum value must be set',
+        quantityRequired: 'The minimum quantity must be set',
+        userStatusRequired: 'The customer status must be selected',
+      },
     },
   },
   seo: {
-    schemaTitle: 'SEO',
-    metaTitle: {
-      title: 'Meta-Title',
-      description: 'Title used for search engines and browsers',
-      validation: 'Titles longer than 50 may be truncated by search engines',
-    },
-    metaDescription: {
-      title: 'Meta-Description',
-      description: 'Description for search engines',
-      validation: 'Descriptions longer than 150 may be truncated by search engines',
-    },
-    shareTitle: {
-      title: 'Share-Title',
-      description: 'Title used for social sharing cards',
-      validation: 'Titles longer than 50 may be truncated by social sites',
-    },
-    shareDescription: {
-      title: 'Share-Description',
-      description: 'Description for social sharing cards',
-      validation: 'Descriptions longer than 150 may be truncated by social sites',
-    },
-    shareImage: {
-      title: 'Share-Image',
-      description: 'Recommended size: 1200x630 (PNG or JPG)',
-    },
-    keywords: {
-      title: 'Keywords',
+    title: 'SEO',
+    fields: {
+      metaTitle: {
+        title: 'Meta title',
+        description: 'Title for search engines and browsers',
+        validation: 'Titles longer than 50 are truncated by search engines and browsers',
+      },
+      metaDescription: {
+        title: 'Meta description',
+        description: 'Description for search engines',
+        validation: 'Descriptions longer than 150 are truncated by search engines',
+      },
+      shareTitle: {
+        title: 'Share title',
+        description: 'Title for social networks. If empty, the meta title is used',
+        validation: 'Titles longer than 50 are truncated by social networks',
+      },
+      shareDescription: {
+        title: 'Share description',
+        description: 'Description for social networks. If empty, the meta description is used',
+        validation: 'Descriptions longer than 150 are truncated by social networks',
+      },
+      shareImage: {
+        title: 'Share image',
+        description: 'Recommended size: 1200x630px (PNG or JPG)',
+      },
+      keywords: {
+        title: 'Keywords',
+      },
     },
   },
   youtube: {
-    schemaTitle: 'YouTube',
-    url: {
-      title: 'Url',
-      description: 'YouTube Video URL or ID',
-    },
-    showControls: {
-      title: 'Show Controls',
-    },
-    start: {
-      title: 'Start at',
-      description: 'Start Video at specific time (in seconds)',
-    },
-    autoload: {
-      title: 'Autoload',
-      description: 'Load video when scrolled into view',
-    },
-    autopause: {
-      title: 'Autopause',
-      description: 'Pauses video when user scrolls away',
+    title: 'YouTube',
+    fields: {
+      url: {
+        title: 'Url',
+        description: 'YouTube video URL or ID',
+      },
+      showControls: {
+        title: 'Show controls',
+      },
+      start: {
+        title: 'Start at',
+        description: 'Start the video at a specific time (in seconds)',
+      },
+      autoload: {
+        title: 'Autoload',
+        description: 'Load the video automatically when it becomes visible',
+      },
+      autopause: {
+        title: 'Autopause',
+        description: 'Pause the video automatically when it is no longer visible',
+      },
     },
   },
   productSection: {
-    schemaTitle: 'Products',
+    title: 'Products',
     preview: {
       products: 'Product(s)',
       categories: 'Category(ies)',
     },
-    headline: {
-      title: 'Headline',
-    },
-    categories: {
-      title: 'Categories',
-      validation: {
-        atLeastOneCategoryRequired: 'At least one category is required',
+    fields: {
+      headline: {
+        title: 'Headline',
       },
-    },
-    totalProducts: {
-      title: 'Total Products',
-      description: 'Number of products to show',
-      validation: {
-        numProducts: 'At least one and up to 50 products can be shown',
+      categories: {
+        title: 'Categories',
+        validation: {
+          atLeastOneCategoryRequired: 'At least one category must be selected',
+        },
+      },
+      totalProducts: {
+        title: 'Count',
+        description: 'Number of products to show',
+        validation: {
+          numProducts: 'At least one and up to 50 products can be shown',
+        },
       },
     },
   },
   categorySection: {
-    schemaTitle: 'Category List',
+    title: 'Category list',
     preview: {
-      allCategories: 'All Main Categories',
+      allCategories: 'All main categories',
     },
-    headline: {
-      title: 'Headline',
-    },
-    category: {
-      title: 'Category',
-      description: 'If no category is selected, all main categories will be shown.',
+    fields: {
+      headline: {
+        title: 'Headline',
+      },
+      category: {
+        title: 'Category',
+        description: 'If no category is selected, all main categories will be shown.',
+      },
     },
   },
   categoryGrid: {
@@ -1126,59 +1453,57 @@ export default {
       title: { title: 'Title' },
       categories: { title: 'Categories' },
     },
+    preview: {
+      categories_zero: 'No categories',
+      categories_one: '{{count}} category',
+      categories_other: '{{count}} categories',
+    },
   },
   carousel: {
-    schemaTitle: 'Carousel',
+    title: 'Carousel',
     preview: {
-      slides: 'Slide(s)',
+      slides_zero: 'No images',
+      slides_one: '{{count}} image',
+      slides_other: '{{count}} images',
     },
-    slides: {
-      title: 'Slides',
+    fields: {
+      slides: {
+        title: 'Images',
+      },
+      autoplay: {
+        title: 'Autoplay',
+      },
+      autoplayDelay: {
+        title: 'Autoplay delay',
+        description: 'The next image is shown after the given seconds.',
+      },
+      loop: {
+        title: 'Loop',
+      },
+      fade: {
+        title: 'Fade',
+        description: 'Fade animations instead of motion when switching slides.',
+      },
     },
-    autoplay: {
-      title: 'Autoplay',
-    },
-    autoplayDelay: {
-      title: 'Autoplay-Delay',
-      description: 'Next slide will be shown after the given seconds.',
-    },
-    loop: {
-      title: 'Loop',
-    },
-    slideSize: {
-      title: 'Slide-Größe',
-    },
-    fade: {
-      title: 'Fade',
-      description: 'Fade-Animations while switching slides.',
-    },
-  },
-
-  orderings: {
-    asc: 'Ascending',
-    desc: 'Descending',
   },
 
   localeBlock: {
-    schemaTitle: 'Localized Block',
+    title: 'Localized block',
     translations: {
       title: 'Translations',
     },
   },
   localeImage: {
-    schemaTitle: 'Localized Image',
-    title: {
-      title: 'Title',
-    },
-    altText: {
-      title: 'Alternative Text',
-    },
-    validation: {
-      assetRequired: 'Asset is required',
-    },
+    title: 'Image (multilingual)',
+  },
+  localeAltImage: {
+    title: 'Image',
+  },
+  baseImage: {
+    title: 'Image',
   },
   localeString: {
-    schemaTitle: 'Localized String',
+    title: 'Localized string',
     translations: {
       title: 'Translations',
     },
@@ -1187,7 +1512,7 @@ export default {
     },
   },
   localeSlug: {
-    schemaTitle: 'Localized URL Slug',
+    title: 'Localized URL name',
     translations: {
       title: 'Translations',
     },
