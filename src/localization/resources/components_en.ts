@@ -1,7 +1,68 @@
+/* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
+  productCreatorTool: {
+    name: 'product-manager',
+    title: 'Product Manager',
+    subtitle: 'Create products and variants in one step',
+    sections: {
+      variants: {
+        title: 'Variants',
+        count_one: '{{count}} variant',
+        count_other: '{{count}} variants',
+      },
+    },
+    placeholders: {
+      productTitle: {
+        wine: 'e.g. Grüner Veltliner',
+        physicalDigital: 'e.g. T-Shirt',
+        bundle: 'e.g. Birthday Bundle',
+      },
+      productPrice: 'e.g. 12.90',
+    },
+    messages: {
+      productCreated: {
+        title: 'Product created',
+        description_one: '{{title}} with one variant.',
+        description_other: '{{title}} with {{count}} variants.',
+      },
+      productCreatedFail: {
+        title: 'Failed to create product',
+      },
+      variantExists: 'This variant already exists.',
+      combinations: {
+        warning: '⚠️ {{count}} variants — are you sure?',
+      },
+    },
+    submit_zero: 'Create product',
+    submit_one: 'Create product',
+    submit_other: 'Create product with {{count}} variants',
+    submitting: 'Creating product...',
+    addVariantButton: {
+      add: 'Add variant',
+      addAnother: 'Add another {{title}}',
+    },
+    combinations: {
+      options: 'Properties',
+      loadingOptions: 'Loading options...',
+      preview: 'Variant preview — {{enabledCount}} of {{totalCount}}',
+      noOptionGroups:
+        'No option groups found. Create some first in the option groups list.',
+      noOptions: 'No options available in this group',
+    },
+  },
+  vinofact: {
+    notInitialized: {
+      title: 'Vinofact client not initialized.',
+      description: 'Check your shop configuration features.',
+    },
+    winesLoadedError: {
+      title: 'Could not load Vinofact wines.',
+    },
+  },
+
   fields: {
     product: 'Product',
-    productVariant: 'Product Variant',
+    productVariant: 'Product variant',
   },
   ui: {
     dialog: {
@@ -22,9 +83,13 @@ export default {
     errors: {
       failedToLoad: 'Failed to load data: {{errorMessage}}',
     },
+    defaults: {
+      noTitle: 'Untitled',
+    },
   },
   product: {
-    deleteNotAllowedVariantsExist: 'Product cannot be deleted because it contains variants.',
+    deleteNotAllowedVariantsExist:
+      'Product cannot be deleted because it is linked to variants.',
   },
   productVariant: {
     publishNotAllowedButByGenerating: 'Product variants can only be generated in products.',
@@ -32,31 +97,36 @@ export default {
       'Product variant cannot be deactivated because it is referenced in other documents.',
   },
   variants: {
-    generate: 'Generate Variants',
+    generate: 'Generate variants',
     coverImage: {
-      select: 'Select Cover Image',
-      remove: 'Remove Selection',
+      select: 'Select cover image',
+      remove: 'Remove selection',
     },
     deleteSingle: {
-      title: 'Remove Variant',
-      confirm: 'Delete Variant?',
+      title: 'Remove variant',
+      confirm: 'Really delete the variant?',
     },
     deleteAll: {
-      title: 'Delete all Variants',
-      confirm: 'Delete Variants?',
+      title: 'Remove all variants',
+      confirm: 'Really delete the variants?',
     },
-    selectProductNumber: 'Please set a product number on the product to generate variants.',
-    couldNotDeleteAll: 'One or more variants could not be deleted because they are in use.',
+    selectProductNumber:
+      'Please assign a product number to generate variants for it.',
+    couldNotDeleteAll:
+      'One or more variants could not be deleted because they are in use.',
   },
   optionsGroups: {
-    addOption: 'Add Option',
-    confirmDelete: 'Are you sure you want to delete this option?',
+    addOption: 'Add option',
+    confirmDelete: 'Really delete the option?',
     deleteErrorMessage:
-      "Cannot remove this option because it's used in one or more product variants.",
+      'Option cannot be deleted because it is used in one or more product variants.',
     groupDeleteNotAllowedOptionsExist:
       'Option group cannot be deleted because it contains options.',
     couldNotDeleteOption:
-      "Cannot remove this option because it's used in one or more product variants.",
+      'Option could not be deleted because it is used in one or more product variants.',
+    defaults: {
+      title: 'New option',
+    },
   },
   categories: {
     deleteNotAllowedSubcategoriesExist:
@@ -64,23 +134,23 @@ export default {
   },
   order: {
     shipping: 'Shipping',
-    billingAddress: 'Billing Address',
-    items: 'Products',
-    freeProducts: 'Free Products',
+    billingAddress: 'Billing address',
+    items: 'Items',
+    freeProducts: 'Free products',
     vouchers: 'Vouchers',
     voucher: {
-      notFound: 'Voucher does not exist anymore',
+      notFound: 'Voucher no longer exists',
     },
     discount: 'Discount',
-    contactEmail: 'Contact Email',
+    contactEmail: 'Contact email',
     total: 'Total',
     subtotal: 'Subtotal',
-    trackingNumber: 'Tracking Number',
+    trackingNumber: 'Tracking number',
     packaging: 'Packaging',
-    loading: 'Loading Order...',
-    orderNumber: 'Order Number',
-    invoiceNumber: 'Invoice Number',
-    totalWithVat: 'Total (Incl. {{vatRate}}% Vat = {{total}})',
+    loading: 'Loading order...',
+    orderNumber: 'Order number',
+    invoiceNumber: 'Invoice number',
+    vatRate: '{{vatRate}}% VAT',
     status: {
       title: 'Status',
       options: {
@@ -93,15 +163,15 @@ export default {
       },
     },
     paymentStatus: {
-      title: 'Payment Status',
+      title: 'Payment status',
       options: {
-        succeeded: 'Successfully paid',
+        succeeded: 'Paid',
         refunded: 'Refunded',
         partiallyRefunded: 'Partially refunded',
       },
     },
     statusHistory: {
-      name: 'Status History',
+      name: 'Status history',
       type: {
         title: 'Type',
         options: {
@@ -113,15 +183,15 @@ export default {
   },
   actions: {
     order: {
-      sendMail: 'Send Customer email',
-      sending: 'Sending mail ...',
-      error: 'Error sending customer email: {{errorMessage}}',
+      sendMail: 'Send customer email',
+      sending: 'Sending email...',
+      error: 'Error sending customer email: {{message}}',
       sendMailSuccess: 'Email successfully sent',
       mailTypes: {
         orderConfirmation: 'Order confirmation',
         orderProcessing: 'Processing',
         orderInvoice: 'Invoice',
-        orderShipping: 'Shipping',
+        orderShipping: 'Shipped',
         orderDelivered: 'Delivered',
         orderReturned: 'Returned',
         orderCanceled: 'Canceled',
@@ -129,14 +199,14 @@ export default {
         orderRefundedPartially: 'Partially refunded',
       },
       updateStatus: {
-        title: 'Update Status',
+        title: 'Update status',
         refundAmount: 'Enter refund amount',
         enterValidAmount: 'Please enter a valid amount',
         notifyCustomer: 'Notify customer',
       },
       sendMailDialog: {
-        title: 'Send mail',
-        selectMailType: 'Select mail type',
+        title: 'Send email',
+        selectMailType: 'Select email type',
         attachInvoice: 'Attach invoice PDF',
         send: 'Send',
       },
@@ -145,9 +215,9 @@ export default {
       title: 'Refund',
       refund: 'Refund',
       refunding: 'Refunding...',
-      alreadyRefunded: 'This order is already refunded',
-      error: 'Error refunding: {{errorMessage}}',
-      sendRefundSuccess: 'Successfully refunded',
+      alreadyRefunded: 'This order has already been refunded',
+      error: 'Error during refund: {{message}}',
+      sendRefundSuccess: 'Refund successful',
     },
   },
   deployments: {
@@ -158,7 +228,7 @@ export default {
         cancel: 'Cancel',
         deploy: 'Deploy',
         close: 'Close',
-        goToNetlify: 'Go to Netlify',
+        goToNetlify: 'Netlify',
       },
       noInfos: 'No information available',
       defaultDeploymentTitle: 'Triggered from Sanity',
@@ -169,23 +239,23 @@ export default {
         building: 'Deploying',
         ready: 'Ready',
         error: 'Error',
-        none: 'No Status',
+        none: 'No status',
       },
     },
     startedOn: 'Started on',
   },
   stock: {
     name: 'Stock',
-    header: 'Low Stock Items',
-    loading: 'Loading Products...',
+    header: 'Low stock',
+    loading: 'Loading products...',
     globalStockThreshold: 'Global lower limit',
     noThreshold: 'None',
     nothing: 'All products are in stock',
     summary: 'Summary',
     product: 'Product',
-    variant: 'Product Variant',
+    variant: 'Product variant',
     products: 'Products',
-    variants: 'Product Variants',
+    variants: 'Product variants',
   },
   exporters: {
     xlsx: {
