@@ -402,11 +402,6 @@ export default {
           archived: '⚪ Archiviert',
         },
       },
-      featured: {
-        title: 'Gefeatured',
-        description:
-          'Wenn ausgewählt, wird diese Variante in der Suche angezeigt. Wenn keine Variante gefeatured ist, wird automatisch die Erste verwendet.',
-      },
     },
     preview: {
       variants: 'Varianten',
@@ -574,7 +569,7 @@ export default {
       },
       defaultTaxCategory: {
         title: 'Standard Steuerklasse',
-        description: 'Welche Steuerklasse soll für Produkte standardmäßig verwendet werden?',
+        description: 'Falls ein Produkt keine Steuerklasse hat, wird diese verwendet.',
       },
       freeShippingCalculation: {
         options: {
@@ -601,15 +596,16 @@ export default {
       },
       senderEmail: {
         title: 'Absender-E-Mail',
-        description: 'Wird als Absenderadresse bei Bestell- und Versand-E-Mails an Kunden verwendet',
+        description:
+          'Wird als Absenderadresse bei Bestell- und Versand-E-Mails an Kunden verwendet',
       },
       orderNumberPrefix: {
         title: 'Bestellnummer-Präfix',
-        description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-20250315-123456',
+        description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-00000001',
       },
       invoiceNumberPrefix: {
         title: 'Rechnungsnummer-Präfix',
-        description: 'Benutzt als Präfix der Rechnungsnummer, z.B. "INV-20250315-123456',
+        description: 'Benutzt als Präfix der Rechnungsnummer, z.B. "INV-00000001',
       },
       lastInvoiceNumber: {
         title: 'Letzte Rechnungsnummer',
@@ -627,7 +623,8 @@ export default {
       stock: 'Lagerbestand',
       tax: 'Steuern',
       orders: 'Bestellungen',
-      billing: 'Abrechnung',
+      billing: 'Rechnungen',
+      notifications: 'Benachrichtigungen',
     },
     preview: {},
   },
@@ -690,9 +687,7 @@ export default {
       },
       code: {
         title: 'Code',
-        description:
-          'Der Code wird verwendet, um die Steuerklasse zu identifizieren und kann nur einmalig gesetzt werden.',
-        // description: 'The code used by the system. Locked after publishing to prevent breaking the shop.',
+        description: 'Der Code wird verwendet, um die Steuerklasse zu identifizieren.',
       },
     },
     preview: {},
@@ -1222,15 +1217,18 @@ export default {
     fields: {
       siteTitle: {
         title: 'Seitentitel',
-        description: 'Name deiner Seite, normalerweise dein Brand- oder Firmenname. Wird im Browser-Tab, in Social-Media-Vorschauen und im Web-App-Manifest verwendet.',
+        description:
+          'Name deiner Seite, normalerweise dein Brand- oder Firmenname. Wird im Browser-Tab, in Social-Media-Vorschauen und im Web-App-Manifest verwendet.',
       },
       siteShortDescription: {
         title: 'Kurzbeschreibung',
-        description: 'Wird als Meta-Description in Suchergebnissen verwendet, wenn keine seitenspezifische SEO-Beschreibung gesetzt ist.',
+        description:
+          'Wird als Meta-Description in Suchergebnissen verwendet, wenn keine seitenspezifische SEO-Beschreibung gesetzt ist.',
       },
       defaultShareImage: {
         title: 'Standard-Vorschaubild',
-        description: 'Wird in Social-Media-Vorschauen (og:image) verwendet, wenn weder ein seitenspezifisches SEO-Bild noch ein Seitenbild vorhanden ist. Empfohlene Größe: 1200×630px.',
+        description:
+          'Wird in Social-Media-Vorschauen (og:image) verwendet, wenn weder ein seitenspezifisches SEO-Bild noch ein Seitenbild vorhanden ist. Empfohlene Größe: 1200×630px.',
       },
       homePage: {
         title: 'Startseite',
@@ -1385,12 +1383,13 @@ export default {
       },
       shareTitle: {
         title: 'Share-Titel',
-        description: 'Titel für soziale Netzwerke',
+        description: 'Titel für soziale Netzwerke. Wenn leer, wird der Meta-Titel verwendet',
         validation: 'Titel länger als 50 werden von sozialen Netzwerken abgeschnitten',
       },
       shareDescription: {
         title: 'Share-Beschreibung',
-        description: 'Beschreibung für soziale Netzwerke',
+        description:
+          'Beschreibung für soziale Netzwerke. Wenn leer, wird die Meta-Beschreibung verwendet',
         validation: 'Beschreibungen länger als 150 werden von sozialen Netzwerken abgeschnitten',
       },
       shareImage: {

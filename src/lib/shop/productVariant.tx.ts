@@ -63,7 +63,6 @@ function baseVariant(
     kind,
     product: { _type: 'reference', _ref: productId },
     status: 'active',
-    featured: false,
     ...(rowTitles.length && { title: rowTitles }),
     ...(price !== undefined && { price }),
     ...(taxId && { taxCategory: { _type: 'reference', _ref: taxId } }),

@@ -131,11 +131,6 @@ export default {
       active: {
         title: 'Active',
       },
-      featured: {
-        title: 'Featured',
-        description:
-          'If checked, this variant will be displayed in the search. If no variant is featured, the first will automatically be used.',
-      },
     },
     preview: {
       variants: 'Variants',

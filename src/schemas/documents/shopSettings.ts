@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import {
   NoteIcon,
+  NotificationIcon,
   OrderIcon,
   PackageIcon,
   TruckIcon,
@@ -25,11 +26,21 @@ export const shopSettings: ITSDocumentDefinition = {
       tax: VatBreakdownIcon,
       orders: OrderIcon,
       billing: NoteIcon,
+      notifications: NotificationIcon,
     }
 
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
+    const vouchersEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vouchers')
 
-    const groupNames = ['displays', 'shipping', ...(stockEnabled ? ['stock'] : []), 'tax', 'orders', 'billing']
+    const groupNames = [
+      'billing',
+      'orders',
+      'shipping',
+      'tax',
+      'notifications',
+      ...(stockEnabled ? ['stock'] : []),
+      'displays',
+    ]
     const groups = groupNames.map((name, index) => ({
       name,
       icon: groupIcons[name],
@@ -48,12 +59,16 @@ export const shopSettings: ITSDocumentDefinition = {
           to: [{ type: 'taxCountry' }],
         }),
 
-        f('freeShippingCalculation', 'string', {
-          options: {
-            list: [{ value: 'beforeDiscount' }, { value: 'afterDiscount' }],
-          },
-          initialValue: 'afterDiscount',
-        }),
+        ...(vouchersEnabled
+          ? [
+              f('freeShippingCalculation', 'string', {
+                options: {
+                  list: [{ value: 'beforeDiscount' }, { value: 'afterDiscount' }],
+                },
+                initialValue: 'afterDiscount',
+              }),
+            ]
+          : []),
       ],
       ...(stockEnabled
         ? { stock: [f('stockThreshold', 'number', { validation: (Rule) => Rule.positive() })] }
@@ -64,16 +79,15 @@ export const shopSettings: ITSDocumentDefinition = {
         }),
       ],
       orders: [
-        f('orderNumberPrefix', 'string'),
-        f('invoiceNumberPrefix', 'string'),
         f('lastInvoiceNumber', 'number', {
           validation: (rule) => rule.required().positive(),
           initialValue: 0,
         }),
+        f('orderNumberPrefix', 'string'),
+        f('invoiceNumberPrefix', 'string'),
       ],
-      billing: [
-        f('billingAddress', 'businessAddress'),
-        f('bankAccount', 'bankAccount'),
+      billing: [f('billingAddress', 'businessAddress'), f('bankAccount', 'bankAccount')],
+      notifications: [
         f('senderName', 'string'),
         f('senderEmail', 'string', {
           validation: (rule) => rule.email(),

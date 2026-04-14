@@ -65,7 +65,6 @@ export const productVariant: ITSDocumentDefinition = {
             validation: (rule) => rule.required(),
           }),
 
-          f('featured', 'boolean', { initialValue: false }),
           ...(ctx.featureRegistry.isDocEnabled('manufacturer')
             ? [
                 f('manufacturers', 'array', {
@@ -145,7 +144,6 @@ export const productVariant: ITSDocumentDefinition = {
       productImage: 'product.image',
       kind: 'kind',
       status: 'status',
-      featured: 'featured',
       // physical + digital: option ref titles
       ...(optionsActuallyEnabled && {
         options: 'options',
@@ -179,7 +177,6 @@ export const productVariant: ITSDocumentDefinition = {
           productImage,
           kind,
           status,
-          featured,
           wineVolume,
           wineVintage,
           bundleItems,
@@ -200,8 +197,7 @@ export const productVariant: ITSDocumentDefinition = {
 
           const statusIcons: Record<string, string> = { comingSoon: '🟡', soldOut: '🔴', archived: '⚪' }
           const statusIcon = statusIcons[status] ?? ''
-          const featuredIcon = featured ? ' ★' : ''
-          const subtitle = [statusIcon + featuredIcon, kindSubtitle].filter(Boolean).join(' ')
+          const subtitle = [statusIcon, kindSubtitle].filter(Boolean).join(' ')
 
           return {
             title,

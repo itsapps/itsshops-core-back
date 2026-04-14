@@ -6,6 +6,7 @@ import {
   DocumentIcon as Document,
   EditIcon as Edit,
   EllipsisHorizontalIcon as EllipsisHorizontal,
+  EnvelopeIcon as Envelope,
   ErrorOutlineIcon as ErrorOutline,
   FilterIcon as Filter,
   HomeIcon as Home,
@@ -73,6 +74,7 @@ export const CustomerIcon = User
 export const DeployIcon = PiRocketLaunch
 export const EditIcon = Edit
 export const EllipsisHorizontalIcon = EllipsisHorizontal
+export const NotificationIcon = Envelope
 export const ErrorOutlineIcon = ErrorOutline
 export const ExternalLinkIcon = PiArrowSquareOut
 export const FilterIcon = Filter

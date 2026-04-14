@@ -936,7 +936,6 @@ export type ProductVariant = {
     } & CategoryReference
   >
   kind?: 'wine' | 'physical' | 'digital' | 'bundle'
-  featured?: boolean
   manufacturers?: Array<
     {
       _key: string
