@@ -14,16 +14,19 @@ export const shippingMethod: ITSDocumentDefinition = {
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
         f('methodType', 'string', {
           options: {
-            list: [{ value: 'delivery' }, { value: 'pickup' }],
+            list: [
+              { value: 'delivery' },
+              // { value: 'pickup' }
+            ],
           },
           initialValue: 'delivery',
           validation: (Rule) => Rule.required(),
         }),
-        ctx.builders.priceField({
-          name: 'pickupFee',
-          initialValue: 0,
-          hidden: ({ parent }) => parent?.methodType !== 'pickup',
-        }),
+        // ctx.builders.priceField({
+        //   name: 'pickupFee',
+        //   initialValue: 0,
+        //   hidden: ({ parent }) => parent?.methodType !== 'pickup',
+        // }),
         f('eligibleCountries', 'array', {
           of: [
             {
@@ -38,33 +41,33 @@ export const shippingMethod: ITSDocumentDefinition = {
         }),
         f('rates', 'array', {
           of: [{ type: 'shippingRate' }],
-          hidden: ({ parent }) => parent?.methodType === 'pickup',
-          validation: (Rule) =>
-            Rule.custom((value, context) => {
-              const rates = value as unknown[] | undefined
-              const parent = context.parent as { methodType?: string; packagingConfigs?: unknown[] } | undefined
-              if (!parent?.methodType) return true
-              if (parent.methodType === 'delivery') {
-                const hasPackaging = (parent.packagingConfigs ?? []).length > 0
-                if (!hasPackaging && (!rates || rates.length === 0)) {
-                  return t.default('validation.deliveryMethodsAtLeastOneRate')
-                }
-              }
-              return true
-            }),
+          // hidden: ({ parent }) => parent?.methodType === 'pickup',
+          // validation: (Rule) =>
+          //   Rule.custom((value, context) => {
+          //     const rates = value as unknown[] | undefined
+          //     const parent = context.parent as { methodType?: string; packagingConfigs?: unknown[] } | undefined
+          //     if (!parent?.methodType) return true
+          //     if (parent.methodType === 'delivery') {
+          //       const hasPackaging = (parent.packagingConfigs ?? []).length > 0
+          //       if (!hasPackaging && (!rates || rates.length === 0)) {
+          //         return t.default('validation.deliveryMethodsAtLeastOneRate')
+          //       }
+          //     }
+          //     return true
+          //   }),
         }),
         f('packagingConfigs', 'array', {
           of: [{ type: 'winePackagingConfig' }],
-          hidden: ({ parent }) => parent?.methodType === 'pickup',
+          // hidden: ({ parent }) => parent?.methodType === 'pickup',
         }),
-        f('taxCategory', 'reference', {
-          to: [{ type: 'taxCategory' }],
-          validation: (Rule) => Rule.required(),
-        }),
+        // f('taxCategory', 'reference', {
+        //   to: [{ type: 'taxCategory' }],
+        //   validation: (Rule) => Rule.required(),
+        // }),
         ctx.builders.priceField({
           name: 'freeShippingThreshold',
           validation: (Rule) => Rule.positive(),
-          hidden: ({ parent }) => parent && parent.methodType !== 'delivery',
+          // hidden: ({ parent }) => parent && parent.methodType !== 'delivery',
         }),
       ],
       preview: {
