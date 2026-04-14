@@ -82,7 +82,7 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
           type: 'group',
           id: 'shopSettingsGroup',
           icon: SettingsIcon,
-          children: mapItems(['shopSettings', 'shippingMethod', 'taxCountry', 'taxCategory']),
+          children: mapItems(['shopSettings', 'taxCategory', 'taxCountry', 'shippingMethod']),
         },
       ],
     },
