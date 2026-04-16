@@ -7,7 +7,7 @@ export const settings: ITSDocumentDefinition = {
   icon: SettingsIcon,
   isSingleton: true,
   build: (ctx) => {
-    const { f } = ctx
+    const { f, t } = ctx
     return ctx.builders.buildGroupedSchema([
       {
         name: 'site',
@@ -29,10 +29,10 @@ export const settings: ITSDocumentDefinition = {
             to: [{ type: 'page' }],
           }),
           f('mainMenus', 'array', {
-            of: [{ type: 'reference', to: [{ type: 'menu' }] }],
+            of: [{ type: 'reference', title: t.default('menu.title'), to: [{ type: 'menu' }] }],
           }),
           f('footerMenus', 'array', {
-            of: [{ type: 'reference', to: [{ type: 'menu' }] }],
+            of: [{ type: 'reference', title: t.default('menu.title'), to: [{ type: 'menu' }] }],
           }),
         ],
       },
