@@ -14,14 +14,14 @@ export function getI18nArrayValue<T>(
   baseLocale: string,
 ): T | undefined {
   if (!items || !Array.isArray(items) || items.length === 0) return undefined
-  // const match = data.find(item => item._key === locale) || data[0];
+  // const match = data.find(item => item.language === locale) || data[0];
   // return match?.value;
   // 1. Try to find the requested locale
-  const requested = items.find((item) => item._key === locale)
+  const requested = items.find((item) => item.language === locale)
   if (requested?.value) return requested.value
 
   // 2. Fallback to base language
-  const base = items.find((item) => item._key === baseLocale)
+  const base = items.find((item) => item.language === baseLocale)
   if (base?.value) return base.value
 
   // 3. Find the first non-empty value available (Any other locale)

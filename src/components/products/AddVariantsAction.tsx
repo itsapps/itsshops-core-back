@@ -95,7 +95,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
           "categories": *[_type == "taxCategory"]{
             _id,
             "title": coalesce(
-              title[_key == $locale][0].value,
+              title[language == $locale][0].value,
               title[0].value
             ),
             "code": code.current

@@ -13,7 +13,7 @@ export const i18nValidators = {
     (defaultLocale: string, isRequired: boolean, ctx: ValidatorContext) =>
     (rule: Rule): Rule => {
       const customRule = rule.custom((value: (any | null)[]) => {
-        const entry = value?.find((item) => item._key === defaultLocale)
+        const entry = value?.find((item) => item.language === defaultLocale)
         if (!entry?.value) {
           return ctx.t('validation.requiredDefault', undefined, { locale: defaultLocale })
         }
@@ -30,7 +30,7 @@ export const i18nValidators = {
       return rule
         .custom((value: any[]) => {
           const missing = allLocales.filter(
-            (lang) => !value?.find((item) => item._key === lang)?.value,
+            (lang) => !value?.find((item) => item.language === lang)?.value,
           )
           return missing.length === 0
             ? true

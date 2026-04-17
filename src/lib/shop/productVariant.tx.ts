@@ -18,10 +18,10 @@ export function cartesian<T>(arrays: T[][]): T[][] {
   )
 }
 
-export function buildI18nTitle(entries: I18nTitleEntry[]): { _key: string; value: string }[] {
+export function buildI18nTitle(entries: I18nTitleEntry[]): { language: string; value: string }[] {
   return entries
     .filter((e) => e.value.trim())
-    .map((e) => ({ _key: e.locale, value: e.value.trim() }))
+    .map((e) => ({ language: e.locale, value: e.value.trim() }))
 }
 
 type ProductTxProps = {

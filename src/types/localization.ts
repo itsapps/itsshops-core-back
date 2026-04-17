@@ -61,35 +61,11 @@ export interface ITSi18nDictValue<T = string> {
 }
 
 export interface ITSi18nEntry<T = string> {
-  _key: string
+  language: string
   value?: T
 }
-// export interface ITSi18nStringEntry {
-//   _key: string; // The locale code, e.g., 'en', 'de'
-//   value?: string;
-// }
-// export type ITSi18nString = ITSi18nStringEntry[];
+
 export type ITSi18nArray<T = string> = ITSi18nEntry<T>[]
-
-// export interface LocaleImage {
-//   _type: 'localeImage';
-//   image: {
-//     asset: {
-//       _ref: string;
-//       _type: 'reference';
-//     };
-//   },
-//   alt?: ITSi18nArray;
-//   title?: ITSi18nArray;
-// }
-
-// export interface LocaleImage {
-//   _type: 'localeImage'
-//   image?: ITSi18nArray<any>
-//   title?: ITSi18nArray
-//   alt?: ITSi18nArray
-// }
-
 export type ITSi18nLocalizerValue = <T = string>(data: any) => T | undefined
 export type ITSi18nLocalizerObjectValue = <T = string>(data: any, key: string) => T | undefined
 
