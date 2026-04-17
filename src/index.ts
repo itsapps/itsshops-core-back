@@ -4,6 +4,7 @@ import { visionTool } from '@sanity/vision'
 import { definePlugin } from 'sanity'
 import { WorkspaceOptions } from 'sanity'
 import { presentationTool } from 'sanity/presentation'
+import { assist } from '@sanity/assist'
 import { structureTool } from 'sanity/structure'
 import { internationalizedArray } from 'sanity-plugin-internationalized-array'
 import { media } from 'sanity-plugin-media'
@@ -36,6 +37,7 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
   // // eslint-disable-next-line no-console
   // console.info(`[itsshops-core-back] v${pkg.version} built: ${__BUILD_TIME__}`)
   const presentationOptions = createPresentations({ ...context, t: context.structureT })
+  const assistDocTypes = context.featureRegistry.getEnabledDocs().map((d) => d.name)
   return {
     name: '@itsapps/itsshops-core-back',
     plugins: [
@@ -50,6 +52,20 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
       media(),
       presentationTool(presentationOptions),
       ...getTranslationPackage(context.locale),
+      assist({
+        translate: {
+          // styleguide: [
+          //   'Rules:',
+          //   '1. If a field value is a URL (starts with "http://" or "https://"), set the translation to an empty string. Do not copy the URL.',
+          //   '2. If the German source text is already written in English, set the translation to an empty string. Do not copy or rephrase it.',
+          //   '3. For testing: append "!" to every non-empty translated text.',
+          // ].join('\n'),
+          field: {
+            documentTypes: assistDocTypes,
+            languages: context.config.localization.fieldLanguages,
+          },
+        },
+      }),
     ],
     schema: {
       types: buildSchemas(context),
@@ -69,9 +85,8 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
     i18n: {
       bundles: [...getStructureOverrideBundles(context.config.localization.uiLanguages)],
     },
-    releases: {
-      enabled: false,
-    },
+    releases: { enabled: false },
+    scheduledDrafts: { enabled: false },
   }
 })
 
