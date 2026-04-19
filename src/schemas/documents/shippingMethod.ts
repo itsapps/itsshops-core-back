@@ -59,6 +59,18 @@ export const shippingMethod: ITSDocumentDefinition = {
         f('packagingConfigs', 'array', {
           of: [{ type: 'winePackagingConfig' }],
           // hidden: ({ parent }) => parent?.methodType === 'pickup',
+          validation: (Rule) =>
+            Rule.custom((configs: { volume?: number }[] | undefined) => {
+              if (!configs || configs.length <= 1) return true
+              const volumes = configs.map((c) => c.volume)
+              const seen = new Set<number>()
+              for (const v of volumes) {
+                if (v == null) continue
+                if (seen.has(v)) return t.default('validation.duplicateVolume', 'Duplicate volume')
+                seen.add(v)
+              }
+              return true
+            }),
         }),
         // f('taxCategory', 'reference', {
         //   to: [{ type: 'taxCategory' }],

@@ -147,6 +147,7 @@ export default {
     subtotal: 'Zwischensumme',
     trackingNumber: 'Sendungsnummer',
     packaging: 'Verpackung',
+    pack: '{{packSize}}er',
     loading: 'Lade Bestellung...',
     orderNumber: 'Bestellnummer',
     invoiceNumber: 'Rechungsnummer',

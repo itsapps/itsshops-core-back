@@ -292,6 +292,7 @@ export default {
     deliveryMethodsAtLeastOneRate: 'At least one rule must be defined.',
     menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
+    duplicateVolume: 'Each volume may only appear once.',
   },
 
   productFieldsets: {

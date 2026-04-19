@@ -45,8 +45,7 @@ export default {
       options: 'Properties',
       loadingOptions: 'Loading options...',
       preview: 'Variant preview — {{enabledCount}} of {{totalCount}}',
-      noOptionGroups:
-        'No option groups found. Create some first in the option groups list.',
+      noOptionGroups: 'No option groups found. Create some first in the option groups list.',
       noOptions: 'No options available in this group',
     },
   },
@@ -88,8 +87,7 @@ export default {
     },
   },
   product: {
-    deleteNotAllowedVariantsExist:
-      'Product cannot be deleted because it is linked to variants.',
+    deleteNotAllowedVariantsExist: 'Product cannot be deleted because it is linked to variants.',
   },
   productVariant: {
     publishNotAllowedButByGenerating: 'Product variants can only be generated in products.',
@@ -110,10 +108,8 @@ export default {
       title: 'Remove all variants',
       confirm: 'Really delete the variants?',
     },
-    selectProductNumber:
-      'Please assign a product number to generate variants for it.',
-    couldNotDeleteAll:
-      'One or more variants could not be deleted because they are in use.',
+    selectProductNumber: 'Please assign a product number to generate variants for it.',
+    couldNotDeleteAll: 'One or more variants could not be deleted because they are in use.',
   },
   optionsGroups: {
     addOption: 'Add option',
@@ -147,6 +143,7 @@ export default {
     subtotal: 'Subtotal',
     trackingNumber: 'Tracking number',
     packaging: 'Packaging',
+    pack: '{{packSize}}-pack',
     loading: 'Loading order...',
     orderNumber: 'Order number',
     invoiceNumber: 'Invoice number',
