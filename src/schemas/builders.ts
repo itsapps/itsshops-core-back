@@ -110,7 +110,11 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
      */
     module: (options) => {
       return {
-        groups: [{ name: 'content', default: true }, { name: 'settings' }],
+        groups: [
+          { name: 'content', default: true },
+          ...(options.groups ? options.groups : []),
+          { name: 'settings' },
+        ],
         fields: [
           // Content fields (assigned to content group)
           ...options.fields.map((field) => ({ ...field, group: field.group || 'content' })),
@@ -178,7 +182,14 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
 
       if (options.multiple) {
         return f(name, 'array', {
-          of: [{ type: 'reference', to: variantTo, options: variantOptions }],
+          of: [
+            {
+              type: 'reference',
+              title: ctx.t.default('product.title'),
+              to: variantTo,
+              options: variantOptions,
+            },
+          ],
         })
       }
 

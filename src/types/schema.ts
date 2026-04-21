@@ -162,6 +162,7 @@ export interface ITSExternalLinkOptions {
 
 export interface ITSModuleOptions {
   fields: any[]
+  groups?: FieldGroupDefinition[]
   allowAnchor?: boolean
   allowTheme?: boolean
 }
