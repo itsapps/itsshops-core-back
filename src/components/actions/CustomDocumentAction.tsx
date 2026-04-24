@@ -20,7 +20,7 @@ export function createCustomDocumentAction<T>(customAction: CustomDocumentAction
 
     return {
       ...originalResult,
-      label: originalResult?.label || t('actions.delete'),
+      label: originalResult?.label || t('ui.actions.delete'),
       onHandle: async () => {
         // optionally check if action is allowed in callback fn
         if (customAction.allowActionFn) {

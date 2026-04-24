@@ -281,7 +281,7 @@ function OrderActionContent({
 
       <TextArea
         rows={3}
-        placeholder={t('actions.order.updateStatus.optionalNote', 'Optional note')}
+        placeholder={t('ui.actions.optionalNote', 'Optional note')}
         value={note}
         onChange={handleNoteChange}
       />
