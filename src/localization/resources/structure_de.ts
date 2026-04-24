@@ -13,7 +13,7 @@ export default {
   orderMeta: { title: 'Bestellungen (Temporär)' },
   products: {
     title: 'Produkte',
-    productContainer: 'Allgemeines',
+    productContainer: 'Produktdaten',
     edit: 'Produkt bearbeiten',
     variant: 'Variante',
     variants: 'Varianten',

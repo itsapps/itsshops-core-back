@@ -253,11 +253,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
     }
   }
 
-  return (
-    <Box padding={1}>
-      <Stack space={1}>{renderContent()}</Stack>
-    </Box>
-  )
+  return <Stack space={1}>{renderContent()}</Stack>
 }
 
 // ─── AddVariantsAction ────────────────────────────────────────────────────────

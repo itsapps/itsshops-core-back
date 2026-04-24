@@ -1,4 +1,5 @@
-import { ProductIcon, productKindIcons, ProductVariantIcon } from '../assets/icons'
+import { AddIcon, ProductIcon, productKindIcons, ProductVariantIcon } from '../assets/icons'
+import { AddVariantsPane } from '../components/products/AddVariantsPane'
 import type { ITSStructureComponent } from '../types'
 import { getReferenceView } from './structure'
 
@@ -36,6 +37,16 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
               .apiVersion(apiVersion)
               .filter('_type == "productVariant" && product._ref == $productId')
               .params({ productId }),
+          ),
+        S.listItem()
+          .id('addVariant')
+          .title(t('products.addVariant'))
+          .icon(AddIcon)
+          .child(
+            S.component(AddVariantsPane)
+              .id('addVariantPane')
+              .title(t('products.addVariant'))
+              .options({ productId }),
           ),
       ])
 

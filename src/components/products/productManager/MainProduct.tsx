@@ -25,13 +25,12 @@ export function GlobalDefaults(props: GlobalDefaultsProps): ReactElement {
   return (
     <Stack space={4}>
       <Grid columns={kind === 'physical' ? 3 : 2} gap={3}>
-        <PriceField value={globalPrice} onChange={onPriceChange} required />
+        <PriceField value={globalPrice} onChange={onPriceChange} />
         <TaxCategoryField
           value={globalTaxCategoryId}
           taxCategories={taxCategories}
           loadingTax={loadingTax}
           onTaxChange={onTaxChange}
-          required
         />
         {kind === 'physical' && <WeightField value={globalWeight} onChange={onWeightChange} />}
       </Grid>
