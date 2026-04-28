@@ -53,6 +53,7 @@ export interface FeatureConfig {
     category?: boolean | { subcategories?: boolean }
     vinofact?: VinofactConfig
     vouchers?: boolean
+    coupons?: boolean
   }>
   blog?: boolean
   users?: boolean
@@ -66,6 +67,7 @@ export interface ITSFeatureConfig {
     category: boolean | { subcategories?: boolean }
     vinofact: VinofactConfig
     vouchers: boolean
+    coupons: boolean
   }
   blog: boolean
   users: boolean

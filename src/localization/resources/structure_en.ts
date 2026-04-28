@@ -53,6 +53,7 @@ export default {
   taxCountry: { title: 'Countries' },
   taxCategory: { title: 'Tax categories' },
   voucher: { title: 'Vouchers' },
+  coupon: { title: 'Coupons' },
   blog: { title: 'Blog' },
 
   tag: 'Tags',

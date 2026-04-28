@@ -1243,6 +1243,70 @@ export default {
   customerGroup: {
     title: 'Customer group',
   },
+  coupon: {
+    title: 'Coupon',
+    fields: {
+      code: {
+        title: 'Code',
+        description: 'Code customers enter at checkout.',
+      },
+      title: {
+        title: 'Internal title',
+      },
+      description: {
+        title: 'Internal note',
+      },
+      enabled: {
+        title: 'Active',
+      },
+      discountType: {
+        title: 'Discount type',
+        options: {
+          percent: 'Percent',
+          fixed: 'Fixed amount',
+          freeShipping: 'Free shipping',
+        },
+      },
+      value: {
+        title: 'Value',
+        description: 'Percent: 1–100. Fixed: amount in cents (1000 = €10).',
+      },
+      validFrom: {
+        title: 'Valid from',
+      },
+      validTo: {
+        title: 'Valid until',
+      },
+      minSubtotal: {
+        title: 'Minimum subtotal',
+        description: 'Gross subtotal threshold to apply this coupon.',
+      },
+      maxRedemptions: {
+        title: 'Max redemptions',
+        description: 'Global cap. Leave empty for unlimited.',
+      },
+      redemptionCount: {
+        title: 'Redemptions so far',
+      },
+    },
+    validation: {
+      valueRequired: 'Value is required',
+      valuePositive: 'Value must be greater than 0',
+      percentMax: 'Percent cannot exceed 100',
+      validToAfterFrom: '"Valid until" must be after "valid from"',
+      codeInUse: 'Code is already in use',
+    },
+    preview: {
+      badge: {
+        active: '🟢 Active',
+        disabled: '⚪ Disabled',
+        expired: '🔴 Expired',
+        scheduled: '🟡 Scheduled',
+        exhausted: '🔴 Exhausted',
+      },
+      freeShipping: 'Free shipping',
+    },
+  },
   voucher: {
     title: 'Voucher',
     validation: {

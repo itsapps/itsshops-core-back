@@ -79,6 +79,7 @@ export interface ITSFormatter {
   date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string
   number: (num: number, options?: Intl.NumberFormatOptions) => string
   currency: (num: number, currency?: string) => string
+  dateFormat: (dateType: 'date' | 'datetime') => { dateFormat: string; timeFormat?: string }
 }
 
 /** 2. Field Factory Types **/

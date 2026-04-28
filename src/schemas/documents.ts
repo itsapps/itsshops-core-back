@@ -1,6 +1,7 @@
 import { ITSDocumentDefinition } from '../types'
 import { blog } from './documents/blog'
 import { category } from './documents/category'
+import { coupon } from './documents/coupon'
 import { customer } from './documents/customer'
 import { customerGroup } from './documents/customerGroup'
 import { manufacturer } from './documents/manufacturer'
@@ -33,6 +34,7 @@ export const getCoreDocuments = (
   return [
     blog,
     category,
+    coupon,
     customer,
     customerGroup,
     manufacturer,

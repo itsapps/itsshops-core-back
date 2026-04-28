@@ -1257,6 +1257,70 @@ export default {
   customerGroup: {
     title: 'Kundengruppe',
   },
+  coupon: {
+    title: 'Rabattcode',
+    fields: {
+      code: {
+        title: 'Code',
+        description: 'Code, den der Kunde im Checkout eingibt.',
+      },
+      title: {
+        title: 'Interner Titel',
+      },
+      description: {
+        title: 'Interne Notiz',
+      },
+      enabled: {
+        title: 'Aktiv',
+      },
+      discountType: {
+        title: 'Ermässigungstyp',
+        options: {
+          percent: 'Prozent',
+          fixed: 'Fixer Betrag',
+          freeShipping: 'Gratisversand',
+        },
+      },
+      value: {
+        title: 'Wert',
+        description: 'Prozent: 1–100. Fixer Betrag: in Cent (1000 = 10€).',
+      },
+      validFrom: {
+        title: 'Gültig ab',
+      },
+      validTo: {
+        title: 'Gültig bis',
+      },
+      minSubtotal: {
+        title: 'Mindestbestellwert',
+        description: 'Brutto-Mindestbetrag, ab dem der Code gilt.',
+      },
+      maxRedemptions: {
+        title: 'Maximale Einlösungen',
+        description: 'Globale Obergrenze. Leer = unbegrenzt.',
+      },
+      redemptionCount: {
+        title: 'Bisherige Einlösungen',
+      },
+    },
+    validation: {
+      valueRequired: 'Wert ist erforderlich',
+      valuePositive: 'Wert muss größer als 0 sein',
+      percentMax: 'Prozent darf 100 nicht überschreiten',
+      validToAfterFrom: '"Gültig bis" muss nach "Gültig ab" liegen',
+      codeInUse: 'Code wird bereits verwendet',
+    },
+    preview: {
+      badge: {
+        active: '🟢 Aktiv',
+        disabled: '⚪ Deaktiviert',
+        expired: '🔴 Abgelaufen',
+        scheduled: '🟡 Geplant',
+        exhausted: '🔴 Verbraucht',
+      },
+      freeShipping: 'Gratisversand',
+    },
+  },
   voucher: {
     title: 'Gutschein',
     validation: {

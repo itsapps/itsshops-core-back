@@ -58,7 +58,7 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
           component: categoriesMenu,
           hidden: isDocHidden(ctx, 'category'),
         },
-        ...mapItems(['manufacturer', 'voucher']),
+        ...mapItems(['manufacturer', 'voucher', 'coupon']),
       ],
     },
     {

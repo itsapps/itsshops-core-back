@@ -50,6 +50,7 @@ import {
   PiSquaresFour,
   PiStack,
   PiStar,
+  PiTag,
   PiTruck,
   PiWarning,
   PiWarningCircle,
@@ -60,6 +61,7 @@ import {
 import { ProductKind } from '../types'
 
 export const AddIcon = Add
+export const CouponIcon = PiTag
 export const ArrowUDownLeftIcon = PiArrowUDownLeft
 export const ArticleIcon = PiArticle
 export const BundleItemIcon = Package

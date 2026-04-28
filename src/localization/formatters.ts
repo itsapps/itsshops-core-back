@@ -3,6 +3,7 @@ export const createFormatHelpers = (locale: string) => ({
     formatDate(locale, date, options),
   number: (num: number, options?: Intl.NumberFormatOptions) => formatNumber(locale, num, options),
   currency: (num: number, currency = 'EUR') => formatCurrency(locale, num, currency),
+  dateFormat: (dateType: 'date' | 'datetime') => dateFormat(locale, dateType),
 })
 
 export function formatDate(
@@ -17,6 +18,15 @@ export function formatDate(
   const d = typeof date === 'string' ? new Date(date) : date
   options.timeZone = 'Europe/Vienna'
   return new Intl.DateTimeFormat(locale, options).format(d)
+}
+
+export function dateFormat(
+  locale: string,
+  dateType: 'date' | 'datetime',
+): { dateFormat: string; timeFormat?: string } {
+  const datePart = locale === 'de' ? 'DD.MM.YYYY' : 'YYYY-MM-DD'
+  if (dateType === 'date') return { dateFormat: datePart }
+  return { dateFormat: datePart, timeFormat: 'HH:mm' }
 }
 
 export function formatNumber(
