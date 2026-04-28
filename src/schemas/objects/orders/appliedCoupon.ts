@@ -12,6 +12,7 @@ export const appliedCoupon: ITSSchemaDefinition = {
       fields: [
         f('couponRef', 'reference', {
           to: [{ type: 'coupon' }],
+          weak: true,
         }),
         f('code', 'string', {
           validation: (rule) => rule.required(),
