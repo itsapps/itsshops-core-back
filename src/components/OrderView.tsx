@@ -226,7 +226,7 @@ export const OrderView: UserViewComponent = (props) => {
         </Card>
 
         {/* ── Customer + addresses ────────────────────────────────────── */}
-        <Flex gap={3} wrap="wrap">
+        <Flex gap={3} direction="column">
           {shippingAddress && (
             <AddressCard
               title={t('order.shipping')}
@@ -350,7 +350,7 @@ function TotalRow({
 
 function AddressCard({ title, lines }: { title: string; lines: string[] }) {
   return (
-    <Card padding={3} radius={2} shadow={1} tone="transparent" style={{ flex: '1 1 280px' }}>
+    <Card padding={3} radius={2} shadow={1} tone="transparent">
       <Stack space={3}>
         <Heading as="h4" size={1}>
           {title}
