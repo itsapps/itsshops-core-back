@@ -54,6 +54,7 @@ export default {
     orderCustomer: 'Customer',
     orderTotals: 'Totals',
     orderVouchers: 'Vouchers',
+    orderCoupons: 'Coupons',
     orderFreeProducts: 'Gifts',
     infos: 'Information',
   },
@@ -242,6 +243,9 @@ export default {
     },
     vouchers: {
       title: 'Vouchers',
+    },
+    appliedCoupons: {
+      title: 'Redeemed coupons',
     },
     freeProducts: {
       title: 'Gifts',
@@ -739,6 +743,7 @@ export default {
       orderTotals: 'Totals',
       fulfillment: 'Fulfillment',
       orderVouchers: 'Vouchers',
+      orderCoupons: 'Coupons',
       orderFreeProducts: 'Gifts',
     },
     fields: {
@@ -1305,6 +1310,32 @@ export default {
         exhausted: '🔴 Exhausted',
       },
       freeShipping: 'Free shipping',
+    },
+  },
+  appliedCoupon: {
+    title: 'Redeemed coupon',
+    fields: {
+      couponRef: {
+        title: 'Coupon',
+      },
+      code: {
+        title: 'Code',
+      },
+      discountType: {
+        title: 'Discount type',
+        options: {
+          percent: 'Percent',
+          fixed: 'Fixed amount',
+          freeShipping: 'Free shipping',
+        },
+      },
+      value: {
+        title: 'Value',
+      },
+      discountAmount: {
+        title: 'Deducted amount',
+        description: 'Amount actually deducted, in cents',
+      },
     },
   },
   voucher: {

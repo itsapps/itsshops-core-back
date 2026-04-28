@@ -137,6 +137,10 @@ export default {
     voucher: {
       notFound: 'Voucher no longer exists',
     },
+    coupons: 'Coupons',
+    coupon: {
+      freeShipping: 'Free shipping',
+    },
     discount: 'Discount',
     contactEmail: 'Contact email',
     total: 'Total',

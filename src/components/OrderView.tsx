@@ -99,6 +99,14 @@ type StatusHistoryEntry = {
   note?: string
 }
 
+type AppliedCoupon = {
+  _key: string
+  code: string
+  discountType: 'percent' | 'fixed' | 'freeShipping'
+  value?: number
+  discountAmount: number
+}
+
 interface OrderDocument extends SanityDocument {
   orderNumber?: string
   invoiceNumber?: string
@@ -115,6 +123,7 @@ interface OrderDocument extends SanityDocument {
   totals: OrderTotals
   fulfillment: Fulfillment
   statusHistory?: StatusHistoryEntry[]
+  appliedCoupons?: AppliedCoupon[]
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -224,6 +233,38 @@ export const OrderView: UserViewComponent = (props) => {
             <TotalRow label={t('order.total')} value={money(totals?.grandTotal)} bold />
           </Stack>
         </Card>
+
+        {/* ── Applied coupons ─────────────────────────────────────────── */}
+        {order.appliedCoupons && order.appliedCoupons.length > 0 && (
+          <Card padding={3} radius={2} shadow={1} tone="transparent">
+            <Stack space={3}>
+              <Heading as="h4" size={1}>
+                {t('order.coupons', 'Coupons')}
+              </Heading>
+              <Stack space={2}>
+                {order.appliedCoupons.map((coupon) => {
+                  let valueLabel = ''
+                  if (coupon.discountType === 'percent') valueLabel = `${coupon.value ?? 0}%`
+                  else if (coupon.discountType === 'fixed' && typeof coupon.value === 'number')
+                    valueLabel = money(coupon.value)
+                  else if (coupon.discountType === 'freeShipping')
+                    valueLabel = t('order.coupon.freeShipping', 'Free shipping')
+                  return (
+                    <Flex key={coupon._key} justify="space-between" gap={3} wrap="wrap">
+                      <Stack space={1}>
+                        <Text weight="medium" style={{ fontFamily: 'monospace' }}>
+                          {coupon.code}
+                        </Text>
+                        {valueLabel && <Text muted>{valueLabel}</Text>}
+                      </Stack>
+                      <Text weight="medium">− {money(coupon.discountAmount)}</Text>
+                    </Flex>
+                  )
+                })}
+              </Stack>
+            </Stack>
+          </Card>
+        )}
 
         {/* ── Customer + addresses ────────────────────────────────────── */}
         <Flex gap={3} direction="column">

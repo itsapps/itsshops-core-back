@@ -54,6 +54,7 @@ export default {
     orderCustomer: 'Kundendaten',
     orderTotals: 'Kosten',
     orderVouchers: 'Gutscheine',
+    orderCoupons: 'Rabattcodes',
     orderFreeProducts: 'Goodies',
     infos: 'Informationen',
   },
@@ -243,6 +244,9 @@ export default {
     },
     vouchers: {
       title: 'Gutscheine',
+    },
+    appliedCoupons: {
+      title: 'Eingelöste Rabattcodes',
     },
     freeProducts: {
       title: 'Geschenke',
@@ -751,6 +755,7 @@ export default {
       orderTotals: 'Kosten',
       fulfillment: 'Versand',
       orderVouchers: 'Gutscheine',
+      orderCoupons: 'Rabattcodes',
       orderFreeProducts: 'Geschenke',
     },
     fields: {
@@ -1319,6 +1324,32 @@ export default {
         exhausted: '🔴 Verbraucht',
       },
       freeShipping: 'Gratisversand',
+    },
+  },
+  appliedCoupon: {
+    title: 'Eingelöster Rabattcode',
+    fields: {
+      couponRef: {
+        title: 'Rabattcode',
+      },
+      code: {
+        title: 'Code',
+      },
+      discountType: {
+        title: 'Ermässigungstyp',
+        options: {
+          percent: 'Prozent',
+          fixed: 'Fixer Betrag',
+          freeShipping: 'Gratisversand',
+        },
+      },
+      value: {
+        title: 'Wert',
+      },
+      discountAmount: {
+        title: 'Abgezogener Betrag',
+        description: 'Tatsächlich abgezogener Betrag in Cent',
+      },
     },
   },
   voucher: {

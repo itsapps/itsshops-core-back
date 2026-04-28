@@ -12,6 +12,7 @@ export const buildShared = (ctx: FieldContext) => {
     'orderTotals',
     'orderItems',
     'orderVouchers',
+    'orderCoupons',
     'orderFreeProducts',
   ].map((name, index) => ({
     name,
@@ -59,6 +60,13 @@ export const buildShared = (ctx: FieldContext) => {
       //   of: [ { type: 'orderVoucher' } ],
       //   validation: (rule) => rule.required(),
       // }),
+    ],
+    orderCoupons: [
+      f('appliedCoupons', 'array', {
+        of: [{ type: 'appliedCoupon' }],
+        options: { sortable: false },
+        readOnly: !ctx.config.isDev,
+      }),
     ],
     orderFreeProducts: [
       // f('freeProducts', 'array', {

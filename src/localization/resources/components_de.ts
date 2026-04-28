@@ -141,6 +141,10 @@ export default {
     voucher: {
       notFound: 'Gutschein existiert nicht mehr',
     },
+    coupons: 'Rabattcodes',
+    coupon: {
+      freeShipping: 'Gratisversand',
+    },
     discount: 'Ermäßigung',
     contactEmail: 'Kontakt E-Mail',
     total: 'Gesamtsumme',
