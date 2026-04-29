@@ -8,7 +8,6 @@ export const createVinofactClient = (
 ): ITSVinofactClient => {
   const defaultQueryParameters = {
     profileSlug,
-    locales: [locale],
   }
   const fetchData = async (query: string, variables = {}) => {
     try {
@@ -51,8 +50,8 @@ export const createVinofactClient = (
 
   const getWines = async (): Promise<VinofactWinesResponse> => {
     const query = `
-      query ($profileSlug: String!, $locales: [String!]!) {
-        wines(profileSlug: $profileSlug, locales: $locales) {
+      query ($profileSlug: String!) {
+        wines(profileSlug: $profileSlug) {
           id
           slug
           title
