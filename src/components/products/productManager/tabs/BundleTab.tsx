@@ -258,7 +258,7 @@ export function BundleTab(props: BundleTabProps): ReactElement {
   useEffect(() => {
     sanityClient
       .fetch<BundleVariantResult[]>(
-        `*[_type == "productVariant" && kind != "bundle" && status == "active"]{
+        `*[_type == "productVariant" && kind != "bundle" && status == "active" && !(_id in path("drafts.**"))]{
           _id,
           kind,
           "title": title,
