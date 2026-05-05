@@ -428,9 +428,7 @@ function OrderItemRow({
               {item.quantity}× {item.title}
             </Text>
           </Flex>
-          {item.subtitle && (
-            <Text muted>{item.subtitle}</Text>
-          )}
+          {item.subtitle && <Text muted>{item.subtitle}</Text>}
           <Flex gap={3} wrap="wrap">
             {item.sku && (
               <Text muted style={{ fontFamily: 'monospace' }}>
