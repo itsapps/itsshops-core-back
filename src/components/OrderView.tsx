@@ -303,7 +303,9 @@ export const OrderView: UserViewComponent = (props) => {
                     <Text>
                       {`${line.quantity}× ${t('order.pack', `${line.packSize}-pack`, { packSize: line.packSize })} · ${line.volume >= 1000 ? `${line.volume / 1000} l` : `${line.volume} ml`}`}
                     </Text>
-                    <Text weight="medium">{money(line.price * line.quantity)}</Text>
+                    {fulfillment.shippingCost > 0 && (
+                      <Text weight="medium">{money(line.price * line.quantity)}</Text>
+                    )}
                   </Flex>
                 ))}
               </Stack>
