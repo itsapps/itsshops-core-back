@@ -128,7 +128,9 @@ export const orderItem: ITSSchemaDefinition = {
           const weightStr = typeof weight === 'number' ? `${weight}g` : null
           return {
             title: `${quantity}× ${title}`,
-            subtitle: [subtitle, priceStr, weightStr, kind, packed ? '✓' : null].filter(Boolean).join(' · '),
+            subtitle: [subtitle, priceStr, weightStr, kind, packed ? '✓' : null]
+              .filter(Boolean)
+              .join(' · '),
             media: OrderItemIcon,
           }
         },

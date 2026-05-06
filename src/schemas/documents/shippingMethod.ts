@@ -65,7 +65,7 @@ export const shippingMethod: ITSDocumentDefinition = {
               const volumes = configs.map((c) => c.volume)
               const seen = new Set<number>()
               for (const v of volumes) {
-                if (v == null) continue
+                if (v === undefined) continue
                 if (seen.has(v)) return t.default('validation.duplicateVolume', 'Duplicate volume')
                 seen.add(v)
               }
