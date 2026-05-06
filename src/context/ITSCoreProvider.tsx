@@ -74,17 +74,15 @@ export const ITSCoreProvider = ({ children, ctx }: { children: ReactNode; ctx: I
   }, [ctx.locale, ctx.config.integrations.netlify])
 
   const vinofactClient = useMemo(() => {
-    const vinofact = ctx.config.features.shop.vinofact
-    if (!vinofact?.integration?.endpoint || !vinofact?.integration?.accessToken) return undefined
-
-    // This helper would handle the fetch logic and headers
+    const vinofact = ctx.config.integrations.vinofact
+    if (!vinofact?.endpoint || !vinofact?.accessToken) return undefined
     return createVinofactClient(
       ctx.locale,
-      vinofact.integration.endpoint,
-      vinofact.integration.accessToken,
-      vinofact.integration.profileSlug,
+      vinofact.endpoint,
+      vinofact.accessToken,
+      vinofact.profileSlug,
     )
-  }, [ctx.config.features.shop.vinofact, ctx.locale])
+  }, [ctx.config.integrations.vinofact, ctx.locale])
 
   const value = useMemo(
     () => ({

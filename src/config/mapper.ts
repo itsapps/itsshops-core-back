@@ -22,9 +22,14 @@ const allowedDocumentReferenceTypes: AllowedDocumentReferenceTypes = [
 ]
 const allowedProductKinds: ProductKinds = ['wine', 'physical', 'digital', 'bundle']
 
+// eslint-disable-next-line complexity
 export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   const isDev = config.settings.isDev || false
   const ignoreExtensions = config.settings.ignoreExtensions || false
+
+  const projectId = config.projectId ?? process.env.SANITY_STUDIO_PROJECT ?? ''
+  const dataset = config.dataset ?? process.env.SANITY_STUDIO_DATASET ?? ''
+  const workspaceName = config.workspaceName ?? process.env.SANITY_STUDIO_WORKSPACE_NAME ?? ''
 
   const { uiLanguages, fieldLanguages, uiLocales, fieldLocales } = getLanguages(config.i18n)
   const defaultLocale = config.i18n?.defaultLocale || uiLocales?.[0] || 'en'
@@ -67,11 +72,27 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
 
   const countries = createCountries(uiLocales)
 
+  const netlify = {
+    accessToken: process.env.SANITY_STUDIO_NETLIFY_ACCESS_TOKEN ?? '',
+    siteId: process.env.SANITY_STUDIO_NETLIFY_SITE_ID ?? '',
+    projectName: process.env.SANITY_STUDIO_NETLIFY_PROJECT_NAME ?? '',
+    endpoint: process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_ENDPOINT ?? '',
+    secret: process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_SECRET ?? '',
+  }
+
+  const vinofact = features.shop.vinofact.enabled
+    ? (config.integrations?.vinofact ?? {
+        endpoint: process.env.SANITY_STUDIO_VINOFACT_API_URL ?? '',
+        accessToken: process.env.SANITY_STUDIO_VINOFACT_API_TOKEN ?? '',
+        profileSlug: process.env.SANITY_STUDIO_VINOFACT_PROFILE_SLUG ?? '',
+      })
+    : undefined
+
   return {
     // ...config,
-    projectId: config.projectId,
-    dataset: config.dataset,
-    workspaceName: config.workspaceName,
+    projectId,
+    dataset,
+    workspaceName,
     workspaceIcon: config.workspaceIcon,
     isDev,
     settings: {
@@ -89,7 +110,7 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
       countries,
     },
     features,
-    integrations: config.integrations,
+    integrations: { netlify, vinofact },
     schemaSettings,
     schemaExtensions,
     apiVersion: sanityApiVersion,

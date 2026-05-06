@@ -38,11 +38,12 @@ export type SchemaSettingsInput = RecursivePartial<CoreSchemaSettings>
 
 export interface VinofactConfig {
   enabled: boolean
-  integration?: {
-    endpoint: string
-    accessToken: string
-    profileSlug: string
-  }
+}
+
+export interface VinofactIntegrationConfig {
+  endpoint: string
+  accessToken: string
+  profileSlug: string
 }
 
 export interface FeatureConfig {
@@ -111,6 +112,7 @@ export interface IntegrationsConfig {
   // `secret` must match SERVER_FUNCTIONS_SECRET in the core-front Netlify env.
   // Studio document actions (refund, notify) call /api/* paths under endpoint.
   netlify: NetlifyConfig
+  vinofact?: VinofactIntegrationConfig
 }
 
 export interface ItsConfigSettings {
@@ -120,12 +122,12 @@ export interface ItsConfigSettings {
 export type ConfigSettings = Partial<ItsConfigSettings>
 
 export interface ItsshopsConfig {
-  projectId: string
-  dataset: string
-  workspaceName: string
+  projectId?: string
+  dataset?: string
+  workspaceName?: string
   workspaceIcon?: ComponentType
   settings: ConfigSettings
-  integrations: IntegrationsConfig
+  integrations?: { vinofact?: VinofactIntegrationConfig }
   i18n?: I18nConfig
   features?: FeatureConfig
   schemaSettings?: SchemaSettingsInput

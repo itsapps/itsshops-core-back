@@ -144,9 +144,9 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
     return {
       name: locale,
       basePath: `/${locale}`,
-      projectId: config.projectId,
-      dataset: config.dataset,
-      title: `${language.locale.split('-')[0].toUpperCase()} - ${config.workspaceName}`,
+      projectId: coreConfig.projectId,
+      dataset: coreConfig.dataset,
+      title: `${language.locale.split('-')[0].toUpperCase()} - ${coreConfig.workspaceName}`,
       icon: coreConfig.workspaceIcon,
       plugins: [itsshopsPlugin(context)],
     }
