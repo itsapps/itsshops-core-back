@@ -452,6 +452,10 @@ export default {
   category: {
     title: 'Category',
     fields: {
+      sortOrder: {
+        title: 'Sort order',
+        description: 'The lower the number, the earlier the category appears.',
+      },
       parent: {
         title: 'Parent category',
       },

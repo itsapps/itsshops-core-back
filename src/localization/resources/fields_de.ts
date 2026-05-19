@@ -454,6 +454,10 @@ export default {
   category: {
     title: 'Kategorie',
     fields: {
+      sortOrder: {
+        title: 'Sortierung',
+        description: 'Je kleiner die Zahl, desto früher wird die Kategorie angezeigt.',
+      },
       parent: {
         title: 'Übergeordnete Kategorie',
       },
