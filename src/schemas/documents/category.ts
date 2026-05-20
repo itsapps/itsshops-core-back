@@ -23,7 +23,6 @@ export const category: ITSDocumentDefinition = {
           f('title', 'i18nString', { i18n: 'atLeastOne' }),
           f('description', 'i18nString'),
           f('sortOrder', 'number', {
-            initialValue: 0,
             validation: (rule) => rule.positive(),
           }),
           f('level', 'number', { hidden: true }),
