@@ -614,6 +614,10 @@ export default {
         title: 'Shop page',
         description: 'This page is used as the main page of the shop.',
       },
+      termsPage: {
+        title: 'Terms of service',
+        description: 'This page contains the terms of service.',
+      },
     },
     groups: {
       displays: 'Displays',

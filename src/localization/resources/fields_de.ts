@@ -626,6 +626,10 @@ export default {
         title: 'Shopseite',
         description: 'Diese Seite wird als Haupseite des Shops verwendet.',
       },
+      termsPage: {
+        title: 'AGB',
+        description: 'Diese Seite beschreibt die allgemeinen Geschäftsbedingungen.',
+      },
     },
     groups: {
       displays: 'Anzeigen',

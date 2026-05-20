@@ -52,6 +52,9 @@ export const shopSettings: ITSDocumentDefinition = {
         f('shopPage', 'reference', {
           to: [{ type: 'page' }],
         }),
+        f('termsPage', 'reference', {
+          to: [{ type: 'page' }],
+        }),
         ...builders.filterField(),
       ],
       shipping: [
