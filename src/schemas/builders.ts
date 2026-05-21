@@ -215,18 +215,29 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             // We use the internalLink builder INSIDE the array item
             fields: [
               // f('label', 'i18nString', { i18n: 'requiredDefault' }),
-              ...createBuilders(factory, ctx).internalLinkFields({ includeDisplayType: true }),
+              ...createBuilders(factory, ctx).internalLinkFields({
+                includeTitle: options.includeTitle || false,
+                includeDisplayType: options.includeDisplayType || false,
+              }),
             ],
             // Preview so the editor sees the label in the list
             preview: {
-              select: { title: 'label' },
-              prepare({ title }: any) {
-                return { title: ctx.localizer.value(title) || 'Untitled Action' }
+              select: {
+                linkTitle: 'internalLinkTitle',
+                linkReferenceTitle: 'internalLinkReference.title',
+              },
+              prepare({ linkTitle, linkReferenceTitle }) {
+                return {
+                  title:
+                    ctx.localizer.value(linkTitle) ||
+                    ctx.localizer.value(linkReferenceTitle) ||
+                    'Untitled Action',
+                }
               },
             },
           },
         ],
-        validation: (rule: any) => (options.max ? rule.max(options.max) : rule),
+        validation: (rule) => (options.max ? rule.max(options.max) : rule),
       })
     },
     countryCodeField: (options) => {

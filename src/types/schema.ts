@@ -171,6 +171,8 @@ export interface ITSModuleOptions {
 export interface ITSActionGroupOptions {
   name?: string
   max?: number
+  includeTitle?: boolean
+  includeDisplayType?: boolean
 }
 
 export interface ITSCountryCodeOptions {
