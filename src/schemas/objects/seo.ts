@@ -7,10 +7,10 @@ export const seo: ITSSchemaDefinition = {
     const { f } = ctx
     return {
       fields: [
-        f('metaTitle', 'i18nString', { i18n: { max: 50, warning: true } }),
-        f('metaDescription', 'i18nString', { i18n: { max: 150, warning: true } }),
-        f('shareTitle', 'i18nString', { i18n: { max: 50, warning: true } }),
-        f('shareDescription', 'i18nString', { i18n: { max: 150, warning: true } }),
+        f('metaTitle', 'i18nString', { i18n: { max: 60, warning: true } }),
+        f('metaDescription', 'i18nString', { i18n: { max: 155, warning: true } }),
+        f('shareTitle', 'i18nString', { i18n: { max: 60, warning: true } }),
+        f('shareDescription', 'i18nString', { i18n: { max: 155, warning: true } }),
         f('shareImage', 'localeAltImage'),
       ],
     }
