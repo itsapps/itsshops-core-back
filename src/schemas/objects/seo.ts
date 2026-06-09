@@ -12,7 +12,6 @@ export const seo: ITSSchemaDefinition = {
         f('shareTitle', 'i18nString', { i18n: { max: 50, warning: true } }),
         f('shareDescription', 'i18nString', { i18n: { max: 150, warning: true } }),
         f('shareImage', 'localeAltImage'),
-        f('keywords', 'i18nString'),
       ],
     }
   },

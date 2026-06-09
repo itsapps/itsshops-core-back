@@ -1482,9 +1482,6 @@ export default {
         title: 'Share image',
         description: 'Recommended size: 1200x630px (PNG or JPG)',
       },
-      keywords: {
-        title: 'Keywords',
-      },
     },
   },
   youtube: {

@@ -1498,9 +1498,6 @@ export default {
         title: 'Share-Bild',
         description: 'Empfohlene Bildgröße: 1200x630px (PNG oder JPG)',
       },
-      keywords: {
-        title: 'Keywords',
-      },
     },
   },
   youtube: {

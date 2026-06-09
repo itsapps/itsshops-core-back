@@ -637,7 +637,6 @@ export type Seo = {
   shareTitle?: InternationalizedArrayString
   shareDescription?: InternationalizedArrayString
   shareImage?: LocaleAltImage
-  keywords?: InternationalizedArrayString
 }
 
 export type OrderStatusHistory = {
