@@ -35,11 +35,16 @@ export const createFieldFactory = (
   const runShortcut = (shortcut: I18nRuleShortcut, rule: Rule, fieldName: string) => {
     const vCtx = { t: t.default, fieldName }
     switch (shortcut) {
-      case 'requiredDefault': return i18nValidators.requiredDefault(defaultLocale, true, vCtx)(rule)
-      case 'requiredDefaultWarning': return i18nValidators.requiredDefault(defaultLocale, false, vCtx)(rule)
-      case 'requiredAll':            return i18nValidators.requiredAll(allLocales, vCtx)(rule)
-      case 'atLeastOne':             return i18nValidators.atLeastOneExists(true, vCtx)(rule)
-      case 'atLeastOneWarning':      return i18nValidators.atLeastOneExists(false, vCtx)(rule)
+      case 'requiredDefault':
+        return i18nValidators.requiredDefault(defaultLocale, true, vCtx)(rule)
+      case 'requiredDefaultWarning':
+        return i18nValidators.requiredDefault(defaultLocale, false, vCtx)(rule)
+      case 'requiredAll':
+        return i18nValidators.requiredAll(allLocales, vCtx)(rule)
+      case 'atLeastOne':
+        return i18nValidators.atLeastOneExists(true, vCtx)(rule)
+      case 'atLeastOneWarning':
+        return i18nValidators.atLeastOneExists(false, vCtx)(rule)
       default:
         if (typeof shortcut === 'object') return i18nValidators.contentLimits(shortcut, vCtx)(rule)
         return null
@@ -110,11 +115,13 @@ export const createFieldFactory = (
       rest.description ||
       fieldTranslators.strict({ fieldGroup: 'fields', fieldName, attribute: 'description' })
 
+    const isTranslatableI18nField = type === 'i18nString' || type === 'i18nText'
     return defineField({
       name: fieldName,
       type: ctx.i18nFieldTypes[type] || type,
       title,
       ...(description && { description }),
+      ...(isTranslatableI18nField && { options: { aiAssist: { translateAction: true } } }),
       validation: (rule: Rule) => {
         const rules: any[] = []
         if (i18n) {
@@ -139,8 +146,16 @@ export const createFactory = (namespace: string, ctx: ITSContext): CoreFactory =
   const f = createFieldFactory(namespace, ctx, fieldTranslators)
 
   const extendField = <T extends FieldDefinition>(field: T): T => {
-    const title = fieldTranslators.default({ fieldGroup: 'fields', fieldName: field.name, attribute: 'title' })
-    const description = fieldTranslators.default({ fieldGroup: 'fields', fieldName: field.name, attribute: 'description' })
+    const title = fieldTranslators.default({
+      fieldGroup: 'fields',
+      fieldName: field.name,
+      attribute: 'title',
+    })
+    const description = fieldTranslators.default({
+      fieldGroup: 'fields',
+      fieldName: field.name,
+      attribute: 'description',
+    })
     return { title, ...(description && { description }), ...field }
   }
 

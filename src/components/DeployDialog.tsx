@@ -147,7 +147,7 @@ export function DeployDialog(): ReactElement {
                 dateStyle: 'medium',
                 timeStyle: 'medium',
               })
-            : '–'}
+            : '-'}
         </Text>
 
         {status !== 'building' && (
