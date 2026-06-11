@@ -1585,6 +1585,10 @@ export default {
         title: 'Fade',
         description: 'Fade animations instead of motion when switching slides.',
       },
+      preload: {
+        title: 'Preload',
+        description: 'Preload the first image - enable when the carousel is visible on page load.',
+      },
     },
   },
 

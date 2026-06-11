@@ -17,6 +17,7 @@ export const carousel: ITSSchemaDefinition = {
         f('autoplayDelay', 'number', { initialValue: 5 }),
         f('loop', 'boolean', { initialValue: false }),
         f('fade', 'boolean', { initialValue: false }),
+        f('preload', 'boolean', { initialValue: false }),
       ],
       preview: {
         select: {

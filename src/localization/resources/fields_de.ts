@@ -1601,6 +1601,11 @@ export default {
         title: 'Fade',
         description: 'Fade-Animationen anstatt Bewegung beim Wechsel der Slides.',
       },
+      preload: {
+        title: 'Vorladen',
+        description:
+          'Erstes Bild vorladen - aktivieren, wenn das Karussell beim Laden der Seite sichtbar ist.',
+      },
     },
   },
 
