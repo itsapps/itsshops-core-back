@@ -192,18 +192,6 @@ export type GroupFieldsOutput = {
   fields: FieldDefinition[]
 }
 
-export interface ITSVariantReferenceOptions {
-  name?: string
-  multiple?: boolean
-}
-
-export interface ITSVariantReferenceMemberOptions {
-  name?: string
-  icon?: ComponentType
-}
-
-export type CoreModuleName = 'carousel' | 'youtube' | 'productGrid' | 'categoryGrid' | 'productList'
-
 export interface ITSBuilders {
   externalLinkFields: (options?: ITSExternalLinkOptions) => FieldDefinition[]
   internalLinkFields: (options?: ITSInternalLinkOptions) => FieldDefinition[]
@@ -211,25 +199,17 @@ export interface ITSBuilders {
   /**
    * Standalone reference field (or array field) pointing to productVariant.
    * Automatically applies `disableNew` and filters out archived variants.
-   * Use `multiple: true` for an array of variant references.
    */
-  variantReference: (options?: ITSVariantReferenceOptions) => FieldDefinition
+  variantReferences: () => FieldDefinition
   /**
    * ProductVariant reference definition for use as a member inside a mixed `of` array.
    * Use when productVariant is one of several types in an array (e.g. alongside external links).
    */
-  variantReferenceMember: (options?: ITSVariantReferenceMemberOptions) => ArrayOfType<'reference'>
+  variantReference: () => ArrayOfType<'reference'>
   actionGroup: (options: ITSActionGroupOptions) => any
   countryCodeField: (options: ITSCountryCodeOptions) => FieldDefinition
   countryCodesField: (options: ITSCountryCodesOptions) => FieldDefinition
   priceField: (options: PriceOptions) => FieldDefinition<'number'>
-  defineArrayField(props: Omit<ArrayDefinition, 'type'>): ArrayDefinition
   buildGroupedSchema: (props: GroupFieldsInput[]) => GroupFieldsOutput
-  /**
-   * Returns `ArrayOfType[]` for the requested core module names.
-   * Feature-gated modules (productGrid, categoryGrid) are silently omitted
-   * when the required feature is not enabled.
-   */
-  coreModules: (names: CoreModuleName[]) => ArrayOfType[]
   filterField: () => FieldDefinition[]
 }

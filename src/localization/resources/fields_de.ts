@@ -321,57 +321,6 @@ export default {
       variants_other: '{{count}} Varianten',
     },
   },
-  productGrid: {
-    title: 'Produktraster',
-    fields: {
-      title: { title: 'Titel' },
-      products: { title: 'Produkte' },
-    },
-  },
-  productList: {
-    title: 'Produktliste',
-    fields: {
-      title: { title: 'Titel' },
-      filters: { title: 'Filter' },
-      products: { title: 'Produkte' },
-    },
-    wineFieldFilter: {
-      title: 'Wein-Filter',
-      fields: {
-        field: {
-          title: 'Feld',
-          options: {
-            vintage: 'Jahrgang',
-            varietal: 'Rebsorte',
-            color: 'Farbe',
-            classification: 'Klassifikation',
-            volume: 'Flaschengröße',
-          },
-        },
-      },
-    },
-    productFieldFilter: {
-      title: 'Produkt-Filter',
-      fields: {
-        field: {
-          title: 'Feld',
-          options: {
-            price: 'Preis',
-            category: 'Kategorie',
-          },
-        },
-      },
-    },
-    preview: {
-      filter: 'Filter',
-      filters_zero: 'Keine Filter',
-      filters_other: '{{count}} Filter',
-      product: 'Produkt',
-      products_zero: 'Keine Produkte',
-      products_one: '{{count}} Produkt',
-      products_other: '{{count}} Produkte',
-    },
-  },
   productVariant: {
     title: 'Produktvariante',
     fields: {
@@ -540,14 +489,6 @@ export default {
         title: 'Maximales Gewicht',
         description: 'Bis zu Gewicht (kg)',
       },
-      // title: {
-      //   description: 'Name der Klasse (z.b. "Standard, Alkohol, ...")',
-      // },
-      // code: {
-      //   title: 'Code',
-      //   description: 'Der Code wird verwendet, um die Steuerklasse zu identifizieren und kann nur einmalig gesetzt werden.',
-      //   // description: 'The code used by the system. Locked after publishing to prevent breaking the shop.',
-      // },
     },
   },
   taxCountry: {
@@ -1500,82 +1441,7 @@ export default {
       },
     },
   },
-  youtube: {
-    title: 'YouTube',
-    fields: {
-      url: {
-        title: 'Url',
-        description: 'YouTube Video URL oder ID',
-      },
-      showControls: {
-        title: 'Steuerleiste anzeigen',
-      },
-      start: {
-        title: 'Starten bei',
-        description: 'Video an bestimmtem Zeitpunkt starten (in Sekunden)',
-      },
-      autoload: {
-        title: 'Automatisch laden',
-        description: 'Video automatisch laden, wenn es sichtbar wird',
-      },
-      autopause: {
-        title: 'Automatisch pausieren',
-        description: 'Video automatisch pausieren, wenn es nicht mehr sichtbar ist',
-      },
-    },
-  },
-  productSection: {
-    title: 'Produkte',
-    preview: {
-      products: 'Produkt(e)',
-      categories: 'Kategorie(n)',
-    },
-    fields: {
-      headline: {
-        title: 'Überschrift',
-      },
-      categories: {
-        title: 'Kategorien',
-        validation: {
-          atLeastOneCategoryRequired: 'Es muss mindestens eine Kategorie ausgewählt werden',
-        },
-      },
-      totalProducts: {
-        title: 'Anzahl',
-        description: 'Anzahl der Produkte, die angezeigt werden sollen',
-        validation: {
-          numProducts: 'Es können mindestens eines und maximal 50 Produkte angezeigt werden',
-        },
-      },
-    },
-  },
-  categorySection: {
-    title: 'Kategorienliste',
-    preview: {
-      allCategories: 'Alle Hauptkategorien',
-    },
-    fields: {
-      headline: {
-        title: 'Überschrift',
-      },
-      category: {
-        title: 'Kategorie',
-        description: 'Wenn keine Kategorie ausgewählt wird, werden alle Hauptkategorien angezeigt.',
-      },
-    },
-  },
-  categoryGrid: {
-    title: 'Kategorieraster',
-    fields: {
-      title: { title: 'Titel' },
-      categories: { title: 'Kategorien' },
-    },
-    preview: {
-      categories_zero: 'Keine Kategorien',
-      categories_one: '{{count}} Kategorie',
-      categories_other: '{{count}} Kategorien',
-    },
-  },
+
   carousel: {
     title: 'Karussell',
     preview: {
@@ -1605,6 +1471,94 @@ export default {
         title: 'Vorladen',
         description:
           'Erstes Bild vorladen - aktivieren, wenn das Karussell beim Laden der Seite sichtbar ist.',
+      },
+    },
+  },
+  categoryList: {
+    title: 'Kategorienliste',
+    fields: {
+      title: { title: 'Titel' },
+      categories: { title: 'Kategorien' },
+    },
+    preview: {
+      categories_zero: 'Keine Kategorien',
+      categories_one: '{{count}} Kategorie',
+      categories_other: '{{count}} Kategorien',
+    },
+  },
+  productList: {
+    title: 'Produktliste',
+    fields: {
+      title: { title: 'Titel' },
+      filters: { title: 'Filter' },
+      products: { title: 'Produkte' },
+    },
+    wineFieldFilter: {
+      title: 'Wein-Filter',
+      fields: {
+        field: {
+          title: 'Feld',
+          options: {
+            vintage: 'Jahrgang',
+            varietal: 'Rebsorte',
+            color: 'Farbe',
+            classification: 'Klassifikation',
+            volume: 'Flaschengröße',
+          },
+        },
+      },
+    },
+    productFieldFilter: {
+      title: 'Produkt-Filter',
+      fields: {
+        field: {
+          title: 'Feld',
+          options: {
+            price: 'Preis',
+            category: 'Kategorie',
+          },
+        },
+      },
+    },
+    preview: {
+      filter: 'Filter',
+      filters_zero: 'Keine Filter',
+      filters_one: '{{count}} Filter',
+      filters_other: '{{count}} Filter',
+      product: 'Produkt',
+      products_zero: 'Keine Produkte',
+      products_one: '{{count}} Produkt',
+      products_other: '{{count}} Produkte',
+    },
+  },
+  productVariantList: {
+    title: 'Produktvariantenliste',
+    fields: {
+      title: { title: 'Titel' },
+      products: { title: 'Varianten' },
+    },
+  },
+  youtube: {
+    title: 'YouTube',
+    fields: {
+      url: {
+        title: 'Url',
+        description: 'YouTube Video URL oder ID',
+      },
+      showControls: {
+        title: 'Steuerleiste anzeigen',
+      },
+      start: {
+        title: 'Starten bei',
+        description: 'Video an bestimmtem Zeitpunkt starten (in Sekunden)',
+      },
+      autoload: {
+        title: 'Automatisch laden',
+        description: 'Video automatisch laden, wenn es sichtbar wird',
+      },
+      autopause: {
+        title: 'Automatisch pausieren',
+        description: 'Video automatisch pausieren, wenn es nicht mehr sichtbar ist',
       },
     },
   },

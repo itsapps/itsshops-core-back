@@ -972,8 +972,8 @@ export type ProductList = {
   disabled?: boolean
 }
 
-export type ProductGrid = {
-  _type: 'productGrid'
+export type ProductVariantList = {
+  _type: 'productVariantList'
   title?: InternationalizedArrayString
   products?: Array<
     {
@@ -983,8 +983,8 @@ export type ProductGrid = {
   disabled?: boolean
 }
 
-export type CategoryGrid = {
-  _type: 'categoryGrid'
+export type CategoryList = {
+  _type: 'categoryList'
   title?: InternationalizedArrayString
   categories?: Array<
     {
@@ -1334,8 +1334,8 @@ export type AllSanitySchemaTypes =
   | Page
   | InternationalizedArraySlug
   | ProductList
-  | ProductGrid
-  | CategoryGrid
+  | ProductVariantList
+  | CategoryList
   | Carousel
   | BundleItem
   | VariantOptionReference

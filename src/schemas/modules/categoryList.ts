@@ -1,10 +1,10 @@
-import { CategoryGridIcon } from '../../assets/icons'
+import { CategoryListIcon as Icon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 
-export const categoryGrid: ITSSchemaDefinition = {
-  name: 'categoryGrid',
+export const categoryList: ITSSchemaDefinition = {
+  name: 'categoryList',
   type: 'object',
-  icon: CategoryGridIcon,
+  icon: Icon,
   feature: 'shop.category',
   build: (ctx) => {
     const { f, builders, t } = ctx
@@ -31,11 +31,11 @@ export const categoryGrid: ITSSchemaDefinition = {
         prepare({ title, categories }) {
           const count = categories?.length || 0
           return {
-            title: ctx.localizer.value(title) || t.default('categoryGrid.title'),
-            subtitle: ctx.t.default('categoryGrid.preview.categories', `${count} Categories`, {
+            title: ctx.localizer.value(title) || t.default('categoryList.title'),
+            subtitle: ctx.t.default('categoryList.preview.categories', `${count} Categories`, {
               count,
             }),
-            media: CategoryGridIcon,
+            media: Icon,
           }
         },
       },

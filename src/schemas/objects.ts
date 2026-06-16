@@ -1,14 +1,10 @@
 import { ITSSchemaDefinition } from '../types'
-import { categoryGrid } from './modules/categoryGrid'
-import { productGrid } from './modules/productGrid'
-import { productList } from './modules/productList'
 import { address } from './objects/address'
 import { addressStrict } from './objects/addressStrict'
 import { bankAccount } from './objects/bankAccount'
 import { businessAddress } from './objects/businessAddress'
 import { baseImage } from './objects/baseImage'
 import { bundleItem } from './objects/bundleItem'
-import { carousel } from './objects/carousel'
 import { company } from './objects/company'
 import { cropImage } from './objects/cropImage'
 import { internalLink } from './objects/internalLink'
@@ -32,7 +28,11 @@ import { winePackage } from './objects/winePackage'
 import { winePackagingConfig } from './objects/winePackagingConfig'
 import { taxRule } from './objects/taxRule'
 import { wine } from './objects/wine'
-import { youtube } from './objects/youtube'
+import { carousel } from './modules/carousel'
+import { categoryList } from './modules/categoryList'
+import { productVariantList } from './modules/productVariantList'
+import { productList } from './modules/productList'
+import { youtube } from './modules/youtube'
 
 export const getCoreObjects = (
   extensions: ITSSchemaDefinition[] | undefined,
@@ -45,8 +45,8 @@ export const getCoreObjects = (
     baseImage,
     bundleItem,
     carousel,
-    categoryGrid,
-    productGrid,
+    categoryList,
+    productVariantList,
     productList,
     internalLink,
     company,

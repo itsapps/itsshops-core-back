@@ -1,5 +1,4 @@
-import { defineField, isReference } from 'sanity'
-import { WineIcon, FilterIcon } from '../assets/icons'
+import { WineIcon, FilterIcon, ProductVariantIcon } from '../assets/icons'
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
 
@@ -66,28 +65,13 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
 
               return true
             }),
-          // TODO: dynamic filter
           options: {
-            // filter: options.to?.includes('product') ? `...your product filter...` : ''
             filter: `
               (!defined(active) && _type != "product") ||
               (active == true && _type == "productVariant") ||
               ((!defined(variants) || count(variants) == 0) && _type == "product")
             `,
           },
-          // preview: {
-          //   select: {
-          //     type: 'internalLinkReference._type',
-          //     title: 'internalLinkTitle',
-          //   },
-          //   prepare({ type, title }: any) {
-          //     return {
-          //       title: 'asdf',
-          //       // title: type ? ctx.t.default(`${type}.title`) : '',
-          //       subtitle: ctx.localizer.value(title),
-          //     }
-          //   },
-          // },
         }),
         ...(options.includeDisplayType && displayTypes.length
           ? [
@@ -144,62 +128,23 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       }
     },
 
-    // block: (options) => {
-    //   return {
-    //     type: 'block',
-    //     ...options,
-    //     // ...options.styles && { styles: options.styles?.map(s => {
-    //     //   return {
-    //     //     ...s,
-    //     //     ...(!s.title) && { title: ft.default(`block.styles.${s.value}`) },
-    //     //   }
-    //     // })},
-    //     // marks: {
-    //     //   ...options.marks?.decorators && {decorators: options.marks.decorators.map(d => {
-    //     //     return {
-    //     //       ...d,
-    //     //       ...(!d.title) && { title: t(`fields.block.marks.decorators.${d.value}`) },
-    //     //     }
-    //     //   })},
-    //     //   annotations: options.allowLinks ? [
-    //     //     {
-    //     //       name: 'internalLink',
-    //     //       type: 'object',
-    //     //       title: 'Internal Link',
-    //     //       // Recursively call the link builder!
-    //     //       fields: createBuilders(factory, ctx).internalLink({
-    //     //         includeDisplayType: true
-    //     //       })
-    //     //     }
-    //     //   ] : []
-    //     // }
-    //   };
-    // },
-    variantReference: (options = {}) => {
-      const name = options.name || 'products'
-      const variantTo = [{ type: 'productVariant' }]
-      const variantOptions = { disableNew: true, filter: 'status != "archived"' }
-
-      if (options.multiple) {
-        return f(name, 'array', {
-          of: [
-            {
-              type: 'reference',
-              title: ctx.t.default('product.title'),
-              to: variantTo,
-              options: variantOptions,
-            },
-          ],
-        })
-      }
-
-      return f(name, 'reference', { to: variantTo, options: variantOptions })
+    variantReferences: () => {
+      return f('products', 'array', {
+        of: [
+          {
+            type: 'reference',
+            title: ctx.t.default('product.title'),
+            to: [{ type: 'productVariant' }],
+            options: { disableNew: true, filter: 'status != "archived"' },
+          },
+        ],
+      })
     },
 
-    variantReferenceMember: (options = {}) => ({
-      name: options.name || 'variantLink',
+    variantReference: () => ({
+      name: 'variantLink',
       type: 'reference' as const,
-      ...(options.icon && { icon: options.icon }),
+      icon: ProductVariantIcon,
       to: [{ type: 'productVariant' }],
       options: { disableNew: true, filter: 'status != "archived"' },
     }),
@@ -283,24 +228,8 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
           list: ctx.constants.countryOptions,
         },
       })
-      // return {
-      //   name: 'countries',
-      //   type: 'array',
-      //   of: [{ type: 'string' }],
-      //   options: {
-      //     list: config.localization.countries.map(country => ({ title: `${country.value} (${localizer.dictValue(country.title)})`, value: country.value }))
-      //   },
-      // }
     },
-    // priceField: (ctx, options) => {
-    //   ctx.f(options.name || 'price', 'number', {
-    //     validation: (Rule) => Rule.positive(),
-    //     ...options.group && { group: 'pricing'},
-    //     components: {
-    //       input: PriceInput,
-    //     },
-    //   }),
-    // },
+
     priceField: (options = {}) => {
       const { name, validation, ...rest } = options
 
@@ -316,46 +245,6 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
         },
       })
       return field
-      // return f(name || 'price', 'number', {
-      //   ...rest,
-      //   validation: (Rule) => {
-      //     const base = Rule.min(0)
-      //     if (validation) {
-      //       return [base, validation(Rule)]
-      //     }
-      //     return base
-      //   },
-      //   components: {
-      //     input: PriceInput,
-      //   },
-      // })
-    },
-    defineArrayField: (props) => {
-      const of = props.of.filter((item) => {
-        if (isReference(item)) {
-          // item.t
-        }
-        if (item.type === 'reference') {
-          const refType = item as any
-          // const refType = item as ArrayOfType<'reference'>
-          // const refType = item as ArrayOfType<'reference'>
-          return ctx.featureRegistry.isDocEnabled(refType.to[0].type)
-        }
-        return true
-      })
-      return defineField({
-        type: 'array',
-        ...props,
-        ...(of && { of }),
-      })
-    },
-    coreModules: (names) => {
-      return names
-        .filter((name) => {
-          const feature = ctx.featureRegistry.getSchema(name)?.feature
-          return !feature || ctx.featureRegistry.isFeatureEnabled(feature)
-        })
-        .map((name) => ({ type: name }))
     },
 
     buildGroupedSchema: (props) => {
@@ -379,7 +268,6 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       const hasOptions = ctx.featureRegistry.isFeatureEnabled('shop.productKind.options')
 
       const wft = (key: string) => ctx.t.strict(`productList.wineFieldFilter.${key}`)
-
       const pft = (key: string) => ctx.t.strict(`productList.productFieldFilter.${key}`)
 
       const of = [
@@ -480,18 +368,3 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     },
   }
 }
-
-// export const createITSBlock: ITSBuilderBlock = (options) => {
-//   const {
-//     styles,
-//     marks,
-//     ...rest
-//   } = options
-
-//   return defineArrayMember({
-//     type: 'block',
-//     styles: resolveStyles(styles),
-//     marks: resolveMarks(marks),
-//     ...rest
-//   })
-// }

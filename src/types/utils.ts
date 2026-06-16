@@ -1,6 +1,5 @@
 // import { FieldDefinition } from 'sanity'
 import type { Image } from 'sanity'
-// import { SanityImageSource } from './components'
 
 export type WithOptionalTitle<T> = Omit<T, 'title'> & { title?: string }
 

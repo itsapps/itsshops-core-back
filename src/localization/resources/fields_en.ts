@@ -319,58 +319,6 @@ export default {
       variants_other: '{{count}} variants',
     },
   },
-  productGrid: {
-    title: 'Product Grid',
-    fields: {
-      title: { title: 'Title' },
-      products: { title: 'Products' },
-    },
-  },
-  productList: {
-    title: 'Product List',
-    fields: {
-      title: { title: 'Title' },
-      filters: { title: 'Filters' },
-      products: { title: 'Products' },
-    },
-    wineFieldFilter: {
-      title: 'Wine filter',
-      fields: {
-        field: {
-          title: 'Field',
-          options: {
-            vintage: 'Vintage',
-            varietal: 'Varietal',
-            color: 'Color',
-            classification: 'Classification',
-            volume: 'Bottle size',
-          },
-        },
-      },
-    },
-    productFieldFilter: {
-      title: 'Product filter',
-      fields: {
-        field: {
-          title: 'Field',
-          options: {
-            price: 'Price',
-            category: 'Category',
-          },
-        },
-      },
-    },
-    preview: {
-      filter: 'Filter',
-      filters_zero: 'No filters',
-      filters_one: '{{count}} filter',
-      filters_other: '{{count}} filters',
-      product: 'Product',
-      products_zero: 'No products',
-      products_one: '{{count}} product',
-      products_other: '{{count}} products',
-    },
-  },
   productVariant: {
     title: 'Product variant',
     fields: {
@@ -1484,82 +1432,7 @@ export default {
       },
     },
   },
-  youtube: {
-    title: 'YouTube',
-    fields: {
-      url: {
-        title: 'Url',
-        description: 'YouTube video URL or ID',
-      },
-      showControls: {
-        title: 'Show controls',
-      },
-      start: {
-        title: 'Start at',
-        description: 'Start the video at a specific time (in seconds)',
-      },
-      autoload: {
-        title: 'Autoload',
-        description: 'Load the video automatically when it becomes visible',
-      },
-      autopause: {
-        title: 'Autopause',
-        description: 'Pause the video automatically when it is no longer visible',
-      },
-    },
-  },
-  productSection: {
-    title: 'Products',
-    preview: {
-      products: 'Product(s)',
-      categories: 'Category(ies)',
-    },
-    fields: {
-      headline: {
-        title: 'Headline',
-      },
-      categories: {
-        title: 'Categories',
-        validation: {
-          atLeastOneCategoryRequired: 'At least one category must be selected',
-        },
-      },
-      totalProducts: {
-        title: 'Count',
-        description: 'Number of products to show',
-        validation: {
-          numProducts: 'At least one and up to 50 products can be shown',
-        },
-      },
-    },
-  },
-  categorySection: {
-    title: 'Category list',
-    preview: {
-      allCategories: 'All main categories',
-    },
-    fields: {
-      headline: {
-        title: 'Headline',
-      },
-      category: {
-        title: 'Category',
-        description: 'If no category is selected, all main categories will be shown.',
-      },
-    },
-  },
-  categoryGrid: {
-    title: 'Category Grid',
-    fields: {
-      title: { title: 'Title' },
-      categories: { title: 'Categories' },
-    },
-    preview: {
-      categories_zero: 'No categories',
-      categories_one: '{{count}} category',
-      categories_other: '{{count}} categories',
-    },
-  },
+
   carousel: {
     title: 'Carousel',
     preview: {
@@ -1588,6 +1461,94 @@ export default {
       preload: {
         title: 'Preload',
         description: 'Preload the first image - enable when the carousel is visible on page load.',
+      },
+    },
+  },
+  categoryList: {
+    title: 'Category List',
+    fields: {
+      title: { title: 'Title' },
+      categories: { title: 'Categories' },
+    },
+    preview: {
+      categories_zero: 'No categories',
+      categories_one: '{{count}} category',
+      categories_other: '{{count}} categories',
+    },
+  },
+  productList: {
+    title: 'Product List',
+    fields: {
+      title: { title: 'Title' },
+      filters: { title: 'Filters' },
+      products: { title: 'Products' },
+    },
+    wineFieldFilter: {
+      title: 'Wine filter',
+      fields: {
+        field: {
+          title: 'Field',
+          options: {
+            vintage: 'Vintage',
+            varietal: 'Varietal',
+            color: 'Color',
+            classification: 'Classification',
+            volume: 'Bottle size',
+          },
+        },
+      },
+    },
+    productFieldFilter: {
+      title: 'Product filter',
+      fields: {
+        field: {
+          title: 'Field',
+          options: {
+            price: 'Price',
+            category: 'Category',
+          },
+        },
+      },
+    },
+    preview: {
+      filter: 'Filter',
+      filters_zero: 'No filters',
+      filters_one: '{{count}} filter',
+      filters_other: '{{count}} filters',
+      product: 'Product',
+      products_zero: 'No products',
+      products_one: '{{count}} product',
+      products_other: '{{count}} products',
+    },
+  },
+  productVariantList: {
+    title: 'Product Variant List',
+    fields: {
+      title: { title: 'Title' },
+      products: { title: 'Product variants' },
+    },
+  },
+  youtube: {
+    title: 'YouTube',
+    fields: {
+      url: {
+        title: 'Url',
+        description: 'YouTube video URL or ID',
+      },
+      showControls: {
+        title: 'Show controls',
+      },
+      start: {
+        title: 'Start at',
+        description: 'Start the video at a specific time (in seconds)',
+      },
+      autoload: {
+        title: 'Autoload',
+        description: 'Load the video automatically when it becomes visible',
+      },
+      autopause: {
+        title: 'Autopause',
+        description: 'Pause the video automatically when it is no longer visible',
       },
     },
   },
