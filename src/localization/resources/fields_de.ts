@@ -416,6 +416,9 @@ export default {
   manufacturer: {
     title: 'Hersteller',
     fields: {
+      name: {
+        title: 'Name',
+      },
       link: {
         title: 'Link',
       },
@@ -1010,14 +1013,9 @@ export default {
     },
   },
   post: {
-    title: 'Blog Eintrag',
+    title: 'Post',
     groups: {
       post: 'Allgemeines',
-    },
-    fields: {
-      preview: {
-        title: 'Vorschau',
-      },
     },
   },
   blog: {

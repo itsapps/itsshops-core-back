@@ -10,17 +10,17 @@ export const manufacturer: ITSDocumentDefinition = {
     const { f } = ctx
     return {
       fields: [
-        f('title', 'i18nString', { i18n: 'atLeastOne' }),
+        f('name', 'i18nString', { i18n: 'atLeastOne' }),
         f('description', 'i18nText'),
         f('link', 'url'),
       ],
       preview: {
         select: {
-          title: 'title',
+          name: 'name',
         },
-        prepare({ title }) {
+        prepare({ name }) {
           return {
-            title: ctx.localizer.value(title),
+            title: ctx.localizer.value(name),
             media: ManufacturerIcon,
           }
         },

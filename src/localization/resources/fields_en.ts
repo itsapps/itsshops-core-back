@@ -413,6 +413,9 @@ export default {
   manufacturer: {
     title: 'Manufacturer',
     fields: {
+      name: {
+        title: 'Name',
+      },
       link: {
         title: 'Link',
       },
@@ -1003,14 +1006,9 @@ export default {
     },
   },
   post: {
-    title: 'Blog post',
+    title: 'Post',
     groups: {
       post: 'General',
-    },
-    fields: {
-      preview: {
-        title: 'Preview',
-      },
     },
   },
   blog: {
