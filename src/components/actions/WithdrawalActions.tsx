@@ -13,7 +13,8 @@
  * Both email paths go through `frontendClient.withdrawNotify`, which sends the
  * customer-facing mail only (the shop already knows).
  */
-import { AddDocumentIcon, EnvelopeIcon } from '@sanity/icons'
+import { EnvelopeIcon } from '@sanity/icons'
+import { OrderWithdrawalIcon } from '../../assets/icons'
 import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput, useToast } from '@sanity/ui'
 import type { ChangeEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -77,7 +78,7 @@ export function OrderWithdrawalCreateAction(
   const label = t('actions.orderWithdrawal.create.title', 'Declare withdrawal')
 
   if (!order) {
-    return { label, icon: AddDocumentIcon, disabled: true }
+    return { label, icon: OrderWithdrawalIcon, disabled: true }
   }
 
   // Mirror the web endpoint's dedupe: block while an open withdrawal exists.
@@ -85,7 +86,7 @@ export function OrderWithdrawalCreateAction(
   if (openExists) {
     return {
       label,
-      icon: AddDocumentIcon,
+      icon: OrderWithdrawalIcon,
       disabled: true,
       title: t(
         'actions.orderWithdrawal.create.alreadyOpen',
@@ -96,7 +97,7 @@ export function OrderWithdrawalCreateAction(
 
   return {
     label,
-    icon: AddDocumentIcon,
+    icon: OrderWithdrawalIcon,
     onHandle: handleOpen,
     dialog: dialogOpen && {
       type: 'dialog',
