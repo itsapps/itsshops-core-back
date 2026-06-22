@@ -8,6 +8,7 @@ import { OrderMailDocumentAction } from '../components/actions/OrderMailAction'
 import {
   OrderWithdrawalCreateAction,
   WithdrawalResendAction,
+  WithdrawalResolveAction,
 } from '../components/actions/WithdrawalActions'
 import { AddVariantsAction } from '../components/products/AddVariantsAction'
 import { ITSContext, ITSFeatureKey, ITSSanityDefinedAction } from '../types'
@@ -61,6 +62,7 @@ export function actionResolver(
     actions.push(OrderWithdrawalCreateAction)
   }
   if (context.schemaType === 'orderWithdrawal') {
+    actions.push(WithdrawalResolveAction)
     actions.push(WithdrawalResendAction)
   }
   if (isEnabledSchema(context.schemaType, 'product', 'shop')) {

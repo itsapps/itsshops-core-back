@@ -30,6 +30,7 @@ import {
   getAllowedFulfillmentTransitions,
   getAllowedPaymentTransitions,
   mailTypeForStatus,
+  refundCancelsFulfillment,
   type OrderPaymentStatus,
   type OrderStatus,
   type StatusAction,
@@ -182,14 +183,36 @@ function OrderActionContent({
       ...(note && { note }),
     }
 
+    // Fully refunding a still-undispatched order also cancels fulfillment, so the
+    // order doesn't stay stuck reading as `created`/`processing`. Post-dispatch
+    // refunds (shipped/delivered) keep their fulfillment status — those can still
+    // be marked `returned` later.
+    const setFields: Record<string, string> = {
+      [selectedAction.type === 'fulfillment' ? 'status' : 'paymentStatus']: selectedAction.newState,
+    }
+    const historyEntries = [historyEntry]
+    if (
+      selectedAction.type === 'payment' &&
+      selectedAction.newState === 'refunded' &&
+      refundCancelsFulfillment(order.status)
+    ) {
+      setFields.status = 'canceled'
+      historyEntries.push({
+        _key: crypto.randomUUID(),
+        _type: 'orderStatusHistory' as const,
+        type: 'fulfillment',
+        status: 'canceled',
+        timestamp,
+        source: 'admin',
+        ...(note && { note }),
+      })
+    }
+
     try {
       await sanityClient
         .patch(order._id)
-        .set({
-          [selectedAction.type === 'fulfillment' ? 'status' : 'paymentStatus']:
-            selectedAction.newState,
-        })
-        .append('statusHistory', [historyEntry])
+        .set(setFields)
+        .append('statusHistory', historyEntries)
         .commit({ autoGenerateArrayKeys: false, returnDocuments: false })
     } catch (err) {
       setStatus(

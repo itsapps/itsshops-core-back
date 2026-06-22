@@ -47,12 +47,17 @@ const paymentTransitions: Record<OrderPaymentStatus, OrderPaymentStatus[]> = {
   refunded: [],
 }
 
-// A fully-refunded order is locked — no further fulfillment changes allowed.
+// A fully-refunded order is mostly locked, with one exception: goods that were
+// already dispatched (shipped/delivered) can still be marked `returned`, since
+// a refund of shipped goods is typically followed by the customer returning them.
+// Pre-dispatch refunds stay terminal (the order is effectively cancelled).
 export const getAllowedFulfillmentTransitions = (
   currentStatus: OrderStatus,
   paymentStatus: OrderPaymentStatus,
 ): OrderStatus[] => {
-  if (paymentStatus === 'refunded') return []
+  if (paymentStatus === 'refunded') {
+    return currentStatus === 'shipped' || currentStatus === 'delivered' ? ['returned'] : []
+  }
   return fulfillmentTransitions[currentStatus] ?? []
 }
 
@@ -62,20 +67,34 @@ export const getAllowedPaymentTransitions = (
   return paymentTransitions[currentStatus] ?? []
 }
 
+// A full refund of a still-undispatched order also cancels fulfillment, so the
+// order doesn't stay stuck reading as `created`/`processing`. Shared by the
+// refund action and the withdrawal "resolve" action.
+export const refundCancelsFulfillment = (currentStatus: OrderStatus): boolean =>
+  currentStatus === 'created' || currentStatus === 'processing'
+
 // The mail to send when a transition completes. Some transitions don't
 // trigger a customer notification (e.g. created, succeeded).
 export const mailTypeForStatus = (
   status: OrderStatus | OrderPaymentStatus | undefined,
 ): MailType | undefined => {
   switch (status) {
-    case 'processing': return 'orderProcessing'
-    case 'shipped': return 'orderShipping'
-    case 'delivered': return 'orderDelivered'
-    case 'returned': return 'orderReturned'
-    case 'canceled': return 'orderCanceled'
-    case 'refunded': return 'orderRefunded'
-    case 'partiallyRefunded': return 'orderRefundedPartially'
-    default: return undefined
+    case 'processing':
+      return 'orderProcessing'
+    case 'shipped':
+      return 'orderShipping'
+    case 'delivered':
+      return 'orderDelivered'
+    case 'returned':
+      return 'orderReturned'
+    case 'canceled':
+      return 'orderCanceled'
+    case 'refunded':
+      return 'orderRefunded'
+    case 'partiallyRefunded':
+      return 'orderRefundedPartially'
+    default:
+      return undefined
   }
 }
 

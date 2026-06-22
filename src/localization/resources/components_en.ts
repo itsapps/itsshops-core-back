@@ -236,6 +236,12 @@ export default {
         success: 'Confirmation email sent',
         error: 'Email could not be sent',
       },
+      resolve: {
+        title: 'Refund & close',
+        intro: 'This will refund {{amount}} to the customer and close the withdrawal.',
+        alreadyRefunded: 'The order is already refunded. This will close the withdrawal.',
+        notify: 'Send refund confirmation email',
+      },
     },
     refund: {
       title: 'Refund',
