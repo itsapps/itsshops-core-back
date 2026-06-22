@@ -181,6 +181,15 @@ export default {
         },
       },
     },
+    withdrawals: {
+      title: 'Withdrawals',
+      status: {
+        received: 'Received',
+        processing: 'Processing',
+        refunded: 'Refunded',
+        rejected: 'Rejected',
+      },
+    },
   },
   actions: {
     order: {
@@ -210,6 +219,22 @@ export default {
         selectMailType: 'Select email type',
         attachInvoice: 'Attach invoice PDF',
         send: 'Send',
+      },
+    },
+    orderWithdrawal: {
+      create: {
+        title: 'Declare withdrawal',
+        declaredAt: 'Declared on',
+        reason: 'Reason / affected items (optional)',
+        notify: 'Send confirmation email to customer',
+        error: 'Could not create the withdrawal',
+        alreadyOpen: 'An open withdrawal already exists for this order',
+      },
+      notifyError: 'Saved, but the email could not be sent',
+      resend: {
+        title: 'Resend confirmation',
+        success: 'Confirmation email sent',
+        error: 'Email could not be sent',
       },
     },
     refund: {

@@ -185,6 +185,15 @@ export default {
         },
       },
     },
+    withdrawals: {
+      title: 'Widerrufe',
+      status: {
+        received: 'Eingegangen',
+        processing: 'In Bearbeitung',
+        refunded: 'Erstattet',
+        rejected: 'Abgelehnt',
+      },
+    },
   },
   actions: {
     order: {
@@ -214,6 +223,22 @@ export default {
         selectMailType: 'Email-Typ auswählen',
         attachInvoice: 'Rechnungs-PDF anhängen',
         send: 'Senden',
+      },
+    },
+    orderWithdrawal: {
+      create: {
+        title: 'Widerruf erfassen',
+        declaredAt: 'Erklärt am',
+        reason: 'Grund / betroffene Artikel (optional)',
+        notify: 'Bestätigungs-E-Mail an Kunden senden',
+        error: 'Widerruf konnte nicht erstellt werden',
+        alreadyOpen: 'Für diese Bestellung existiert bereits ein offener Widerruf',
+      },
+      notifyError: 'Gespeichert, aber die E-Mail konnte nicht gesendet werden',
+      resend: {
+        title: 'Bestätigung erneut senden',
+        success: 'Bestätigungs-E-Mail gesendet',
+        error: 'E-Mail konnte nicht gesendet werden',
       },
     },
     refund: {

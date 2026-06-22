@@ -5,6 +5,10 @@ import {
 } from '../components/actions/CustomDocumentAction'
 import { OrderDocumentAction } from '../components/actions/OrderActions'
 import { OrderMailDocumentAction } from '../components/actions/OrderMailAction'
+import {
+  OrderWithdrawalCreateAction,
+  WithdrawalResendAction,
+} from '../components/actions/WithdrawalActions'
 import { AddVariantsAction } from '../components/products/AddVariantsAction'
 import { ITSContext, ITSFeatureKey, ITSSanityDefinedAction } from '../types'
 
@@ -54,6 +58,10 @@ export function actionResolver(
   if (context.schemaType === 'order') {
     actions.push(OrderDocumentAction)
     actions.push(OrderMailDocumentAction)
+    actions.push(OrderWithdrawalCreateAction)
+  }
+  if (context.schemaType === 'orderWithdrawal') {
+    actions.push(WithdrawalResendAction)
   }
   if (isEnabledSchema(context.schemaType, 'product', 'shop')) {
     actions.push(AddVariantsAction)

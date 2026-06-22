@@ -58,6 +58,8 @@ import {
   PiYoutubeLogo,
 } from 'react-icons/pi'
 
+import { TbTruckReturn } from 'react-icons/tb'
+
 import { ProductKind } from '../types'
 
 export const AddIcon = Add
@@ -115,6 +117,7 @@ export const SyncIcon = Sync
 export const TaxRuleIcon = PiPackage
 export const TrashIcon = Trash
 export const TruckIcon = PiTruck
+export const OrderWithdrawalIcon = TbTruckReturn
 export const UserIcon = User
 export const VatBreakdownIcon = PiCalculator
 export const VoucherIcon = PiBarcode

@@ -6,6 +6,7 @@ import type {
   MailType,
   NotifyResult,
   RefundResult,
+  WithdrawNotifyResult,
 } from '../types'
 
 /**
@@ -66,5 +67,7 @@ export const createFrontendClient = (
         paymentIntentId,
         ...(options.amount !== undefined && { amount: options.amount }),
       }),
+    withdrawNotify: (withdrawalId: string) =>
+      post<WithdrawNotifyResult>('/api/order/withdraw-notify', { withdrawalId }),
   }
 }

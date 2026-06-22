@@ -35,7 +35,7 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
       icon: ShopIcon,
       feature: 'shop',
       children: [
-        ...mapItems(['order', 'orderMeta']),
+        ...mapItems(['order', 'orderWithdrawal', 'orderMeta']),
         {
           type: 'custom',
           id: 'products',

@@ -7,6 +7,7 @@ import {
   TruckIcon,
   VatBreakdownIcon,
   WebsiteIcon,
+  OrderWithdrawalIcon,
 } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
@@ -27,6 +28,7 @@ export const shopSettings: ITSDocumentDefinition = {
       orders: OrderIcon,
       billing: NoteIcon,
       notifications: NotificationIcon,
+      returns: OrderWithdrawalIcon,
     }
 
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
@@ -36,6 +38,7 @@ export const shopSettings: ITSDocumentDefinition = {
       'billing',
       'orders',
       'shipping',
+      'returns',
       'tax',
       'notifications',
       ...(stockEnabled ? ['stock'] : []),
@@ -90,6 +93,17 @@ export const shopSettings: ITSDocumentDefinition = {
         f('invoiceNumberPrefix', 'string'),
       ],
       billing: [f('billingAddress', 'businessAddress'), f('bankAccount', 'bankAccount')],
+      returns: [
+        f('returnAddress', 'businessAddress'),
+        f('returnShippingBorneBy', 'string', {
+          options: {
+            list: [{ value: 'customer' }, { value: 'merchant' }],
+            layout: 'radio',
+          },
+          initialValue: 'customer',
+        }),
+        f('returnPolicyNote', 'i18nText'),
+      ],
       notifications: [
         f('senderName', 'string'),
         f('senderEmail', 'string', {

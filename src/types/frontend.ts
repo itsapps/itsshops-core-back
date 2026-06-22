@@ -16,6 +16,10 @@ export type NotifyResult = {
   mailType: MailType
 }
 
+export type WithdrawNotifyResult = {
+  to: string
+}
+
 export type ITSFrontendClient = {
   /**
    * Trigger a customer notification email for the given order. The core-front
@@ -35,4 +39,9 @@ export type ITSFrontendClient = {
     paymentIntentId: string,
     options?: { amount?: number },
   ) => Promise<FrontendResponse<RefundResult>>
+  /**
+   * (Re)send the customer withdrawal confirmation email for an existing
+   * `orderWithdrawal` record (manual logging or after a delivery failure).
+   */
+  withdrawNotify: (withdrawalId: string) => Promise<FrontendResponse<WithdrawNotifyResult>>
 }

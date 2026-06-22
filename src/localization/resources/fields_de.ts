@@ -574,10 +574,30 @@ export default {
         title: 'AGB',
         description: 'Diese Seite beschreibt die allgemeinen Geschäftsbedingungen.',
       },
+      returnAddress: {
+        title: 'Retourenadresse',
+        description:
+          'Wohin Kunden widerrufene Ware zurücksenden. Ohne Angabe wird die Rechnungsadresse verwendet.',
+      },
+      returnShippingBorneBy: {
+        title: 'Rücksendekosten trägt',
+        description:
+          'Wer die Kosten der Rücksendung trägt. "Kunde" ist nur durchsetzbar, wenn in der Widerrufsbelehrung angegeben.',
+        options: {
+          customer: 'Kunde',
+          merchant: 'Händler',
+        },
+      },
+      returnPolicyNote: {
+        title: 'Hinweis zur Rücksendung',
+        description:
+          'Optionaler Zusatztext, der in der Widerrufs-Bestätigungs-E-Mail angezeigt wird.',
+      },
     },
     groups: {
       displays: 'Anzeigen',
       shipping: 'Versand',
+      returns: 'Retouren',
       stock: 'Lagerbestand',
       tax: 'Steuern',
       orders: 'Bestellungen',
@@ -694,6 +714,27 @@ export default {
       currency: {
         title: 'Währung',
       },
+    },
+  },
+  orderWithdrawal: {
+    title: 'Widerruf',
+    fields: {
+      orderRef: { title: 'Bestellung' },
+      declaredAt: { title: 'Erklärt am' },
+      status: {
+        title: 'Status',
+        options: {
+          received: 'Eingegangen',
+          processing: 'In Bearbeitung',
+          refunded: 'Erstattet',
+          rejected: 'Abgelehnt',
+        },
+      },
+      reason: { title: 'Grund / betroffene Artikel' },
+      note: { title: 'Interne Notiz' },
+    },
+    preview: {
+      title: 'Widerruf #{{orderNumber}}',
     },
   },
   order: {

@@ -8,6 +8,7 @@ import { manufacturer } from './documents/manufacturer'
 import { menu } from './documents/menu'
 import { order } from './documents/orders/order'
 import { orderMeta } from './documents/orders/orderMeta'
+import { orderWithdrawal } from './documents/orders/orderWithdrawal'
 import { page } from './documents/page'
 import { post } from './documents/post'
 import { product } from './documents/product'
@@ -41,6 +42,7 @@ export const getCoreDocuments = (
     menu,
     order,
     orderMeta,
+    orderWithdrawal,
     page,
     post,
     product,

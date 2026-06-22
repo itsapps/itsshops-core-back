@@ -569,10 +569,29 @@ export default {
         title: 'Terms of service',
         description: 'This page contains the terms of service.',
       },
+      returnAddress: {
+        title: 'Return address',
+        description:
+          'Where customers send withdrawn goods. Falls back to the billing address when empty.',
+      },
+      returnShippingBorneBy: {
+        title: 'Return postage paid by',
+        description:
+          'Who bears the cost of returning the goods. "Customer" is only enforceable if disclosed in the withdrawal policy.',
+        options: {
+          customer: 'Customer',
+          merchant: 'Merchant',
+        },
+      },
+      returnPolicyNote: {
+        title: 'Return note',
+        description: 'Optional extra text shown in the withdrawal confirmation email.',
+      },
     },
     groups: {
       displays: 'Displays',
       shipping: 'Shipping',
+      returns: 'Returns',
       stock: 'Stock',
       tax: 'Tax',
       orders: 'Orders',
@@ -689,6 +708,27 @@ export default {
       currency: {
         title: 'Currency',
       },
+    },
+  },
+  orderWithdrawal: {
+    title: 'Withdrawal',
+    fields: {
+      orderRef: { title: 'Order' },
+      declaredAt: { title: 'Declared at' },
+      status: {
+        title: 'Status',
+        options: {
+          received: 'Received',
+          processing: 'Processing',
+          refunded: 'Refunded',
+          rejected: 'Rejected',
+        },
+      },
+      reason: { title: 'Reason / affected items' },
+      note: { title: 'Internal note' },
+    },
+    preview: {
+      title: 'Withdrawal #{{orderNumber}}',
     },
   },
   order: {

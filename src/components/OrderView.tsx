@@ -1,6 +1,7 @@
 import { Badge, Box, Card, Flex, Heading, Stack, Text } from '@sanity/ui'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { type SanityDocument } from 'sanity'
+import { IntentLink } from 'sanity/router'
 import { type UserViewComponent } from 'sanity/structure'
 
 import {
@@ -140,6 +141,68 @@ const STATUS_TONES: Record<string, 'positive' | 'caution' | 'critical' | 'primar
   partiallyRefunded: 'caution',
 }
 
+const WITHDRAWAL_TONES: Record<
+  string,
+  'positive' | 'caution' | 'critical' | 'primary' | 'default'
+> = {
+  received: 'primary',
+  processing: 'caution',
+  refunded: 'positive',
+  rejected: 'critical',
+}
+
+type WithdrawalDoc = {
+  _id: string
+  declaredAt: string
+  status: string
+  reason?: string
+}
+
+/**
+ * Collapse draft/published pairs to one entry per document, preferring the draft
+ * so in-progress edits show live. Without this, editing a withdrawal makes both
+ * its published and `drafts.` version appear as duplicates.
+ */
+function dedupeDrafts(docs: WithdrawalDoc[]): WithdrawalDoc[] {
+  const byBaseId = new Map<string, WithdrawalDoc>()
+  for (const d of docs) {
+    const baseId = d._id.replace(/^drafts\./, '')
+    const existing = byBaseId.get(baseId)
+    if (!existing || d._id.startsWith('drafts.')) byBaseId.set(baseId, d)
+  }
+  return [...byBaseId.values()].sort((a, b) => b.declaredAt.localeCompare(a.declaredAt))
+}
+
+/** Live list of withdrawal declarations referencing the given order. */
+function useOrderWithdrawals(orderId: string | undefined): WithdrawalDoc[] {
+  const { sanityClient } = useITSContext()
+  const [withdrawals, setWithdrawals] = useState<WithdrawalDoc[]>([])
+  const cleanId = orderId?.replace(/^drafts\./, '')
+
+  useEffect(() => {
+    if (!cleanId) return undefined
+
+    const query = `*[_type == "orderWithdrawal" && orderRef._ref == $id] | order(declaredAt desc){
+      _id, declaredAt, status, reason
+    }`
+    const params = { id: cleanId }
+    let active = true
+    const load = () => {
+      sanityClient.fetch<WithdrawalDoc[]>(query, params).then((docs) => {
+        if (active) setWithdrawals(dedupeDrafts(docs))
+      })
+    }
+    load()
+    const sub = sanityClient.listen(query, params, { visibility: 'query' }).subscribe(() => load())
+    return () => {
+      active = false
+      sub.unsubscribe()
+    }
+  }, [cleanId, sanityClient])
+
+  return withdrawals
+}
+
 function formatAddressLines(address: Address): string[] {
   const fullName = [address.prename, address.lastname].filter(Boolean).join(' ') || address.name
   const cityLine = [address.country, address.zip, address.city].filter(Boolean).join(' ')
@@ -167,6 +230,7 @@ export const OrderView: UserViewComponent = (props) => {
 
   const order = (props.document.displayed ?? props.document.published) as OrderDocument | undefined
   const currency = order?.totals?.currency ?? 'EUR'
+  const withdrawals = useOrderWithdrawals(order?._id)
 
   const money = useCallback(
     (cents: number | undefined): string =>
@@ -213,6 +277,41 @@ export const OrderView: UserViewComponent = (props) => {
             </Badge>
           </Flex>
         </Flex>
+
+        {/* ── Withdrawals (Widerruf) ──────────────────────────────────── */}
+        {withdrawals.length > 0 && (
+          <Card padding={3} radius={2} shadow={1} tone="caution">
+            <Stack space={3}>
+              <Heading as="h4" size={1}>
+                {t('order.withdrawals.title', 'Withdrawals')}
+              </Heading>
+              <Stack space={2}>
+                {withdrawals.map((w) => (
+                  <IntentLink
+                    key={w._id}
+                    intent="edit"
+                    params={{ id: w._id.replace(/^drafts\./, ''), type: 'orderWithdrawal' }}
+                    style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                  >
+                    <Card padding={3} radius={2} shadow={1} tone="default">
+                      <Flex justify="space-between" gap={3} wrap="wrap" align="flex-start">
+                        <Stack space={1}>
+                          <Text muted>
+                            {format.date(w.declaredAt, { dateStyle: 'medium', timeStyle: 'short' })}
+                          </Text>
+                          {w.reason && <Text>{w.reason}</Text>}
+                        </Stack>
+                        <Badge tone={WITHDRAWAL_TONES[w.status] ?? 'default'}>
+                          {t(`order.withdrawals.status.${w.status}`, w.status)}
+                        </Badge>
+                      </Flex>
+                    </Card>
+                  </IntentLink>
+                ))}
+              </Stack>
+            </Stack>
+          </Card>
+        )}
 
         {/* ── Totals ──────────────────────────────────────────────────── */}
         <Card padding={3} radius={2} shadow={1} tone="primary">
