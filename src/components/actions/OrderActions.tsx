@@ -226,7 +226,16 @@ function OrderActionContent({
     // Invoice PDF attachment is handled by the separate OrderMailAction (manual
     // mail picker) — status-transition mails never attach the invoice.
     if (notifyCustomer && notificationMailType) {
-      const result = await frontendClient.notifyOrder(notificationMailType, order._id)
+      // For refund mails, pass the refunded amount so it can be shown in the email.
+      let refundAmount: number | undefined
+      if (selectedAction.newState === 'refunded') {
+        refundAmount = grandTotal
+      } else if (selectedAction.newState === 'partiallyRefunded' && isPartialRefundValid) {
+        refundAmount = partialAmount! * 100
+      }
+      const result = await frontendClient.notifyOrder(notificationMailType, order._id, {
+        ...(refundAmount !== undefined && { refundAmount }),
+      })
       if (result.error) {
         setStatus(`${t('actions.order.error', 'Mail failed', { message: result.error })}`)
         setLoading(false)
@@ -242,6 +251,7 @@ function OrderActionContent({
     frontendClient,
     sanityClient,
     order,
+    grandTotal,
     isPartialRefund,
     isPartialRefundValid,
     partialAmount,

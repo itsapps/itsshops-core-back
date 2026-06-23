@@ -29,7 +29,7 @@ export type ITSFrontendClient = {
   notifyOrder: (
     mailType: MailType,
     orderId: string,
-    options?: { attachInvoice?: boolean },
+    options?: { attachInvoice?: boolean; refundAmount?: number },
   ) => Promise<FrontendResponse<NotifyResult>>
   /**
    * Trigger a Stripe refund. Pass `amount` (cents) for partial refunds; omit

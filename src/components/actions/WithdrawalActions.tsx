@@ -443,7 +443,9 @@ function ResolveWithdrawalContent({
 
     // 3. Notify the customer of the refund (only when we just refunded).
     if (notify && !alreadyRefunded) {
-      const r = await frontendClient.notifyOrder('orderRefunded', order._id)
+      const r = await frontendClient.notifyOrder('orderRefunded', order._id, {
+        ...(typeof order.grandTotal === 'number' && { refundAmount: order.grandTotal }),
+      })
       if (r.error) {
         setStatus(`${t('actions.order.error', 'Mail failed', { message: r.error })}`)
         setLoading(false)
