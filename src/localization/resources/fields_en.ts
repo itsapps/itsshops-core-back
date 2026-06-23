@@ -569,6 +569,10 @@ export default {
         title: 'Terms of service',
         description: 'This page contains the terms of service.',
       },
+      withdrawalPolicyPage: {
+        title: 'Withdrawal policy',
+        description: 'This page contains the withdrawal instructions (incl. return costs).',
+      },
       returnAddress: {
         title: 'Return address',
         description:

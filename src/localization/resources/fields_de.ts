@@ -574,6 +574,10 @@ export default {
         title: 'AGB',
         description: 'Diese Seite beschreibt die allgemeinen Geschäftsbedingungen.',
       },
+      withdrawalPolicyPage: {
+        title: 'Widerrufsbelehrung',
+        description: 'Diese Seite enthält die Widerrufsbelehrung (inkl. Rücksendekosten).',
+      },
       returnAddress: {
         title: 'Retourenadresse',
         description:

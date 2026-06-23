@@ -58,6 +58,9 @@ export const shopSettings: ITSDocumentDefinition = {
         f('termsPage', 'reference', {
           to: [{ type: 'page' }],
         }),
+        f('withdrawalPolicyPage', 'reference', {
+          to: [{ type: 'page' }],
+        }),
         ...builders.filterField(),
       ],
       shipping: [
