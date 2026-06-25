@@ -33,9 +33,7 @@ type OrderMailActionDoc = {
   _id: string
 }
 
-export function OrderMailDocumentAction(
-  props: DocumentActionProps,
-): DocumentActionDescription | null {
+export function OrderMailDocumentAction(props: DocumentActionProps): DocumentActionDescription {
   const { published } = props
   const order = published as OrderMailActionDoc | null
   const { componentT } = useITSContext()

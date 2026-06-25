@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { FieldDefinition } from 'sanity'
 import {
   NoteIcon,
   NotificationIcon,
@@ -50,7 +51,7 @@ export const shopSettings: ITSDocumentDefinition = {
       ...(index === 0 && { default: true }),
     }))
 
-    const fieldsMap: Record<string, any[]> = {
+    const fieldsMap: Record<string, FieldDefinition[]> = {
       displays: [
         f('shopPage', 'reference', {
           to: [{ type: 'page' }],

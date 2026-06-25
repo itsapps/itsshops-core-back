@@ -69,7 +69,7 @@ function buildActions(
   return { fulfillmentActions, paymentActions }
 }
 
-export function OrderDocumentAction(props: DocumentActionProps): DocumentActionDescription | null {
+export function OrderDocumentAction(props: DocumentActionProps): DocumentActionDescription {
   const { published } = props
   const order = published as OrderActionDoc | null
   const { componentT } = useITSContext()

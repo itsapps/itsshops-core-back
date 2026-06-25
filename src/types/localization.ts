@@ -66,14 +66,11 @@ export interface ITSi18nEntry<T = string> {
 }
 
 export type ITSi18nArray<T = string> = ITSi18nEntry<T>[]
-export type ITSi18nLocalizerValue = <T = string>(data: any) => T | undefined
-export type ITSi18nLocalizerObjectValue = <T = string>(data: any, key: string) => T | undefined
+export type ITSi18nLocalizerValue = <T = string>(data: unknown) => T | undefined
 
 export interface ITSLocalizer {
   value: ITSi18nLocalizerValue
-  objectValue: ITSi18nLocalizerObjectValue
   dictValue: ITSi18nLocalizerValue
-  dictObjectValue: ITSi18nLocalizerObjectValue
 }
 export interface ITSFormatter {
   date: (date: string | Date, options?: Intl.DateTimeFormatOptions) => string

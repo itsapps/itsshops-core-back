@@ -51,22 +51,6 @@ export const orderCustomer: ITSSchemaDefinition = {
     return {
       groups,
       fields,
-      // preview: {
-      //   select: {
-      //     title: 'product.title',
-      //     quantity: 'quantity',
-      //     image: 'product.images.0.image',
-      //   },
-      //   prepare({ title, quantity, image }) {
-      //     return {
-      //       // title: ctx.localizer.value(title),
-      //       title: title ? `${quantity}x "${ctx.localizer.value(title)}"` : '-',
-      //       // subtitle: ctx.t.default('productBundleItem.preview.quantity', 'product', { count: quantity }),
-      //       media: ctx.localizer.value<any>(image) || PackageIcon,
-      //       // media: ProductMediaPreview({ info: `${quantity}x` }),
-      //     }
-      //   }
-      // },
     }
   },
 }

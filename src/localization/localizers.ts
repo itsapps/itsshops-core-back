@@ -2,10 +2,7 @@ import type { ITSLocalizer } from '../types/localization'
 
 export const createI18nHelpers = (locale: string, baseLocale: string): ITSLocalizer => ({
   value: (data) => getI18nArrayValue(data, locale, baseLocale),
-  objectValue: (data, key) => getI18nArrayValue(data?.[key], locale, baseLocale),
   dictValue: (data) => getI18nDictValue(data, locale, baseLocale, [locale, baseLocale]),
-  dictObjectValue: (data, key) =>
-    getI18nDictValue(data?.[key], locale, baseLocale, [locale, baseLocale]),
 })
 
 export function getI18nArrayValue<T>(
@@ -32,23 +29,24 @@ export function getI18nArrayValue<T>(
 }
 
 export function getI18nDictValue<T>(
-  item: Record<string, T> | undefined,
+  item: unknown,
   locale: string,
   baseLocale: string,
   supportedLocales: string[],
 ): T | undefined {
-  if (!item) {
+  if (!item || typeof item !== 'object') {
     return undefined
   }
-  if (locale in item) {
-    return item[locale]
-  } else if (baseLocale in item) {
-    return item[baseLocale]
+  const dict = item as Record<string, T>
+  if (locale in dict) {
+    return dict[locale]
+  } else if (baseLocale in dict) {
+    return dict[baseLocale]
   }
   // find in other locales
   for (const key of supportedLocales) {
-    if (key !== locale && key !== baseLocale && item[key]) {
-      return item[key]
+    if (key !== locale && key !== baseLocale && dict[key]) {
+      return dict[key]
     }
   }
 

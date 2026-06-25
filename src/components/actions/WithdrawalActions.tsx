@@ -64,9 +64,7 @@ function useHasOpenWithdrawal(orderId: string | undefined): boolean {
   return open
 }
 
-export function OrderWithdrawalCreateAction(
-  props: DocumentActionProps,
-): DocumentActionDescription | null {
+export function OrderWithdrawalCreateAction(props: DocumentActionProps): DocumentActionDescription {
   const order = props.published as { _id: string } | null
   const { componentT } = useITSContext()
   const t = componentT.default

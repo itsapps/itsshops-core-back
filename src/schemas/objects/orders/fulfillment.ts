@@ -9,16 +9,12 @@ export const fulfillment: ITSSchemaDefinition = {
   build: (ctx) => {
     const { f } = ctx
 
-    // const groups = ['info'].map((name, index) => ({
-    //   name, ...index === 0 && { default: true }
-    // }));
-
     // Snapshotted fields (taken at order time) are read-only outside dev.
     // trackingCode and pickupLocation are intentionally writable so admins can
     // add them after dispatch / pickup.
     const lockSnapshot = !ctx.config.isDev
 
-    const all = [
+    const fields = [
       f('trackingCode', 'string', {
         hidden: ({ parent }) => parent?.methodType === 'pickup',
       }),
@@ -54,31 +50,6 @@ export const fulfillment: ITSSchemaDefinition = {
       }),
     ]
 
-    // const fieldsMap: Record<string, FieldDefinition[]> = {
-    // }
-    // const fields = groups.map(({ name }) => ([
-    //   ...fieldsMap[name].map(field => ({ ...field, group: name }))
-    // ])).flat();
-
-    return {
-      // groups,
-      fields: all,
-      // preview: {
-      //   select: {
-      //     title: 'product.title',
-      //     quantity: 'quantity',
-      //     image: 'product.images.0.image',
-      //   },
-      //   prepare({ title, quantity, image }) {
-      //     return {
-      //       // title: ctx.localizer.value(title),
-      //       title: title ? `${quantity}x "${ctx.localizer.value(title)}"` : '-',
-      //       // subtitle: ctx.t.default('productBundleItem.preview.quantity', 'product', { count: quantity }),
-      //       media: ctx.localizer.value<any>(image) || PackageIcon,
-      //       // media: ProductMediaPreview({ info: `${quantity}x` }),
-      //     }
-      //   }
-      // },
-    }
+    return { fields }
   },
 }

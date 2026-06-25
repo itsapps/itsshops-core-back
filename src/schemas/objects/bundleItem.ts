@@ -1,6 +1,5 @@
 import { BundleItemIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
-// import { ProductMediaPreview } from '../../components/previews/ProductMediaPreview';
 
 export const bundleItem: ITSSchemaDefinition = {
   name: 'bundleItem',
@@ -47,11 +46,8 @@ export const bundleItem: ITSSchemaDefinition = {
         const count = quantity || 0
         const title = vTitle || pTitle ? `${count}x ${vTitle || `[${pTitle}]`}` : ''
         return {
-          // title: ctx.localizer.value(title),
           title,
-          // subtitle: ctx.t.default('productBundleItem.preview.quantity', 'product', { count: quantity }),
           media: ctx.localizer.value(image) || ctx.localizer.value(productImage) || BundleItemIcon,
-          // media: ProductMediaPreview({ info: `${quantity}x` }),
         }
       },
     },

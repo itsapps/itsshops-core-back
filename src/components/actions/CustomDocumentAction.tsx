@@ -11,8 +11,10 @@ export type CustomDocumentAction<T> = {
   allowActionFn?: (props: DocumentActionProps) => string | true
   shouldValidateFn?: (props: DocumentActionProps) => boolean
 }
-export function createCustomDocumentAction<T>(customAction: CustomDocumentAction<T>) {
-  const DocumentAction = (props: DocumentActionProps) => {
+export function createCustomDocumentAction<T>(
+  customAction: CustomDocumentAction<T>,
+): DocumentActionComponent {
+  const DocumentAction: DocumentActionComponent = (props: DocumentActionProps) => {
     const originalResult = customAction.action(props)
     const toast = useToast()
     const { componentT, sanityClient } = useITSContext()
