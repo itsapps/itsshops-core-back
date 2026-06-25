@@ -42,7 +42,7 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   const coreSchemaSettings: ITSCoreSchemaSettings = {
     links: { allowedReferences: allowedDocumentReferenceTypes },
     menus: {
-      disableSubmenus: false,
+      disableSubmenus: true,
       maxDepth: 1,
       allowedReferences: allowedDocumentReferenceTypes,
     },

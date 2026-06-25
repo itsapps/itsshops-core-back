@@ -1,5 +1,5 @@
 // import replace from '@rollup/plugin-replace'
-import {defineConfig} from '@sanity/pkg-utils'
+import { defineConfig } from '@sanity/pkg-utils'
 
 export default defineConfig({
   dist: 'dist',
@@ -36,5 +36,5 @@ export default defineConfig({
       'ae-missing-release-tag': 'off',
     },
     checkTypes: false,
-  }
+  },
 })

@@ -243,7 +243,8 @@ export default {
       resolve: {
         title: 'Erstatten & abschließen',
         intro: 'Damit werden {{amount}} an den Kunden erstattet und der Widerruf abgeschlossen.',
-        alreadyRefunded: 'Die Bestellung ist bereits erstattet. Damit wird der Widerruf abgeschlossen.',
+        alreadyRefunded:
+          'Die Bestellung ist bereits erstattet. Damit wird der Widerruf abgeschlossen.',
         notify: 'Erstattungsbestätigung per E-Mail senden',
       },
     },

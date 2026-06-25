@@ -12,7 +12,10 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
   const shopEnabled = !!config.features.shop?.enabled
   const categoryConfig = config.features.shop?.category
   const categoryEnabled = shopEnabled && !!categoryConfig
-  const subcategoriesEnabled = categoryEnabled && typeof categoryConfig === 'object' && !!(categoryConfig as Record<string, unknown>).subcategories
+  const subcategoriesEnabled =
+    categoryEnabled &&
+    typeof categoryConfig === 'object' &&
+    !!(categoryConfig as Record<string, unknown>).subcategories
   const featureMap: Record<ITSFeatureKey, boolean> = {
     shop: shopEnabled,
     'shop.manufacturer': shopEnabled && !!config.features.shop?.manufacturer,

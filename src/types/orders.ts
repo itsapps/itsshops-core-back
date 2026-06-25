@@ -14,7 +14,7 @@ export type Address = {
   phone?: string
   line1: string
   line2?: string
-};
+}
 
 export type Shipping = {
   address: Address

@@ -10,9 +10,7 @@ export const categoriesMenu: ITSStructureComponent = (S, context, ctx) => {
     return S.listItem()
       .title(t('categories.title'))
       .icon(CategoryIcon)
-      .child(
-        S.documentTypeList('category').title(t('categories.title')).apiVersion(apiVersion),
-      )
+      .child(S.documentTypeList('category').title(t('categories.title')).apiVersion(apiVersion))
   }
 
   const tSchema = ctx.schemaT

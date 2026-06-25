@@ -23,7 +23,8 @@ export const bundleItem: ITSSchemaDefinition = {
 
             // filter so only non-bundle variants of other products are shown
             return {
-              filter: 'kind != "bundle" && product._ref != $parentProductId && !(_id in path("drafts.**"))',
+              filter:
+                'kind != "bundle" && product._ref != $parentProductId && !(_id in path("drafts.**"))',
               params: {
                 parentProductId: parentProductId || '',
               },

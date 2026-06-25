@@ -21,7 +21,9 @@ export const fulfillmentPackagingLine: ITSSchemaDefinition = {
             subtitle: [
               volume ? `${volume} ml` : null,
               price ? ctx.format.currency(price / 100) : null,
-            ].filter(Boolean).join(' · '),
+            ]
+              .filter(Boolean)
+              .join(' · '),
           }
         },
       },

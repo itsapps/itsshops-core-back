@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Spinner, Stack, Text, useToast } from '@sanity/ui'
+import { Card, Flex, Spinner, Stack, Text, useToast } from '@sanity/ui'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { DocumentActionComponent, DocumentActionProps } from 'sanity'
 
