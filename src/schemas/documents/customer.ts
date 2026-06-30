@@ -8,6 +8,7 @@ export const customer: ITSDocumentDefinition = {
   type: 'document',
   icon: CustomerIcon,
   feature: 'users',
+  allowCreate: false,
   disallowedActions: ['duplicate'],
   build: (ctx) => {
     const { f } = ctx
@@ -18,8 +19,7 @@ export const customer: ITSDocumentDefinition = {
 
     const fieldsMap: Record<string, FieldDefinition[]> = {
       general: [
-        f('email', 'string'),
-
+        f('email', 'string', { readOnly: true }),
         f('locale', 'string', {
           options: {
             list: ctx.config.localization.uiLanguages.map((language) => ({
@@ -29,7 +29,7 @@ export const customer: ITSDocumentDefinition = {
           },
         }),
 
-        f('customerNumber', 'string'),
+        f('customerNumber', 'string', { readOnly: true }),
         f('customerGroups', 'array', {
           of: [
             {
@@ -44,6 +44,7 @@ export const customer: ITSDocumentDefinition = {
         }),
 
         f('status', 'string', {
+          readOnly: true,
           options: {
             list: [{ value: 'registered' }, { value: 'invited' }, { value: 'active' }],
             layout: 'dropdown',
