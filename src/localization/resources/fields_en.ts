@@ -1220,11 +1220,13 @@ export default {
     fields: {
       senderName: {
         title: 'Sender name',
-        description: 'Used as the sender for emails to customers (e.g. newsletter, account confirmation).',
+        description:
+          'Used as the sender for emails to customers (e.g. newsletter, account confirmation, orders).',
       },
       senderEmail: {
         title: 'Sender email',
-        description: 'Used as the sender address for emails to customers (e.g. newsletter, account confirmation).',
+        description:
+          'Used as the sender address for emails to customers (e.g. newsletter, account confirmation, orders).',
       },
       siteTitle: {
         title: 'Site title',
