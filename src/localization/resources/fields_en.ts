@@ -1033,7 +1033,6 @@ export default {
       token: { title: 'Token' },
       supabaseId: { title: 'Supabase ID' },
       confirmedAt: { title: 'Confirmed at' },
-      createdAt: { title: 'Created at' },
     },
   },
   variantOptionGroup: {

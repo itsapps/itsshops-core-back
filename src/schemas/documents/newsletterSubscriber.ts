@@ -23,7 +23,14 @@ export const newsletterSubscriber: ITSDocumentDefinition = {
     return {
       fields: [
         f('email', 'string', { readOnly: true }),
-        f('locale', 'string', { readOnly: true }),
+        f('locale', 'string', {
+          options: {
+            list: ctx.config.localization.uiLanguages.map((language) => ({
+              title: language.title,
+              value: language.id,
+            })),
+          },
+        }),
         f('status', 'string', {
           readOnly: true,
           options: {
@@ -41,8 +48,10 @@ export const newsletterSubscriber: ITSDocumentDefinition = {
         }),
         f('token', 'string', { readOnly: true }),
         f('supabaseId', 'string', { readOnly: true }),
-        f('confirmedAt', 'datetime', { readOnly: true }),
-        f('createdAt', 'datetime', { readOnly: true }),
+        f('confirmedAt', 'datetime', {
+          options: ctx.format.dateFormat('datetime'),
+          readOnly: true,
+        }),
       ],
       preview: {
         select: {
@@ -57,9 +66,15 @@ export const newsletterSubscriber: ITSDocumentDefinition = {
             pending: '⏳',
           }
           const icon = statusIcons[status] ?? '⏳'
+          const statusLabel = status
+            ? ctx.schemaT.default(`newsletterSubscriber.fields.status.options.${status}`)
+            : ''
+          const sourceLabel = source
+            ? ctx.schemaT.default(`newsletterSubscriber.fields.source.options.${source}`)
+            : ''
           return {
             title: email || 'No email',
-            subtitle: `${icon} ${status}${source ? ` · ${source}` : ''}`,
+            subtitle: `${icon} ${statusLabel}${sourceLabel ? ` · ${sourceLabel}` : ''}`,
             media: Icon,
           }
         },
