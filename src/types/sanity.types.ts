@@ -94,8 +94,6 @@ export type ShopSettings = {
   defaultCountry?: TaxCountryReference
   freeShippingCalculation?: 'beforeDiscount' | 'afterDiscount'
   defaultTaxCategory?: TaxCategoryReference
-  senderName?: string
-  senderEmail?: string
   stockThreshold?: number
   shopPage?: PageReference
   filters?: Array<
@@ -293,6 +291,8 @@ export type Settings = {
   >
   gtmId?: string
   company?: Company
+  senderName?: string
+  senderEmail?: string
 }
 
 export type Company = {
@@ -466,7 +466,6 @@ export type Customer = {
   _rev: string
   email?: string
   locale?: 'en' | 'de'
-  receiveNewsletter?: boolean
   customerNumber?: string
   customerGroups?: Array<
     {

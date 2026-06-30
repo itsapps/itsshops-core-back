@@ -40,6 +40,7 @@ export type ITSFeatureKey =
   | 'shop.coupons'
   | 'blog'
   | 'users'
+  | 'newsletter'
 
 interface ITSBaseDefinition {
   name: string

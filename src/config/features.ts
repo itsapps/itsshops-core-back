@@ -37,6 +37,7 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
     'shop.coupons': shopEnabled && !!config.features.shop?.coupons,
     blog: !!config.features.blog,
     users: !!config.features.users,
+    newsletter: !!config.features.newsletter,
   }
 
   const isFeatureEnabled = (feature: ITSFeatureKey): boolean => featureMap[feature] ?? false

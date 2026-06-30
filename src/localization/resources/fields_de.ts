@@ -544,15 +544,6 @@ export default {
         title: 'Bankdaten',
         description: 'Werden für Rechnungen verwendet',
       },
-      senderName: {
-        title: 'Absendername',
-        description: 'Wird als Absender bei Bestell- und Versand-E-Mails an Kunden verwendet',
-      },
-      senderEmail: {
-        title: 'Absender-E-Mail',
-        description:
-          'Wird als Absenderadresse bei Bestell- und Versand-E-Mails an Kunden verwendet',
-      },
       orderNumberPrefix: {
         title: 'Bestellnummer-Präfix',
         description: 'Benutzt als Präfix der Bestellnummer, z.B. "ORD-00000001',
@@ -606,7 +597,6 @@ export default {
       tax: 'Steuern',
       orders: 'Bestellungen',
       billing: 'Rechnungen',
-      notifications: 'Benachrichtigungen',
     },
     preview: {},
   },
@@ -1014,9 +1004,6 @@ export default {
       customerGroups: {
         title: 'Kundengruppen',
       },
-      receiveNewsletter: {
-        title: 'Newsletter',
-      },
       status: {
         title: 'Registrierungsstatus',
         options: {
@@ -1028,6 +1015,32 @@ export default {
       locale: {
         title: 'Sprache',
       },
+    },
+  },
+  newsletterSubscriber: {
+    title: 'Newsletter-Abonnent',
+    fields: {
+      email: { title: 'E-Mail' },
+      locale: { title: 'Sprache' },
+      status: {
+        title: 'Status',
+        options: {
+          pending: 'Ausstehend (Bestätigung offen)',
+          confirmed: 'Bestätigt',
+          unsubscribed: 'Abgemeldet',
+        },
+      },
+      source: {
+        title: 'Quelle',
+        options: {
+          standalone: 'Newsletter-Formular',
+          registration: 'Kontoregistrierung',
+        },
+      },
+      token: { title: 'Token' },
+      supabaseId: { title: 'Supabase-ID' },
+      confirmedAt: { title: 'Bestätigt am' },
+      createdAt: { title: 'Erstellt am' },
     },
   },
   variantOptionGroup: {
@@ -1207,10 +1220,21 @@ export default {
     groups: {
       site: 'Webseite',
       displays: 'Anzeigen',
+      notifications: 'Benachrichtigungen',
       analytics: 'Statistiken',
       company: 'Firma',
     },
     fields: {
+      senderName: {
+        title: 'Absendername',
+        description:
+          'Wird als Absender bei E-Mails an Kunden verwendet (z.B. Newsletter, Konto-Bestätigung, Bestellungen).',
+      },
+      senderEmail: {
+        title: 'Absender-E-Mail',
+        description:
+          'Wird als Absenderadresse bei E-Mails an Kunden verwendet (z.B. Newsletter, Konto-Bestätigung, Bestellungen).',
+      },
       siteTitle: {
         title: 'Seitentitel',
         description:

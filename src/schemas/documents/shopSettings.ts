@@ -2,7 +2,6 @@ import type { ComponentType } from 'react'
 import { FieldDefinition } from 'sanity'
 import {
   NoteIcon,
-  NotificationIcon,
   OrderIcon,
   PackageIcon,
   TruckIcon,
@@ -28,7 +27,6 @@ export const shopSettings: ITSDocumentDefinition = {
       tax: VatBreakdownIcon,
       orders: OrderIcon,
       billing: NoteIcon,
-      notifications: NotificationIcon,
       returns: OrderWithdrawalIcon,
     }
 
@@ -41,7 +39,6 @@ export const shopSettings: ITSDocumentDefinition = {
       'shipping',
       'returns',
       'tax',
-      'notifications',
       ...(stockEnabled ? ['stock'] : []),
       'displays',
     ]
@@ -107,12 +104,6 @@ export const shopSettings: ITSDocumentDefinition = {
           initialValue: 'customer',
         }),
         f('returnPolicyNote', 'i18nText'),
-      ],
-      notifications: [
-        f('senderName', 'string'),
-        f('senderEmail', 'string', {
-          validation: (rule) => rule.email(),
-        }),
       ],
     }
     const fields = groups

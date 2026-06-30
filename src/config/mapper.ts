@@ -135,6 +135,7 @@ function allFeatures(): ITSFeatureConfig {
     },
     blog: true,
     users: true,
+    newsletter: true,
   } as ITSFeatureConfig
 }
 
@@ -153,5 +154,6 @@ function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
     },
     blog: input?.blog ?? false,
     users: input?.users ?? false,
+    newsletter: input?.newsletter ?? false,
   } as ITSFeatureConfig
 }

@@ -1,4 +1,11 @@
-import { MenuIcon, SearchIcon, SettingsIcon, UserIcon, WebsiteIcon } from '../../assets/icons'
+import {
+  MenuIcon,
+  NotificationIcon,
+  SearchIcon,
+  SettingsIcon,
+  UserIcon,
+  WebsiteIcon,
+} from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
 
 export const settings: ITSDocumentDefinition = {
@@ -33,6 +40,16 @@ export const settings: ITSDocumentDefinition = {
           }),
           f('footerMenus', 'array', {
             of: [{ type: 'reference', title: t.default('menu.title'), to: [{ type: 'menu' }] }],
+          }),
+        ],
+      },
+      {
+        name: 'notifications',
+        icon: NotificationIcon,
+        fields: [
+          f('senderName', 'string'),
+          f('senderEmail', 'string', {
+            validation: (rule) => rule.email(),
           }),
         ],
       },

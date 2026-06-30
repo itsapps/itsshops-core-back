@@ -29,10 +29,6 @@ export const customer: ITSDocumentDefinition = {
           },
         }),
 
-        f('receiveNewsletter', 'boolean', {
-          initialValue: false,
-        }),
-
         f('customerNumber', 'string'),
         f('customerGroups', 'array', {
           of: [
@@ -69,16 +65,13 @@ export const customer: ITSDocumentDefinition = {
         select: {
           address: 'address',
           status: 'status',
-          newsletter: 'receiveNewsletter',
         },
-        prepare: ({ address, status, newsletter }) => {
+        prepare: ({ address, status }) => {
           const title = [address?.prename, address?.lastname].filter(Boolean).join(' ') || 'No Name'
           const statusString = `${ctx.schemaT.default('customer.fields.status.options.active')}: ${status === 'active' ? '✅' : '❌'}`
-          const newsletterString = `${ctx.schemaT.default('customer.fields.receiveNewsletter.title')}: ${newsletter ? '✅' : '❌'}`
-          const subtitle = `${statusString}, ${newsletterString}`
           return {
             title,
-            subtitle,
+            subtitle: statusString,
             media: CustomerIcon,
           }
         },

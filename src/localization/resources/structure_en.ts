@@ -46,6 +46,8 @@ export default {
   customers: { title: 'Customers' },
   customerGroup: { title: 'Customer groups' },
   customerGroups: { title: 'Customer groups' },
+  newsletterGroup: { title: 'Newsletter' },
+  newsletterSubscriber: { title: 'Subscribers' },
   settingsGroup: { title: 'Settings' },
   shopSettingsGroup: { title: 'Shop settings' },
   settings: { title: 'General' },

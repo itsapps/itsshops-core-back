@@ -6,7 +6,14 @@ import type {
 } from 'sanity/structure'
 
 // import { CustomerGroupView } from '../components/CustomerGroupView';
-import { EditIcon, SettingsIcon, ShopIcon, UserIcon, WebsiteIcon } from '../assets/icons'
+import {
+  EditIcon,
+  NotificationIcon,
+  SettingsIcon,
+  ShopIcon,
+  UserIcon,
+  WebsiteIcon,
+} from '../assets/icons'
 import { OrderView } from '../components/OrderView'
 import { categoriesMenu } from '../structure/categories'
 import { productsMenu } from '../structure/products'
@@ -71,6 +78,13 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
       icon: UserIcon,
       feature: 'shop',
       children: mapItems(['customer', 'customerGroup']),
+    },
+    {
+      type: 'group',
+      id: 'newsletterGroup',
+      icon: NotificationIcon,
+      feature: 'newsletter',
+      children: mapItems(['newsletterSubscriber']),
     },
     {
       type: 'group',

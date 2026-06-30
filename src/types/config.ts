@@ -58,6 +58,7 @@ export interface FeatureConfig {
   }>
   blog?: boolean
   users?: boolean
+  newsletter?: boolean
 }
 
 export interface ITSFeatureConfig {
@@ -72,6 +73,7 @@ export interface ITSFeatureConfig {
   }
   blog: boolean
   users: boolean
+  newsletter: boolean
 }
 
 export interface I18nConfig {

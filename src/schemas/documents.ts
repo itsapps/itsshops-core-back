@@ -6,6 +6,7 @@ import { customer } from './documents/customer'
 import { customerGroup } from './documents/customerGroup'
 import { manufacturer } from './documents/manufacturer'
 import { menu } from './documents/menu'
+import { newsletterSubscriber } from './documents/newsletterSubscriber'
 import { order } from './documents/orders/order'
 import { orderMeta } from './documents/orders/orderMeta'
 import { orderWithdrawal } from './documents/orders/orderWithdrawal'
@@ -40,6 +41,7 @@ export const getCoreDocuments = (
     customerGroup,
     manufacturer,
     menu,
+    newsletterSubscriber,
     order,
     orderMeta,
     orderWithdrawal,

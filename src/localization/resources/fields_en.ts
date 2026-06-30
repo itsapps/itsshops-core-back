@@ -540,14 +540,6 @@ export default {
         title: 'Bank details',
         description: 'Used on invoices',
       },
-      senderName: {
-        title: 'Sender name',
-        description: 'Used as the sender for order and shipping emails to customers',
-      },
-      senderEmail: {
-        title: 'Sender email',
-        description: 'Used as the sender address for order and shipping emails to customers',
-      },
       orderNumberPrefix: {
         title: 'Order number prefix',
         description: 'Used as a prefix for the order number, e.g. "ORD-00000001"',
@@ -600,7 +592,6 @@ export default {
       tax: 'Tax',
       orders: 'Orders',
       billing: 'Billing',
-      notifications: 'Notifications',
     },
     preview: {},
   },
@@ -1006,9 +997,6 @@ export default {
       customerGroups: {
         title: 'Customer groups',
       },
-      receiveNewsletter: {
-        title: 'Newsletter',
-      },
       status: {
         title: 'Registration status',
         options: {
@@ -1020,6 +1008,32 @@ export default {
       locale: {
         title: 'Language',
       },
+    },
+  },
+  newsletterSubscriber: {
+    title: 'Newsletter subscriber',
+    fields: {
+      email: { title: 'Email' },
+      locale: { title: 'Language' },
+      status: {
+        title: 'Status',
+        options: {
+          pending: 'Pending (awaiting confirmation)',
+          confirmed: 'Confirmed',
+          unsubscribed: 'Unsubscribed',
+        },
+      },
+      source: {
+        title: 'Source',
+        options: {
+          standalone: 'Newsletter form',
+          registration: 'Account registration',
+        },
+      },
+      token: { title: 'Token' },
+      supabaseId: { title: 'Supabase ID' },
+      confirmedAt: { title: 'Confirmed at' },
+      createdAt: { title: 'Created at' },
     },
   },
   variantOptionGroup: {
@@ -1199,10 +1213,19 @@ export default {
     groups: {
       site: 'Website',
       displays: 'Displays',
+      notifications: 'Notifications',
       analytics: 'Analytics',
       company: 'Company',
     },
     fields: {
+      senderName: {
+        title: 'Sender name',
+        description: 'Used as the sender for emails to customers (e.g. newsletter, account confirmation).',
+      },
+      senderEmail: {
+        title: 'Sender email',
+        description: 'Used as the sender address for emails to customers (e.g. newsletter, account confirmation).',
+      },
       siteTitle: {
         title: 'Site title',
         description:
