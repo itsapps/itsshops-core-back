@@ -13,8 +13,7 @@
  * Both email paths go through `frontendClient.withdrawNotify`, which sends the
  * customer-facing mail only (the shop already knows).
  */
-import { CheckmarkCircleIcon, EnvelopeIcon } from '@sanity/icons'
-import { OrderWithdrawalIcon } from '../../assets/icons'
+import { ConfirmIcon, OrderWithdrawalIcon, SendMailIcon } from '../../assets/icons'
 import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
 import { useToast } from '@sanity/ui/toast'
 import type { ChangeEvent } from 'react'
@@ -277,7 +276,7 @@ export function WithdrawalResendAction(
 
   return {
     label: t('actions.orderWithdrawal.resend.title', 'Resend confirmation'),
-    icon: EnvelopeIcon,
+    icon: SendMailIcon,
     disabled: loading || !id,
     onHandle: handle,
   }
@@ -321,7 +320,7 @@ export function WithdrawalResolveAction(
   const label = t('actions.orderWithdrawal.resolve.title', 'Refund & close')
   return {
     label,
-    icon: CheckmarkCircleIcon,
+    icon: ConfirmIcon,
     onHandle: handleOpen,
     dialog: dialogOpen && {
       type: 'dialog',

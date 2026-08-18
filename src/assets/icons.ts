@@ -1,5 +1,6 @@
 import { AddIcon as Add } from '@sanity/icons/Add'
 import { BasketIcon as Basket } from '@sanity/icons/Basket'
+import { CheckmarkCircleIcon as CheckmarkCircle } from '@sanity/icons/CheckmarkCircle'
 import { CloseIcon as Close } from '@sanity/icons/Close'
 import { CogIcon as Cog } from '@sanity/icons/Cog'
 import { DocumentIcon as Document } from '@sanity/icons/Document'
@@ -72,6 +73,7 @@ export const CheckIcon = PiCheck
 export const CircleIcon = PiCircle
 export const ClockIcon = PiClock
 export const CloseIcon = Close
+export const ConfirmIcon = CheckmarkCircle
 export const CustomerIcon = User
 export const DeployIcon = PiRocketLaunch
 export const EditIcon = Edit
@@ -107,6 +109,7 @@ export const ProductKindWineIcon = PiWine
 export const ProductVariantIcon = PiSlidersHorizontal
 export const QuestionIcon = PiQuestion
 export const SearchIcon = Search
+export const SendMailIcon = Envelope
 export const SettingsIcon = Cog
 export const ShippingRateIcon = PiBoat
 export const ShopIcon = Basket

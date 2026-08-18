@@ -19,7 +19,7 @@
  * The Stripe webhook also reconciles the paymentStatus, so direct patches and
  * webhook updates must remain idempotent — both paths set the same fields.
  */
-import { CheckmarkCircleIcon } from '@sanity/icons'
+import { ConfirmIcon } from '../../assets/icons'
 import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
 import type { ChangeEvent } from 'react'
 import { useCallback, useState } from 'react'
@@ -82,7 +82,7 @@ export function OrderDocumentAction(props: DocumentActionProps): DocumentActionD
   if (!order) {
     return {
       label: t('actions.order.updateStatus.title', 'Update status'),
-      icon: CheckmarkCircleIcon,
+      icon: ConfirmIcon,
       disabled: true,
     }
   }
@@ -91,7 +91,7 @@ export function OrderDocumentAction(props: DocumentActionProps): DocumentActionD
 
   return {
     label: t('actions.order.updateStatus.title', 'Update status'),
-    icon: CheckmarkCircleIcon,
+    icon: ConfirmIcon,
     disabled: fulfillmentActions.length === 0 && paymentActions.length === 0,
     onHandle: handleOpen,
     dialog: dialogOpen && {

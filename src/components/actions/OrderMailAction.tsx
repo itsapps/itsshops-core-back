@@ -8,7 +8,7 @@
  *
  * No document patch, no statusHistory entry — just a notify call.
  */
-import { EnvelopeIcon } from '@sanity/icons'
+import { SendMailIcon } from '../../assets/icons'
 import { Box, Button, Card, Checkbox, Flex, Select, Stack, Text } from '@sanity/ui'
 import type { ChangeEvent } from 'react'
 import { useCallback, useState } from 'react'
@@ -46,14 +46,14 @@ export function OrderMailDocumentAction(props: DocumentActionProps): DocumentAct
   if (!order) {
     return {
       label: t('actions.order.sendMailDialog.title', 'Send mail'),
-      icon: EnvelopeIcon,
+      icon: SendMailIcon,
       disabled: true,
     }
   }
 
   return {
     label: t('actions.order.sendMailDialog.title', 'Send mail'),
-    icon: EnvelopeIcon,
+    icon: SendMailIcon,
     onHandle: handleOpen,
     dialog: dialogOpen && {
       type: 'dialog',
