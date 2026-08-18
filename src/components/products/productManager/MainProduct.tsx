@@ -23,8 +23,8 @@ export function GlobalDefaults(props: GlobalDefaultsProps): ReactElement {
   } = props
 
   return (
-    <Stack space={4}>
-      <Grid columns={kind === 'physical' ? 3 : 2} gap={3}>
+    <Stack gap={4}>
+      <Grid gridTemplateColumns={kind === 'physical' ? 3 : 2} gap={3}>
         <PriceField value={globalPrice} onChange={onPriceChange} />
         <TaxCategoryField
           value={globalTaxCategoryId}
@@ -64,7 +64,7 @@ export function MainProduct(props: MainProductProps): ReactElement {
       padding={4}
       style={{ borderLeft: '3px solid var(--card-focus-ring-color)' }}
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <SectionLabel>{schemaT.default('product.title')}</SectionLabel>
         <I18nTitleInputs
           locales={locales}

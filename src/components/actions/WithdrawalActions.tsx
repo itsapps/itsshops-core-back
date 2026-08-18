@@ -15,7 +15,8 @@
  */
 import { CheckmarkCircleIcon, EnvelopeIcon } from '@sanity/icons'
 import { OrderWithdrawalIcon } from '../../assets/icons'
-import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput, useToast } from '@sanity/ui'
+import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
+import { useToast } from '@sanity/ui/toast'
 import type { ChangeEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { DocumentActionDescription, DocumentActionProps, SanityClient } from 'sanity'
@@ -193,8 +194,8 @@ function CreateWithdrawalContent({
   }, [dateStr, reason, notify, orderId, sanityClient, frontendClient, t, onComplete])
 
   return (
-    <Stack padding={4} space={4}>
-      <Stack space={2}>
+    <Stack padding={4} gap={4}>
+      <Stack gap={2}>
         <Text size={1} weight="semibold">
           {t('actions.orderWithdrawal.create.declaredAt', 'Declared on')}
         </Text>
@@ -206,7 +207,7 @@ function CreateWithdrawalContent({
         )}
       </Stack>
 
-      <Stack space={2}>
+      <Stack gap={2}>
         <Text size={1} weight="semibold">
           {t('actions.orderWithdrawal.create.reason', 'Reason / affected items (optional)')}
         </Text>
@@ -466,7 +467,7 @@ function ResolveWithdrawalContent({
   const amount = typeof order.grandTotal === 'number' ? format.currency(order.grandTotal / 100) : ''
 
   return (
-    <Stack padding={4} space={4}>
+    <Stack padding={4} gap={4}>
       <Text>
         {alreadyRefunded
           ? t(

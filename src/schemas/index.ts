@@ -56,6 +56,8 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
           }
         : undefined)
 
+    // Sanity 6's defineType overloads can't resolve a union `type` ('document' | 'object');
+    // this factory legitimately builds both, so widen the argument.
     const d = defineType({
       ...built,
       ...base,
@@ -64,7 +66,7 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
       ...(groups && { groups }),
       ...(fieldsets && { fieldsets }),
       preview,
-    })
+    } as Parameters<typeof defineType>[0])
     return d
   } else if (definition.type === 'array') {
     const built = definition.build(fieldCtx)

@@ -1,5 +1,5 @@
 import { Transaction } from '@sanity/client'
-import { useToast } from '@sanity/ui'
+import { useToast } from '@sanity/ui/toast'
 import { useCallback, useState } from 'react'
 
 import { I18nTitleEntry } from '../../components/products/productManager/ProductCreator.types'

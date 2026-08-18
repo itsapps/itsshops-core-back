@@ -1,17 +1,14 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Card,
   Flex,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
   Stack,
   Text,
-  useToast,
 } from '@sanity/ui'
+import { Autocomplete } from '@sanity/ui/autocomplete'
+import { Menu, MenuButton, MenuDivider, MenuItem } from '@sanity/ui/menu'
+import { useToast } from '@sanity/ui/toast'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { FormField, type ObjectInputProps, PatchEvent, set, unset } from 'sanity'
 
@@ -173,7 +170,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
           <Text size={2}>
             <WarningOutlineIcon />
           </Text>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1} weight="semibold">
               Vinofact Configuration Issue
             </Text>
@@ -242,9 +239,9 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
     )
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       {wineIdMember && wineIdMember.kind === 'field' && (
-        <Stack space={2}>
+        <Stack gap={2}>
           {/* This renders the Label and Description automatically */}
           {/* <Text size={1} weight="semibold">
             {wineIdMember.field.schemaType.title}
@@ -266,7 +263,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
       )}
       {renderDefault({ ...props, renderField: renderFieldOverride })}
       {/* <Card radius={2}>
-        <Stack space={4}>
+        <Stack gap={4}>
           {otherFields.map((member) => {
             if (member.kind !== 'field') return null
             return (

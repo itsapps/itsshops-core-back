@@ -1,4 +1,4 @@
-import { useToast } from '@sanity/ui'
+import { useToast } from '@sanity/ui/toast'
 import { DocumentActionComponent, DocumentActionProps, DocumentActionsContext } from 'sanity'
 
 import { useITSContext } from '../../context/ITSCoreProvider'

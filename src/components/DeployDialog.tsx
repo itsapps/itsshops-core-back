@@ -222,7 +222,7 @@ export function DeployDialog(): ReactElement {
           width={1}
         >
           <Card padding={4}>
-            <Stack space={4}>{dialogContent}</Stack>
+            <Stack gap={4}>{dialogContent}</Stack>
           </Card>
         </Dialog>
       )}

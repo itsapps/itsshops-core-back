@@ -9,11 +9,11 @@ export const WinePreview = ({ wine }: { wine: VinofactWine }): ReactElement => (
     <Text size={2} muted>
       <WineIcon />
     </Text>
-    <Stack space={2} flex={1}>
+    <Stack gap={2} flex={1}>
       <Text weight="semibold" size={1}>
         {wine.title}
       </Text>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Badge>
           <Flex align="center" gap={1}>
             {wine.year || 'N/V'}

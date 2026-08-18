@@ -252,10 +252,10 @@ export const OrderView: UserViewComponent = (props) => {
 
   return (
     <Box padding={[3, 4]}>
-      <Stack space={4}>
+      <Stack gap={4}>
         {/* ── Header: order/invoice number, statuses ──────────────────── */}
         <Flex align="flex-start" justify="space-between" wrap="wrap" gap={3}>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Heading as="h2" size={2}>
               {order.orderNumber
                 ? `${t('order.orderNumber')} ${order.orderNumber}`
@@ -281,11 +281,11 @@ export const OrderView: UserViewComponent = (props) => {
         {/* ── Withdrawals (Widerruf) ──────────────────────────────────── */}
         {withdrawals.length > 0 && (
           <Card padding={3} radius={2} shadow={1} tone="caution">
-            <Stack space={3}>
+            <Stack gap={3}>
               <Heading as="h4" size={1}>
                 {t('order.withdrawals.title', 'Withdrawals')}
               </Heading>
-              <Stack space={2}>
+              <Stack gap={2}>
                 {withdrawals.map((w) => (
                   <IntentLink
                     key={w._id}
@@ -295,7 +295,7 @@ export const OrderView: UserViewComponent = (props) => {
                   >
                     <Card padding={3} radius={2} shadow={1} tone="default">
                       <Flex justify="space-between" gap={3} wrap="wrap" align="flex-start">
-                        <Stack space={1}>
+                        <Stack gap={1}>
                           <Text muted>
                             {format.date(w.declaredAt, { dateStyle: 'medium', timeStyle: 'short' })}
                           </Text>
@@ -315,7 +315,7 @@ export const OrderView: UserViewComponent = (props) => {
 
         {/* ── Totals ──────────────────────────────────────────────────── */}
         <Card padding={3} radius={2} shadow={1} tone="primary">
-          <Stack space={3}>
+          <Stack gap={3}>
             <TotalRow label={t('order.subtotal')} value={money(totals?.subtotal)} />
             <TotalRow label={t('order.shipping')} value={money(totals?.shipping)} />
             {totals?.discount > 0 && (
@@ -336,11 +336,11 @@ export const OrderView: UserViewComponent = (props) => {
         {/* ── Applied coupons ─────────────────────────────────────────── */}
         {order.appliedCoupons && order.appliedCoupons.length > 0 && (
           <Card padding={3} radius={2} shadow={1} tone="transparent">
-            <Stack space={3}>
+            <Stack gap={3}>
               <Heading as="h4" size={1}>
                 {t('order.coupons', 'Coupons')}
               </Heading>
-              <Stack space={2}>
+              <Stack gap={2}>
                 {order.appliedCoupons.map((coupon) => {
                   let valueLabel = ''
                   if (coupon.discountType === 'percent') valueLabel = `${coupon.value ?? 0}%`
@@ -350,7 +350,7 @@ export const OrderView: UserViewComponent = (props) => {
                     valueLabel = t('order.coupon.freeShipping', 'Free shipping')
                   return (
                     <Flex key={coupon._key} justify="space-between" gap={3} wrap="wrap">
-                      <Stack space={1}>
+                      <Stack gap={1}>
                         <Text weight="medium" style={{ fontFamily: 'monospace' }}>
                           {coupon.code}
                         </Text>
@@ -392,11 +392,11 @@ export const OrderView: UserViewComponent = (props) => {
         {/* ── Packaging lines ─────────────────────────────────────────── */}
         {fulfillment?.packagingLines && fulfillment.packagingLines.length > 0 && (
           <Card padding={3} radius={2} shadow={1} tone="transparent">
-            <Stack space={3}>
+            <Stack gap={3}>
               <Heading as="h4" size={1}>
                 {t('order.packaging')}
               </Heading>
-              <Stack space={2}>
+              <Stack gap={2}>
                 {fulfillment.packagingLines.map((line) => (
                   <Flex key={line._key} justify="space-between" gap={3}>
                     <Text>
@@ -413,11 +413,11 @@ export const OrderView: UserViewComponent = (props) => {
         )}
 
         {/* ── Items ───────────────────────────────────────────────────── */}
-        <Stack space={2}>
+        <Stack gap={2}>
           <Heading as="h3" size={1}>
             {t('order.items')}
           </Heading>
-          <Stack space={2}>
+          <Stack gap={2}>
             {(order.orderItems ?? []).map((item) => (
               <OrderItemRow key={item._key} item={item} money={money} t={t} />
             ))}
@@ -426,16 +426,16 @@ export const OrderView: UserViewComponent = (props) => {
 
         {/* ── Status history ──────────────────────────────────────────── */}
         {order.statusHistory && order.statusHistory.length > 0 && (
-          <Stack space={2}>
+          <Stack gap={2}>
             <Heading as="h3" size={1}>
               {t('order.statusHistory.name')}
             </Heading>
-            <Stack space={2}>
+            <Stack gap={2}>
               {[...order.statusHistory]
                 .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
                 .map((entry) => (
                   <Card key={entry._key} padding={3} radius={2} shadow={1} tone="transparent">
-                    <Stack space={2}>
+                    <Stack gap={2}>
                       <Flex justify="space-between" gap={2} wrap="wrap">
                         <Text weight="medium">
                           {`${tHistoryType(entry.type)} - ${schemaT.default(getStateTranslationKey(entry.status), entry.status)}`}
@@ -493,11 +493,11 @@ function TotalRow({
 function AddressCard({ title, lines }: { title: string; lines: string[] }) {
   return (
     <Card padding={3} radius={2} shadow={1} tone="transparent">
-      <Stack space={3}>
+      <Stack gap={3}>
         <Heading as="h4" size={1}>
           {title}
         </Heading>
-        <Stack space={2}>
+        <Stack gap={2}>
           {lines.map((line) => (
             <Text key={line}>{line}</Text>
           ))}
@@ -521,7 +521,7 @@ function OrderItemRow({
   return (
     <Card padding={3} radius={2} shadow={1} tone="transparent">
       <Flex gap={3} align="flex-start" justify="space-between">
-        <Stack space={2} flex={1}>
+        <Stack gap={2} flex={1}>
           <Flex gap={2} align="center" wrap="wrap">
             <Text weight="semibold">
               {item.quantity}× {item.title}
@@ -544,7 +544,7 @@ function OrderItemRow({
             </Text>
           </Flex>
         </Stack>
-        <Stack space={2} style={{ textAlign: 'right' }}>
+        <Stack gap={2} style={{ textAlign: 'right' }}>
           <Text weight="semibold">{money(lineTotal)}</Text>
           <Text muted>
             {money(item.price)} × {item.quantity}

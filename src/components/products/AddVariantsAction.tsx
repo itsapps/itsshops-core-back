@@ -1,4 +1,5 @@
-import { Card, Flex, Spinner, Stack, Text, useToast } from '@sanity/ui'
+import { Card, Flex, Spinner, Stack, Text } from '@sanity/ui'
+import { useToast } from '@sanity/ui/toast'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { DocumentActionComponent, DocumentActionProps } from 'sanity'
 
@@ -253,7 +254,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
     }
   }
 
-  return <Stack space={1}>{renderContent()}</Stack>
+  return <Stack gap={1}>{renderContent()}</Stack>
 }
 
 // ─── AddVariantsAction ────────────────────────────────────────────────────────

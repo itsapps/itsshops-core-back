@@ -103,8 +103,8 @@ function OrderMailContent({
   }, [frontendClient, mailType, order._id, attachInvoice, t, onComplete])
 
   return (
-    <Stack padding={4} space={4}>
-      <Stack space={2}>
+    <Stack padding={4} gap={4}>
+      <Stack gap={2}>
         <Text weight="bold">
           {t('actions.order.sendMailDialog.selectMailType', 'Select mail type')}
         </Text>

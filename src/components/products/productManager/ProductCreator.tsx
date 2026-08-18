@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import { Container, Flex, Heading, Stack, Tab, TabList, TabPanel, Text, useToast } from '@sanity/ui'
+import { Container, Flex, Heading, Stack, Tab, TabList, TabPanel, Text } from '@sanity/ui'
+import { useToast } from '@sanity/ui/toast'
 import { ComponentType, ReactElement } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
@@ -229,9 +230,9 @@ export function ProductCreator(): ReactElement {
   return (
     <Flex padding={4} direction="column" height="fill" flex={1}>
       <Container width={2}>
-        <Stack space={6}>
+        <Stack gap={6}>
           {/* Header */}
-          <Stack space={2}>
+          <Stack gap={2}>
             <Heading size={3}>{componentT.default('productCreatorTool.title')}</Heading>
             <Text size={1} muted>
               {componentT.default('productCreatorTool.subtitle')}
@@ -240,7 +241,7 @@ export function ProductCreator(): ReactElement {
 
           {/* Tabs — only shown when multiple kinds are enabled */}
           {showTabs && (
-            <TabList space={1}>
+            <TabList gap={1}>
               {enabledKinds.map((kind) => {
                 const { icon: Icon } = KIND_CONFIG[kind]
                 return (

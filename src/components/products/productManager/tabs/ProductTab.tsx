@@ -8,7 +8,7 @@ import { ProductTabProps } from '../ProductCreator.types'
 export function ProductTab(props: ProductTabProps): ReactElement {
   const { componentT } = useITSContext()
   return (
-    <Stack space={[1, 1, 4, 6]}>
+    <Stack gap={[1, 1, 4, 6]}>
       {!props.hideProductSection && <MainProduct {...props.global} />}
 
       <Stack>{props.content}</Stack>

@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
 import {
-  Autocomplete,
   Badge,
   Box,
   Button,
@@ -12,8 +11,9 @@ import {
   Select,
   Stack,
   Text,
-  useToast,
 } from '@sanity/ui'
+import { Autocomplete } from '@sanity/ui/autocomplete'
+import { useToast } from '@sanity/ui/toast'
 import { ChangeEvent, ReactElement } from 'react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -127,7 +127,7 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
 
   return (
     <VariantRow index={index}>
-      <Stack space={4}>
+      <Stack gap={4}>
         {/* Row header */}
         <Flex align="center" justify="space-between">
           <Text size={1} muted>
@@ -150,7 +150,7 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
         </Flex>
 
         {/* Wine picker */}
-        <Stack space={2}>
+        <Stack gap={2}>
           <Label size={1}>{schemaT.default('wine.fields.vinofactWineId.title')} *</Label>
           {row.wine ? (
             <Card border radius={2} padding={2}>
@@ -187,9 +187,9 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
           placeholder={titlePlaceholder}
         />
 
-        <Grid columns={[1, 1, 3]} gap={3}>
+        <Grid gridTemplateColumns={[1, 1, 3]} gap={3}>
           {/* Volume */}
-          <Stack space={2}>
+          <Stack gap={2}>
             <Label size={1}>{schemaT.default('productVariant.fields.volume.title')} *</Label>
             <Select value={row.volume} onChange={handleVolumeChange}>
               <option value="">—</option>
@@ -363,7 +363,7 @@ export function WineTab(props: WineTabProps): ReactElement {
   const lastSelectedWine = [...rows].reverse().find((r) => r.wine)?.wine
 
   const content = (
-    <Stack space={3}>
+    <Stack gap={3}>
       <VariantSectionHeader count={rows.length} />
 
       {rows.map((row, index) => (

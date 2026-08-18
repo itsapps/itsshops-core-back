@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import { Badge, Card, Flex, Grid, Stack, Text, useToast } from '@sanity/ui'
+import { Badge, Card, Flex, Grid, Stack, Text } from '@sanity/ui'
+import { useToast } from '@sanity/ui/toast'
 import { ReactElement } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -126,8 +127,8 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
       index={index}
       tone={row.alreadyExists ? 'caution' : row.enabled ? 'default' : 'transparent'}
     >
-      <Stack space={3}>
-        <Grid columns={[1, 1, showWeight ? 5 : 4]} gap={3}>
+      <Stack gap={3}>
+        <Grid gridTemplateColumns={[1, 1, showWeight ? 5 : 4]} gap={3}>
           {/* Toggle + label */}
           <Flex align="center" gap={3} style={{ gridColumn: 'span 1' }}>
             <input
@@ -148,7 +149,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
               {label}
             </Text>
             {row.alreadyExists && (
-              <Badge tone="caution" size={1}>
+              <Badge tone="caution">
                 {componentT.default('productCreatorTool.messages.variantExists')}
               </Badge>
             )}
@@ -292,10 +293,10 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
   }, [canSubmit, onSubmit, enabledCombinations])
 
   const content = (
-    <Stack space={3}>
+    <Stack gap={3}>
       <VariantSectionHeader count={combinations.length} />
       <Card border radius={2} padding={4}>
-        <Stack space={4}>
+        <Stack gap={4}>
           <SectionLabel>
             {componentT.default('productCreatorTool.combinations.options')}
           </SectionLabel>
@@ -308,9 +309,9 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
               {componentT.default('productCreatorTool.combinations.noOptionGroups')}
             </Text>
           ) : (
-            <Stack space={5}>
+            <Stack gap={5}>
               {groups.map((group) => (
-                <Stack key={group._id} space={3}>
+                <Stack key={group._id} gap={3}>
                   <Text size={1} weight="semibold">
                     {group.title}
                   </Text>
@@ -338,7 +339,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
         </Stack>
       </Card>
       {combinations.length > 0 && (
-        <Stack space={3}>
+        <Stack gap={3}>
           <Flex align="center" justify="space-between">
             <SectionLabel>
               {componentT.default(
@@ -359,7 +360,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
             )}
           </Flex>
 
-          <Stack space={2}>
+          <Stack gap={2}>
             {combinations.map((combo, index) => {
               const label = combo.optionIds
                 .map((optId, i) => {

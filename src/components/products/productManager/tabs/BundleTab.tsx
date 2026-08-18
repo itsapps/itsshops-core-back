@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
 import {
-  Autocomplete,
   Box,
   Button,
   Card,
@@ -11,8 +10,9 @@ import {
   Stack,
   Text,
   TextInput,
-  useToast,
 } from '@sanity/ui'
+import { Autocomplete } from '@sanity/ui/autocomplete'
+import { useToast } from '@sanity/ui/toast'
 import { ChangeEvent, ReactElement } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -161,7 +161,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
 
   return (
     <VariantRow index={index}>
-      <Stack space={4}>
+      <Stack gap={4}>
         {/* Row header */}
         <Flex align="center" justify="space-between">
           <Text size={1} muted>
@@ -180,7 +180,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
 
         {/* Selected items */}
         {row.items.length > 0 && (
-          <Stack space={2}>
+          <Stack gap={2}>
             {row.items.map((item) => (
               <BundleVariantRowItem
                 key={item.variantId}
@@ -194,7 +194,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
         )}
 
         {/* Variant search */}
-        <Stack space={2}>
+        <Stack gap={2}>
           <Label size={1}>{schemaT.default('productVariant.title')}</Label>
           <Autocomplete
             id={`bundle-picker-${row.id}`}
@@ -222,7 +222,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
         />
 
         {/* Price + tax */}
-        <Grid columns={2} gap={3}>
+        <Grid gridTemplateColumns={2} gap={3}>
           <PriceField value={row.price} onChange={handlePriceChange} required={false} />
           <TaxCategoryField
             value={row.taxCategoryId}
@@ -382,9 +382,9 @@ export function BundleTab(props: BundleTabProps): ReactElement {
   }, [canSubmit, onSubmit, rows])
 
   const content = (
-    <Stack space={6}>
+    <Stack gap={6}>
       {/* Bundle variant rows */}
-      <Stack space={3}>
+      <Stack gap={3}>
         <VariantSectionHeader count={rows.length} />
 
         {rows.map((row, index) => (

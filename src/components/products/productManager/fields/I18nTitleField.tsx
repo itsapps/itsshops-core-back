@@ -49,14 +49,14 @@ export function I18nTitleInputs(props: I18nTitleInputsProps): ReactElement {
   )
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <Flex align="center" gap={3}>
         {!required && <Checkbox checked={expanded} onChange={handleToggle} />}
         <Label size={1}>{`${schemaT.default('fields.title.title')}${required ? ' *' : ''}`}</Label>
       </Flex>
 
       {expanded && (
-        <Stack space={3}>
+        <Stack gap={3}>
           {locales.map((locale) => (
             <LocaleTitleInput
               key={locale}

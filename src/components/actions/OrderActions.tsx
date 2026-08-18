@@ -263,7 +263,7 @@ function OrderActionContent({
   ])
 
   return (
-    <Stack padding={4} space={4}>
+    <Stack padding={4} gap={4}>
       {fulfillmentActions.length > 0 && (
         <>
           <Text weight="bold">{t('order.status.title', 'Fulfillment status')}</Text>
@@ -297,7 +297,7 @@ function OrderActionContent({
       )}
 
       {isPartialRefund && (
-        <Stack space={2}>
+        <Stack gap={2}>
           <TextInput
             type="number"
             value={partialAmount ?? ''}

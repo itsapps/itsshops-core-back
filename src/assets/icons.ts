@@ -1,29 +1,27 @@
-import {
-  AddIcon as Add,
-  BasketIcon as Basket,
-  CloseIcon as Close,
-  CogIcon as Cog,
-  DocumentIcon as Document,
-  EditIcon as Edit,
-  EllipsisHorizontalIcon as EllipsisHorizontal,
-  EnvelopeIcon as Envelope,
-  ErrorOutlineIcon as ErrorOutline,
-  FilterIcon as Filter,
-  HomeIcon as Home,
-  LaunchIcon as Launch,
-  OlistIcon as Olist,
-  PackageIcon as Package,
-  SchemaIcon as Schema,
-  SearchIcon as Search,
-  SparkleIcon as Sparkle,
-  SparklesIcon as Sparkles,
-  SyncIcon as Sync,
-  TrashIcon as Trash,
-  TrolleyIcon as Trolley,
-  UserIcon as User,
-  WarningOutlineIcon as WarningOutline,
-  WrenchIcon as Wrench,
-} from '@sanity/icons'
+import { AddIcon as Add } from '@sanity/icons/Add'
+import { BasketIcon as Basket } from '@sanity/icons/Basket'
+import { CloseIcon as Close } from '@sanity/icons/Close'
+import { CogIcon as Cog } from '@sanity/icons/Cog'
+import { DocumentIcon as Document } from '@sanity/icons/Document'
+import { EditIcon as Edit } from '@sanity/icons/Edit'
+import { EllipsisHorizontalIcon as EllipsisHorizontal } from '@sanity/icons/EllipsisHorizontal'
+import { EnvelopeIcon as Envelope } from '@sanity/icons/Envelope'
+import { ErrorOutlineIcon as ErrorOutline } from '@sanity/icons/ErrorOutline'
+import { FilterIcon as Filter } from '@sanity/icons/Filter'
+import { HomeIcon as Home } from '@sanity/icons/Home'
+import { LaunchIcon as Launch } from '@sanity/icons/Launch'
+import { OlistIcon as Olist } from '@sanity/icons/Olist'
+import { PackageIcon as Package } from '@sanity/icons/Package'
+import { SchemaIcon as Schema } from '@sanity/icons/Schema'
+import { SearchIcon as Search } from '@sanity/icons/Search'
+import { SparkleIcon as Sparkle } from '@sanity/icons/Sparkle'
+import { SparklesIcon as Sparkles } from '@sanity/icons/Sparkles'
+import { SyncIcon as Sync } from '@sanity/icons/Sync'
+import { TrashIcon as Trash } from '@sanity/icons/Trash'
+import { TrolleyIcon as Trolley } from '@sanity/icons/Trolley'
+import { UserIcon as User } from '@sanity/icons/User'
+import { WarningOutlineIcon as WarningOutline } from '@sanity/icons/WarningOutline'
+import { WrenchIcon as Wrench } from '@sanity/icons/Wrench'
 import { ComponentType } from 'react'
 import {
   PiArrowSquareIn,
