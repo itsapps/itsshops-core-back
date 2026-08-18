@@ -17,6 +17,7 @@ export const post: ITSDocumentDefinition = {
         f('slug', 'i18nSlug', { group: 'post' }),
         f('publishedAt', 'datetime', {
           options: ctx.format.dateFormat('datetime'),
+          group: 'post',
         }),
         f('seo', 'seo', { group: 'seo' }),
       ],

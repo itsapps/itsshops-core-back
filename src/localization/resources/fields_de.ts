@@ -1074,6 +1074,11 @@ export default {
     groups: {
       post: 'Allgemeines',
     },
+    fields: {
+      publishedAt: {
+        title: 'Veröffentlichungsdatum',
+      },
+    },
   },
   blog: {
     title: 'Blog',
