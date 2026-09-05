@@ -2,6 +2,7 @@ import { Slug } from 'sanity'
 
 import { PageIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
+import { slugFormatWarning } from '../../utils/validation'
 
 export const page: ITSDocumentDefinition = {
   name: 'page',
@@ -13,7 +14,7 @@ export const page: ITSDocumentDefinition = {
       groups: [{ name: 'page', default: true }, { name: 'seo' }, { name: 'content' }],
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne', group: 'page' }),
-        f('slug', 'i18nSlug', { group: 'page' }),
+        f('slug', 'i18nSlug', { group: 'page', validation: slugFormatWarning(ctx.t.default) }),
         f('seo', 'seo', { group: 'seo' }),
       ],
       preview: {

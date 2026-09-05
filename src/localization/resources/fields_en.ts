@@ -173,6 +173,7 @@ export default {
     },
     slug: {
       title: 'URL name',
+      description: 'Lowercase, no spaces. Use "/" for nested paths, e.g. infos/company',
       validation: 'Allowed characters: "a-z" "A-Z" "0-9" "-" "_"',
     },
     modules: {
@@ -297,6 +298,8 @@ export default {
     menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
     duplicateVolume: 'Each volume may only appear once.',
+    slugFormat:
+      'Use lowercase letters, numbers and "-" only ("/" for nested paths). Spaces and capitals are removed automatically in the URL.',
   },
 
   productFieldsets: {

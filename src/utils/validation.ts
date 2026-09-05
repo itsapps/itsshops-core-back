@@ -7,6 +7,26 @@ interface ValidatorContext {
   fieldName: string
 }
 
+/**
+ * Soft warning for i18nSlug fields: flags entries whose slug contains spaces or
+ * capitals. Non-blocking — the frontend slugifies the URL regardless, so this
+ * only nudges editors toward clean slugs. Pass `ctx.t.default`.
+ *
+ * Usage: f('slug', 'i18nSlug', { validation: slugFormatWarning(ctx.t.default) })
+ */
+export const slugFormatWarning =
+  (t: TranslatorFunction) =>
+  (rule: Rule): Rule =>
+    rule
+      .custom((value: any[]) => {
+        const hasInvalid = (value ?? []).some(
+          (entry) =>
+            typeof entry?.value?.current === 'string' && /[A-Z\s]/.test(entry.value.current),
+        )
+        return hasInvalid ? t('validation.slugFormat') : true
+      })
+      .warning()
+
 export const i18nValidators = {
   /** 1 & 5: Required (or Warning) for the Default Locale */
   requiredDefault:

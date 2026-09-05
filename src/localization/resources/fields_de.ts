@@ -174,6 +174,8 @@ export default {
     },
     slug: {
       title: 'URL-Name',
+      description:
+        'Kleinbuchstaben, keine Leerzeichen. "/" für verschachtelte Pfade, z. B. infos/firma',
       validation: 'Erlaubte Zeichen: "a-z" "A-Z" "0-9" "-" "_"',
     },
     modules: {
@@ -298,6 +300,8 @@ export default {
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
     countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',
     duplicateVolume: 'Jedes Volumen darf nur einmal vorkommen.',
+    slugFormat:
+      'Nur Kleinbuchstaben, Zahlen und "-" ("/" für verschachtelte Pfade). Leerzeichen und Großbuchstaben werden in der URL automatisch entfernt.',
   },
 
   productFieldsets: {

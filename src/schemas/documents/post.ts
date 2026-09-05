@@ -2,6 +2,7 @@ import { Slug } from 'sanity'
 
 import { NoteIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
+import { slugFormatWarning } from '../../utils/validation'
 
 export const post: ITSDocumentDefinition = {
   name: 'post',
@@ -14,7 +15,7 @@ export const post: ITSDocumentDefinition = {
       groups: [{ name: 'post', default: true }, { name: 'seo' }, { name: 'content' }],
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne', group: 'post' }),
-        f('slug', 'i18nSlug', { group: 'post' }),
+        f('slug', 'i18nSlug', { group: 'post', validation: slugFormatWarning(ctx.t.default) }),
         f('publishedAt', 'datetime', {
           options: ctx.format.dateFormat('datetime'),
           group: 'post',
