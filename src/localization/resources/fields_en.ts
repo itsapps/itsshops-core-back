@@ -1041,6 +1041,14 @@ export default {
   variantOptionGroup: {
     title: 'Option group',
     fields: {
+      displayMode: {
+        title: 'Display',
+        description: 'How the options are shown in the shop.',
+        options: {
+          dropdown: 'Dropdown',
+          list: 'List',
+        },
+      },
       sortOrder: {
         title: 'Sort order',
         description: 'The lower the number, the earlier the option appears.',

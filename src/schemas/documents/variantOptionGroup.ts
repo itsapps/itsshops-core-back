@@ -13,6 +13,14 @@ export const variantOptionGroup: ITSDocumentDefinition = {
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
         // f('description', 'i18nString'),
+        f('displayMode', 'string', {
+          options: {
+            list: [{ value: 'dropdown' }, { value: 'list' }],
+            layout: 'radio',
+            direction: 'horizontal',
+          },
+          initialValue: 'dropdown',
+        }),
         f('sortOrder', 'number', {
           initialValue: 0,
           validation: (rule) => rule.required().positive(),
