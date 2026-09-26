@@ -328,6 +328,10 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
                           title: wft('fields.field.options.classification') || 'Classification',
                         },
                         {
+                          value: 'qualityGrade',
+                          title: wft('fields.field.options.qualityGrade') || 'Quality grade',
+                        },
+                        {
                           value: 'volume',
                           title: wft('fields.field.options.volume') || 'Volume',
                         },

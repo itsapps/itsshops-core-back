@@ -1586,6 +1586,7 @@ export default {
             varietal: 'Rebsorte',
             color: 'Farbe',
             classification: 'Klassifikation',
+            qualityGrade: 'Qualitätsstufe',
             volume: 'Flaschengröße',
           },
         },

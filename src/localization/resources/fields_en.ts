@@ -1570,6 +1570,7 @@ export default {
             varietal: 'Varietal',
             color: 'Color',
             classification: 'Classification',
+            qualityGrade: 'Quality grade',
             volume: 'Bottle size',
           },
         },
