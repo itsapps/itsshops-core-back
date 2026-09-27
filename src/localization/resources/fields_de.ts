@@ -618,6 +618,14 @@ export default {
       },
     },
   },
+  generatedZip: {
+    title: 'ZIP-Archiv',
+    noZip: 'Noch kein ZIP erzeugt',
+    fields: {
+      file: { title: 'Datei' },
+      generatedAt: { title: 'Erzeugt am' },
+    },
+  },
   company: {
     title: 'Organisation',
     fields: {

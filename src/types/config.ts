@@ -1,3 +1,4 @@
+import type { DocumentActionComponent, DocumentActionsContext } from 'sanity'
 import { ComponentType } from 'react'
 
 import { Country } from './constants'
@@ -137,7 +138,15 @@ export interface ItsshopsConfig {
   documents?: ITSDocumentDefinition[]
   objects?: ITSSchemaDefinition[]
   structure?: ITSStructureItem[]
+  /** Customer hook to add/wrap document actions (e.g. withGeneratedZips). Runs after core's own resolver. */
+  documentActions?: DocumentActionResolver
 }
+
+/** Transforms the resolved document actions for a document. */
+export type DocumentActionResolver = (
+  actions: DocumentActionComponent[],
+  context: DocumentActionsContext,
+) => DocumentActionComponent[]
 
 /** Internal version of the config used by the engine **/
 export interface CoreBackConfig {
@@ -156,4 +165,5 @@ export interface CoreBackConfig {
   documents: ITSDocumentDefinition[]
   objects: ITSSchemaDefinition[]
   structure: ITSStructureItem[]
+  documentActions?: DocumentActionResolver
 }

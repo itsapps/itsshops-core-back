@@ -37,6 +37,7 @@ import {
   PiClock,
   PiCube,
   PiDownloadSimple,
+  PiFileZip,
   PiFolder,
   PiImage,
   PiImages,
@@ -92,6 +93,7 @@ export const ManufacturerIcon = Wrench
 export const MenuIcon = Olist
 export const NoteIcon = PiNote
 export const OptionGroupIcon = Sparkles
+export const ZipIcon = PiFileZip
 export const OptionIcon = Sparkle
 export const OrderIcon = Trolley
 export const OrderItemIcon = Package

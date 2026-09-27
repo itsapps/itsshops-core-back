@@ -1,4 +1,10 @@
 export * from './types'
+export {
+  withGeneratedZips,
+  type GeneratedZipsOptions,
+  type ZipTarget,
+  type ZipPathSegment,
+} from './components/actions/generatedZips'
 
 import { visionTool } from '@sanity/vision'
 import { definePlugin } from 'sanity'

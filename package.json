@@ -80,6 +80,7 @@
     "@sanity/schema": "^6.9.2",
     "@sanity/ui": "^4.0.0",
     "@sanity/vision": "^6.9.2",
+    "client-zip": "^2.5.1",
     "countries-list": "^3.2.2",
     "flat": "^6.0.1",
     "i18n-iso-countries": "^7.14.0",

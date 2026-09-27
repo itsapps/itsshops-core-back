@@ -22,6 +22,7 @@ import { orderItemWine } from './objects/orders/orderItemWine'
 import { orderStatusHistory } from './objects/orders/orderStatusHistory'
 import { orderTotals } from './objects/orders/orderTotals'
 import { vatBreakdownItem } from './objects/orders/vatBreakdownItem'
+import { generatedZip } from './objects/generatedZip'
 import { seo } from './objects/seo'
 import { shippingRate } from './objects/shippingRate'
 import { winePackage } from './objects/winePackage'
@@ -53,6 +54,7 @@ export const getCoreObjects = (
     cropImage,
     fulfillment,
     fulfillmentPackagingLine,
+    generatedZip,
     localeAltImage,
     localeImage,
     menuItem,

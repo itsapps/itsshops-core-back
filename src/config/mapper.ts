@@ -117,6 +117,7 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     documents: ignoreExtensions ? [] : config.documents || [],
     objects: ignoreExtensions ? [] : config.objects || [],
     structure: ignoreExtensions ? [] : config.structure || [],
+    documentActions: ignoreExtensions ? undefined : config.documentActions,
   }
 }
 

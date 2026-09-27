@@ -612,6 +612,14 @@ export default {
       },
     },
   },
+  generatedZip: {
+    title: 'ZIP archive',
+    noZip: 'No zip generated yet',
+    fields: {
+      file: { title: 'File' },
+      generatedAt: { title: 'Generated at' },
+    },
+  },
   company: {
     title: 'Organization',
     fields: {

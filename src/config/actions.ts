@@ -83,5 +83,7 @@ export function actionResolver(
     }
   }
 
-  return actions
+  // Customer hook — add/wrap actions (e.g. withGeneratedZips). Runs last so it
+  // sees the final core action set.
+  return ctx.config.documentActions ? ctx.config.documentActions(actions, context) : actions
 }
