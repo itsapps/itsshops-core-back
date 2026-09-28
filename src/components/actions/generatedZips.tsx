@@ -30,8 +30,8 @@ export type ZipPathSegment = string | number | { _key: string }
 export type ZipTarget = {
   /** Path to the `generatedZip` field, incl. keyed array segments, e.g. ['modules', {_key}, 'groups', {_key}, 'generatedZip']. */
   path: ZipPathSegment[]
-  /** Source asset _ids to include, in order. */
-  assetIds: string[]
+  /** Source assets in order. `name` = desired entry base name (without extension); falls back to the original filename. */
+  assets: { id: string; name?: string }[]
   /** Filename for the produced zip. */
   filename: string
 }
@@ -71,9 +71,10 @@ function getAtPath(doc: any, path: ZipPathSegment[]): any {
   return cur
 }
 
-/** Stable non-crypto hash (djb2) of the sorted asset ids. */
-function hashAssetIds(ids: string[]): string {
-  const str = [...ids].sort().join('|')
+/** Stable non-crypto hash (djb2) of the assets (id + entry name), so renaming
+ *  a source (e.g. a changed title) also regenerates the zip. */
+function hashAssets(assets: { id: string; name?: string }[]): string {
+  const str = assets.map((a) => `${a.id}:${a.name ?? ''}`).sort().join('|')
   let h = 5381
   for (let i = 0; i < str.length; i++) h = (h * 33) ^ str.charCodeAt(i)
   return (h >>> 0).toString(16)
@@ -100,29 +101,44 @@ async function syncZips(
   const oldAssetIds: string[] = []
 
   for (const target of targets) {
-    const ids = target.assetIds.filter(Boolean)
-    if (!ids.length) continue
+    const specs = (target.assets ?? []).filter((a) => a?.id)
+    if (!specs.length) continue
 
     const existing = getAtPath(doc, target.path)
-    const newHash = hashAssetIds(ids)
+    const newHash = hashAssets(specs)
     if (existing?.hash === newHash && existing?.file?.asset?._ref) continue // unchanged → skip
 
-    // fetch originals (url + name), preserve target order
-    const assets = await client.fetch<Array<{ _id: string; url: string; originalFilename?: string }>>(
+    // fetch originals (url + original filename), keyed by id
+    const ids = specs.map((s) => s.id)
+    const fetched = await client.fetch<Array<{ _id: string; url: string; originalFilename?: string }>>(
       `*[_id in $ids]{ _id, url, originalFilename }`,
       { ids },
     )
-    const byId = new Map(assets.map((a) => [a._id, a]))
+    const byId = new Map(fetched.map((a) => [a._id, a]))
+
+    // name each entry by its desired base + original extension, de-duplicated
+    const seen = new Map<string, number>()
+    const metas: { name: string; url: string }[] = []
+    for (const spec of specs) {
+      const a = byId.get(spec.id)
+      if (!a?.url) continue
+      const ext = (
+        a.originalFilename?.split('.').pop() ||
+        a.url.split('?')[0].split('.').pop() ||
+        ''
+      ).toLowerCase()
+      const base = spec.name || a.originalFilename?.replace(/\.[^.]+$/, '') || 'image'
+      let name = ext ? `${base}.${ext}` : base
+      const n = seen.get(name) ?? 0
+      seen.set(name, n + 1)
+      if (n > 0) name = ext ? `${base}-${n + 1}.${ext}` : `${base}-${n + 1}`
+      metas.push({ name, url: a.url })
+    }
+    if (!metas.length) continue
+
     const files = await Promise.all(
-      ids
-        .map((id) => byId.get(id))
-        .filter((a): a is { _id: string; url: string; originalFilename?: string } => !!a?.url)
-        .map(async (a, i) => ({
-          name: a.originalFilename || `${i + 1}`,
-          input: await fetch(a.url),
-        })),
+      metas.map(async (m) => ({ name: m.name, input: await fetch(m.url) })),
     )
-    if (!files.length) continue
 
     const { downloadZip } = await import('client-zip')
     const blob = await downloadZip(files).blob()
