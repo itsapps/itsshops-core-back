@@ -64,8 +64,9 @@
     "watch": "pkg-utils watch --strict",
     "prepare": "npm run build",
     "test": "vitest",
-    "extract": "sanity schema extract --workspace de",
+    "extract": "sanity schema extract --workspace de --force",
     "typegen": "sanity typegen generate",
+    "types": "npm run extract && npm run typegen",
     "start": "sanity dev --host 0.0.0.0 --port 3331"
   },
   "dependencies": {
