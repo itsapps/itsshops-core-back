@@ -52,6 +52,11 @@ npm run lint / format
 Develop against a customer backend via `npm link` (no yalc). See
 `.claude/architecture/plugin-and-config.md` for the npm-link gotcha (customer-side vite dedupe).
 
+**Git workflow:** develop on `main` (+ feature branches) with **your own GitHub user**. Core is a
+library consumed as a git dependency and is never deployed to Netlify, so no customer-identity / PAT
+applies here (that's only for customer repos). Consumption/release: core-front's
+`.claude/workflows/consuming-core-and-deploy.md`.
+
 ## Entry point (`src/index.ts`)
 
 - `itsshopsPlugin = definePlugin<ITSContext>(...)` — assembles the Sanity plugin: internationalized
