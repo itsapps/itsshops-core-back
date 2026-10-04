@@ -74,8 +74,8 @@ primitives.
 ### Adding your own localized type (consumer)
 To make a new field type localized (so editors get one value per field language):
 
-1. **Register the type as a schema** if it's a custom object — via `config.objects` (primitives like
-   `string`/`url` need no registration). Core's `cropImage`/`baseImage` are the model.
+1. **Register the type as a schema** if it's a custom object/image/file — via `config.objects`
+   (primitives like `string`/`url` need no registration). Core's `cropImage`/`baseImage` are the model.
 2. **Add its type name to `config.i18n.localizedFieldTypes`** (a string array). `mapConfig` appends
    it to the base six: `localizedFieldTypes = [...i18nFieldTypes, ...config.i18n.localizedFieldTypes]`.
 3. Result: the plugin generates `internationalizedArray<YourType>`, and the alias
@@ -87,6 +87,23 @@ objects: [myColorObject],                 // defines object type `color`
 i18n: { localizedFieldTypes: ['color'] }, // → internationalizedArrayColor + i18nColor alias
 // then in a schema build(): f('accent', 'i18nColor')
 ```
+
+**Localized files with an upload restriction.** Plain `file` can be localized too (`i18nFile`), but
+`accept` can't be set on the inner file that way — an `options.accept` on the field only lands on the
+outer array. Register a named file type (`ITSFileDefinition`, `type: 'file'`) instead, one per
+restriction:
+
+```ts
+export const pdfFile: ITSFileDefinition = {
+  name: 'pdfFile',
+  type: 'file',
+  build: () => ({ options: { accept: 'application/pdf' } }),
+}
+// objects: [pdfFile], i18n: { localizedFieldTypes: ['pdfFile'] } → f('factsheet', 'i18nPdfFile')
+```
+
+Don't name one `file` (collides with Sanity's built-in). `accept` only filters the studio picker —
+API uploads aren't checked. Frontend projection: `field[]{ language, "value": value.asset->url }`.
 
 ⚠️ Caveat: the field factory only auto-enables the **AI translate** action for `i18nString` /
 `i18nText`. Custom localized types are per-locale editable but won't get the AI "translate" button

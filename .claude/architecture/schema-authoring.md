@@ -7,7 +7,8 @@ Sanity field definition.
 ## A schema definition
 
 Each schema in `src/schemas/{documents,objects,modules}/*.ts` is an `ITSDocumentDefinition` (or
-object/array/image) — metadata plus a `build(ctx)`:
+object/array/image/file) — metadata plus a `build(ctx)`. `image`/`file` are named asset types
+(e.g. `cropImage`, a customer `pdfFile` with `options.accept`); they share one builder branch:
 
 ```ts
 export const category: ITSDocumentDefinition = {

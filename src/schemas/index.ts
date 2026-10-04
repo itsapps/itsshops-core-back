@@ -75,7 +75,8 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
       ...base,
       type: definition.type,
     })
-  } else if (definition.type === 'image') {
+  } else if (definition.type === 'image' || definition.type === 'file') {
+    // Asset types: same shape (optional extra fields + preview), only `options` differ.
     const built = definition.build(fieldCtx)
 
     const { fields, fieldsets } = shapeSchema({
@@ -89,6 +90,7 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
 
     const preview = extension?.preview ? extension.preview(ctx) : built.preview
 
+    // Union `type` ('image' | 'file') can't resolve defineType's overloads — widen (as above).
     return defineType({
       ...built,
       ...base,
@@ -96,7 +98,7 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
       ...(fields && { fields }),
       ...(fieldsets && { fieldsets }),
       preview,
-    })
+    } as Parameters<typeof defineType>[0])
   }
 
   throw new Error(`Unknown schema type for schema named "${name}"`)

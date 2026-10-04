@@ -7,6 +7,7 @@ import type {
   FieldDefinition,
   FieldGroupDefinition,
   FieldsetDefinition,
+  FileDefinition,
   ImageDefinition,
   ObjectDefinition,
   PreviewConfig,
@@ -73,11 +74,17 @@ export interface ITSImageDefinition extends ITSBaseDefinition {
   type: 'image'
   build: (ctx: FieldContext) => Omit<ImageDefinition, DefinitionOmits>
 }
+/** Named file type, e.g. `pdfFile` with `options.accept`. Localizable via `i18n.localizedFieldTypes`. */
+export interface ITSFileDefinition extends ITSBaseDefinition {
+  type: 'file'
+  build: (ctx: FieldContext) => Omit<FileDefinition, DefinitionOmits>
+}
 export type ITSSchemaDefinition =
   | ITSDocumentDefinition
   | ITSObjectDefinition
   | ITSArrayDefinition
   | ITSImageDefinition
+  | ITSFileDefinition
 
 export interface SchemaExtension {
   icon?: ComponentType
