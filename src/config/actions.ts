@@ -68,18 +68,24 @@ export function actionResolver(
   if (isEnabledSchema(context.schemaType, 'product', 'shop')) {
     actions.push(AddVariantsAction)
   }
-  if (isEnabledSchema(context.schemaType, 'category', 'shop.category.subcategories')) {
+  // category: plain delete is disallowed in the schema and re-added here — guarded
+  // (blocks deleting a parent) when subcategories are enabled, plain otherwise.
+  if (isEnabledSchema(context.schemaType, 'category', 'shop.category') && !ctx.config.isDev) {
     const action = prev.find((props) => props.action === 'delete')
     if (action) {
-      const query = `count(*[_type == "category" && parent._ref == $id]) > 0`
-      actions.push(
-        createCustomAction<boolean>({
-          action,
-          query,
-          validateFn: (result) =>
-            result == true ? 'categories.deleteNotAllowedSubcategoriesExist' : true,
-        }),
-      )
+      if (registry.isFeatureEnabled('shop.category.subcategories')) {
+        const query = `count(*[_type == "category" && parent._ref == $id]) > 0`
+        actions.push(
+          createCustomAction<boolean>({
+            action,
+            query,
+            validateFn: (result) =>
+              result == true ? 'categories.deleteNotAllowedSubcategoriesExist' : true,
+          }),
+        )
+      } else {
+        actions.push(action)
+      }
     }
   }
 

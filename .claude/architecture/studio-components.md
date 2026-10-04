@@ -54,9 +54,11 @@ add variants inline), `WineSelector` / `WinePreview`.
   - `order` → `OrderDocumentAction`, `OrderMailDocumentAction`, `OrderWithdrawalCreateAction`
   - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`
   - `product` (feature `shop`) → `AddVariantsAction`
-  - `category` (feature `shop.category.subcategories`) → a guarded delete that blocks deleting a
-    category which still has subcategories (`createCustomDocumentAction`, a reusable
-    query+validate wrapper in `components/actions/CustomDocumentAction.tsx`)
+  - `category` (feature `shop.category`; schema disallows the plain `delete`, so it's re-added
+    here, non-dev only) → with `shop.category.subcategories`: a guarded delete that blocks
+    deleting a category which still has subcategories (`createCustomDocumentAction`, a reusable
+    query+validate wrapper in `components/actions/CustomDocumentAction.tsx`); without: the plain
+    delete. (Sanity's strong `parent` reference blocks it anyway — the guard gives a clear message.)
 - **Consumer hook, last:** `ctx.config.documentActions?.(actions, context)` — lets a project add or
   wrap actions over the final core set. `withGeneratedZips` (exported from the package root) is the
   shipped example; Jurtschitsch uses it on `page`.
