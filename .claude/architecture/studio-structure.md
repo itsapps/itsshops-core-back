@@ -75,4 +75,5 @@ Per-type editor views:
 
 `createStructureTool(ctx)` bundles `{ title, structure, defaultDocumentNode }` and is handed to
 `structureTool(...)` in `src/index.ts`. Custom per-menu panes live in `src/structure/`
-(`products.ts`, `categories.ts`, `variantOptions.ts`).
+(`products.ts`, `categories.ts`, `variantOptions.ts`). Category lists (top-level and subcategory
+panes) default-order by `sortOrder` asc, then `_createdAt`.
