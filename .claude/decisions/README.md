@@ -10,3 +10,5 @@ that future-you would otherwise re-litigate.
 - [typegen-coexists-with-handwritten-types.md](typegen-coexists-with-handwritten-types.md) — the
   generated `sanity.types.ts` is load-bearing alongside the hand-written types; resync with
   `npm run types`.
+- [named-file-types.md](named-file-types.md) — upload-restricted (localized) files are named
+  `type: 'file'` definitions (`ITSFileDefinition`), not a customer-side plugin.
