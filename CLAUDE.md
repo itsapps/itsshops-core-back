@@ -49,7 +49,9 @@ npm run typegen     # sanity typegen generate                → src/types/sanit
 npm run lint / format
 ```
 
-Develop against a customer backend via `npm link` (no yalc). See
+Develop against a customer backend via `npm link` (no yalc). **Rebuild after every core change:** the
+link serves `dist/`, so a backend only sees a change once `npm run build` ran (or while
+`npm run watch` is running) — then restart `sanity dev`. See
 `.claude/architecture/plugin-and-config.md` for the npm-link gotcha (customer-side vite dedupe).
 
 **Git workflow:** develop on `main` (+ feature branches) with **your own GitHub user**. Core is a
