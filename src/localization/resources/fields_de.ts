@@ -93,6 +93,13 @@ export default {
     url: {
       title: 'URL',
     },
+    internalLinkSystemPage: {
+      title: 'Systemseite',
+      description: 'Alternativ zur Referenz: eine feste Shop-Seite, z. B. das Widerrufsformular.',
+      options: {
+        orderWithdraw: 'Widerruf',
+      },
+    },
     internalLinkDisplayType: {
       title: 'Anzeigetyp',
       options: {

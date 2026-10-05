@@ -93,6 +93,13 @@ export default {
     url: {
       title: 'URL',
     },
+    internalLinkSystemPage: {
+      title: 'System page',
+      description: 'Alternative to the reference: a fixed shop page, e.g. the withdrawal form.',
+      options: {
+        orderWithdraw: 'Withdrawal',
+      },
+    },
     internalLinkDisplayType: {
       title: 'Display type',
       options: {

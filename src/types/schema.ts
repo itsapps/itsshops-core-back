@@ -158,6 +158,9 @@ export interface ITSInternalLinkOptions {
   includeDisplayType?: boolean
   displayTypes?: string[]
   required?: boolean
+  /** Also offer fixed frontend routes (e.g. the withdrawal form) as `<name>SystemPage`, as an
+   *  alternative to the reference. */
+  includeSystemPages?: boolean
 }
 
 export interface ITSExternalLinkOptions {

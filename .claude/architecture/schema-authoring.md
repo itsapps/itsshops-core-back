@@ -76,7 +76,7 @@ instead of re-deriving the same field clusters:
 |---|---|
 | `buildGroupedSchema(groups[])` | `{ groups, fields }` with each field assigned to its group (first group default) |
 | `module({ fields, groups?, allowAnchor?, allowTheme? })` | wraps content fields and appends a `settings` group (`disabled`, optional `anchorId`, `theme`) — the standard page-module shape |
-| `internalLinkFields` / `externalLinkFields` | reference/url link field clusters; internal is feature-aware with conditional-required validation and optional `displayType` |
+| `internalLinkFields` / `externalLinkFields` | reference/url link field clusters; internal is feature-aware with conditional-required validation, optional `displayType`, and opt-in `includeSystemPages` (fixed routes like the withdrawal form, as an alternative to the reference) |
 | `actionGroup({ max?, … })` | an array of internal-link "actions" with a localized preview |
 | `variantReferences` / `variantReference` | references to `productVariant` (filtered to non-archived, `disableNew`) |
 | `priceField` | a positive `number` field rendered with the `PriceInput` component |

@@ -1,11 +1,6 @@
 import { linkIcons, LinkIcon } from '../../assets/icons'
-import { ITSFeatureKey, ITSSchemaDefinition } from '../../types'
-
-// Fixed core routes (not documents) an editor can link from a menu. The frontend resolves each to
-// its URL + translated default title, and drops it when the feature is off.
-const systemPages: { value: string; feature: ITSFeatureKey }[] = [
-  { value: 'orderWithdraw', feature: 'shop' },
-]
+import { ITSSchemaDefinition } from '../../types'
+import { enabledSystemPages as getEnabledSystemPages } from '../systemPages'
 
 export const menuItem: ITSSchemaDefinition = {
   name: 'menuItem',
@@ -14,9 +9,7 @@ export const menuItem: ITSSchemaDefinition = {
   build: (ctx) => {
     const { f } = ctx
     const submenusEnabled = !ctx.config.schemaSettings.menus.disableSubmenus
-    const enabledSystemPages = systemPages.filter((p) =>
-      ctx.featureRegistry.isFeatureEnabled(p.feature),
-    )
+    const enabledSystemPages = getEnabledSystemPages(ctx)
 
     const allFields = [
       f('title', 'i18nString', {

@@ -1,6 +1,7 @@
 import { WineIcon, FilterIcon, ProductVariantIcon } from '../assets/icons'
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
+import { enabledSystemPages } from './systemPages'
 
 export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilders => {
   const { config } = ctx
@@ -43,11 +44,17 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
         // .filter(type => ctx.featureRegistry.isDocEnabled(type))
         .map((type) => ({ type }))
       const displayTypes = options.displayTypes || ['link', 'button', 'ghost']
+      const systemPages = options.includeSystemPages ? enabledSystemPages(ctx) : []
+      const systemPageField = `${fieldName}SystemPage`
 
       return [
         ...(options.includeTitle ? [f(`${fieldName}Title`, 'i18nString')] : []),
         f(`${fieldName}Reference`, 'reference', {
           to,
+          // Reference and system page are alternatives — show only the one in use
+          ...(systemPages.length && {
+            hidden: ({ parent }: any) => !!parent?.[systemPageField],
+          }),
           // ...(options.required || true) && { validation: (Rule) => Rule.required() },
           validation: (rule) =>
             rule.custom((value, context) => {
@@ -58,8 +65,8 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
                 return true
               }
 
-              // If it IS an internal link, we require the reference
-              if (!value && required) {
+              // If it IS an internal link, we require the reference (or a system page)
+              if (!value && required && !parent?.[systemPageField]) {
                 return ctx.t.default('validation.requiredField')
               }
 
@@ -73,6 +80,17 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
             `,
           },
         }),
+        ...(systemPages.length
+          ? [
+              f(systemPageField, 'string', {
+                options: {
+                  list: systemPages.map(({ value }) => ({ value })),
+                  layout: 'radio',
+                },
+                hidden: ({ parent }: any) => !!parent?.[`${fieldName}Reference`],
+              }),
+            ]
+          : []),
         ...(options.includeDisplayType && displayTypes.length
           ? [
               f(`${fieldName}DisplayType`, 'string', {
