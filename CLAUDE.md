@@ -59,6 +59,15 @@ library consumed as a git dependency and is never deployed to Netlify, so no cus
 applies here (that's only for customer repos). Consumption/release: core-front's
 `.claude/workflows/consuming-core-and-deploy.md`.
 
+## Features that span backend and frontend
+
+A new or changed schema field usually also needs the **frontend** side: projecting it in core-front's
+data layer (or the customer frontend's `src/_config/extensions.mts`) and rendering it in templates.
+Before touching the frontend side, read core-front's `CLAUDE.md` and the customer frontend's
+`CLAUDE.md` (paths in core-front's ecosystem table) — they aren't loaded in a backend session. Same
+reuse order: core first, customer extension only for customer-specific data. After a core-front
+change, run its `npm run build` (or `npm run dev`) and restart the customer's Eleventy dev server.
+
 ## Entry point (`src/index.ts`)
 
 - `itsshopsPlugin = definePlugin<ITSContext>(...)` — assembles the Sanity plugin: internationalized
