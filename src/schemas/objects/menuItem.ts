@@ -1,5 +1,11 @@
 import { linkIcons, LinkIcon } from '../../assets/icons'
-import { ITSSchemaDefinition } from '../../types'
+import { ITSFeatureKey, ITSSchemaDefinition } from '../../types'
+
+// Fixed core routes (not documents) an editor can link from a menu. The frontend resolves each to
+// its URL + translated default title, and drops it when the feature is off.
+const systemPages: { value: string; feature: ITSFeatureKey }[] = [
+  { value: 'orderWithdraw', feature: 'shop' },
+]
 
 export const menuItem: ITSSchemaDefinition = {
   name: 'menuItem',
@@ -8,6 +14,9 @@ export const menuItem: ITSSchemaDefinition = {
   build: (ctx) => {
     const { f } = ctx
     const submenusEnabled = !ctx.config.schemaSettings.menus.disableSubmenus
+    const enabledSystemPages = systemPages.filter((p) =>
+      ctx.featureRegistry.isFeatureEnabled(p.feature),
+    )
 
     const allFields = [
       f('title', 'i18nString', {
@@ -29,6 +38,7 @@ export const menuItem: ITSSchemaDefinition = {
             { value: 'internal' },
             { value: 'external' },
             ...(submenusEnabled ? [{ value: 'submenu' }] : []),
+            ...(enabledSystemPages.length ? [{ value: 'system' }] : []),
           ],
           layout: 'radio',
           direction: 'horizontal',
@@ -62,6 +72,27 @@ export const menuItem: ITSSchemaDefinition = {
             return true
           }),
       }),
+
+      // System page (fixed core route, e.g. the withdrawal form)
+      ...(enabledSystemPages.length
+        ? [
+            f('systemPage', 'string', {
+              options: {
+                list: enabledSystemPages.map(({ value }) => ({ value })),
+                layout: 'radio',
+              },
+              hidden: ({ parent }: any) => parent?.linkType !== 'system',
+              validation: (rule) =>
+                rule.custom((value: string | undefined, context) => {
+                  const parent = context.parent as any
+                  if (parent?.linkType === 'system' && !value) {
+                    return context.i18n.t('validation:generic.required')
+                  }
+                  return true
+                }),
+            }),
+          ]
+        : []),
 
       // The Recursive Part: Children
       ...(submenusEnabled
@@ -113,8 +144,9 @@ export const menuItem: ITSSchemaDefinition = {
           url: 'url',
           refTitle: 'internalLinkReference.title',
           children: 'children',
+          systemPage: 'systemPage',
         },
-        prepare: ({ title, linkType, url, refTitle, children }) => {
+        prepare: ({ title, linkType, url, refTitle, children, systemPage }) => {
           const localTitle = ctx.localizer.value(title)
           const localRefTitle = ctx.localizer.value(refTitle)
           const localUrl = ctx.localizer.value(url)
@@ -124,12 +156,20 @@ export const menuItem: ITSSchemaDefinition = {
             subtitle = `${ctx.t.default('menuItem.preview.submenuItems', `${childrenCount} entries`, { count: childrenCount })}`
           } else if (linkType === 'external') {
             subtitle = `${localUrl || ctx.t.default('menuItem.preview.noUrl')}`
+          } else if (linkType === 'system') {
+            subtitle = systemPage
+              ? ctx.t.default(`menuItem.fields.systemPage.options.${systemPage}`, systemPage)
+              : ''
           } else if (linkType === 'internal') {
             subtitle = `${localRefTitle || ctx.t.default('menuItem.preview.noReference')}`
           }
           const media = linkIcons[linkType as keyof typeof linkIcons] || LinkIcon
           return {
-            title: localTitle,
+            title:
+              localTitle ||
+              (linkType === 'system' && systemPage
+                ? ctx.t.default(`menuItem.fields.systemPage.options.${systemPage}`, systemPage)
+                : localTitle),
             subtitle,
             media,
           }

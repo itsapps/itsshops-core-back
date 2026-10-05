@@ -21,6 +21,13 @@ builders, auto-translation, validation shortcuts) see
 `shippingRate`, `taxRule`, `generatedZip`, wine objects (`wine`, `winePackage`,
 `winePackagingConfig`), and `orders/`.
 
+`menuItem` `linkType`: `internal` | `external` | `submenu` (unless `menus.disableSubmenus`) |
+`system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The
+options come from the feature-filtered `systemPages` list in `menuItem.ts`, currently only
+`orderWithdraw` (requires `shop`). `system` is only offered when at least one is enabled; title is
+optional. The frontend resolves URL + default title and guarantees the withdrawal link: see core-front
+`.claude/architecture/data-layer.md` → "Menus & system links".
+
 ## Modules (`src/schemas/modules/`)
 
 Page/content building blocks: `carousel`, `categoryList`, `productList`, `productVariantList`,

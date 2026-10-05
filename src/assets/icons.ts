@@ -39,6 +39,7 @@ import {
   PiDownloadSimple,
   PiFileZip,
   PiFolder,
+  PiGearSix,
   PiImage,
   PiImages,
   PiLink,
@@ -116,6 +117,7 @@ export const SettingsIcon = Cog
 export const ShippingRateIcon = PiBoat
 export const ShopIcon = Basket
 export const SubmenuIcon = PiFolder
+export const SystemLinkIcon = PiGearSix
 export const SyncIcon = Sync
 export const TaxRuleIcon = PiPackage
 export const TrashIcon = Trash
@@ -142,4 +144,5 @@ export const linkIcons = {
   internal: InternalLinkIcon,
   external: ExternalLinkIcon,
   submenu: SubmenuIcon,
+  system: SystemLinkIcon,
 }

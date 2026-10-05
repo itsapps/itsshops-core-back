@@ -27,6 +27,7 @@ export default {
       internal: 'Internal Link',
       external: 'External Link',
       submenu: 'Submenu',
+      system: 'System page',
     },
   },
   groups: {
@@ -1196,6 +1197,14 @@ export default {
           internal: 'Internal link',
           external: 'External link',
           submenu: 'Submenu',
+          system: 'System page',
+        },
+      },
+      systemPage: {
+        title: 'System page',
+        description: 'A fixed shop page, e.g. the withdrawal form. Without a title, the page name is used.',
+        options: {
+          orderWithdraw: 'Withdrawal',
         },
       },
       children: {

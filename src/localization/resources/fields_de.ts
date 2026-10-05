@@ -27,6 +27,7 @@ export default {
       internal: 'Interne Verlinkung',
       external: 'Externe Verlinkung',
       submenu: 'Untermenü',
+      system: 'Systemseite',
     },
   },
   groups: {
@@ -1209,6 +1210,14 @@ export default {
           internal: 'Interne Verlinkung',
           external: 'Externe Verlinkung',
           submenu: 'Untermenü',
+          system: 'Systemseite',
+        },
+      },
+      systemPage: {
+        title: 'Systemseite',
+        description: 'Feste Shop-Seite, z. B. das Widerrufsformular. Ohne Titel wird der Seitenname verwendet.',
+        options: {
+          orderWithdraw: 'Widerruf',
         },
       },
       children: {
