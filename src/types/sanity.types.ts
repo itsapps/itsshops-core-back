@@ -1169,6 +1169,7 @@ export type ProductVariant = {
     } & ManufacturerReference
   >
   title?: InternationalizedArrayString
+  description?: InternationalizedArrayText
   product?: ProductReference
   sku?: string
   specifications?: Array<
@@ -1192,6 +1193,7 @@ export type Product = {
   _updatedAt: string
   _rev: string
   title?: InternationalizedArrayString
+  description?: InternationalizedArrayText
   kind?: 'wine' | 'physical' | 'digital' | 'bundle'
   weight?: number
   specifications?: Array<

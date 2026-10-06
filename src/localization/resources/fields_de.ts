@@ -322,6 +322,10 @@ export default {
   product: {
     title: 'Produkt',
     fields: {
+      description: {
+        title: 'Beschreibung',
+        description: "Wird auf der Produktseite angezeigt. Leerzeilen trennen Absätze. Bei Weinen ersetzt sie die Vinofact-Beschreibung.",
+      },
       variants: {
         title: 'Produktvarianten',
         description: 'Alle Varianten generiert durch Produktoptionen',
@@ -340,6 +344,10 @@ export default {
   productVariant: {
     title: 'Produktvariante',
     fields: {
+      description: {
+        title: 'Beschreibung',
+        description: "Ersetzt die Beschreibung des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.",
+      },
       specifications: {
         title: 'Produktdetails',
         description: "Ersetzt die Produktdetails des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.",

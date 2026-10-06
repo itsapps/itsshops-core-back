@@ -20,6 +20,7 @@ export const product: ITSDocumentDefinition = {
         name: 'infos',
         fields: [
           f('title', 'i18nString', { i18n: 'atLeastOne' }),
+          f('description', 'i18nText'),
           f('kind', 'string', {
             options: {
               list: ctx.config.schemaSettings.productKinds.map((type) => ({ value: type })),

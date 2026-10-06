@@ -85,6 +85,7 @@ export const productVariant: ITSDocumentDefinition = {
         name: 'infos',
         fields: [
           f('title', 'i18nString'),
+          f('description', 'i18nText'),
           f('product', 'reference', {
             to: [{ type: 'product' }],
             readOnly: !ctx.config.isDev,

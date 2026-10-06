@@ -320,6 +320,10 @@ export default {
   product: {
     title: 'Product',
     fields: {
+      description: {
+        title: 'Description',
+        description: "Shown on the product page. Blank lines separate paragraphs. For wines it replaces the Vinofact description.",
+      },
       variants: {
         title: 'Product variants',
         description: 'All variants generated from product options',
@@ -337,6 +341,10 @@ export default {
   productVariant: {
     title: 'Product variant',
     fields: {
+      description: {
+        title: 'Description',
+        description: "Replaces the product's description for this variant. Leave empty to use the product's.",
+      },
       specifications: {
         title: 'Product details',
         description: "Replaces the product's details for this variant. Leave empty to use the product's.",

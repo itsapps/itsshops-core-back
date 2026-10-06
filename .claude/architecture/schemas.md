@@ -27,6 +27,10 @@ array of `productSpecification` (`label` + `value`, both `i18nString`; Studio la
 variant's non-empty list replaces the product's (no merge); resolved + rendered by core-front
 (`data-layer.md` → "Variant resolution").
 
+**Product description:** `product` and `productVariant` both have an optional `description`
+(`i18nText`, plain text; blank lines = paragraphs), any kind. The variant's replaces the product's;
+for wines it takes precedence over the VinoFact description.
+
 `menuItem` `linkType`: `internal` | `external` | `submenu` (unless `menus.disableSubmenus`) |
 `system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The
 options come from the feature-filtered list in `src/schemas/systemPages.ts`, currently only
