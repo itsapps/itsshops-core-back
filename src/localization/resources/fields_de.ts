@@ -61,6 +61,10 @@ export default {
   },
   fieldsets: {},
   fields: {
+    specifications: {
+      title: 'Produktdetails',
+      description: 'Eigenschaften wie Material oder Schnitt, auf der Produktseite als Liste angezeigt (z. B. „Material: 100% Baumwolle“).',
+    },
     kind: {
       title: 'Produktart',
       options: {
@@ -336,6 +340,10 @@ export default {
   productVariant: {
     title: 'Produktvariante',
     fields: {
+      specifications: {
+        title: 'Produktdetails',
+        description: "Ersetzt die Produktdetails des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.",
+      },
       coverImage: {
         title: 'Cover-Bild',
         description:
@@ -393,6 +401,17 @@ export default {
       },
       vintage: {
         title: 'Jahrgang',
+      },
+    },
+  },
+  productSpecification: {
+    title: 'Produktdetail',
+    fields: {
+      label: {
+        title: 'Bezeichnung',
+      },
+      value: {
+        title: 'Wert',
       },
     },
   },

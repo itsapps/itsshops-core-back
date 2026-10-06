@@ -11,6 +11,7 @@ import { internalLink } from './objects/internalLink'
 import { localeAltImage } from './objects/localeAltImage'
 import { localeImage } from './objects/localeImage'
 import { menuItem } from './objects/menuItem'
+import { productSpecification } from './objects/productSpecification'
 import { appliedCoupon } from './objects/orders/appliedCoupon'
 import { fulfillment } from './objects/orders/fulfillment'
 import { fulfillmentPackagingLine } from './objects/orders/fulfillmentPackagingLine'
@@ -58,6 +59,7 @@ export const getCoreObjects = (
     localeAltImage,
     localeImage,
     menuItem,
+    productSpecification,
     appliedCoupon,
     orderCustomer,
     orderItem,

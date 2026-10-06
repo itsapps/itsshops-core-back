@@ -33,6 +33,9 @@ export const product: ITSDocumentDefinition = {
             validation: (rule) => rule.positive().integer(),
             hidden: ({ document }) => document?.kind !== 'physical',
           }),
+          f('specifications', 'array', {
+            of: [{ type: 'productSpecification' }],
+          }),
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [
                 f('categories', 'array', {

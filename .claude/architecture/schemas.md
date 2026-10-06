@@ -18,8 +18,14 @@ builders, auto-translation, validation shortcuts) see
 
 `address`, `addressStrict`, `businessAddress`, `company`, `bankAccount`, `seo`, `internalLink`,
 `menuItem`, `baseImage`, `cropImage`, `localeImage`, `localeAltImage`, `bundleItem`,
-`shippingRate`, `taxRule`, `generatedZip`, wine objects (`wine`, `winePackage`,
-`winePackagingConfig`), and `orders/`.
+`productSpecification`, `shippingRate`, `taxRule`, `generatedZip`, wine objects (`wine`,
+`winePackage`, `winePackagingConfig`), and `orders/`.
+
+**Product specifications:** `product` and `productVariant` both have an optional `specifications`
+array of `productSpecification` (`label` + `value`, both `i18nString`; Studio label
+"Produktdetails" / "Product details"), for any product kind — e.g. "Material: 100% Baumwolle". A
+variant's non-empty list replaces the product's (no merge); resolved + rendered by core-front
+(`data-layer.md` → "Variant resolution").
 
 `menuItem` `linkType`: `internal` | `external` | `submenu` (unless `menus.disableSubmenus`) |
 `system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The

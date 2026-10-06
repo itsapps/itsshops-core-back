@@ -92,6 +92,9 @@ export const productVariant: ITSDocumentDefinition = {
           }),
 
           f('sku', 'string'),
+          f('specifications', 'array', {
+            of: [{ type: 'productSpecification' }],
+          }),
         ],
       },
       {

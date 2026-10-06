@@ -61,6 +61,10 @@ export default {
   },
   fieldsets: {},
   fields: {
+    specifications: {
+      title: 'Product details',
+      description: 'Properties such as material or cut, listed on the product page (e.g. “Material: 100% cotton”).',
+    },
     kind: {
       title: 'Product Kind',
       options: {
@@ -333,6 +337,10 @@ export default {
   productVariant: {
     title: 'Product variant',
     fields: {
+      specifications: {
+        title: 'Product details',
+        description: "Replaces the product's details for this variant. Leave empty to use the product's.",
+      },
       coverImage: {
         title: 'Cover image',
         description:
@@ -389,6 +397,17 @@ export default {
       },
       vintage: {
         title: 'Vintage',
+      },
+    },
+  },
+  productSpecification: {
+    title: 'Product detail',
+    fields: {
+      label: {
+        title: 'Label',
+      },
+      value: {
+        title: 'Value',
       },
     },
   },

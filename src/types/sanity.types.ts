@@ -839,6 +839,12 @@ export type Coupon = {
   redemptionCount?: number
 }
 
+export type ProductSpecification = {
+  _type: 'productSpecification'
+  label?: InternationalizedArrayString
+  value?: InternationalizedArrayString
+}
+
 export type ProductVariantReference = {
   _ref: string
   _type: 'reference'
@@ -870,10 +876,11 @@ export type BlogReference = {
 export type MenuItem = {
   _type: 'menuItem'
   title?: InternationalizedArrayString
-  linkType?: 'internal' | 'external'
+  linkType?: 'internal' | 'external' | 'system'
   internalLinkReference?:
     ProductVariantReference | PageReference | PostReference | CategoryReference | BlogReference
   url?: InternationalizedArrayUrl
+  systemPage?: 'orderWithdraw'
 }
 
 export type InternationalizedArrayUrl = Array<
@@ -1164,6 +1171,11 @@ export type ProductVariant = {
   title?: InternationalizedArrayString
   product?: ProductReference
   sku?: string
+  specifications?: Array<
+    {
+      _key: string
+    } & ProductSpecification
+  >
   taxCategory?: TaxCategoryReference
   price?: number
   compareAtPrice?: number
@@ -1182,6 +1194,11 @@ export type Product = {
   title?: InternationalizedArrayString
   kind?: 'wine' | 'physical' | 'digital' | 'bundle'
   weight?: number
+  specifications?: Array<
+    {
+      _key: string
+    } & ProductSpecification
+  >
   categories?: Array<
     {
       _key: string
@@ -1578,6 +1595,7 @@ export type AllSanitySchemaTypes =
   | CouponReference
   | AppliedCoupon
   | Coupon
+  | ProductSpecification
   | ProductVariantReference
   | PostReference
   | CategoryReference
