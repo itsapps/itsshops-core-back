@@ -50,11 +50,11 @@ types are imported through that barrel by real code — e.g. `Product`, `Product
 (in `src/schemas/documents/productVariant.ts`, `src/components/products/*`), and `Order`
 (`src/components/StatusIcon.tsx`).
 
-Subtlety worth knowing: for several of these names the generated file is the **only** reachable
-source, because the hand-written equivalent isn't re-exported — e.g. `src/types/orders.ts` declares
-its own `Order` but its barrel line is commented out (`// export * from './orders'`), so `Order`
-resolves to the typegen one. A name appearing in a `src/types/*.ts` file does **not** mean it's
-exported from the barrel. (This is the trap that made an earlier "dead code" read wrong.)
+Subtlety worth knowing: for several of these names the generated file is the **only** source —
+e.g. `Order` comes solely from typegen (the old hand-written `src/types/orders.ts`, never exported,
+was removed 2026-10-07). A name appearing in a `src/types/*.ts` file does **not** mean it's exported
+from the barrel — check what `src/types/index.ts` actually re-exports. (This is the trap that made
+an earlier "dead code" read wrong.)
 
 The **frontend** carries no copy of these types — it defines its own resolved shapes.
 
