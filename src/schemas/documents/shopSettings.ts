@@ -63,6 +63,11 @@ export const shopSettings: ITSDocumentDefinition = {
           to: [{ type: 'page' }],
           validation: (rule) => rule.required(),
         }),
+        // "Versand & Zahlung" page (shippingInfoModule) — linked at the start of the checkout and
+        // above the order button (FAGG §8 (3)).
+        f('shippingInfoPage', 'reference', {
+          to: [{ type: 'page' }],
+        }),
         ...builders.filterField(),
       ],
       shipping: [
@@ -119,7 +124,40 @@ export const shopSettings: ITSDocumentDefinition = {
           // Legal choice (withdrawal instructions + mails) — must be set explicitly.
           validation: (rule) => rule.required(),
         }),
+        // Shown in the generated withdrawal instructions (page + order mail) and the withdrawal
+        // confirmation mail — as a separate note, never spliced into the statutory text.
         f('returnPolicyNote', 'i18nText'),
+        // When the withdrawal period starts — FAGG Anhang I note [1] b–e. Default: several items
+        // of one order may arrive separately (cases ship as several parcels).
+        f('withdrawalPeriodStart', 'string', {
+          options: {
+            list: [
+              { value: 'goods' },
+              { value: 'multipleGoods' },
+              { value: 'partialDeliveries' },
+              { value: 'subscription' },
+            ],
+            layout: 'radio',
+          },
+          initialValue: 'multipleGoods',
+          validation: (rule) => rule.required(),
+        }),
+        // Statutory exceptions (§ 18 Abs. 1 FAGG) that apply to this shop's goods — listed next
+        // to the withdrawal instructions.
+        f('withdrawalExceptions', 'array', {
+          of: [{ type: 'string' }],
+          options: {
+            list: [
+              { value: 'customMade' },
+              { value: 'perishable' },
+              { value: 'sealedHygiene' },
+              { value: 'mixed' },
+              { value: 'alcoholMarketPrice' },
+              { value: 'sealedMedia' },
+              { value: 'newspapers' },
+            ],
+          },
+        }),
       ],
     }
     const fields = groups

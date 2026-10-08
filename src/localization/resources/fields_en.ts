@@ -609,7 +609,13 @@ export default {
       },
       withdrawalPolicyPage: {
         title: 'Withdrawal policy',
-        description: 'This page contains the withdrawal instructions (incl. return costs).',
+        description:
+          'Page with the "Withdrawal policy" module – instructions and model form are generated from the settings.',
+      },
+      shippingInfoPage: {
+        title: 'Shipping & payment',
+        description:
+          'Page with the "Shipping & payment" module. Linked at the start of the checkout and above the order button.',
       },
       returnAddress: {
         title: 'Return address',
@@ -627,7 +633,32 @@ export default {
       },
       returnPolicyNote: {
         title: 'Return note',
-        description: 'Optional extra text shown in the withdrawal confirmation email.',
+        description:
+          'Optional extra note (e.g. "Please return in packaging suitable for shipping") – shown next to the withdrawal instructions (page and order confirmation) and in the withdrawal confirmation.',
+      },
+      withdrawalPeriodStart: {
+        title: 'Start of the withdrawal period',
+        description: 'Selects the statutory wording in the withdrawal instructions.',
+        options: {
+          goods: 'Receipt of the goods (always one delivery)',
+          multipleGoods: 'Receipt of the last item (an order may arrive in several parcels)',
+          partialDeliveries: 'Receipt of the last lot (one item delivered in several lots)',
+          subscription: 'Receipt of the first item (regular delivery, subscription)',
+        },
+      },
+      withdrawalExceptions: {
+        title: 'Exceptions from the right of withdrawal',
+        description:
+          'Statutory exceptions (§ 18 FAGG) that apply to your goods – listed next to the withdrawal instructions.',
+        options: {
+          customMade: 'Made to the consumer’s specifications / personalised',
+          perishable: 'Liable to deteriorate rapidly',
+          sealedHygiene: 'Sealed, not suitable for return for hygiene reasons',
+          mixed: 'Inseparably mixed with other items after delivery',
+          alcoholMarketPrice: 'Alcoholic beverages with market-dependent price, delivered after 30 days at the earliest (en primeur)',
+          sealedMedia: 'Sealed audio/video recordings or software',
+          newspapers: 'Newspapers, periodicals (except subscriptions)',
+        },
       },
     },
     groups: {
@@ -1708,6 +1739,12 @@ export default {
       title: { title: 'Title' },
       products: { title: 'Product variants' },
     },
+  },
+  withdrawalPolicyModule: {
+    title: 'Withdrawal policy (generated)',
+  },
+  shippingInfoModule: {
+    title: 'Shipping & payment (generated)',
   },
   youtube: {
     title: 'YouTube',

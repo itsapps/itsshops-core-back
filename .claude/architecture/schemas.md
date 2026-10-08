@@ -48,6 +48,10 @@ for order copies + withdrawal notifications, empty → `senderEmail`); `company`
 Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`
 (`orderPaymentMethod`: type, brand, last4, wallet — order only, not orderMeta).
 
+**Withdrawal-instruction settings (`shopSettings`, group returns):** `withdrawalPeriodStart`
+(FAGG Anhang I note [1] variant, default `multipleGoods`), `withdrawalExceptions` (§ 18 list),
+`returnPolicyNote` (now also shown next to the instructions), `shippingInfoPage` reference (displays).
+
 **`orderWithdrawal`:** a web declaration that matches no order is stored with status **`unmatched`**
 and no `orderRef`, holding the submitted `name` / `email` / `orderNumber` / `locale` (read-only).
 `orderRef` is editable only while the **published** status is `unmatched`
@@ -73,7 +77,10 @@ optional — except for `orderWithdraw`, whose label is fixed by law ("Vertrag w
 ## Modules (`src/schemas/modules/`)
 
 Page/content building blocks: `carousel`, `categoryList`, `productList`, `productVariantList`,
-`youtube`. These are the array members of a document's `modules[]` and map to frontend module
+`youtube`, plus two field-less **legal modules** (feature `shop`): `withdrawalPolicyModule` (generated
+withdrawal instructions + model form) and `shippingInfoModule` ("Versand & Zahlung": shipping
+methods + warranty notice). Their content comes from settings, rendered by core-front (`commerce-and-netlify.md`
+→ "Legal texts"); customers add them to their page `modules` array. These are the array members of a document's `modules[]` and map to frontend module
 templates (`itsshops-core-front` → `templates/overridable/modules/` and `core/modules/`). The
 `productList` module pairs with the frontend's URL-based filter system.
 

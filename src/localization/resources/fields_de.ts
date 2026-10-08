@@ -614,7 +614,13 @@ export default {
       },
       withdrawalPolicyPage: {
         title: 'Widerrufsbelehrung',
-        description: 'Diese Seite enthält die Widerrufsbelehrung (inkl. Rücksendekosten).',
+        description:
+          'Seite mit dem Modul „Widerrufsbelehrung“ – Belehrung und Muster-Formular werden aus den Einstellungen erzeugt.',
+      },
+      shippingInfoPage: {
+        title: 'Versand & Zahlung',
+        description:
+          'Seite mit dem Modul „Versand & Zahlung“. Wird am Beginn der Kasse und über dem Bestell-Button verlinkt.',
       },
       returnAddress: {
         title: 'Retourenadresse',
@@ -633,7 +639,31 @@ export default {
       returnPolicyNote: {
         title: 'Hinweis zur Rücksendung',
         description:
-          'Optionaler Zusatztext, der in der Widerrufs-Bestätigungs-E-Mail angezeigt wird.',
+          'Optionaler Zusatzhinweis (z. B. „Bitte in versandgeeigneter Verpackung zurücksenden“) – erscheint neben der Widerrufsbelehrung (Seite und Bestellbestätigung) und in der Widerrufs-Bestätigung.',
+      },
+      withdrawalPeriodStart: {
+        title: 'Beginn der Widerrufsfrist',
+        description: 'Wählt den gesetzlichen Textbaustein der Widerrufsbelehrung.',
+        options: {
+          goods: 'Erhalt der Ware (immer eine Lieferung)',
+          multipleGoods: 'Erhalt der letzten Ware (Bestellung kann in mehreren Paketen kommen)',
+          partialDeliveries: 'Erhalt der letzten Teilsendung (eine Ware in mehreren Teilsendungen)',
+          subscription: 'Erhalt der ersten Ware (regelmäßige Lieferung, Abo)',
+        },
+      },
+      withdrawalExceptions: {
+        title: 'Ausnahmen vom Widerrufsrecht',
+        description:
+          'Gesetzliche Ausnahmen (§ 18 FAGG), die für Ihre Waren gelten – werden neben der Widerrufsbelehrung aufgelistet.',
+        options: {
+          customMade: 'Nach Kundenspezifikation angefertigt / personalisiert',
+          perishable: 'Schnell verderblich',
+          sealedHygiene: 'Versiegelt, aus Hygienegründen nicht zur Rückgabe geeignet',
+          mixed: 'Nach Lieferung untrennbar mit anderen Gütern vermischt',
+          alcoholMarketPrice: 'Alkoholische Getränke mit marktabhängigem Preis, Lieferung frühestens nach 30 Tagen (Subskription)',
+          sealedMedia: 'Versiegelte Ton-/Videoaufnahmen oder Software',
+          newspapers: 'Zeitungen, Zeitschriften (außer Abo)',
+        },
       },
     },
     groups: {
@@ -1724,6 +1754,12 @@ export default {
       title: { title: 'Titel' },
       products: { title: 'Varianten' },
     },
+  },
+  withdrawalPolicyModule: {
+    title: 'Widerrufsbelehrung (automatisch)',
+  },
+  shippingInfoModule: {
+    title: 'Versand & Zahlung (automatisch)',
   },
   youtube: {
     title: 'YouTube',

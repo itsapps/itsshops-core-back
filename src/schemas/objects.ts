@@ -36,6 +36,8 @@ import { categoryList } from './modules/categoryList'
 import { productVariantList } from './modules/productVariantList'
 import { productList } from './modules/productList'
 import { youtube } from './modules/youtube'
+import { withdrawalPolicyModule } from './modules/withdrawalPolicyModule'
+import { shippingInfoModule } from './modules/shippingInfoModule'
 
 export const getCoreObjects = (
   extensions: ITSSchemaDefinition[] | undefined,
@@ -77,6 +79,8 @@ export const getCoreObjects = (
     taxRule,
     vatBreakdownItem,
     wine,
+    withdrawalPolicyModule,
+    shippingInfoModule,
     youtube,
     ...(extensions ? extensions : []),
   ]
