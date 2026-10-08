@@ -649,15 +649,15 @@ export default {
       withdrawalExceptions: {
         title: 'Exceptions from the right of withdrawal',
         description:
-          'Statutory exceptions (§ 18 FAGG) that apply to your goods – listed next to the withdrawal instructions.',
+          'Only tick what really applies to goods in this shop – every selection is listed on the withdrawal page and in every order confirmation as "no right of withdrawal" (§ 18 FAGG). For normal wine sales usually none applies. If in doubt, check with the WKO or legal advice.',
         options: {
-          customMade: 'Made to the consumer’s specifications / personalised',
-          perishable: 'Liable to deteriorate rapidly',
-          sealedHygiene: 'Sealed, not suitable for return for hygiene reasons',
-          mixed: 'Inseparably mixed with other items after delivery',
-          alcoholMarketPrice: 'Alcoholic beverages with market-dependent price, delivered after 30 days at the earliest (en primeur)',
-          sealedMedia: 'Sealed audio/video recordings or software',
-          newspapers: 'Newspapers, periodicals (except subscriptions)',
+          customMade: 'Personalised / made to order – e.g. engraved bottles, custom labels',
+          perishable: 'Liable to deteriorate rapidly – e.g. fresh food (not wine)',
+          sealedHygiene: 'Sealed, not returnable for hygiene reasons – only once unsealed, e.g. cosmetics',
+          mixed: 'Inseparably mixed with other items after delivery – rarely relevant',
+          alcoholMarketPrice: 'En primeur / subscription – wine at a price fixed today, delivered 30+ days later, price depends on the market',
+          sealedMedia: 'Sealed audio/video recordings or software – only once unsealed',
+          newspapers: 'Newspapers, periodicals – except subscriptions',
         },
       },
     },

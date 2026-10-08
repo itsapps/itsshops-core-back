@@ -654,15 +654,15 @@ export default {
       withdrawalExceptions: {
         title: 'Ausnahmen vom Widerrufsrecht',
         description:
-          'Gesetzliche Ausnahmen (§ 18 FAGG), die für Ihre Waren gelten – werden neben der Widerrufsbelehrung aufgelistet.',
+          'Nur ankreuzen, was auf Waren in diesem Shop tatsächlich zutrifft – jede Auswahl wird auf der Widerrufsseite und in jeder Bestellbestätigung als „kein Widerrufsrecht“ angeführt (§ 18 FAGG). Für einen normalen Weinverkauf trifft in der Regel keine Ausnahme zu. Im Zweifel mit der WKO bzw. Rechtsberatung klären.',
         options: {
-          customMade: 'Nach Kundenspezifikation angefertigt / personalisiert',
-          perishable: 'Schnell verderblich',
-          sealedHygiene: 'Versiegelt, aus Hygienegründen nicht zur Rückgabe geeignet',
-          mixed: 'Nach Lieferung untrennbar mit anderen Gütern vermischt',
-          alcoholMarketPrice: 'Alkoholische Getränke mit marktabhängigem Preis, Lieferung frühestens nach 30 Tagen (Subskription)',
-          sealedMedia: 'Versiegelte Ton-/Videoaufnahmen oder Software',
-          newspapers: 'Zeitungen, Zeitschriften (außer Abo)',
+          customMade: 'Personalisiert / nach Kundenwunsch angefertigt – z. B. gravierte Flaschen, individuelle Etiketten',
+          perishable: 'Schnell verderblich – z. B. frische Lebensmittel (nicht Wein)',
+          sealedHygiene: 'Versiegelt, aus Hygienegründen nicht rückgabefähig – nur nach geöffneter Versiegelung, z. B. Kosmetik',
+          mixed: 'Nach Lieferung untrennbar mit anderen Gütern vermischt – selten relevant',
+          alcoholMarketPrice: 'Subskription / En primeur – Wein zu heute fixem Preis, Lieferung frühestens 30 Tage später, Preis vom Markt abhängig',
+          sealedMedia: 'Versiegelte Ton-/Videoaufnahmen oder Software – nur nach geöffneter Versiegelung',
+          newspapers: 'Zeitungen, Zeitschriften – außer Abonnements',
         },
       },
     },
