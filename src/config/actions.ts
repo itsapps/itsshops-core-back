@@ -64,6 +64,19 @@ export function actionResolver(
   if (context.schemaType === 'orderWithdrawal') {
     actions.push(WithdrawalResolveAction)
     actions.push(WithdrawalResendAction)
+    // Delete is disallowed in the schema (a matched withdrawal is a legal record) and
+    // re-added here for unmatched declarations only (junk / non-customers' data).
+    const action = !ctx.config.isDev && prev.find((props) => props.action === 'delete')
+    if (action) {
+      actions.push(
+        createCustomAction<string | null>({
+          action,
+          query: `*[_id == $id][0].status`,
+          validateFn: (status) =>
+            status === 'unmatched' ? true : 'actions.orderWithdrawal.deleteOnlyUnmatched',
+        }),
+      )
+    }
   }
   if (isEnabledSchema(context.schemaType, 'product', 'shop')) {
     actions.push(AddVariantsAction)

@@ -129,6 +129,28 @@ export default {
       'Category cannot be deleted because it contains subcategories.',
   },
   order: {
+    payment: {
+      title: 'Payment method',
+      types: {
+        card: 'Card',
+        eps: 'EPS',
+        klarna: 'Klarna',
+        paypal: 'PayPal',
+        sepa_debit: 'SEPA Direct Debit',
+        sofort: 'Sofort',
+        giropay: 'Giropay',
+        bancontact: 'Bancontact',
+        ideal: 'iDEAL',
+        twint: 'TWINT',
+        link: 'Link',
+      },
+      wallets: {
+        apple_pay: 'Apple Pay',
+        google_pay: 'Google Pay',
+        link: 'Link',
+        samsung_pay: 'Samsung Pay',
+      },
+    },
     shipping: 'Shipping',
     billingAddress: 'Billing address',
     items: 'Items',
@@ -230,6 +252,12 @@ export default {
         error: 'Could not create the withdrawal',
         alreadyOpen: 'An open withdrawal already exists for this order',
       },
+      assign: {
+        suggestions: 'Possible orders',
+        noSuggestions: 'No order matches the submitted details — search below.',
+        useOrder: 'Use this order',
+      },
+      deleteOnlyUnmatched: 'Only unmatched withdrawals can be deleted.',
       notifyError: 'Saved, but the email could not be sent',
       resend: {
         title: 'Resend confirmation',

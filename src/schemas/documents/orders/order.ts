@@ -43,6 +43,12 @@ export const order: ITSDocumentDefinition = {
           validation: (rule) => rule.required(),
           hidden: !ctx.config.isDev,
         }),
+        // When the customer placed the order (PaymentIntent `created`), shown in the
+        // confirmation mail; the order itself is only created at payment success.
+        f('orderDate', 'datetime', {
+          readOnly: !ctx.config.isDev,
+          options: ctx.format.dateFormat('datetime'),
+        }),
         f('paymentStatus', 'string', {
           options: {
             list: [{ value: 'succeeded' }, { value: 'refunded' }, { value: 'partiallyRefunded' }],
@@ -67,6 +73,12 @@ export const order: ITSDocumentDefinition = {
 
     const shared = buildShared(ctx)
     shared.fields.push(...fields)
+    // Written by the payment webhook (order only — orderMeta is written before the
+    // customer's final choice of payment method).
+    shared.fields.push({
+      ...f('payment', 'orderPaymentMethod', { readOnly: !ctx.config.isDev }),
+      group: 'orderPayment',
+    })
     shared.groups.push(...groups)
 
     return {
@@ -74,6 +86,7 @@ export const order: ITSDocumentDefinition = {
       preview: {
         select: {
           // stripeId: 'paymentIntentId',
+          orderNumber: 'orderNumber',
           total: 'totals.grandTotal',
           status: 'status',
           paymentStatus: 'paymentStatus',
@@ -81,11 +94,12 @@ export const order: ITSDocumentDefinition = {
           shipping: 'customer.shippingAddress',
           // locale: language.id
         },
-        prepare: ({ status, paymentStatus, shipping, total }) => {
+        prepare: ({ orderNumber, status, paymentStatus, shipping, total }) => {
           return status && paymentStatus && shipping && total
             ? {
                 // title: `${total/100}€ - ${status}`,
-                title: `${shipping.name} - ${ctx.format.currency(total / 100)}`,
+                // Order number first — the withdrawal order picker searches and shows it.
+                title: `${orderNumber ? `#${orderNumber} · ` : ''}${shipping.name} - ${ctx.format.currency(total / 100)}`,
                 subtitle: `${shipping.zip} ${shipping.city}, ${shipping.country}`,
                 media: StatusIcon({ status, paymentStatus }),
               }

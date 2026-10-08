@@ -308,6 +308,8 @@ export default {
     requiredField: 'Required',
     recommendedField: 'Recommended',
     companyDetailsRecommended: 'Recommended – used on invoices and in the legal details of emails',
+    withdrawalUnmatchedWithOrder: 'An assigned withdrawal cannot be "Unmatched".',
+    withdrawalOrderHasOpen: 'This order already has an open withdrawal.',
     deliveryMethodsAtLeastOneRate: 'At least one rule must be defined.',
     menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
@@ -478,6 +480,10 @@ export default {
   shippingMethod: {
     title: 'Shipping method',
     fields: {
+      deliveryTime: {
+        title: 'Delivery time',
+        description: 'Optional, e.g. "2–4 working days". Shown in the order confirmation.',
+      },
       rates: {
         title: 'Rate table (weight)',
       },
@@ -678,6 +684,14 @@ export default {
       vatId: {
         title: 'VAT ID',
       },
+      registerNumber: {
+        title: 'Company register number',
+        description: 'Only if registered in the company register. Shown in emails.',
+      },
+      registerCourt: {
+        title: 'Register court',
+        description: 'Only if registered in the company register.',
+      },
     },
   },
   taxRule: {
@@ -756,17 +770,28 @@ export default {
   orderWithdrawal: {
     title: 'Withdrawal',
     fields: {
-      orderRef: { title: 'Order' },
+      orderRef: {
+        title: 'Order',
+        description:
+          'Unmatched: pick the matching order (then publish and "Resend confirmation") or delete the withdrawal after checking – within 30 days at the latest.',
+      },
       declaredAt: { title: 'Declared at' },
       status: {
         title: 'Status',
+        description:
+          'Unmatched: assign it to an order or delete it after checking (within 30 days at the latest).',
         options: {
+          unmatched: 'Unmatched',
           received: 'Received',
           processing: 'Processing',
           refunded: 'Refunded',
           rejected: 'Rejected',
         },
       },
+      name: { title: 'Name (submitted)' },
+      email: { title: 'Email (submitted)' },
+      orderNumber: { title: 'Order number (submitted)' },
+      locale: { title: 'Language' },
       reason: { title: 'Reason / affected items' },
       note: { title: 'Internal note' },
     },
@@ -806,6 +831,13 @@ export default {
           returned: 'Returned',
         },
       },
+      orderDate: {
+        title: 'Order date',
+        description: 'When the order was placed (payment started); shown in the order confirmation.',
+      },
+      payment: {
+        title: 'Payment method',
+      },
       paymentStatus: {
         title: 'Payment status',
         options: {
@@ -832,6 +864,15 @@ export default {
       fulfillment: {
         title: 'Fulfillment',
       },
+    },
+  },
+  orderPaymentMethod: {
+    title: 'Payment method',
+    fields: {
+      type: { title: 'Type' },
+      brand: { title: 'Card brand' },
+      last4: { title: 'Last 4 digits' },
+      wallet: { title: 'Wallet' },
     },
   },
   orderStatusHistory: {
@@ -991,6 +1032,10 @@ export default {
       methodTitle: {
         title: 'Shipping method',
         description: 'Snapshotted title (e.g. "DHL Express" or "Self-pickup")',
+      },
+      deliveryTime: {
+        title: 'Delivery time',
+        description: "Snapshot of the method's delivery time at order time",
       },
       methodType: {
         title: 'Type',
@@ -1238,9 +1283,9 @@ export default {
       },
       systemPage: {
         title: 'System page',
-        description: 'A fixed shop page, e.g. the withdrawal form. Without a title, the page name is used.',
+        description: 'A fixed shop page, e.g. the withdrawal form. Without a title, the page name is used. The withdrawal link is always labelled "Withdraw from contract here" (required by law, FAGG §13a) – a custom title is ignored there.',
         options: {
-          orderWithdraw: 'Withdrawal',
+          orderWithdraw: 'Withdraw from contract',
         },
       },
       children: {
@@ -1290,6 +1335,11 @@ export default {
         title: 'Sender email',
         description:
           'Used as the sender address for emails to customers (e.g. newsletter, account confirmation, orders).',
+      },
+      shopNotificationEmail: {
+        title: 'Shop notifications',
+        description:
+          "Receives the shop's copy of order confirmations and withdrawals; empty = sender email.",
       },
       siteTitle: {
         title: 'Site title',

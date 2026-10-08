@@ -41,6 +41,22 @@ time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
   city/country (invoice seller address), `returnShippingBorneBy`. Warnings only: `company`
   name, address (street/zip/city/country), email, vatId, `defaultCountry` (checkout falls back to `'AT'`).
 
+**Mail-related fields (core-front reads them):** `settings.shopNotificationEmail` (optional; inbox
+for order copies + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
+`registerNumber` / `registerCourt` (rendered in every mail footer only when set);
+`shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
+Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`
+(`orderPaymentMethod`: type, brand, last4, wallet — order only, not orderMeta).
+
+**`orderWithdrawal`:** a web declaration that matches no order is stored with status **`unmatched`**
+and no `orderRef`, holding the submitted `name` / `email` / `orderNumber` / `locale` (read-only).
+`orderRef` is editable only while the **published** status is `unmatched`
+(`components/WithdrawalOrderInput.tsx`: order suggestions by submitted number/email/name, the picker
+filter hides orders with an open withdrawal, and `status` follows the field — order set → `received`,
+cleared → `unmatched`); validation: `unmatched` ⇔ no order, and the chosen order has no other open
+withdrawal. Editor rule (in the field descriptions): assign or delete within 30 days. Matched
+records are never deleted. Flow + rationale: core-front `commerce-and-netlify.md` → "Withdrawal".
+
 When a frontend feature starts depending on a settings field, add the matching conditional rule
 here. Validation only fires when an editor publishes — existing documents must be checked per shop
 before go-live.
@@ -50,7 +66,8 @@ before go-live.
 options come from the feature-filtered list in `src/schemas/systemPages.ts`, currently only
 `orderWithdraw` (requires `shop`). Rich-text link annotations can offer the same list via
 `internalLinkFields({ includeSystemPages: true })` (field `internalLinkSystemPage`). `system` is only offered when at least one is enabled; title is
-optional. The frontend resolves URL + default title and guarantees the withdrawal link: see core-front
+optional — except for `orderWithdraw`, whose label is fixed by law ("Vertrag widerrufen", FAGG
+§13a; the frontend ignores an editor title). The frontend resolves URL + default title and guarantees the withdrawal link: see core-front
 `.claude/architecture/data-layer.md` → "Menus & system links".
 
 ## Modules (`src/schemas/modules/`)

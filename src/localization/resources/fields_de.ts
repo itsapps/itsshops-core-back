@@ -310,6 +310,8 @@ export default {
     requiredField: 'Erforderlich',
     recommendedField: 'Empfohlen',
     companyDetailsRecommended: 'Empfohlen – wird für Rechnungen und rechtliche Angaben in E-Mails verwendet',
+    withdrawalUnmatchedWithOrder: 'Ein zugeordneter Widerruf kann nicht „Nicht zugeordnet“ sein.',
+    withdrawalOrderHasOpen: 'Diese Bestellung hat bereits einen offenen Widerruf.',
     deliveryMethodsAtLeastOneRate: 'Es muss zumindest eine Regel definiert sein.',
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
     countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',
@@ -482,6 +484,10 @@ export default {
   shippingMethod: {
     title: 'Versandart',
     fields: {
+      deliveryTime: {
+        title: 'Lieferzeit',
+        description: 'Optional, z. B. „2–4 Werktage“. Steht in der Bestellbestätigung.',
+      },
       rates: {
         title: 'Preistabelle (Gewicht)',
       },
@@ -684,6 +690,14 @@ export default {
       vatId: {
         title: 'UID-Nummer',
       },
+      registerNumber: {
+        title: 'Firmenbuchnummer',
+        description: 'Nur wenn im Firmenbuch eingetragen. Erscheint in E-Mails.',
+      },
+      registerCourt: {
+        title: 'Firmenbuchgericht',
+        description: 'Nur wenn im Firmenbuch eingetragen.',
+      },
     },
   },
   taxRule: {
@@ -762,17 +776,28 @@ export default {
   orderWithdrawal: {
     title: 'Widerruf',
     fields: {
-      orderRef: { title: 'Bestellung' },
+      orderRef: {
+        title: 'Bestellung',
+        description:
+          'Nicht zugeordnet: passende Bestellung auswählen (danach veröffentlichen und „Bestätigung erneut senden“) oder den Widerruf nach Prüfung löschen – spätestens nach 30 Tagen.',
+      },
       declaredAt: { title: 'Erklärt am' },
       status: {
         title: 'Status',
+        description:
+          'Nicht zugeordnet: einer Bestellung zuordnen oder nach Prüfung löschen (spätestens nach 30 Tagen).',
         options: {
+          unmatched: 'Nicht zugeordnet',
           received: 'Eingegangen',
           processing: 'In Bearbeitung',
           refunded: 'Erstattet',
           rejected: 'Abgelehnt',
         },
       },
+      name: { title: 'Name (angegeben)' },
+      email: { title: 'E-Mail (angegeben)' },
+      orderNumber: { title: 'Bestellnummer (angegeben)' },
+      locale: { title: 'Sprache' },
       reason: { title: 'Grund / betroffene Artikel' },
       note: { title: 'Interne Notiz' },
     },
@@ -812,6 +837,13 @@ export default {
           returned: 'Zurückgeliefert',
         },
       },
+      orderDate: {
+        title: 'Bestelldatum',
+        description: 'Zeitpunkt der Bestellung (Zahlungsbeginn), steht in der Bestellbestätigung.',
+      },
+      payment: {
+        title: 'Zahlungsart',
+      },
       paymentStatus: {
         title: 'Zahlungsstatus',
         options: {
@@ -838,6 +870,15 @@ export default {
       fulfillment: {
         title: 'Versand',
       },
+    },
+  },
+  orderPaymentMethod: {
+    title: 'Zahlungsart',
+    fields: {
+      type: { title: 'Typ' },
+      brand: { title: 'Kartenmarke' },
+      last4: { title: 'Letzte 4 Ziffern' },
+      wallet: { title: 'Wallet' },
     },
   },
   orderStatusHistory: {
@@ -999,6 +1040,10 @@ export default {
       methodTitle: {
         title: 'Versandart',
         description: 'Eingefrorener Titel (z.B. "DHL Express" oder "Selbstabholung")',
+      },
+      deliveryTime: {
+        title: 'Lieferzeit',
+        description: 'Eingefrorene Lieferzeit der Versandart zum Bestellzeitpunkt',
       },
       methodType: {
         title: 'Typ',
@@ -1251,9 +1296,9 @@ export default {
       },
       systemPage: {
         title: 'Systemseite',
-        description: 'Feste Shop-Seite, z. B. das Widerrufsformular. Ohne Titel wird der Seitenname verwendet.',
+        description: 'Feste Shop-Seite, z. B. das Widerrufsformular. Ohne Titel wird der Seitenname verwendet. Der Widerrufs-Link heißt immer „Vertrag widerrufen“ (gesetzlich vorgegeben, § 13a FAGG) – ein eigener Titel wird dort ignoriert.',
         options: {
-          orderWithdraw: 'Widerruf',
+          orderWithdraw: 'Vertrag widerrufen',
         },
       },
       children: {
@@ -1303,6 +1348,11 @@ export default {
         title: 'Absender-E-Mail',
         description:
           'Wird als Absenderadresse bei E-Mails an Kunden verwendet (z.B. Newsletter, Konto-Bestätigung, Bestellungen).',
+      },
+      shopNotificationEmail: {
+        title: 'Shop-Benachrichtigungen',
+        description:
+          'Empfänger der Shop-Kopie von Bestellbestätigungen und Widerrufen; leer = Absender-E-Mail.',
       },
       siteTitle: {
         title: 'Seitentitel',

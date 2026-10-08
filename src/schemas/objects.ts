@@ -22,6 +22,7 @@ import { orderItemOption } from './objects/orders/orderItemOption'
 import { orderItemWine } from './objects/orders/orderItemWine'
 import { orderStatusHistory } from './objects/orders/orderStatusHistory'
 import { orderTotals } from './objects/orders/orderTotals'
+import { orderPaymentMethod } from './objects/orders/orderPaymentMethod'
 import { vatBreakdownItem } from './objects/orders/vatBreakdownItem'
 import { generatedZip } from './objects/generatedZip'
 import { seo } from './objects/seo'
@@ -67,6 +68,7 @@ export const getCoreObjects = (
     orderItemOption,
     orderItemWine,
     orderStatusHistory,
+    orderPaymentMethod,
     orderTotals,
     seo,
     shippingRate,

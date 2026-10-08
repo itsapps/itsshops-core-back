@@ -23,6 +23,8 @@ export const fulfillment: ITSSchemaDefinition = {
       }),
 
       f('methodTitle', 'string', { hidden: lockSnapshot }),
+      // Snapshot of the method's delivery time at order time (shown in the confirmation).
+      f('deliveryTime', 'string', { readOnly: lockSnapshot }),
       f('methodType', 'string', {
         options: { list: [{ value: 'delivery' }, { value: 'pickup' }] },
         validation: (Rule) => Rule.required(),

@@ -13,6 +13,9 @@ export const company: ITSSchemaDefinition = {
         f('email', 'string'),
         f('phone', 'string'),
         f('vatId', 'string'),
+        // Firmenbuch — optional (sole-trader farms often aren't registered); rendered only when set.
+        f('registerNumber', 'string'),
+        f('registerCourt', 'string'),
       ],
     }
   },

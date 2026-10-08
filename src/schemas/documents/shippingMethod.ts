@@ -12,6 +12,8 @@ export const shippingMethod: ITSDocumentDefinition = {
       fields: [
         // f('isDefault', 'boolean', { initialValue: false }),
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
+        // Optional, e.g. "2–4 Werktage" — snapshotted onto the order, shown in the confirmation mail.
+        f('deliveryTime', 'i18nString'),
         f('methodType', 'string', {
           options: {
             list: [

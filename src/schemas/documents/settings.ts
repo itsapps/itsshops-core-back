@@ -61,6 +61,11 @@ export const settings: ITSDocumentDefinition = {
           f('senderEmail', 'string', {
             validation: (rule) => (sendsMail ? rule.required().email() : rule.email()),
           }),
+          // Inbox for every mail *to the shop* (order copies, withdrawals); empty → senderEmail.
+          f('shopNotificationEmail', 'string', {
+            hidden: !shopEnabled,
+            validation: (rule) => rule.email(),
+          }),
         ],
       },
       {

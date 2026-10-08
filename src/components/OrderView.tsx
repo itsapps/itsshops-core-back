@@ -108,8 +108,17 @@ type AppliedCoupon = {
   discountAmount: number
 }
 
+type PaymentMethod = {
+  type?: string
+  brand?: string
+  last4?: string
+  wallet?: string
+}
+
 interface OrderDocument extends SanityDocument {
   orderNumber?: string
+  orderDate?: string
+  payment?: PaymentMethod
   invoiceNumber?: string
   status: 'created' | 'processing' | 'shipped' | 'delivered' | 'canceled' | 'returned'
   paymentStatus: 'succeeded' | 'refunded' | 'partiallyRefunded'
@@ -128,6 +137,27 @@ interface OrderDocument extends SanityDocument {
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
+
+const CARD_BRANDS: Record<string, string> = {
+  visa: 'Visa',
+  mastercard: 'Mastercard',
+  amex: 'American Express',
+  discover: 'Discover',
+  diners: 'Diners Club',
+  jcb: 'JCB',
+  unionpay: 'UnionPay',
+}
+
+/** "Visa •••• 4242", "Apple Pay (Visa •••• 4242)", "SEPA-Lastschrift •••• 3000", "EPS". */
+function paymentLabel(p: PaymentMethod, t: (key: string, fallback?: string) => string): string {
+  const masked = p.last4 ? ` •••• ${p.last4}` : ''
+  const typeName = (type: string) => t(`order.payment.types.${type}`, type)
+  if (p.type === 'card' && p.brand) {
+    const card = `${CARD_BRANDS[p.brand] ?? p.brand}${masked}`
+    return p.wallet ? `${t(`order.payment.wallets.${p.wallet}`, p.wallet)} (${card})` : card
+  }
+  return p.type ? `${typeName(p.type)}${masked}` : ''
+}
 
 const STATUS_TONES: Record<string, 'positive' | 'caution' | 'critical' | 'primary' | 'default'> = {
   created: 'primary',
@@ -267,8 +297,16 @@ export const OrderView: UserViewComponent = (props) => {
               </Text>
             )}
             <Text muted>
-              {format.date(order._createdAt, { dateStyle: 'medium', timeStyle: 'short' })}
+              {format.date(order.orderDate ?? order._createdAt, {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
             </Text>
+            {order.payment?.type && (
+              <Text muted>
+                {t('order.payment.title', 'Payment method')}: {paymentLabel(order.payment, t)}
+              </Text>
+            )}
           </Stack>
           <Flex gap={2} wrap="wrap">
             <Badge tone={STATUS_TONES[order.status] ?? 'default'}>{tStatus(order.status)}</Badge>

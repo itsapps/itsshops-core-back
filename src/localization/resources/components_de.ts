@@ -133,6 +133,28 @@ export default {
       'Kategorie kann nicht gelöscht werden, weil sie Unterkategorien enthält.',
   },
   order: {
+    payment: {
+      title: 'Zahlungsart',
+      types: {
+        card: 'Karte',
+        eps: 'EPS',
+        klarna: 'Klarna',
+        paypal: 'PayPal',
+        sepa_debit: 'SEPA-Lastschrift',
+        sofort: 'Sofortüberweisung',
+        giropay: 'Giropay',
+        bancontact: 'Bancontact',
+        ideal: 'iDEAL',
+        twint: 'TWINT',
+        link: 'Link',
+      },
+      wallets: {
+        apple_pay: 'Apple Pay',
+        google_pay: 'Google Pay',
+        link: 'Link',
+        samsung_pay: 'Samsung Pay',
+      },
+    },
     shipping: 'Versand',
     billingAddress: 'Rechnungsadresse',
     items: 'Produkte',
@@ -234,6 +256,12 @@ export default {
         error: 'Widerruf konnte nicht erstellt werden',
         alreadyOpen: 'Für diese Bestellung existiert bereits ein offener Widerruf',
       },
+      assign: {
+        suggestions: 'Mögliche Bestellungen',
+        noSuggestions: 'Keine Bestellung passt zu den Angaben – unten suchen.',
+        useOrder: 'Diese Bestellung verwenden',
+      },
+      deleteOnlyUnmatched: 'Nur nicht zugeordnete Widerrufe können gelöscht werden.',
       notifyError: 'Gespeichert, aber die E-Mail konnte nicht gesendet werden',
       resend: {
         title: 'Bestätigung erneut senden',

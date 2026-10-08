@@ -59,6 +59,8 @@ add variants inline), `WineSelector` / `WinePreview`.
     deleting a category which still has subcategories (`createCustomDocumentAction`, a reusable
     query+validate wrapper in `components/actions/CustomDocumentAction.tsx`); without: the plain
     delete. (Sanity's strong `parent` reference blocks it anyway — the guard gives a clear message.)
+  - `orderWithdrawal`: delete is disallowed in the schema (a matched withdrawal is a legal record)
+    and re-added (non-dev) as a guarded delete that only allows `status == "unmatched"`.
 - **Consumer hook, last:** `ctx.config.documentActions?.(actions, context)` — lets a project add or
   wrap actions over the final core set. `withGeneratedZips` (exported from the package root) is the
   shipped example; Jurtschitsch uses it on `page`.
@@ -67,7 +69,10 @@ add variants inline), `WineSelector` / `WinePreview`.
 
 - `PriceInput.tsx` — currency input; the **only** component re-exported publicly
   (`src/components/index.ts`). Used by the `priceField` builder.
-- `OrderView.tsx` — the order document's overview view (totals, fulfillment, withdrawals).
+- `OrderView.tsx` — the order document's overview view (order date, payment method, totals,
+  fulfillment, withdrawals).
+- `WithdrawalOrderInput.tsx` — `orderWithdrawal.orderRef` input for assigning unmatched
+  declarations (see `schemas.md` → `orderWithdrawal`).
 - `StatusIcon.tsx`, `YoutubePreview.tsx`, `DeployDialog.tsx` (triggers a Netlify build via the
   Netlify integration env/config), and the `CustomToolbar` (studio `toolMenu`).
 
