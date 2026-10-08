@@ -142,3 +142,46 @@ export const validateRequiredIfKind =
 
       return true
     })
+
+/** Filled: non-empty string/number, an i18n array with at least one value, or an object with any filled field. */
+const hasValue = (value: unknown): boolean => {
+  if (value === undefined || value === null) return false
+  if (typeof value === 'string') return value.trim() !== ''
+  if (Array.isArray(value)) return value.some((item) => hasValue(item?.value))
+  if (typeof value === 'object') {
+    return Object.entries(value).some(([key, v]) => !key.startsWith('_') && hasValue(v))
+  }
+  return true
+}
+
+/**
+ * Requires the given subfields of an object field (e.g. a `businessAddress`) and
+ * marks each missing one on its own input. Nested subfields use dot paths
+ * (`'address.zip'`). `warning: true` makes it non-blocking. `message` overrides the
+ * translation key (default `validation.requiredField` / `validation.recommendedField`).
+ * Pass `ctx.t.default`.
+ *
+ * Usage: f('billingAddress', 'businessAddress', { validation: requiredSubfields(['line1', 'zip'], ctx.t.default) })
+ */
+export const requiredSubfields =
+  (
+    fields: string[],
+    t: TranslatorFunction,
+    options: { warning?: boolean; message?: string } = {},
+  ) =>
+  (rule: Rule): Rule => {
+    const customRule = rule.custom((value: Record<string, unknown> | undefined) => {
+      const missing = fields
+        .map((field) => field.split('.'))
+        .filter((path) => !hasValue(path.reduce<any>((v, key) => v?.[key], value)))
+      if (missing.length === 0) return true
+      return missing.map((path) => ({
+        message: t(
+          options.message ??
+            (options.warning ? 'validation.recommendedField' : 'validation.requiredField'),
+        ),
+        path,
+      }))
+    })
+    return options.warning ? customRule.warning() : customRule.error()
+  }

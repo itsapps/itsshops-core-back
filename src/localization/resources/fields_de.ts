@@ -308,6 +308,8 @@ export default {
     minLength: 'Wert muss mindestens {{min}} Zeichen enthalten',
     oneFieldMustExist: 'Mindestens eines erforderlich',
     requiredField: 'Erforderlich',
+    recommendedField: 'Empfohlen',
+    companyDetailsRecommended: 'Empfohlen – wird für Rechnungen und rechtliche Angaben in E-Mails verwendet',
     deliveryMethodsAtLeastOneRate: 'Es muss zumindest eine Regel definiert sein.',
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
     countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',

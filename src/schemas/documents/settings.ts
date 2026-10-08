@@ -6,7 +6,8 @@ import {
   UserIcon,
   WebsiteIcon,
 } from '../../assets/icons'
-import { ITSDocumentDefinition } from '../../types'
+import { ITSDocumentDefinition, ITSFeatureKey } from '../../types'
+import { requiredSubfields } from '../../utils/validation'
 
 export const settings: ITSDocumentDefinition = {
   name: 'settings',
@@ -15,12 +16,17 @@ export const settings: ITSDocumentDefinition = {
   isSingleton: true,
   build: (ctx) => {
     const { f, t } = ctx
+    // Order, withdrawal, account and newsletter mails need a sender and the
+    // site title (shop name) — the frontend's notifiers throw without them.
+    const mailFeatures: ITSFeatureKey[] = ['shop', 'users', 'newsletter']
+    const sendsMail = mailFeatures.some((feature) => ctx.featureRegistry.isFeatureEnabled(feature))
+    const shopEnabled = ctx.featureRegistry.isFeatureEnabled('shop')
     return ctx.builders.buildGroupedSchema([
       {
         name: 'site',
         icon: WebsiteIcon,
         fields: [
-          f('siteTitle', 'i18nString'),
+          f('siteTitle', 'i18nString', sendsMail ? { i18n: 'requiredDefault' } : {}),
           f('siteShortDescription', 'i18nString'),
           f('defaultShareImage', 'image'),
         ],
@@ -32,8 +38,10 @@ export const settings: ITSDocumentDefinition = {
           f('homePage', 'reference', {
             to: [{ type: 'page' }],
           }),
+          // Linked from the newsletter, registration and checkout forms.
           f('privacyPage', 'reference', {
             to: [{ type: 'page' }],
+            validation: (rule) => (sendsMail ? rule.required() : rule),
           }),
           f('mainMenus', 'array', {
             of: [{ type: 'reference', title: t.default('menu.title'), to: [{ type: 'menu' }] }],
@@ -47,9 +55,11 @@ export const settings: ITSDocumentDefinition = {
         name: 'notifications',
         icon: NotificationIcon,
         fields: [
-          f('senderName', 'string'),
+          f('senderName', 'string', {
+            validation: (rule) => (sendsMail ? rule.required() : rule),
+          }),
           f('senderEmail', 'string', {
-            validation: (rule) => rule.email(),
+            validation: (rule) => (sendsMail ? rule.required().email() : rule.email()),
           }),
         ],
       },
@@ -61,7 +71,30 @@ export const settings: ITSDocumentDefinition = {
       {
         name: 'company',
         icon: UserIcon,
-        fields: [f('company', 'company')],
+        fields: [
+          // Invoices and the generated withdrawal instructions read these.
+          f(
+            'company',
+            'company',
+            shopEnabled
+              ? {
+                  validation: requiredSubfields(
+                    [
+                      'name',
+                      'address.line1',
+                      'address.zip',
+                      'address.city',
+                      'address.country',
+                      'email',
+                      'vatId',
+                    ],
+                    ctx.t.default,
+                    { warning: true, message: 'validation.companyDetailsRecommended' },
+                  ),
+                }
+              : {},
+          ),
+        ],
       },
     ])
   },

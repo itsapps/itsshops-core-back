@@ -306,6 +306,8 @@ export default {
     minLength: 'Value must contain at least {{min}} characters',
     oneFieldMustExist: 'At least one is required',
     requiredField: 'Required',
+    recommendedField: 'Recommended',
+    companyDetailsRecommended: 'Recommended – used on invoices and in the legal details of emails',
     deliveryMethodsAtLeastOneRate: 'At least one rule must be defined.',
     menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',

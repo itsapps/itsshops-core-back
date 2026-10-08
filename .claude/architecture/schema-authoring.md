@@ -63,6 +63,14 @@ Schema/document title & description also auto-resolve from the `schema` namespac
   `'requiredDefault'` (require default locale), `'requiredDefaultWarning'`, `'requiredAll'`,
   `'atLeastOne'`, `'atLeastOneWarning'`, or an object → content-length limits. A plain
   `validation: (Rule) => …` still works and is combined.
+- **Required subfields of an object field** —
+  `requiredSubfields(fields, ctx.t.default, { warning?, message? })` (`src/utils/validation.ts`)
+  marks each missing subfield on its own input; nested subfields via dot paths (`'address.zip'`);
+  i18n subfields count as filled when any locale has a value. `warning: true` → non-blocking
+  (generic "Empfohlen"); `message` passes a caller-specific translation key when the reason matters
+  (e.g. `validation.companyDetailsRecommended`).
+- **Feature-conditional rules** — pick the rule at build time, e.g.
+  `validation: (rule) => (ctx.featureRegistry.isFeatureEnabled('shop') ? rule.required() : rule)`.
 
 `createFactory` also returns `factory.reference(name, options)` (feature-filtered reference with
 auto label) and `factory.fieldTranslators`.

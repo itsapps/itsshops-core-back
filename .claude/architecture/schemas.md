@@ -31,6 +31,20 @@ variant's non-empty list replaces the product's (no merge); resolved + rendered 
 (`i18nText`, plain text; blank lines = paragraphs), any kind. The variant's replaces the product's;
 for wines it takes precedence over the VinoFact description.
 
+**Settings validation (feature-conditional):** `settings` / `shopSettings` fields the frontend
+depends on are required only when the feature that uses them is on (the rule is chosen at build
+time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
+- `shop` / `users` / `newsletter` (= core-front sends mail): `senderName`, `senderEmail`,
+  `siteTitle` (default locale) — core-front's mail notifiers throw without them — and `privacyPage`.
+- `shop`: `defaultTaxCategory` (otherwise uncategorized products get 0 % VAT), `termsPage` +
+  `withdrawalPolicyPage` (checkout hides its confirmations when unset), `billingAddress` street/zip/
+  city/country (invoice seller address), `returnShippingBorneBy`. Warnings only: `company`
+  name, address (street/zip/city/country), email, vatId, `defaultCountry` (checkout falls back to `'AT'`).
+
+When a frontend feature starts depending on a settings field, add the matching conditional rule
+here. Validation only fires when an editor publishes — existing documents must be checked per shop
+before go-live.
+
 `menuItem` `linkType`: `internal` | `external` | `submenu` (unless `menus.disableSubmenus`) |
 `system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The
 options come from the feature-filtered list in `src/schemas/systemPages.ts`, currently only

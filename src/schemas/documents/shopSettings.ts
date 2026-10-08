@@ -10,6 +10,7 @@ import {
   OrderWithdrawalIcon,
 } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
+import { requiredSubfields } from '../../utils/validation'
 
 export const shopSettings: ITSDocumentDefinition = {
   name: 'shopSettings',
@@ -53,17 +54,22 @@ export const shopSettings: ITSDocumentDefinition = {
         f('shopPage', 'reference', {
           to: [{ type: 'page' }],
         }),
+        // Checkout hides the terms / withdrawal confirmations when these are unset.
         f('termsPage', 'reference', {
           to: [{ type: 'page' }],
+          validation: (rule) => rule.required(),
         }),
         f('withdrawalPolicyPage', 'reference', {
           to: [{ type: 'page' }],
+          validation: (rule) => rule.required(),
         }),
         ...builders.filterField(),
       ],
       shipping: [
+        // Checkout falls back to 'AT' when unset.
         f('defaultCountry', 'reference', {
           to: [{ type: 'taxCountry' }],
+          validation: (rule) => rule.required().warning(),
         }),
 
         ...(vouchersEnabled
@@ -81,8 +87,10 @@ export const shopSettings: ITSDocumentDefinition = {
         ? { stock: [f('stockThreshold', 'number', { validation: (Rule) => Rule.positive() })] }
         : {}),
       tax: [
+        // Without it, products lacking a tax category are charged 0 % VAT.
         f('defaultTaxCategory', 'reference', {
           to: [{ type: 'taxCategory' }],
+          validation: (rule) => rule.required(),
         }),
       ],
       orders: [
@@ -93,7 +101,13 @@ export const shopSettings: ITSDocumentDefinition = {
         f('orderNumberPrefix', 'string'),
         f('invoiceNumberPrefix', 'string'),
       ],
-      billing: [f('billingAddress', 'businessAddress'), f('bankAccount', 'bankAccount')],
+      billing: [
+        // Seller address on the invoice + mail footer; fallback return address.
+        f('billingAddress', 'businessAddress', {
+          validation: requiredSubfields(['line1', 'zip', 'city', 'country'], ctx.t.default),
+        }),
+        f('bankAccount', 'bankAccount'),
+      ],
       returns: [
         f('returnAddress', 'businessAddress'),
         f('returnShippingBorneBy', 'string', {
@@ -102,6 +116,8 @@ export const shopSettings: ITSDocumentDefinition = {
             layout: 'radio',
           },
           initialValue: 'customer',
+          // Legal choice (withdrawal instructions + mails) — must be set explicitly.
+          validation: (rule) => rule.required(),
         }),
         f('returnPolicyNote', 'i18nText'),
       ],
