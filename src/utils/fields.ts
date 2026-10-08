@@ -99,7 +99,9 @@ export const createFieldFactory = (
       }, [])
     }
 
-    if (type === 'string' && rest.options) {
+    // Translated titles for option lists — on string fields and on arrays of strings (checkbox
+    // lists); without a title Sanity treats each `{ value }` entry as an (invalid) object item.
+    if ((type === 'string' || type === 'array') && rest.options) {
       const ops = rest.options as any
       if (ops.list && Array.isArray(ops.list)) {
         ops.list.forEach((option: { title?: string; value: string }) => {

@@ -147,6 +147,7 @@ export const shopSettings: ITSDocumentDefinition = {
         f('withdrawalExceptions', 'array', {
           of: [{ type: 'string' }],
           options: {
+            layout: 'grid',
             list: [
               { value: 'customMade' },
               { value: 'perishable' },
