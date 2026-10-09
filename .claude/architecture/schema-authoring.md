@@ -55,8 +55,10 @@ Schema/document title & description also auto-resolve from the `schema` namespac
 - **Feature-aware references** — for `reference` and `array`-of-reference, `to` targets are filtered
   to feature-enabled schema types (disabled types are dropped; if the only target is disabled the
   field/array item is removed), and `disableNew` is set when a target doc has `allowCreate === false`.
-- **Option auto-translation** — a `string` field with an `options.list` gets each option's `title`
-  filled from `fields.<name>.options.<value>`.
+- **Option auto-translation** — a `string` field **or an array of strings** (checkbox list) with an
+  `options.list` gets each option's missing `title` filled from `fields.<name>.options.<value>`
+  (resolved under the document's namespace first). Without titles Sanity treats `{ value }` entries
+  as invalid object items. Long option labels: keep the default list layout, not `layout: 'grid'`.
 - **Portable-text** — `block` members in an array get styles/decorators/annotations auto-titled.
 - **i18n validation shortcuts** via `overrides.i18n` (one or an array), backed by
   `src/utils/validation.ts` (`i18nValidators`):
