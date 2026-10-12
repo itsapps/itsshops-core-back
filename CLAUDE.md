@@ -63,7 +63,8 @@ link serves `dist/`, so a backend only sees a change once `npm run build` ran (o
 **Git workflow:** develop on `main` (+ feature branches) with **your own GitHub user**. Core is a
 library consumed as a git dependency and is never deployed to Netlify, so no customer-identity / PAT
 applies here (that's only for customer repos). Consumption/release: core-front's
-`.claude/workflows/consuming-core-and-deploy.md`.
+`.claude/workflows/consuming-core-and-deploy.md` ("Release flow": production pins a core **tag**;
+cut versions with `npm version <patch|minor|major>`, tags without `v` prefix).
 
 ## Features that span backend and frontend
 
