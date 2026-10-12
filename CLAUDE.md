@@ -49,6 +49,12 @@ npm run typegen     # sanity typegen generate                → src/types/sanit
 npm run lint / format
 ```
 
+Data ops on a dataset (count/delete documents by type, ad-hoc GROQ) use core-front's `itsshops`
+CLI: `itsshops sanity [-e <envfile>] query|count|delete …` — needs `SANITY_PROJECT_ID`/
+`SANITY_DATASET`/`SANITY_TOKEN` (not the backend's `SANITY_STUDIO_*` names). `delete` asks you to
+type the dataset name and runs as one all-or-nothing transaction. It **bypasses studio delete guards**
+(e.g. matched `orderWithdrawal`s). See core-front `.claude/architecture/cli.md`.
+
 Develop against a customer backend via `npm link` (no yalc). **Rebuild after every core change:** the
 link serves `dist/`, so a backend only sees a change once `npm run build` ran (or while
 `npm run watch` is running) — then restart `sanity dev`. See
