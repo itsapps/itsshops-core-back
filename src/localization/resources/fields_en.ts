@@ -1745,6 +1745,13 @@ export default {
   },
   shippingInfoModule: {
     title: 'Shipping & payment (generated)',
+    fields: {
+      paymentInfo: {
+        title: 'Payment methods',
+        description:
+          'Text about the payment methods (e.g. “You can pay by credit card, Apple Pay or Google Pay.”). Must match the payment methods enabled in Stripe. Blank lines separate paragraphs. Empty = no “Payment” section.',
+      },
+    },
   },
   youtube: {
     title: 'YouTube',

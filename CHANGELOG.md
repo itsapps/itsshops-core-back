@@ -4,6 +4,14 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 3.1.0 — 2026-10-13
+
+Pairs with **core-front 2.1.0**.
+
+### Added
+- `shippingInfoModule`: `paymentInfo` field ("Zahlungsarten", localized plain text) for the
+  payment-methods text — replaces the separate rich-text module on the "Versand & Zahlung" page.
+
 ## 3.0.0 — 2026-10-12
 
 First tagged release since 2.0.0. Pairs with **core-front 2.0.0**.

@@ -1760,6 +1760,13 @@ export default {
   },
   shippingInfoModule: {
     title: 'Versand & Zahlung (automatisch)',
+    fields: {
+      paymentInfo: {
+        title: 'Zahlungsarten',
+        description:
+          'Text zu den Zahlungsarten (z. B. „Sie können per Kreditkarte, Apple Pay oder Google Pay bezahlen.“). Muss zu den in Stripe aktivierten Zahlungsarten passen. Leerzeilen trennen Absätze. Leer = kein Abschnitt „Zahlung“.',
+      },
+    },
   },
   youtube: {
     title: 'YouTube',

@@ -77,9 +77,10 @@ optional — except for `orderWithdraw`, whose label is fixed by law ("Vertrag w
 ## Modules (`src/schemas/modules/`)
 
 Page/content building blocks: `carousel`, `categoryList`, `productList`, `productVariantList`,
-`youtube`, plus two field-less **legal modules** (feature `shop`): `withdrawalPolicyModule` (generated
-withdrawal instructions + model form) and `shippingInfoModule` ("Versand & Zahlung": shipping
-methods + warranty notice). Their content comes from settings, rendered by core-front (`commerce-and-netlify.md`
+`youtube`, plus two **legal modules** (feature `shop`): `withdrawalPolicyModule` (field-less; generated
+withdrawal instructions + model form) and `shippingInfoModule` ("Versand & Zahlung": one field,
+`paymentInfo` — editor-written payment-methods text, `i18nText`, must match Stripe — plus the
+generated shipping methods + warranty notice). Their generated content comes from settings, rendered by core-front (`commerce-and-netlify.md`
 → "Legal texts"); customers add them to their page `modules` array. These are the array members of a document's `modules[]` and map to frontend module
 templates (`itsshops-core-front` → `templates/overridable/modules/` and `core/modules/`). The
 `productList` module pairs with the frontend's URL-based filter system.
