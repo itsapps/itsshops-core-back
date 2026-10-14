@@ -314,6 +314,8 @@ export default {
     menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
     duplicateVolume: 'Each volume may only appear once.',
+    duplicatePlaces: 'Each box size may only appear once.',
+    volumeInOneGroup: 'Each bottle size may only be in one box type.',
     slugFormat:
       'Use lowercase letters, numbers and "-" only ("/" for nested paths). Spaces and capitals are removed automatically in the URL.',
   },
@@ -494,8 +496,13 @@ export default {
           pickup: 'Pickup',
         },
       },
-      packagingConfigs: {
+      packagingGroups: {
         title: 'Wine packaging',
+        description:
+          'Box types: which bottle sizes go in them and what the boxes cost. The cheapest combination is calculated at checkout. Bottle sizes without a group go into the group of the next larger bottle (1 per place).',
+      },
+      packagingConfigs: {
+        title: 'Wine packaging (old)',
       },
       pickupFee: {
         title: 'Pickup fee',
@@ -509,6 +516,47 @@ export default {
       countries_zero: 'No countries selected',
       countries_one: '{{count}} country',
       countries_other: '{{count}} countries',
+    },
+  },
+  packagingGroup: {
+    title: 'Box type',
+    fields: {
+      bottles: {
+        title: 'Bottles',
+        description: 'Bottle sizes that go into these boxes.',
+      },
+      packages: {
+        title: 'Boxes',
+        description: 'Box sizes by places, with price.',
+      },
+    },
+  },
+  packagingGroupPackage: {
+    title: 'Box',
+    fields: {
+      places: {
+        title: 'Places',
+        description: 'How many bottles fit (bottles with "Bottles per place" > 1 share a place).',
+      },
+      price: { title: 'Price', description: 'Gross price' },
+    },
+    preview: {
+      places_one: 'Box for {{count}} bottle',
+      places_other: 'Box for {{count}} bottles',
+    },
+  },
+  packagingGroupBottle: {
+    title: 'Bottle size',
+    fields: {
+      volume: { title: 'Bottle size' },
+      perPlace: {
+        title: 'Bottles per place',
+        description: 'How many bottles of this size take one place, e.g. 2 for 0.375 l in 0.75 l boxes.',
+      },
+    },
+    preview: {
+      perPlace_one: '1 bottle per place',
+      perPlace_other: '{{count}} bottles per place',
     },
   },
   winePackage: {

@@ -4,9 +4,21 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
-## Unreleased
+## Unreleased (4.0.0)
+
+Pairs with **core-front 3.0.0**.
+
+### Upgrading
+- Shipping methods: enter **Weinverpackung** as packaging groups (box types: boxes by places +
+  bottle sizes with "Flaschen pro Platz"). The old per-volume packaging is hidden (kept read-only
+  for this release so a live frontend on the old core still prices); core-front 3.0.0 reads only
+  the groups. Release this backend first, enter the groups, then the frontend.
 
 ### Added
+- `shippingMethod.packagingGroups` (`packagingGroup`, `packagingGroupPackage`,
+  `packagingGroupBottle`) — bottle sizes share boxes, e.g. 2 × 0.375 l per 0.75 l place.
+- Order packaging lines store the group's sizes (`volumes[]`); `OrderView` shows them
+  ("1× 6er · 0.75 l / 0.375 l"), old orders keep their single size.
 - Orders, "Status aktualisieren": choosing **shipped** on a delivery order offers an optional
   tracking code (filled in with the current one). It is saved with the status, before the shipped
   mail is sent, so the mail shows it.

@@ -316,6 +316,8 @@ export default {
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
     countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',
     duplicateVolume: 'Jedes Volumen darf nur einmal vorkommen.',
+    duplicatePlaces: 'Jede Kartongröße darf nur einmal vorkommen.',
+    volumeInOneGroup: 'Jede Flaschengröße darf nur in einer Kartonart vorkommen.',
     slugFormat:
       'Nur Kleinbuchstaben, Zahlen und "-" ("/" für verschachtelte Pfade). Leerzeichen und Großbuchstaben werden in der URL automatisch entfernt.',
   },
@@ -498,8 +500,13 @@ export default {
           pickup: 'Abholung',
         },
       },
-      packagingConfigs: {
+      packagingGroups: {
         title: 'Weinverpackung',
+        description:
+          'Kartonarten: welche Flaschengrößen hineinkommen und was die Kartons kosten. Beim Bestellen wird die günstigste Kombination berechnet. Flaschengrößen ohne Gruppe kommen in die Gruppe der nächstgrößeren Flasche (1 pro Platz).',
+      },
+      packagingConfigs: {
+        title: 'Weinverpackung (alt)',
       },
       pickupFee: {
         title: 'Kosten für die Abholung',
@@ -513,6 +520,47 @@ export default {
       countries_zero: 'Keine Länder ausgewählt',
       countries_one: '{{count}} Land',
       countries_other: '{{count}} Länder',
+    },
+  },
+  packagingGroup: {
+    title: 'Kartonart',
+    fields: {
+      bottles: {
+        title: 'Flaschen',
+        description: 'Flaschengrößen, die in diese Kartons kommen.',
+      },
+      packages: {
+        title: 'Kartons',
+        description: 'Kartongrößen nach Plätzen, mit Preis.',
+      },
+    },
+  },
+  packagingGroupPackage: {
+    title: 'Karton',
+    fields: {
+      places: {
+        title: 'Plätze',
+        description: 'Wie viele Flaschen hineinpassen (Flaschen mit „Flaschen pro Platz“ > 1 teilen sich einen Platz).',
+      },
+      price: { title: 'Preis', description: 'Brutto-Preis' },
+    },
+    preview: {
+      places_one: 'Karton für {{count}} Flasche',
+      places_other: 'Karton für {{count}} Flaschen',
+    },
+  },
+  packagingGroupBottle: {
+    title: 'Flaschengröße',
+    fields: {
+      volume: { title: 'Flaschengröße' },
+      perPlace: {
+        title: 'Flaschen pro Platz',
+        description: 'Wie viele Flaschen dieser Größe einen Platz belegen, z. B. 2 für 0,375 l in Kartons für 0,75 l.',
+      },
+    },
+    preview: {
+      perPlace_one: '1 Flasche pro Platz',
+      perPlace_other: '{{count}} Flaschen pro Platz',
     },
   },
   winePackage: {

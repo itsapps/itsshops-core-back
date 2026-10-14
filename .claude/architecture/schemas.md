@@ -19,7 +19,19 @@ builders, auto-translation, validation shortcuts) see
 `address`, `addressStrict`, `businessAddress`, `company`, `bankAccount`, `seo`, `internalLink`,
 `menuItem`, `baseImage`, `cropImage`, `localeImage`, `localeAltImage`, `bundleItem`,
 `productSpecification`, `shippingRate`, `taxRule`, `generatedZip`, wine objects (`wine`,
-`winePackage`, `winePackagingConfig`), and `orders/`.
+`winePackage`, `winePackagingConfig` — legacy, see below), packaging groups (`packagingGroup`,
+`packagingGroupPackage`, `packagingGroupBottle`), and `orders/`.
+
+**Wine packaging:** `shippingMethod.packagingGroups[]` — each group is a box type with
+`packages[]{ places, price }` and `bottles[]{ volume, perPlace }` (`perPlace` bottles share one
+place). No text fields: labels are derived from the sizes. Validation: unique size and box size per
+group, each size in at most one group per method. The checkout math and info-page rendering live in
+core-front (`commerce-and-netlify.md` → Wine packaging). `packagingConfigs` (old per-volume config)
+is kept **hidden + read-only** for one release so a live frontend on the old core keeps pricing
+while groups are entered — remove it (and `winePackage`/`winePackagingConfig`) in the next major.
+Order snapshot `fulfillmentPackagingLine`: `volumes[]` (group sizes), `packSize` (places),
+`quantity`, `price`; old orders have `volume` instead (shown only when set; `OrderView` handles
+both).
 
 **Product specifications:** `product` and `productVariant` both have an optional `specifications`
 array of `productSpecification` (`label` + `value`, both `i18nString`; Studio label

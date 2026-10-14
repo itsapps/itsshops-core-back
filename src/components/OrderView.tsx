@@ -75,7 +75,10 @@ type OrderTotals = {
 
 type PackagingLine = {
   _key: string
-  volume: number
+  /** Bottle sizes of the packaging group (core-back ≥ 4.0.0). */
+  volumes?: number[]
+  /** Single bottle size — orders before core-back 4.0.0. */
+  volume?: number
   packSize: number
   quantity: number
   price: number
@@ -231,6 +234,14 @@ function useOrderWithdrawals(orderId: string | undefined): WithdrawalDoc[] {
   }, [cleanId, sanityClient])
 
   return withdrawals
+}
+
+/** Bottle sizes of a packaging line, largest first: "0.75 l / 0.375 l" (ml below 1 l, as before). */
+function formatVolumes(volumes: number[]): string {
+  return [...volumes]
+    .sort((a, b) => b - a)
+    .map((v) => (v >= 1000 ? `${v / 1000} l` : `${v} ml`))
+    .join(' / ')
 }
 
 function formatAddressLines(address: Address): string[] {
@@ -438,7 +449,7 @@ export const OrderView: UserViewComponent = (props) => {
                 {fulfillment.packagingLines.map((line) => (
                   <Flex key={line._key} justify="space-between" gap={3}>
                     <Text>
-                      {`${line.quantity}× ${t('order.pack', `${line.packSize}-pack`, { packSize: line.packSize })} · ${line.volume >= 1000 ? `${line.volume / 1000} l` : `${line.volume} ml`}`}
+                      {`${line.quantity}× ${t('order.pack', `${line.packSize}-pack`, { packSize: line.packSize })} · ${formatVolumes(line.volumes ?? (line.volume ? [line.volume] : []))}`}
                     </Text>
                     {fulfillment.shippingCost > 0 && (
                       <Text weight="medium">{money(line.price * line.quantity)}</Text>

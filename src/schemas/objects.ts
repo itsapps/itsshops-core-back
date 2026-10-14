@@ -29,6 +29,9 @@ import { seo } from './objects/seo'
 import { shippingRate } from './objects/shippingRate'
 import { winePackage } from './objects/winePackage'
 import { winePackagingConfig } from './objects/winePackagingConfig'
+import { packagingGroup } from './objects/packagingGroup'
+import { packagingGroupBottle } from './objects/packagingGroupBottle'
+import { packagingGroupPackage } from './objects/packagingGroupPackage'
 import { taxRule } from './objects/taxRule'
 import { wine } from './objects/wine'
 import { carousel } from './modules/carousel'
@@ -76,6 +79,9 @@ export const getCoreObjects = (
     shippingRate,
     winePackage,
     winePackagingConfig,
+    packagingGroup,
+    packagingGroupBottle,
+    packagingGroupPackage,
     taxRule,
     vatBreakdownItem,
     wine,

@@ -96,11 +96,14 @@ export type ShopSettings = {
   returnAddress?: BusinessAddress
   returnShippingBorneBy?: 'customer' | 'merchant'
   returnPolicyNote?: InternationalizedArrayText
+  withdrawalPeriodStart?: 'goods' | 'multipleGoods' | 'partialDeliveries' | 'subscription'
+  withdrawalExceptions?: Array<string>
   defaultTaxCategory?: TaxCategoryReference
   stockThreshold?: number
   shopPage?: PageReference
   termsPage?: PageReference
   withdrawalPolicyPage?: PageReference
+  shippingInfoPage?: PageReference
   filters?: Array<
     | {
         field?: 'price' | 'category'
@@ -302,6 +305,7 @@ export type Settings = {
   >
   senderName?: string
   senderEmail?: string
+  shopNotificationEmail?: string
   gtmId?: string
   company?: Company
 }
@@ -314,6 +318,8 @@ export type Company = {
   email?: string
   phone?: string
   vatId?: string
+  registerNumber?: string
+  registerCourt?: string
 }
 
 export type SanityImageCrop = {
@@ -347,7 +353,11 @@ export type OrderWithdrawal = {
   _rev: string
   orderRef?: OrderReference
   declaredAt?: string
-  status?: 'received' | 'processing' | 'refunded' | 'rejected'
+  status?: 'unmatched' | 'received' | 'processing' | 'refunded' | 'rejected'
+  name?: string
+  email?: string
+  orderNumber?: string
+  locale?: string
   reason?: string
   note?: string
 }
@@ -410,6 +420,7 @@ export type Fulfillment = {
   trackingCode?: string
   pickupLocation?: string
   methodTitle?: string
+  deliveryTime?: string
   methodType?: 'delivery' | 'pickup'
   shippingCost?: number
   taxSnapshot?: VatBreakdownItem
@@ -444,12 +455,22 @@ export type Order = {
   orderNumber?: string
   invoiceNumber?: string
   status?: 'created' | 'processing' | 'shipped' | 'delivered' | 'canceled' | 'returned'
+  orderDate?: string
   paymentStatus?: 'succeeded' | 'refunded' | 'partiallyRefunded'
   statusHistory?: Array<
     {
       _key: string
     } & OrderStatusHistory
   >
+  payment?: OrderPaymentMethod
+}
+
+export type OrderPaymentMethod = {
+  _type: 'orderPaymentMethod'
+  type?: string
+  brand?: string
+  last4?: string
+  wallet?: string
 }
 
 export type NewsletterSubscriber = {
@@ -601,6 +622,17 @@ export type Youtube = {
   start?: string
 }
 
+export type ShippingInfoModule = {
+  _type: 'shippingInfoModule'
+  paymentInfo?: InternationalizedArrayText
+  disabled?: boolean
+}
+
+export type WithdrawalPolicyModule = {
+  _type: 'withdrawalPolicyModule'
+  disabled?: boolean
+}
+
 export type Wine = {
   _type: 'wine'
   vinofactWineId?: string
@@ -637,6 +669,50 @@ export type TaxRule = {
   _type: 'taxRule'
   taxCategory?: TaxCategoryReference
   rate?: number
+}
+
+export type PackagingGroupPackage = {
+  _type: 'packagingGroupPackage'
+  places?: number
+  price?: number
+}
+
+export type PackagingGroupBottle = {
+  _type: 'packagingGroupBottle'
+  volume?:
+    | 100
+    | 187
+    | 200
+    | 250
+    | 375
+    | 500
+    | 750
+    | 1000
+    | 1500
+    | 2000
+    | 2250
+    | 3000
+    | 4500
+    | 5000
+    | 6000
+    | 9000
+    | 12000
+    | 15000
+  perPlace?: number
+}
+
+export type PackagingGroup = {
+  _type: 'packagingGroup'
+  bottles?: Array<
+    {
+      _key: string
+    } & PackagingGroupBottle
+  >
+  packages?: Array<
+    {
+      _key: string
+    } & PackagingGroupPackage
+  >
 }
 
 export type WinePackagingConfig = {
@@ -931,6 +1007,7 @@ export type GeneratedZip = {
 
 export type FulfillmentPackagingLine = {
   _type: 'fulfillmentPackagingLine'
+  volumes?: Array<number>
   volume?: number
   packSize?: number
   quantity?: number
@@ -944,6 +1021,7 @@ export type ShippingMethod = {
   _updatedAt: string
   _rev: string
   title?: InternationalizedArrayString
+  deliveryTime?: InternationalizedArrayString
   methodType?: 'delivery'
   eligibleCountries?: Array<
     {
@@ -954,6 +1032,11 @@ export type ShippingMethod = {
     {
       _key: string
     } & ShippingRate
+  >
+  packagingGroups?: Array<
+    {
+      _key: string
+    } & PackagingGroup
   >
   packagingConfigs?: Array<
     {
@@ -1573,6 +1656,7 @@ export type AllSanitySchemaTypes =
   | ShippingMethodReference
   | Fulfillment
   | Order
+  | OrderPaymentMethod
   | NewsletterSubscriber
   | Menu
   | Manufacturer
@@ -1581,9 +1665,14 @@ export type AllSanitySchemaTypes =
   | Customer
   | Address
   | Youtube
+  | ShippingInfoModule
+  | WithdrawalPolicyModule
   | Wine
   | VatBreakdownItem
   | TaxRule
+  | PackagingGroupPackage
+  | PackagingGroupBottle
+  | PackagingGroup
   | WinePackagingConfig
   | WinePackage
   | ShippingRate

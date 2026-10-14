@@ -58,21 +58,34 @@ export const shippingMethod: ITSDocumentDefinition = {
           //     return true
           //   }),
         }),
-        f('packagingConfigs', 'array', {
-          of: [{ type: 'winePackagingConfig' }],
+        f('packagingGroups', 'array', {
+          of: [{ type: 'packagingGroup' }],
           // hidden: ({ parent }) => parent?.methodType === 'pickup',
           validation: (Rule) =>
-            Rule.custom((configs: { volume?: number }[] | undefined) => {
-              if (!configs || configs.length <= 1) return true
-              const volumes = configs.map((c) => c.volume)
+            Rule.custom((groups: { bottles?: { volume?: number }[] }[] | undefined) => {
+              // A bottle size belongs to one box type only — the checkout must not have to choose.
               const seen = new Set<number>()
-              for (const v of volumes) {
-                if (v === undefined) continue
-                if (seen.has(v)) return t.default('validation.duplicateVolume', 'Duplicate volume')
-                seen.add(v)
+              for (const group of groups ?? []) {
+                for (const bottle of group.bottles ?? []) {
+                  if (bottle.volume === undefined) continue
+                  if (seen.has(bottle.volume)) {
+                    return t.default(
+                      'validation.volumeInOneGroup',
+                      'Each bottle size may only be in one group',
+                    )
+                  }
+                  seen.add(bottle.volume)
+                }
               }
               return true
             }),
+        }),
+        // Superseded by packagingGroups (core-back 4.0.0). Kept hidden for one release so a live
+        // frontend on the old core still prices while the groups are entered; remove afterwards.
+        f('packagingConfigs', 'array', {
+          of: [{ type: 'winePackagingConfig' }],
+          hidden: true,
+          readOnly: true,
         }),
         // f('taxCategory', 'reference', {
         //   to: [{ type: 'taxCategory' }],
