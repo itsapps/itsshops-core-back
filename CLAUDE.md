@@ -25,7 +25,7 @@ map for how customers consume both. Feature flags here are a **superset** of the
 
 ## What this is
 
-`@itsapps/itsshops-core-back` (package **v2.0.0**) — a **Sanity Studio plugin** distributed as an npm
+`@itsapps/itsshops-core-back` (version: `package.json` / git tags) — a **Sanity Studio plugin** distributed as an npm
 package. Built on **Sanity 6 / `@sanity/ui` v4 / React 19**. Customer backends call
 `createItsshopsWorkspaces(config)` and spread the result into their `sanity.config.ts`.
 
