@@ -239,6 +239,7 @@ export default {
         refundAmount: 'Rückerstattungsbetrag eingeben',
         enterValidAmount: 'Bitte geben Sie einen gültigen Betrag ein',
         notifyCustomer: 'Kunde benachrichtigen',
+        trackingCodeHint: 'Optional – wird in der Versandbestätigung angezeigt',
       },
       sendMailDialog: {
         title: 'Email senden',

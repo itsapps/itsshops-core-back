@@ -235,6 +235,7 @@ export default {
         refundAmount: 'Enter refund amount',
         enterValidAmount: 'Please enter a valid amount',
         notifyCustomer: 'Notify customer',
+        trackingCodeHint: 'Optional – shown in the shipping confirmation',
       },
       sendMailDialog: {
         title: 'Send email',

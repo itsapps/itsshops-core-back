@@ -6,13 +6,16 @@
  * state machine in `utils/orderTransitions.ts` and walks the admin through:
  *
  *   1. pick a target state (fulfillment or payment)
- *   2. for partial refunds: enter an amount
+ *   2. for partial refunds: enter an amount; for `shipped` (delivery orders):
+ *      optionally enter/edit the tracking code
  *   3. optionally notify the customer
  *   4. confirm
  *
  * On confirm:
  *   - if a refund: call `frontendClient.refundPayment` first; bail on failure
- *   - patch the order document (set new status + append statusHistory)
+ *   - patch the order document (set new status + append statusHistory, plus
+ *     `fulfillment.trackingCode` when shipping) — committed before the mail,
+ *     so the shipped mail already shows the tracking code
  *   - if notifyCustomer: call `frontendClient.notifyOrder` with the matching
  *     mailType from `mailTypeForStatus`
  *
@@ -43,6 +46,7 @@ type OrderActionDoc = {
   paymentIntentId: string
   totals?: { grandTotal?: number }
   customer?: { locale?: string }
+  fulfillment?: { methodType?: 'delivery' | 'pickup'; trackingCode?: string }
 }
 
 function buildActions(
@@ -128,6 +132,7 @@ function OrderActionContent({
   const [notifyCustomer, setNotifyCustomer] = useState(true)
   const [note, setNote] = useState('')
   const [partialAmount, setPartialAmount] = useState<number | undefined>()
+  const [trackingCode, setTrackingCode] = useState(order.fulfillment?.trackingCode ?? '')
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<string>('')
 
@@ -136,9 +141,18 @@ function OrderActionContent({
   const isPartialRefundValid =
     partialAmount !== undefined && partialAmount > 0 && partialAmount * 100 <= grandTotal
   const notificationMailType = mailTypeForStatus(selectedAction?.newState)
+  // Pickup orders have no tracking code (the schema hides the field for them too).
+  const showTrackingCode =
+    selectedAction?.type === 'fulfillment' &&
+    selectedAction.newState === 'shipped' &&
+    order.fulfillment?.methodType !== 'pickup'
 
   const handleAmountChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setPartialAmount(Number(e.currentTarget.value)),
+    [],
+  )
+  const handleTrackingCodeChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => setTrackingCode(e.currentTarget.value),
     [],
   )
   const handleNoteChange = useCallback(
@@ -208,10 +222,20 @@ function OrderActionContent({
       })
     }
 
+    // Tracking code is saved in the same patch, before the shipped mail is sent.
+    const trimmedTrackingCode = trackingCode.trim()
+    const trackingCodeChanged =
+      showTrackingCode && trimmedTrackingCode !== (order.fulfillment?.trackingCode ?? '')
+    if (trackingCodeChanged && trimmedTrackingCode) {
+      setFields['fulfillment.trackingCode'] = trimmedTrackingCode
+    }
+
     try {
-      await sanityClient
-        .patch(order._id)
-        .set(setFields)
+      let patch = sanityClient.patch(order._id).set(setFields)
+      if (trackingCodeChanged && !trimmedTrackingCode) {
+        patch = patch.unset(['fulfillment.trackingCode'])
+      }
+      await patch
         .append('statusHistory', historyEntries)
         .commit({ autoGenerateArrayKeys: false, returnDocuments: false })
     } catch (err) {
@@ -255,6 +279,8 @@ function OrderActionContent({
     isPartialRefund,
     isPartialRefundValid,
     partialAmount,
+    trackingCode,
+    showTrackingCode,
     note,
     notifyCustomer,
     notificationMailType,
@@ -309,6 +335,28 @@ function OrderActionContent({
               {t('actions.order.updateStatus.enterValidAmount', 'Enter a valid amount')}
             </Text>
           )}
+        </Stack>
+      )}
+
+      {showTrackingCode && (
+        <Stack gap={2}>
+          <Text size={1} weight="medium">
+            <label htmlFor="order-tracking-code-input">
+              {t('order.trackingNumber', 'Tracking number')}
+            </label>
+          </Text>
+          <TextInput
+            id="order-tracking-code-input"
+            value={trackingCode}
+            onChange={handleTrackingCodeChange}
+            aria-describedby="order-tracking-code-hint"
+          />
+          <Text size={1} muted id="order-tracking-code-hint">
+            {t(
+              'actions.order.updateStatus.trackingCodeHint',
+              'Optional — shown in the shipping confirmation',
+            )}
+          </Text>
         </Stack>
       )}
 

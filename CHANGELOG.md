@@ -4,6 +4,13 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased
+
+### Added
+- Orders, "Status aktualisieren": choosing **shipped** on a delivery order offers an optional
+  tracking code (filled in with the current one). It is saved with the status, before the shipped
+  mail is sent, so the mail shows it.
+
 ## 3.1.0 — 2026-10-13
 
 Pairs with **core-front 2.1.0**.
