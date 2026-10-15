@@ -4,6 +4,18 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased
+
+Pairs with **core-front** (next: generated privacy policy).
+
+### Upgrading
+- Add `{ type: 'privacyPolicyModule' }` to the page `modules` array (`schema/extensions.ts`) to
+  offer the generated privacy policy.
+
+### Added
+- `privacyPolicyModule` (no feature gate) with `extraSections` (`privacyPolicySection`: heading +
+  text) and `dpoContact`.
+
 ## 4.0.0
 
 Pairs with **core-front 3.0.0**.

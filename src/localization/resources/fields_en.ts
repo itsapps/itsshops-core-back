@@ -1801,6 +1801,27 @@ export default {
       },
     },
   },
+  privacyPolicyModule: {
+    title: 'Privacy policy (generated)',
+    fields: {
+      extraSections: {
+        title: 'Additional sections',
+        description:
+          'Only for data processing the shop cannot know about: every external service embedded on a page (e.g. a map, a video, a third-party form). Per service: provider with address, which data, purpose, legal basis and any transfer to third countries.',
+      },
+      dpoContact: {
+        title: 'Data protection officer',
+        description: 'Contact, only if one is appointed. Empty = not mentioned.',
+      },
+    },
+  },
+  privacyPolicySection: {
+    title: 'Section',
+    fields: {
+      heading: { title: 'Heading' },
+      text: { title: 'Text', description: 'Blank lines separate paragraphs.' },
+    },
+  },
   youtube: {
     title: 'YouTube',
     fields: {

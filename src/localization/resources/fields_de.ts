@@ -1816,6 +1816,27 @@ export default {
       },
     },
   },
+  privacyPolicyModule: {
+    title: 'Datenschutzerklärung (automatisch)',
+    fields: {
+      extraSections: {
+        title: 'Zusätzliche Abschnitte',
+        description:
+          'Nur für Datenverarbeitung, die der Shop nicht selbst kennt: jeder externe Dienst, der auf einer Seite eingebunden ist (z. B. Karte, Video, Formular eines Drittanbieters). Je Dienst: Anbieter mit Anschrift, welche Daten, Zweck, Rechtsgrundlage und ggf. Übermittlung in Drittländer.',
+      },
+      dpoContact: {
+        title: 'Datenschutzbeauftragte:r',
+        description: 'Kontakt, nur falls eine:r bestellt ist. Leer = kein Hinweis.',
+      },
+    },
+  },
+  privacyPolicySection: {
+    title: 'Abschnitt',
+    fields: {
+      heading: { title: 'Überschrift' },
+      text: { title: 'Text', description: 'Leerzeilen trennen Absätze.' },
+    },
+  },
   youtube: {
     title: 'YouTube',
     fields: {

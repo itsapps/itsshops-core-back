@@ -41,6 +41,8 @@ import { productList } from './modules/productList'
 import { youtube } from './modules/youtube'
 import { withdrawalPolicyModule } from './modules/withdrawalPolicyModule'
 import { shippingInfoModule } from './modules/shippingInfoModule'
+import { privacyPolicyModule } from './modules/privacyPolicyModule'
+import { privacyPolicySection } from './objects/privacyPolicySection'
 
 export const getCoreObjects = (
   extensions: ITSSchemaDefinition[] | undefined,
@@ -87,6 +89,8 @@ export const getCoreObjects = (
     wine,
     withdrawalPolicyModule,
     shippingInfoModule,
+    privacyPolicyModule,
+    privacyPolicySection,
     youtube,
     ...(extensions ? extensions : []),
   ]

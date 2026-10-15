@@ -89,10 +89,13 @@ optional — except for `orderWithdraw`, whose label is fixed by law ("Vertrag w
 ## Modules (`src/schemas/modules/`)
 
 Page/content building blocks: `carousel`, `categoryList`, `productList`, `productVariantList`,
-`youtube`, plus two **legal modules** (feature `shop`): `withdrawalPolicyModule` (field-less; generated
-withdrawal instructions + model form) and `shippingInfoModule` ("Versand & Zahlung": one field,
-`paymentInfo` — editor-written payment-methods text, `i18nText`, must match Stripe — plus the
-generated shipping methods + warranty notice). Their generated content comes from settings, rendered by core-front (`commerce-and-netlify.md`
+`youtube`, plus three **legal modules**: `withdrawalPolicyModule` (feature `shop`, field-less;
+generated withdrawal instructions + model form), `shippingInfoModule` (feature `shop`; "Versand &
+Zahlung": one field, `paymentInfo` — editor-written payment-methods text, `i18nText`, must match
+Stripe — plus the generated shipping methods + warranty notice) and `privacyPolicyModule` (no feature
+gate — every site needs one; generated privacy policy; fields only for what core can't know:
+`extraSections[]` of `privacyPolicySection` {`heading` i18nString, `text` i18nText} for external
+services the shop embeds itself, e.g. a map, and optional `dpoContact`). Their generated content comes from settings, rendered by core-front (`commerce-and-netlify.md`
 → "Legal texts"); customers add them to their page `modules` array. These are the array members of a document's `modules[]` and map to frontend module
 templates (`itsshops-core-front` → `templates/overridable/modules/` and `core/modules/`). The
 `productList` module pairs with the frontend's URL-based filter system.

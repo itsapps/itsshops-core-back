@@ -622,6 +622,23 @@ export type Youtube = {
   start?: string
 }
 
+export type PrivacyPolicySection = {
+  _type: 'privacyPolicySection'
+  heading?: InternationalizedArrayString
+  text?: InternationalizedArrayText
+}
+
+export type PrivacyPolicyModule = {
+  _type: 'privacyPolicyModule'
+  extraSections?: Array<
+    {
+      _key: string
+    } & PrivacyPolicySection
+  >
+  dpoContact?: InternationalizedArrayText
+  disabled?: boolean
+}
+
 export type ShippingInfoModule = {
   _type: 'shippingInfoModule'
   paymentInfo?: InternationalizedArrayText
@@ -1665,6 +1682,8 @@ export type AllSanitySchemaTypes =
   | Customer
   | Address
   | Youtube
+  | PrivacyPolicySection
+  | PrivacyPolicyModule
   | ShippingInfoModule
   | WithdrawalPolicyModule
   | Wine

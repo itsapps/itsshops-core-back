@@ -47,6 +47,7 @@ import {
   PiPackage,
   PiQuestion,
   PiRocketLaunch,
+  PiShieldCheck,
   PiSlidersHorizontal,
   PiSquaresFour,
   PiStack,
@@ -102,6 +103,7 @@ export const OrderStatusHistoryIcon = Package
 export const OrderTotalsIcon = PiCalculator
 export const PackageIcon = PiPackage
 export const PageIcon = Document
+export const PrivacyPolicyIcon = PiShieldCheck
 export const ProductVariantListIcon = PiSquaresFour
 export const ProductListIcon = PiSlidersHorizontal
 export const ProductIcon = PiCube
