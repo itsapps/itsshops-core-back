@@ -367,6 +367,15 @@ export const OrderView: UserViewComponent = (props) => {
           <Stack gap={3}>
             <TotalRow label={t('order.subtotal')} value={money(totals?.subtotal)} />
             <TotalRow label={t('order.shipping')} value={money(totals?.shipping)} />
+            {fulfillment?.taxSnapshot && fulfillment.shippingCost > 0 && (
+              <TotalRow
+                label={t('order.shippingVat', `incl. ${fulfillment.taxSnapshot.rate}% VAT`, {
+                  vatRate: fulfillment.taxSnapshot.rate,
+                })}
+                value={money(fulfillment.taxSnapshot.vat)}
+                muted
+              />
+            )}
             {totals?.discount > 0 && (
               <TotalRow label={t('order.discount')} value={`− ${money(totals.discount)}`} />
             )}

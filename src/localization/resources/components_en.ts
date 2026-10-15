@@ -174,6 +174,7 @@ export default {
     orderNumber: 'Order number',
     invoiceNumber: 'Invoice number',
     vatRate: '{{vatRate}}% VAT',
+    shippingVat: 'incl. {{vatRate}}% VAT',
     status: {
       title: 'Status',
       options: {

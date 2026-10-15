@@ -178,6 +178,7 @@ export default {
     orderNumber: 'Bestellnummer',
     invoiceNumber: 'Rechungsnummer',
     vatRate: '{{vatRate}}% MwSt',
+    shippingVat: 'davon {{vatRate}}% MwSt',
     status: {
       title: 'Status',
       options: {
