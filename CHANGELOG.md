@@ -4,6 +4,12 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 4.1.1
+
+### Changed
+- Order view: the totals show the shipping VAT ("davon 13% MwSt" / "incl. 13% VAT", from
+  `fulfillment.taxSnapshot`) under the shipping cost; hidden for free shipping.
+
 ## 4.1.0
 
 Pairs with **core-front 3.1.0** (generated privacy policy).
