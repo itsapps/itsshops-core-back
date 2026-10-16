@@ -18,7 +18,7 @@ Run `/update-docs` (see `~/.claude/commands/update-docs.md`) after changes that 
 schema/feature, or establish a rule.
 
 The **frontend** counterpart is `@itsapps/itsshops-core-front`
-(`/Users/kampfgnu/Documents/programming/jamstack/itsshops-core-front/CLAUDE.md`) — read its ecosystem
+(`~/Documents/programming/jamstack/itsshops-core-front/CLAUDE.md`) — read its ecosystem
 map for how customers consume both. Feature flags here are a **superset** of the frontend's.
 
 ---
