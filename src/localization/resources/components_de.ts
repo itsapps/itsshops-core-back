@@ -207,6 +207,8 @@ export default {
           fulfillment: 'Versand',
         },
       },
+      note: 'Interne Notiz',
+      customerMessage: 'Nachricht an den Kunden',
     },
     withdrawals: {
       title: 'Widerrufe',
@@ -224,6 +226,12 @@ export default {
       sending: 'Email wird versendet ...',
       error: 'Fehler beim Versenden der Kundenmail: {{message}}',
       sendMailSuccess: 'Email erfolgreich versendet',
+      internalNote: 'Interne Notiz',
+      internalNoteHint:
+        'Optional – wird nur im Statusverlauf gespeichert, nie an den Kunden gesendet',
+      customerMessage: 'Nachricht an den Kunden',
+      customerMessageHint:
+        'Optional – erscheint in der Email unter dem Standardtext (max. {{max}} Zeichen)',
       mailTypes: {
         orderConfirmation: 'Bestellbestätigung',
         orderProcessing: 'In Bearbeitung',

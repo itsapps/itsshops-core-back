@@ -6,7 +6,8 @@
  * lets an admin pick any `MailType` from a dropdown and send it on demand —
  * useful for re-sending a confirmation, sending the invoice PDF, etc.
  *
- * No document patch, no statusHistory entry — just a notify call.
+ * No document patch, no statusHistory entry — just a notify call (with an
+ * optional personal message shown in the mail).
  */
 import { SendMailIcon } from '../../assets/icons'
 import { Box, Button, Card, Checkbox, Flex, Select, Stack, Text } from '@sanity/ui'
@@ -15,6 +16,7 @@ import { useCallback, useState } from 'react'
 import type { DocumentActionDescription, DocumentActionProps } from 'sanity'
 
 import { useITSContext } from '../../context/ITSCoreProvider'
+import { CustomerMessageField } from './OrderActions'
 import type { MailType } from '../../utils/orderTransitions'
 
 const MAIL_TYPES: MailType[] = [
@@ -76,6 +78,7 @@ function OrderMailContent({
 
   const [mailType, setMailType] = useState<MailType>('orderConfirmation')
   const [attachInvoice, setAttachInvoice] = useState(false)
+  const [customerMessage, setCustomerMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<string>('')
 
@@ -88,10 +91,19 @@ function OrderMailContent({
     [],
   )
 
+  const handleCustomerMessageChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => setCustomerMessage(e.currentTarget.value),
+    [],
+  )
+
   const handleSend = useCallback(async () => {
     setLoading(true)
     setStatus('')
-    const result = await frontendClient.notifyOrder(mailType, order._id, { attachInvoice })
+    const trimmedCustomerMessage = customerMessage.trim()
+    const result = await frontendClient.notifyOrder(mailType, order._id, {
+      attachInvoice,
+      ...(trimmedCustomerMessage && { customerMessage: trimmedCustomerMessage }),
+    })
     if (result.error) {
       setStatus(`${t('actions.order.error', 'Mail failed', { message: result.error })}`)
       setLoading(false)
@@ -100,15 +112,17 @@ function OrderMailContent({
     setStatus(t('actions.order.sendMailSuccess', 'Customer notified'))
     setLoading(false)
     onComplete()
-  }, [frontendClient, mailType, order._id, attachInvoice, t, onComplete])
+  }, [frontendClient, mailType, order._id, attachInvoice, customerMessage, t, onComplete])
 
   return (
     <Stack padding={4} gap={4}>
       <Stack gap={2}>
         <Text weight="bold">
-          {t('actions.order.sendMailDialog.selectMailType', 'Select mail type')}
+          <label htmlFor="order-mail-type-select">
+            {t('actions.order.sendMailDialog.selectMailType', 'Select mail type')}
+          </label>
         </Text>
-        <Select value={mailType} onChange={handleMailTypeChange}>
+        <Select id="order-mail-type-select" value={mailType} onChange={handleMailTypeChange}>
           {MAIL_TYPES.map((type) => (
             <option key={type} value={type}>
               {t(`actions.order.mailTypes.${type}`, type)}
@@ -131,6 +145,8 @@ function OrderMailContent({
           </Text>
         </Box>
       </Flex>
+
+      <CustomerMessageField value={customerMessage} onChange={handleCustomerMessageChange} />
 
       <Flex gap={2} justify="flex-end">
         <Button mode="ghost" text={t('ui.dialog.cancel', 'Cancel')} onClick={onComplete} />

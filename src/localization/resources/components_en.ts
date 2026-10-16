@@ -203,6 +203,8 @@ export default {
           fulfillment: 'Shipping',
         },
       },
+      note: 'Internal note',
+      customerMessage: 'Message to customer',
     },
     withdrawals: {
       title: 'Withdrawals',
@@ -220,6 +222,11 @@ export default {
       sending: 'Sending email...',
       error: 'Error sending customer email: {{message}}',
       sendMailSuccess: 'Email successfully sent',
+      internalNote: 'Internal note',
+      internalNoteHint: 'Optional – saved in the status history only, never sent to the customer',
+      customerMessage: 'Message to customer',
+      customerMessageHint:
+        'Optional – shown in the email below the standard text (max. {{max}} characters)',
       mailTypes: {
         orderConfirmation: 'Order confirmation',
         orderProcessing: 'Processing',

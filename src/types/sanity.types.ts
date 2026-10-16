@@ -788,6 +788,7 @@ export type OrderStatusHistory = {
   timestamp?: string
   source?: string
   note?: string
+  customerMessage?: string
 }
 
 export type OrderItemWine = {

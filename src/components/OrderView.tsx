@@ -101,6 +101,7 @@ type StatusHistoryEntry = {
   timestamp: string
   source?: string
   note?: string
+  customerMessage?: string
 }
 
 type AppliedCoupon = {
@@ -505,8 +506,14 @@ export const OrderView: UserViewComponent = (props) => {
                           })}
                         </Text>
                       </Flex>
-                      {(entry.source || entry.note) && (
-                        <Text muted>{[entry.source, entry.note].filter(Boolean).join(' — ')}</Text>
+                      {entry.source && <Text muted>{entry.source}</Text>}
+                      {entry.customerMessage && (
+                        <Text
+                          muted
+                        >{`${t('order.statusHistory.customerMessage')}: ${entry.customerMessage}`}</Text>
+                      )}
+                      {entry.note && (
+                        <Text muted>{`${t('order.statusHistory.note')}: ${entry.note}`}</Text>
                       )}
                     </Stack>
                   </Card>

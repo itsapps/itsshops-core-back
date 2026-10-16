@@ -4,6 +4,20 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased
+
+Pairs with **core-front (unreleased)** (`order-notify` accepts `customerMessage`).
+
+### Added
+- "Status aktualisieren" and "Email senden" dialogs: optional **message to customer**, shown in the
+  email below the standard text (status dialog: only while a mail is sent; stored on the history
+  entry as `customerMessage`).
+
+### Changed
+- Status dialog: the free-text field is now labelled **internal note** ("Interne Notiz") with a hint
+  that it is never sent to the customer; order view and history entries label note and message.
+- "Email senden": the mail-type select has a real label.
+
 ## 4.1.1
 
 ### Changed

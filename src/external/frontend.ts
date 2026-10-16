@@ -62,6 +62,7 @@ export const createFrontendClient = (
         orderId,
         ...(options.attachInvoice !== undefined && { attachInvoice: options.attachInvoice }),
         ...(options.refundAmount !== undefined && { refundAmount: options.refundAmount }),
+        ...(options.customerMessage && { customerMessage: options.customerMessage }),
       }),
     refundPayment: (paymentIntentId: string, options = {}) =>
       post<RefundResult>('/api/payment/refund', {

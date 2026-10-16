@@ -974,7 +974,12 @@ export default {
         title: 'Source',
       },
       note: {
-        title: 'Note',
+        title: 'Internal note',
+        description: 'Never sent to the customer.',
+      },
+      customerMessage: {
+        title: 'Message to customer',
+        description: 'Sent with the status email.',
       },
     },
   },

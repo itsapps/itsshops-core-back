@@ -8,14 +8,17 @@
  *   1. pick a target state (fulfillment or payment)
  *   2. for partial refunds: enter an amount; for `shipped` (delivery orders):
  *      optionally enter/edit the tracking code
- *   3. optionally notify the customer
- *   4. confirm
+ *   3. optionally notify the customer, with an optional personal message
+ *      that is shown in the mail
+ *   4. optionally add an internal note (status history only, never mailed)
+ *   5. confirm
  *
  * On confirm:
  *   - if a refund: call `frontendClient.refundPayment` first; bail on failure
  *   - patch the order document (set new status + append statusHistory, plus
  *     `fulfillment.trackingCode` when shipping) — committed before the mail,
- *     so the shipped mail already shows the tracking code
+ *     so the shipped mail already shows the tracking code. The history entry
+ *     keeps the internal `note` and, when a mail is sent, the `customerMessage`
  *   - if notifyCustomer: call `frontendClient.notifyOrder` with the matching
  *     mailType from `mailTypeForStatus`
  *
@@ -24,7 +27,7 @@
  */
 import { ConfirmIcon } from '../../assets/icons'
 import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
-import type { ChangeEvent } from 'react'
+import type { ChangeEvent, JSX } from 'react'
 import { useCallback, useState } from 'react'
 import type { DocumentActionDescription, DocumentActionProps } from 'sanity'
 
@@ -38,6 +41,9 @@ import {
   type OrderStatus,
   type StatusAction,
 } from '../../utils/orderTransitions'
+
+/** Same limit as core-front's order-notify function (`CUSTOMER_MESSAGE_MAX_LENGTH`). */
+export const CUSTOMER_MESSAGE_MAX_LENGTH = 2000
 
 type OrderActionDoc = {
   _id: string
@@ -131,6 +137,7 @@ function OrderActionContent({
   const [selectedAction, setSelectedAction] = useState<StatusAction | undefined>()
   const [notifyCustomer, setNotifyCustomer] = useState(true)
   const [note, setNote] = useState('')
+  const [customerMessage, setCustomerMessage] = useState('')
   const [partialAmount, setPartialAmount] = useState<number | undefined>()
   const [trackingCode, setTrackingCode] = useState(order.fulfillment?.trackingCode ?? '')
   const [loading, setLoading] = useState(false)
@@ -141,6 +148,9 @@ function OrderActionContent({
   const isPartialRefundValid =
     partialAmount !== undefined && partialAmount > 0 && partialAmount * 100 <= grandTotal
   const notificationMailType = mailTypeForStatus(selectedAction?.newState)
+  const sendsMail = notifyCustomer && !!notificationMailType
+  const trimmedNote = note.trim()
+  const trimmedCustomerMessage = sendsMail ? customerMessage.trim() : ''
   // Pickup orders have no tracking code (the schema hides the field for them too).
   const showTrackingCode =
     selectedAction?.type === 'fulfillment' &&
@@ -157,6 +167,10 @@ function OrderActionContent({
   )
   const handleNoteChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => setNote(e.currentTarget.value),
+    [],
+  )
+  const handleCustomerMessageChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => setCustomerMessage(e.currentTarget.value),
     [],
   )
   const handleNotifyChange = useCallback(
@@ -194,7 +208,8 @@ function OrderActionContent({
       status: selectedAction.newState,
       timestamp,
       source: 'admin',
-      ...(note && { note }),
+      ...(trimmedNote && { note: trimmedNote }),
+      ...(trimmedCustomerMessage && { customerMessage: trimmedCustomerMessage }),
     }
 
     // Fully refunding a still-undispatched order also cancels fulfillment, so the
@@ -218,7 +233,7 @@ function OrderActionContent({
         status: 'canceled',
         timestamp,
         source: 'admin',
-        ...(note && { note }),
+        ...(trimmedNote && { note: trimmedNote }),
       })
     }
 
@@ -249,7 +264,7 @@ function OrderActionContent({
     // 3. Optionally notify the customer.
     // Invoice PDF attachment is handled by the separate OrderMailAction (manual
     // mail picker) — status-transition mails never attach the invoice.
-    if (notifyCustomer && notificationMailType) {
+    if (sendsMail) {
       // For refund mails, pass the refunded amount so it can be shown in the email.
       let refundAmount: number | undefined
       if (selectedAction.newState === 'refunded') {
@@ -259,6 +274,7 @@ function OrderActionContent({
       }
       const result = await frontendClient.notifyOrder(notificationMailType, order._id, {
         ...(refundAmount !== undefined && { refundAmount }),
+        ...(trimmedCustomerMessage && { customerMessage: trimmedCustomerMessage }),
       })
       if (result.error) {
         setStatus(`${t('actions.order.error', 'Mail failed', { message: result.error })}`)
@@ -281,8 +297,9 @@ function OrderActionContent({
     partialAmount,
     trackingCode,
     showTrackingCode,
-    note,
-    notifyCustomer,
+    trimmedNote,
+    trimmedCustomerMessage,
+    sendsMail,
     notificationMailType,
     t,
     onComplete,
@@ -360,13 +377,6 @@ function OrderActionContent({
         </Stack>
       )}
 
-      <TextArea
-        rows={3}
-        placeholder={t('ui.actions.optionalNote', 'Optional note')}
-        value={note}
-        onChange={handleNoteChange}
-      />
-
       {notificationMailType && (
         <Flex align="center" gap={2}>
           <Checkbox
@@ -383,6 +393,31 @@ function OrderActionContent({
           </Box>
         </Flex>
       )}
+
+      {sendsMail && (
+        <CustomerMessageField value={customerMessage} onChange={handleCustomerMessageChange} />
+      )}
+
+      <Stack gap={2}>
+        <Text size={1} weight="medium">
+          <label htmlFor="order-internal-note-input">
+            {t('actions.order.internalNote', 'Internal note')}
+          </label>
+        </Text>
+        <TextArea
+          id="order-internal-note-input"
+          rows={2}
+          value={note}
+          onChange={handleNoteChange}
+          aria-describedby="order-internal-note-hint"
+        />
+        <Text size={1} muted id="order-internal-note-hint">
+          {t(
+            'actions.order.internalNoteHint',
+            'Optional – saved in the status history only, never sent to the customer',
+          )}
+        </Text>
+      </Stack>
 
       <Flex gap={2} justify="flex-end">
         <Button mode="ghost" text={t('ui.dialog.cancel', 'Cancel')} onClick={onComplete} />
@@ -416,5 +451,41 @@ function TransitionButton({
   const handleClick = useCallback(() => onSelect(action), [action, onSelect])
   return (
     <Button tone={selected ? 'primary' : 'default'} onClick={handleClick} text={action.label} />
+  )
+}
+
+/** Labelled textarea for the optional personal message mailed to the customer. */
+export function CustomerMessageField({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
+}): JSX.Element {
+  const { componentT } = useITSContext()
+  const t = componentT.default
+  return (
+    <Stack gap={2}>
+      <Text size={1} weight="medium">
+        <label htmlFor="order-customer-message-input">
+          {t('actions.order.customerMessage', 'Message to customer')}
+        </label>
+      </Text>
+      <TextArea
+        id="order-customer-message-input"
+        rows={3}
+        value={value}
+        onChange={onChange}
+        maxLength={CUSTOMER_MESSAGE_MAX_LENGTH}
+        aria-describedby="order-customer-message-hint"
+      />
+      <Text size={1} muted id="order-customer-message-hint">
+        {t(
+          'actions.order.customerMessageHint',
+          'Optional – shown in the email below the standard text',
+          { max: CUSTOMER_MESSAGE_MAX_LENGTH },
+        )}
+      </Text>
+    </Stack>
   )
 }

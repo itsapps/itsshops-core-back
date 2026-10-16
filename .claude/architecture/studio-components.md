@@ -54,7 +54,12 @@ add variants inline), `WineSelector` / `WinePreview`.
   - `order` → `OrderDocumentAction`, `OrderMailDocumentAction`, `OrderWithdrawalCreateAction`
     (`OrderDocumentAction` = "Status aktualisieren": legal transitions from `utils/orderTransitions.ts`;
     choosing `shipped` on a delivery order offers an optional tracking code, saved to
-    `fulfillment.trackingCode` in the same patch as the status, before the shipped mail is sent)
+    `fulfillment.trackingCode` in the same patch as the status, before the shipped mail is sent.
+    Two separate texts: **internal note** → `statusHistory[].note`, studio only, never mailed;
+    **message to customer** (shown only while "notify customer" sends a mail, max 2000 chars =
+    core-front `CUSTOMER_MESSAGE_MAX_LENGTH`) → `notifyOrder({ customerMessage })` and
+    `statusHistory[].customerMessage`. `OrderMailDocumentAction` offers the same message field
+    (`CustomerMessageField`) but writes no history entry)
   - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`
   - `product` (feature `shop`) → `AddVariantsAction`
   - `category` (feature `shop.category`; schema disallows the plain `delete`, so it's re-added

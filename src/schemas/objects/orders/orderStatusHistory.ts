@@ -28,7 +28,13 @@ export const orderStatusHistory: ITSSchemaDefinition = {
 
       f('source', 'string'),
 
+      // Internal admin note — studio only, never sent to the customer.
       f('note', 'text', {
+        rows: 2,
+      }),
+
+      // Message sent to the customer with the status mail (OrderActions dialog).
+      f('customerMessage', 'text', {
         rows: 2,
       }),
     ]

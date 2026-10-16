@@ -979,7 +979,12 @@ export default {
         title: 'Quelle',
       },
       note: {
-        title: 'Notiz',
+        title: 'Interne Notiz',
+        description: 'Wird nie an den Kunden gesendet.',
+      },
+      customerMessage: {
+        title: 'Nachricht an den Kunden',
+        description: 'Mit der Status-Email gesendet.',
       },
     },
   },
