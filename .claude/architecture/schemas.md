@@ -54,7 +54,7 @@ time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
   name, address (street/zip/city/country), email, vatId, `defaultCountry` (checkout falls back to `'AT'`).
 
 **Mail-related fields (core-front reads them):** `settings.shopNotificationEmail` (optional; inbox
-for order copies + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
+for new-order mails + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
 `registerNumber` / `registerCourt` (rendered in every mail footer only when set);
 `shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
 Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`
