@@ -17,7 +17,11 @@ v3/React-18 patterns.
 
 ## Consequences
 
-- Customer backends must be on the same Sanity 6 / React 19 line to consume this package.
+- Customer backends must be on the same Sanity 6 / React 19 line to consume this package. Their
+  `package.json` matches the reference customers (tinhof, jurtschitsch): `sanity ^6.9.2`,
+  `react`/`react-dom` `^19.2`, dev dep `@types/node`, no `overrides.vite`. `react` and `react-dom`
+  must **resolve to the identical version** — `sanity build` aborts with "Incompatible React
+  versions" otherwise; update both together (`npm install react@^19.2 react-dom@^19.2`).
 - When a customer `npm link`s core-back, React/Sanity/styled-components can get duplicated and throw
   invalid-hook-call errors. Resolve via `resolve.dedupe` in the **customer's** `sanity.cli.ts` (vite
   config), not in core-back's (which stays minimal). See

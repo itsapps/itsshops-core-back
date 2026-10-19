@@ -68,6 +68,13 @@ Pairs with **core-front 2.1.0**.
 
 First tagged release since 2.0.0. Pairs with **core-front 2.0.0**.
 
+### Upgrading from 1.x
+- 2.0.0 moved to **Sanity 6 / React 19** (peer `sanity ^6`): in the customer backend set
+  `sanity ^6.9.2`, `react`/`react-dom` `^19.2`, add dev dep `@types/node`, and drop any Sanity-5-era
+  `overrides.vite` pin — see `.claude/decisions/sanity-6-platform.md`. Bump these *before*
+  `npm install 'github:itsapps/itsshops-core-back#<tag>'`, or npm fails with ERESOLVE on the peer.
+- Then the 2.0.0 steps below.
+
 ### Upgrading from 2.0.0
 - Settings fields the frontend depends on are now **required** per enabled feature — fill them
   in, or the settings can't be published.
