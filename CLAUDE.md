@@ -14,7 +14,7 @@ file that matches the task. `.claude/` is loaded on demand; this file is the alw
 | Importing/exporting datasets, schema extract & typegen | `.claude/workflows/datasets.md` |
 | Why a non-obvious choice was made (e.g. Sanity 6 platform) | `.claude/decisions/` |
 
-Run `/update-docs` (see `~/.claude/commands/update-docs.md`) after changes that move paths, add a
+Run `/itsshops-update-docs` (see `~/.claude/commands/itsshops-update-docs.md`) after changes that move paths, add a
 schema/feature, or establish a rule.
 
 The **frontend** counterpart is `@itsapps/itsshops-core-front`
