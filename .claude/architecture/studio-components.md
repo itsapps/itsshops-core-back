@@ -58,7 +58,9 @@ add variants inline), `WineSelector` / `WinePreview`.
     Two separate texts: **internal note** → `statusHistory[].note`, studio only, never mailed;
     **message to customer** (shown only while "notify customer" sends a mail, max 2000 chars =
     core-front `CUSTOMER_MESSAGE_MAX_LENGTH`) → `notifyOrder({ customerMessage })` and
-    `statusHistory[].customerMessage`. `OrderMailDocumentAction` offers the same message field
+    `statusHistory[].customerMessage`. "Notify customer" is pre-checked per target status
+    (`notifyCustomerByDefault` in `orderTransitions.ts`: off for `delivered`, which is shop
+    bookkeeping; on otherwise) and resets when another status is picked. `OrderMailDocumentAction` offers the same message field
     (`CustomerMessageField`) but writes no history entry)
   - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`
   - `product` (feature `shop`) → `AddVariantsAction`

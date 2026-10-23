@@ -123,6 +123,13 @@ other locales of an internationalized-array field from the default-locale value.
 Used in structure previews / titles to show the right-language label. (`ctx.format`, from
 `src/localization/formatters.ts`, does locale-aware number/date/currency formatting.)
 
+**Datetime fields:** `ctx.format.dateFormat('datetime')` → `DD.MM.YYYY` + `HH:mm` (de) /
+`YYYY-MM-DD` + `HH:mm` (en), passed as the field's `options`. Gotcha (Sanity 6 `CommonDateTimeInput`):
+typed text that doesn't match the full format (e.g. a date without time) **stays visible in the input
+but is never saved** — only a red outline + an entry in the validation inspector, no message under
+the field, and no draft if it was the only edit. Admins then publish the old/empty value (seen on
+Tinhof coupon `validFrom`/`validTo`). Picking from the calendar always works.
+
 ## UI languages vs field languages (`src/config/localization.ts`)
 `getLanguages({ ui, fields, defaultLocale })` resolves two **separate** sets from
 `src/config/constants/languages.ts` (`studioUILanguages`, `fieldUILanguages`):
