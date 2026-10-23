@@ -98,6 +98,13 @@ export const mailTypeForStatus = (
   }
 }
 
+// Whether the status dialog pre-checks "notify customer" for a transition.
+// `delivered` is mostly bookkeeping for the shop (the customer already has the
+// parcel), so its mail is opt-in.
+export const notifyCustomerByDefault = (
+  status: OrderStatus | OrderPaymentStatus | undefined,
+): boolean => status !== 'delivered'
+
 const stateTranslationKeys: Record<OrderStatus | OrderPaymentStatus, string> = {
   created: 'order.fields.status.options.created',
   processing: 'order.fields.status.options.processing',

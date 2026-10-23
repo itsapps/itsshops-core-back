@@ -36,6 +36,7 @@ import {
   getAllowedFulfillmentTransitions,
   getAllowedPaymentTransitions,
   mailTypeForStatus,
+  notifyCustomerByDefault,
   refundCancelsFulfillment,
   type OrderPaymentStatus,
   type OrderStatus,
@@ -173,6 +174,10 @@ function OrderActionContent({
     (e: ChangeEvent<HTMLTextAreaElement>) => setCustomerMessage(e.currentTarget.value),
     [],
   )
+  const handleSelectAction = useCallback((action: StatusAction) => {
+    setSelectedAction(action)
+    setNotifyCustomer(notifyCustomerByDefault(action.newState))
+  }, [])
   const handleNotifyChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setNotifyCustomer(e.currentTarget.checked),
     [],
@@ -316,7 +321,7 @@ function OrderActionContent({
                 key={action.newState}
                 action={action}
                 selected={selectedAction?.newState === action.newState}
-                onSelect={setSelectedAction}
+                onSelect={handleSelectAction}
               />
             ))}
           </Flex>
@@ -332,7 +337,7 @@ function OrderActionContent({
                 key={action.newState}
                 action={action}
                 selected={selectedAction?.newState === action.newState}
-                onSelect={setSelectedAction}
+                onSelect={handleSelectAction}
               />
             ))}
           </Flex>

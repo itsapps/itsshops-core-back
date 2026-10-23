@@ -4,6 +4,13 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 4.2.1
+
+### Changed
+- Status dialog: "Kunde benachrichtigen" starts **unchecked** for "Angekommen" (`delivered`) — it is
+  mostly bookkeeping for the shop; every other status still starts checked. The checkbox resets to
+  the status's default whenever a status is picked.
+
 ## 4.2.0
 
 Pairs with **core-front 3.2.0** (`order-notify` accepts `customerMessage`; with an older frontend
