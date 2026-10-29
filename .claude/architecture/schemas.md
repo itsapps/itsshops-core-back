@@ -48,10 +48,16 @@ depends on are required only when the feature that uses them is on (the rule is 
 time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
 - `shop` / `users` / `newsletter` (= core-front sends mail): `senderName`, `senderEmail`,
   `siteTitle` (default locale) — core-front's mail notifiers throw without them — and `privacyPage`.
-- `shop`: `defaultTaxCategory` (otherwise uncategorized products get 0 % VAT), `termsPage` +
+- `shop.checkout`: `defaultTaxCategory` (otherwise uncategorized products get 0 % VAT), `termsPage` +
   `withdrawalPolicyPage` (checkout hides its confirmations when unset), `billingAddress` street/zip/
-  city/country (invoice seller address), `returnShippingBorneBy`. Warnings only: `company`
-  name, address (street/zip/city/country), email, vatId, `defaultCountry` (checkout falls back to `'AT'`).
+  city/country (invoice seller address), `returnShippingBorneBy`, `withdrawalPeriodStart`, `lastInvoiceNumber`. Warning
+  only: `defaultCountry` (checkout falls back to `'AT'`).
+- `shop` (also without checkout — the privacy policy reads it): warnings on `settings.company`
+  name, address (street/zip/city/country), email, vatId; `shopNotificationEmail` shown.
+- **Without `shop.checkout`** (`features.shop.checkout: false`, a shop that sells nothing online)
+  the `shop.checkout` fields aren't optional but **absent**: `shopSettings` drops the billing / orders / shipping /
+  returns / tax groups and the terms / withdrawal policy / shipping info pages, leaving `shopPage` +
+  filters (+ stock). Values already stored there show as unknown fields.
 
 **Mail-related fields (core-front reads them):** `settings.shopNotificationEmail` (optional; inbox
 for new-order mails + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
@@ -80,7 +86,7 @@ before go-live.
 `menuItem` `linkType`: `internal` | `external` | `submenu` (unless `menus.disableSubmenus`) |
 `system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The
 options come from the feature-filtered list in `src/schemas/systemPages.ts`, currently only
-`orderWithdraw` (requires `shop`). Rich-text link annotations can offer the same list via
+`orderWithdraw` (requires `shop.checkout`). Rich-text link annotations can offer the same list via
 `internalLinkFields({ includeSystemPages: true })` (field `internalLinkSystemPage`). `system` is only offered when at least one is enabled; title is
 optional — except for `orderWithdraw`, whose label is fixed by law ("Vertrag widerrufen", FAGG
 §13a; the frontend ignores an editor title). The frontend resolves URL + default title and guarantees the withdrawal link: see core-front
