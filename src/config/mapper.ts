@@ -125,6 +125,7 @@ function allFeatures(): ITSFeatureConfig {
   return {
     shop: {
       enabled: true,
+      checkout: true,
       manufacturer: true,
       stock: true,
       category: { subcategories: true },
@@ -144,6 +145,7 @@ function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
   return {
     shop: {
       enabled: input?.shop?.enabled ?? false,
+      checkout: input?.shop?.checkout ?? true,
       manufacturer: input?.shop?.manufacturer ?? false,
       stock: input?.shop?.stock ?? false,
       category: input?.shop?.category ?? false,

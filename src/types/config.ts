@@ -50,6 +50,8 @@ export interface VinofactIntegrationConfig {
 export interface FeatureConfig {
   shop?: Partial<{
     enabled: boolean
+    /** Online checkout (default true). Off hides the checkout-only shop settings. */
+    checkout?: boolean
     manufacturer?: boolean
     stock?: boolean
     category?: boolean | { subcategories?: boolean }
@@ -65,6 +67,7 @@ export interface FeatureConfig {
 export interface ITSFeatureConfig {
   shop: {
     enabled: boolean
+    checkout: boolean
     manufacturer: boolean
     stock: boolean
     category: boolean | { subcategories?: boolean }

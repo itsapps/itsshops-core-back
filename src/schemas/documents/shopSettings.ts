@@ -33,13 +33,12 @@ export const shopSettings: ITSDocumentDefinition = {
 
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
     const vouchersEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vouchers')
+    // Without checkout nothing is sold online: no shipping, tax, invoice, billing or withdrawal
+    // settings, and no legal pages linked from the checkout.
+    const checkoutEnabled = ctx.featureRegistry.isFeatureEnabled('shop.checkout')
 
     const groupNames = [
-      'billing',
-      'orders',
-      'shipping',
-      'returns',
-      'tax',
+      ...(checkoutEnabled ? ['billing', 'orders', 'shipping', 'returns', 'tax'] : []),
       ...(stockEnabled ? ['stock'] : []),
       'displays',
     ]
@@ -54,20 +53,24 @@ export const shopSettings: ITSDocumentDefinition = {
         f('shopPage', 'reference', {
           to: [{ type: 'page' }],
         }),
-        // Checkout hides the terms / withdrawal confirmations when these are unset.
-        f('termsPage', 'reference', {
-          to: [{ type: 'page' }],
-          validation: (rule) => rule.required(),
-        }),
-        f('withdrawalPolicyPage', 'reference', {
-          to: [{ type: 'page' }],
-          validation: (rule) => rule.required(),
-        }),
-        // "Versand & Zahlung" page (shippingInfoModule) — linked at the start of the checkout and
-        // above the order button (FAGG §8 (3)).
-        f('shippingInfoPage', 'reference', {
-          to: [{ type: 'page' }],
-        }),
+        ...(checkoutEnabled
+          ? [
+              // Checkout hides the terms / withdrawal confirmations when these are unset.
+              f('termsPage', 'reference', {
+                to: [{ type: 'page' }],
+                validation: (rule) => rule.required(),
+              }),
+              f('withdrawalPolicyPage', 'reference', {
+                to: [{ type: 'page' }],
+                validation: (rule) => rule.required(),
+              }),
+              // "Versand & Zahlung" page (shippingInfoModule) — linked at the start of the checkout
+              // and above the order button (FAGG §8 (3)).
+              f('shippingInfoPage', 'reference', {
+                to: [{ type: 'page' }],
+              }),
+            ]
+          : []),
         ...builders.filterField(),
       ],
       shipping: [

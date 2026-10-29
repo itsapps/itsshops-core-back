@@ -4,7 +4,7 @@ import { ITSContext, ITSFeatureKey } from '../types'
 // 'system'`) or a rich-text internal link (`internalLinkFields({ includeSystemPages: true })`).
 // The frontend resolves each to its URL and drops the link when the feature is off.
 const systemPages: { value: string; feature: ITSFeatureKey }[] = [
-  { value: 'orderWithdraw', feature: 'shop' },
+  { value: 'orderWithdraw', feature: 'shop.checkout' },
 ]
 
 export const enabledSystemPages = (ctx: ITSContext) =>

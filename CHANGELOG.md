@@ -4,6 +4,21 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 4.3.0
+
+Pairs with **core-front 3.5.3** (no withdrawal form without checkout).
+
+### Added
+- `features.shop.checkout` (default `true`, like the frontend's flag; feature key `shop.checkout`).
+  Set `false` for a shop without online purchases (Rosi Schuster): `shopSettings` hides the
+  checkout-only groups (billing, orders, shipping, returns, tax) and the terms / withdrawal policy /
+  shipping info pages — so their required fields no longer block publishing — and the
+  `orderWithdraw` system link is no longer offered in menus / rich text.
+
+### Upgrading
+- Only for a shop without checkout: set `features.shop.checkout: false` in `sanity.config.ts`.
+  Values already stored in the hidden fields show as unknown fields — remove them in the Studio.
+
 ## 4.2.1
 
 ### Changed

@@ -27,6 +27,7 @@ export type ITSSanityDefinedAction = NonNullable<DocumentActionComponent['action
 
 export type ITSFeatureKey =
   | 'shop'
+  | 'shop.checkout'
   | 'shop.manufacturer'
   | 'shop.stock'
   | 'shop.category'

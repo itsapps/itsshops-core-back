@@ -90,3 +90,11 @@ When a customer backend consumes this package via `npm link`, React/Sanity can g
 breaking hooks. The fix lives in the **customer's** `sanity.cli.ts` (vite `resolve.dedupe` for
 `react`, `react-dom`, `sanity`, `styled-components`), **not** in this repo's `sanity.cli.ts` (which
 stays minimal). Check there if a linked studio throws invalid-hook-call errors.
+
+The same duplication hits **types**: the link points at the whole core repo, so `dist/index.d.ts`
+resolves `sanity` from core's own `node_modules` first. When that version differs from the
+customer's, `tsc` fails in `sanity.config.ts` (`WorkspaceOptions[]` not assignable to `Config`, deep
+down `SanityClient` `#private`); the build still works. `preserveSymlinks` doesn't help. Fix in the
+customer's `tsconfig.json` `paths` (subpaths point at `lib/`, as `paths` ignores `exports`):
+`"sanity": ["./node_modules/sanity"]`, `"sanity/*": ["./node_modules/sanity/lib/*"]`
+(Rosi Schuster, 2026-10-29).

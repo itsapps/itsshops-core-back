@@ -118,11 +118,13 @@ Resolved by `createFeatureRegistry` (`src/config/features.ts`) into a `featureMa
 optional `.feature` tag and are filtered out when their feature is disabled.
 
 ```
-shop, shop.manufacturer, shop.stock, shop.category, shop.category.subcategories,
+shop, shop.checkout, shop.manufacturer, shop.stock, shop.category, shop.category.subcategories,
 shop.vinofact, shop.vouchers, shop.coupons,
 shop.productKind.{wine,physical,digital,bundle}, shop.productKind.options  (physical|digital),
 blog, users, newsletter
 ```
 
 `shop.productKind.*` is driven by `schemaSettings.productKinds`; `options` is on when physical or
-digital is enabled.
+digital is enabled. `shop.checkout` defaults to **on** (`features.shop.checkout: false` to turn off, as in
+the frontend); off hides the checkout-only `shopSettings` groups (billing, orders, shipping,
+returns, tax) and pages (terms, withdrawal policy, shipping info), and the `orderWithdraw` system link.
