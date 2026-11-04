@@ -21,7 +21,7 @@ export const category: ITSDocumentDefinition = {
         name: 'infos',
         fields: [
           f('title', 'i18nString', { i18n: 'atLeastOne' }),
-          f('description', 'i18nString'),
+          f('description', 'i18nText'),
           f('sortOrder', 'number', {
             validation: (rule) => rule.positive(),
           }),

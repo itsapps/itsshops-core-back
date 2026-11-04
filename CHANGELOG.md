@@ -4,6 +4,21 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 5.0.0
+
+Pairs with **core-front 3.7.0** (category description rendered as paragraphs).
+
+### Changed
+- `category.description` is now `i18nText` (multi-line textarea) instead of `i18nString`, so
+  editors can write several paragraphs (blank line = new paragraph) — like product, variant and
+  manufacturer descriptions.
+
+### Upgrading
+- Existing category descriptions are stored as `internationalizedArrayStringValue` items, which
+  the Studio now shows as invalid (the frontend keeps rendering them). Only Tinhof had any; it was
+  migrated with a one-off script (each item's `_type` → `internationalizedArrayTextValue`). Any
+  other shop: re-enter the description in the Studio, or patch `_type` the same way.
+
 ## 4.3.0
 
 Pairs with **core-front 3.5.3** (no withdrawal form without checkout).
