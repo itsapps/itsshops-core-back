@@ -71,6 +71,16 @@ Note `cropImage` / `baseImage` are **custom object schemas** (`src/schemas/objec
 type-name strings — i.e. any registered object type can be internationalized this way, not just
 primitives.
 
+**Choosing / changing the type.** `i18nString` is a single-line input — editors can't enter line
+breaks. Use `i18nText` for any description-like text (rendered with core-front's `paragraphs`
+filter). Each stored item carries the type in its `_type` (`internationalizedArrayStringValue`,
+`internationalizedArrayTextValue`, …), so **changing a field's i18n type is a data migration**:
+until each item's `_type` is patched, the Studio shows existing values as invalid items (the
+frontend keeps rendering them — it only reads `value`). Patch per dataset with a one-off script
+(core-front `.claude/architecture/cli.md` → "no write/patch command"), **after** the new Studio is
+deployed (the old Studio rejects the new `_type`), and treat it as a core-back major. Done for
+`category.description` in 5.0.0 (only Tinhof had values).
+
 ### Adding your own localized type (consumer)
 To make a new field type localized (so editors get one value per field language):
 

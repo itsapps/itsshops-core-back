@@ -22,7 +22,7 @@ export const category: ITSDocumentDefinition = {
     return ctx.builders.buildGroupedSchema([
       { name: 'infos', fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
-        f('description', 'i18nString'),
+        f('description', 'i18nText'),
         f('sortOrder', 'number', { validation: (r) => r.positive() }),
       ]},
     ])
