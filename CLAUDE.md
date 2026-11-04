@@ -73,7 +73,8 @@ A new or changed schema field usually also needs the **frontend** side: projecti
 data layer (or the customer frontend's `src/_config/extensions.mts`) and rendering it in templates.
 Before touching the frontend side, read core-front's `CLAUDE.md` and the customer frontend's
 `CLAUDE.md` (paths in core-front's ecosystem table) — they aren't loaded in a backend session. Same
-reuse order: core first, customer extension only for customer-specific data. After a core-front
+reuse order: core first, customer extension only for customer-specific data — and nothing goes into
+core that only one shop uses (rule: core-front `CLAUDE.md` → "What goes into core"). After a core-front
 change, run its `npm run build` (or `npm run dev`) and restart the customer's Eleventy dev server.
 
 ## Entry point (`src/index.ts`)
