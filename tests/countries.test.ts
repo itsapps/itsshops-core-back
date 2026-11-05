@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
-import { createAllCountryOptions } from '../src/config/constants/countries'
+import {
+  createAllCountryOptions,
+  createCountries,
+  EUROPE_COUNTRY_CODES,
+  flagEmoji,
+} from '../src/config/constants/countries'
 
 describe('createAllCountryOptions', () => {
   it('lists every ISO country with a localized name, sorted by code', () => {
@@ -17,5 +22,19 @@ describe('createAllCountryOptions', () => {
       title: 'DE (Germany)',
       value: 'DE',
     })
+  })
+})
+
+describe('createCountries (the shop list)', () => {
+  it('builds the 52 European countries with a name per locale', () => {
+    const list = createCountries(['de', 'en'])
+    expect(list).toHaveLength(EUROPE_COUNTRY_CODES.length)
+    expect(list).toContainEqual({ code: 'AT', title: { de: 'Österreich', en: 'Austria' } })
+    expect(list.map((c) => c.code)).not.toContain('US')
+  })
+
+  it('makes flag emojis from the code', () => {
+    expect(flagEmoji('AT')).toBe('🇦🇹')
+    expect(flagEmoji('de')).toBe('🇩🇪')
   })
 })

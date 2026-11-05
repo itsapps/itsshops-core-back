@@ -1,5 +1,6 @@
 import { PackageIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
+import { flagEmoji } from '../../config/constants/countries'
 
 export const taxCountry: ITSDocumentDefinition = {
   name: 'taxCountry',
@@ -35,7 +36,7 @@ export const taxCountry: ITSDocumentDefinition = {
             subtitle: ctx.schemaT.default('taxCountry.preview.rules', 'Rules', {
               count: rules?.length || 0,
             }),
-            media: country ? country.emoji : null,
+            media: country ? flagEmoji(country.code) : null,
           }
         },
       },

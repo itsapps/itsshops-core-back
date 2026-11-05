@@ -15,6 +15,11 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
   accounts registered from outside Europe (core-front's registration form offers all countries) are
   no longer shown with an invalid country. Order addresses (`addressStrict`), the shop address
   (`businessAddress`), tax countries and shipping keep the shop's list.
+- The shop's country list is a fixed list of 52 European codes (`EUROPE_COUNTRY_CODES`, the same
+  set as before) with names from `Intl.DisplayNames`; the `countries-list` dependency is gone.
+  A few names read differently, e.g. "Tschechien" (was "Tschechische Republik"), "Republik
+  Moldau", "Czechia". The `Country` type keeps only `code` + `title` (`emoji`, `continent`,
+  `currency` were unused; the tax-country flag comes from `flagEmoji(code)`).
 
 ### Upgrading
 - Nothing to do; existing European codes stay valid.

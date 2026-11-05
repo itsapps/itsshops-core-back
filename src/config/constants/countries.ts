@@ -1,63 +1,49 @@
-import { countries as countryList, getEmojiFlag, TCountryCode } from 'countries-list'
 import countries from 'i18n-iso-countries'
-import deJson from 'i18n-iso-countries/langs/de.json'
-import enJson from 'i18n-iso-countries/langs/en.json'
 
 import type { Country, CountryOption } from '../../types'
 
+/**
+ * The shop's countries: geographic Europe (the 52 codes the former `countries-list` continent
+ * filter `EU` produced). Used for what a shop sells/delivers to or is — tax countries, shipping,
+ * order and shop addresses (`ctx.constants.countryOptions`).
+ */
+// prettier-ignore
+export const EUROPE_COUNTRY_CODES = [
+  'AD', 'AL', 'AT', 'AX', 'BA', 'BE', 'BG', 'BY', 'CH', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI',
+  'FO', 'FR', 'GB', 'GG', 'GI', 'GR', 'HR', 'HU', 'IE', 'IM', 'IS', 'IT', 'JE', 'LI', 'LT', 'LU',
+  'LV', 'MC', 'MD', 'ME', 'MK', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'RS', 'SE', 'SI', 'SJ', 'SK',
+  'SM', 'UA', 'VA', 'XK',
+] as const
+
+/** Localized country names from `Intl.DisplayNames` (same source as core-front's `countryList`). */
+function regionNames(locale: string): Intl.DisplayNames {
+  try {
+    return new Intl.DisplayNames([locale], { type: 'region' })
+  } catch {
+    return new Intl.DisplayNames(['en'], { type: 'region' })
+  }
+}
+
+/** Flag emoji for an ISO alpha-2 code (regional indicator symbols), e.g. `AT` → 🇦🇹. */
+export const flagEmoji = (code: string): string =>
+  String.fromCodePoint(...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65))
+
+/** The shop's countries with a name per UI locale (`config.localization.countries`). */
 export const createCountries = (locales: string[]): Country[] => {
-  countries.registerLocale(deJson)
-  countries.registerLocale(enJson)
-
-  const eu = Object.entries(countryList).filter((entry) => {
-    const value = entry[1]
-    return value.continent === 'EU'
-  })
-
-  const euCountries = eu.map(([code, country]) => {
-    const title: Record<string, string> = {}
-
-    locales.forEach((locale) => {
-      const name = countries.getName(code, locale)
-
-      // Validation: Throw error if name is missing
-      // i18n-iso-countries returns undefined if the locale/code combo fails
-      if (!name) {
-        throw new Error(
-          `Missing translation for country code "${code}" in locale "${locale}". ` +
-            `Ensure the locale is registered and the code is valid.`,
-        )
-      }
-
-      title[locale] = name
-    })
-
-    return {
-      title,
-      code,
-      emoji: getEmojiFlag(code as TCountryCode),
-      // language: c[1].languages[0],
-      continent: country.continent as string,
-      currency: country.currency,
-    }
-  })
-
-  return euCountries
+  const names = locales.map((locale) => [locale, regionNames(locale)] as const)
+  return EUROPE_COUNTRY_CODES.map((code) => ({
+    code,
+    title: Object.fromEntries(names.map(([locale, n]) => [locale, n.of(code) ?? code])),
+  }))
 }
 
 /**
  * Every ISO 3166-1 alpha-2 country as a select option (`"AT (Österreich)"`), for addresses where a
  * person says where they *live* (customer account, a customer's interest list). Delivery, tax and
- * the shop's own address keep the shop's list (`countryOptions`). Names from `Intl.DisplayNames`,
- * the same source as core-front's `countryList` filter, so Studio and website match.
+ * the shop's own address keep the shop's list (`countryOptions`).
  */
 export const createAllCountryOptions = (locale: string): CountryOption[] => {
-  let names: Intl.DisplayNames
-  try {
-    names = new Intl.DisplayNames([locale], { type: 'region' })
-  } catch {
-    names = new Intl.DisplayNames(['en'], { type: 'region' })
-  }
+  const names = regionNames(locale)
   return Object.keys(countries.getAlpha2Codes())
     .sort()
     .map((code) => ({ title: `${code} (${names.of(code) ?? code})`, value: code }))

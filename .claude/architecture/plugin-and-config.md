@@ -39,8 +39,9 @@ constants: { countryOptions, allCountryOptions, volumeOptions }, i18nFieldTypes,
 Defined in `src/types/context.ts`.
 
 **Which country list** (owner's rule, 2026-11-05) — both in `src/config/constants/countries.ts`:
-- `countryOptions` — the shop's countries (today: Europe, `createCountries` filters
-  `continent === 'EU'`). For what the shop **sells/delivers to or is**: tax countries, shipping,
+- `countryOptions` — the shop's countries (today: geographic Europe, the 52 codes in
+  `EUROPE_COUNTRY_CODES`; `createCountries` names them per UI locale, `flagEmoji` makes the
+  tax-country preview flag). For what the shop **sells/delivers to or is**: tax countries, shipping,
   order addresses (`addressStrict`), the shop's own address (`businessAddress`).
 - `allCountryOptions` — every ISO country (`createAllCountryOptions`, names from
   `Intl.DisplayNames` like core-front's `countryList` filter). For where a **person lives**: the
