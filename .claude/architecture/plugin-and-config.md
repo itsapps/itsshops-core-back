@@ -38,7 +38,7 @@ The object threaded through everything: `{ config, featureRegistry, locale, loca
 constants: { countryOptions, allCountryOptions, volumeOptions }, i18nFieldTypes, t/schemaT/structureT/componentT }`.
 Defined in `src/types/context.ts`.
 
-**Which country list** (owner's rule, 2026-11-05) — both in `src/config/constants/countries.ts`:
+**Which country list** (owner's rule, 2026-11-05; why: [../decisions/country-lists-shop-vs-all.md](../decisions/country-lists-shop-vs-all.md)) — both in `src/config/constants/countries.ts`:
 - `countryOptions` — the shop's countries (today: geographic Europe, the 52 codes in
   `EUROPE_COUNTRY_CODES`; `createCountries` names them per UI locale, `flagEmoji` makes the
   tax-country preview flag). For what the shop **sells/delivers to or is**: tax countries, shipping,

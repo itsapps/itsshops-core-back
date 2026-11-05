@@ -12,3 +12,5 @@ that future-you would otherwise re-litigate.
   `npm run types`.
 - [named-file-types.md](named-file-types.md) — upload-restricted (localized) files are named
   `type: 'file'` definitions (`ITSFileDefinition`), not a customer-side plugin.
+- [country-lists-shop-vs-all.md](country-lists-shop-vs-all.md) — every country where a person
+  lives (customer address), the shop's list where it sells/delivers (tax, shipping, orders).

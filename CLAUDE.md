@@ -61,7 +61,8 @@ link serves `dist/`, so a backend only sees a change once `npm run build` ran (o
 `npm run watch` is running) — then restart `sanity dev`. See
 `.claude/architecture/plugin-and-config.md` for the npm-link gotcha (customer-side vite dedupe).
 
-**Git workflow:** develop on `main` (+ feature branches) with **your own GitHub user**. Core is a
+**Git workflow:** new features on a `feature/<slug>` branch, merged to `main` once tested (owner's
+rule, 2026-11-05; docs-only fixes may go to `main`), with **your own GitHub user**. Core is a
 library consumed as a git dependency and is never deployed to Netlify, so no customer-identity / PAT
 applies here (that's only for customer repos). Consumption/release: core-front's
 `.claude/workflows/consuming-core-and-deploy.md` ("Release flow": production pins a core **tag**;
