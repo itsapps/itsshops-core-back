@@ -4,7 +4,7 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
-## Unreleased (minor)
+## 5.1.0
 
 ### Added
 - `ctx.constants.allCountryOptions`: every ISO country (`"AT (Österreich)"`, names from
