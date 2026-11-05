@@ -146,8 +146,11 @@ function OrderActionContent({
 
   const isPartialRefund = selectedAction?.newState === 'partiallyRefunded'
   const grandTotal = order.totals?.grandTotal ?? 0
+  // Euros → integer cents: 4.35 * 100 is 434.99999999999994, and Stripe only takes integers.
+  const partialAmountCents =
+    partialAmount !== undefined ? Math.round(partialAmount * 100) : undefined
   const isPartialRefundValid =
-    partialAmount !== undefined && partialAmount > 0 && partialAmount * 100 <= grandTotal
+    partialAmountCents !== undefined && partialAmountCents > 0 && partialAmountCents <= grandTotal
   const notificationMailType = mailTypeForStatus(selectedAction?.newState)
   const sendsMail = notifyCustomer && !!notificationMailType
   const trimmedNote = note.trim()
@@ -194,7 +197,7 @@ function OrderActionContent({
       (selectedAction.newState === 'refunded' || selectedAction.newState === 'partiallyRefunded')
     ) {
       const result = await frontendClient.refundPayment(order.paymentIntentId, {
-        ...(isPartialRefund && isPartialRefundValid && { amount: partialAmount! * 100 }),
+        ...(isPartialRefund && isPartialRefundValid && { amount: partialAmountCents! }),
       })
       if (result.error) {
         setStatus(`${t('actions.refund.error', 'Refund failed', { message: result.error })}`)
@@ -275,7 +278,7 @@ function OrderActionContent({
       if (selectedAction.newState === 'refunded') {
         refundAmount = grandTotal
       } else if (selectedAction.newState === 'partiallyRefunded' && isPartialRefundValid) {
-        refundAmount = partialAmount! * 100
+        refundAmount = partialAmountCents!
       }
       const result = await frontendClient.notifyOrder(notificationMailType, order._id, {
         ...(refundAmount !== undefined && { refundAmount }),
@@ -299,7 +302,7 @@ function OrderActionContent({
     grandTotal,
     isPartialRefund,
     isPartialRefundValid,
-    partialAmount,
+    partialAmountCents,
     trackingCode,
     showTrackingCode,
     trimmedNote,

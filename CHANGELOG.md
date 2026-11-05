@@ -26,6 +26,8 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
   `coupons` **or** `vouchers` is on (was `vouchers` only, so coupon shops never saw it and the
   frontend fell back to "after discount"). New documents start with `beforeDiscount` (was
   `afterDiscount`).
+- Order action, partial refund: the euro amount is rounded to whole cents before it goes to Stripe
+  (e.g. 4.35 € was sent as 434.99999999999994 and Stripe refused the refund).
 
 ### Upgrading
 - Nothing to do; existing European codes stay valid.
