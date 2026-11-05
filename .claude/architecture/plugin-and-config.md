@@ -25,7 +25,7 @@
    - `createi18nFieldTypes(localizedFieldTypes)` (`src/config/fieldTypes.ts`)
    - `uiLanguages.map(language => …)` → one `WorkspaceOptions` per locale:
      - `name`/`basePath` = locale, `projectId`/`dataset` from config
-     - builds per-locale `localizer`, `format`, `countryOptions`, `volumeOptions`
+     - builds per-locale `localizer`, `format`, `countryOptions`, `allCountryOptions`, `volumeOptions`
        (from `BOTTLE_VOLUMES_ML`), and the `ITSContext`
      - `plugins: [itsshopsPlugin(context)]`
 
@@ -35,8 +35,19 @@ translators and localizer.
 ## ITSContext
 
 The object threaded through everything: `{ config, featureRegistry, locale, localizer, format,
-constants: { countryOptions, volumeOptions }, i18nFieldTypes, t/schemaT/structureT/componentT }`.
+constants: { countryOptions, allCountryOptions, volumeOptions }, i18nFieldTypes, t/schemaT/structureT/componentT }`.
 Defined in `src/types/context.ts`.
+
+**Which country list** (owner's rule, 2026-11-05) — both in `src/config/constants/countries.ts`:
+- `countryOptions` — the shop's countries (today: Europe, `createCountries` filters
+  `continent === 'EU'`). For what the shop **sells/delivers to or is**: tax countries, shipping,
+  order addresses (`addressStrict`), the shop's own address (`businessAddress`).
+- `allCountryOptions` — every ISO country (`createAllCountryOptions`, names from
+  `Intl.DisplayNames` like core-front's `countryList` filter). For where a **person lives**: the
+  customer account (`address`), a customer's interest list. Matches the frontend forms, which offer
+  every country (registration, interest form).
+- Open: the checkout billing address could take every country too (VAT follows the delivery
+  country); parked — core-front `.claude/plans/billing-address-all-countries.md`.
 
 ## Feature registry (`src/config/features.ts`)
 

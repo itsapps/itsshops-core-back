@@ -16,7 +16,10 @@ export interface ITSContext {
   localizer: ITSLocalizer
   format: ITSFormatter
   constants: {
+    /** The shop's countries (delivery, tax, shop address). */
     countryOptions: CountryOption[]
+    /** Every ISO country — for addresses where a person lives (customer account). */
+    allCountryOptions: CountryOption[]
     volumeOptions: VolumeOption[]
   }
   i18nFieldTypes: Record<string, string>

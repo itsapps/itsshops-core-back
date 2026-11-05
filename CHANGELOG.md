@@ -4,6 +4,21 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased (minor)
+
+### Added
+- `ctx.constants.allCountryOptions`: every ISO country (`"AT (Österreich)"`, names from
+  `Intl.DisplayNames`), for addresses where a person lives. `countryOptions` stays the shop's list.
+
+### Changed
+- The customer account address (`address` object, used by `customer`) offers every country, so
+  accounts registered from outside Europe (core-front's registration form offers all countries) are
+  no longer shown with an invalid country. Order addresses (`addressStrict`), the shop address
+  (`businessAddress`), tax countries and shipping keep the shop's list.
+
+### Upgrading
+- Nothing to do; existing European codes stay valid.
+
 ## 5.0.0
 
 Pairs with **core-front 3.7.0** (category description rendered as paragraphs).

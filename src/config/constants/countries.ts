@@ -3,7 +3,7 @@ import countries from 'i18n-iso-countries'
 import deJson from 'i18n-iso-countries/langs/de.json'
 import enJson from 'i18n-iso-countries/langs/en.json'
 
-import type { Country } from '../../types'
+import type { Country, CountryOption } from '../../types'
 
 export const createCountries = (locales: string[]): Country[] => {
   countries.registerLocale(deJson)
@@ -43,4 +43,22 @@ export const createCountries = (locales: string[]): Country[] => {
   })
 
   return euCountries
+}
+
+/**
+ * Every ISO 3166-1 alpha-2 country as a select option (`"AT (Österreich)"`), for addresses where a
+ * person says where they *live* (customer account, a customer's interest list). Delivery, tax and
+ * the shop's own address keep the shop's list (`countryOptions`). Names from `Intl.DisplayNames`,
+ * the same source as core-front's `countryList` filter, so Studio and website match.
+ */
+export const createAllCountryOptions = (locale: string): CountryOption[] => {
+  let names: Intl.DisplayNames
+  try {
+    names = new Intl.DisplayNames([locale], { type: 'region' })
+  } catch {
+    names = new Intl.DisplayNames(['en'], { type: 'region' })
+  }
+  return Object.keys(countries.getAlpha2Codes())
+    .sort()
+    .map((code) => ({ title: `${code} (${names.of(code) ?? code})`, value: code }))
 }

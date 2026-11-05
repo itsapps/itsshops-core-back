@@ -19,6 +19,7 @@ import { media } from 'sanity-plugin-media'
 import { CustomToolbar } from './components/CustomToolbar'
 // import { CreateWineProducts } from './components/products/CreateWineProducts'
 import { actionResolver } from './config/actions'
+import { createAllCountryOptions } from './config/constants/countries'
 import { BOTTLE_VOLUMES_ML } from './config/constants/volumes'
 import { createFeatureRegistry } from './config/features'
 import { createi18nFieldTypes } from './config/fieldTypes'
@@ -138,6 +139,7 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
       format,
       constants: {
         countryOptions,
+        allCountryOptions: createAllCountryOptions(locale),
         volumeOptions,
       },
       i18nFieldTypes,
