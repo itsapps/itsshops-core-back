@@ -246,6 +246,7 @@ export default {
       updateStatus: {
         title: 'Status aktualisieren',
         refundAmount: 'Rückerstattungsbetrag eingeben',
+        refundAmountLabel: 'Rückerstattungsbetrag (€)',
         enterValidAmount: 'Bitte geben Sie einen gültigen Betrag ein',
         notifyCustomer: 'Kunde benachrichtigen',
         trackingCodeHint: 'Optional – wird in der Versandbestätigung angezeigt',

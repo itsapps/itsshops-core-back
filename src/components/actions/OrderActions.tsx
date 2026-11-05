@@ -349,14 +349,24 @@ function OrderActionContent({
 
       {isPartialRefund && (
         <Stack gap={2}>
+          <Text size={1} weight="medium">
+            <label htmlFor="order-refund-amount-input">
+              {t('actions.order.updateStatus.refundAmountLabel', 'Refund amount (€)')}
+            </label>
+          </Text>
           <TextInput
+            id="order-refund-amount-input"
             type="number"
+            min={0}
+            step="0.01"
             value={partialAmount ?? ''}
             onChange={handleAmountChange}
             placeholder={t('actions.order.updateStatus.refundAmount', 'Refund amount')}
+            aria-invalid={partialAmount !== undefined && !isPartialRefundValid}
+            aria-describedby={isPartialRefundValid ? undefined : 'order-refund-amount-hint'}
           />
           {!isPartialRefundValid && (
-            <Text size={1} muted>
+            <Text size={1} muted id="order-refund-amount-hint">
               {t('actions.order.updateStatus.enterValidAmount', 'Enter a valid amount')}
             </Text>
           )}

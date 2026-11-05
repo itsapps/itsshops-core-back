@@ -4,6 +4,17 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 5.1.1
+
+### Fixed
+- Order list: a partially refunded order shows its fulfillment icon (e.g. the truck when shipped)
+  instead of a yellow warning — a partial refund needs no further action. A full refund keeps the
+  red refund icon. The order view still shows both states.
+- Order action, partial refund: the amount field has a visible label "Rückerstattungsbetrag (€)"
+  (new key `actions.order.updateStatus.refundAmountLabel`); the "enter a valid amount" hint is
+  linked to it (`aria-describedby`, `aria-invalid`). Decimal separator: a dot always works, a
+  comma only in a browser set to German (native number field).
+
 ## 5.1.0
 
 ### Added

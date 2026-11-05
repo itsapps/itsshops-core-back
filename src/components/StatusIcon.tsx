@@ -9,7 +9,6 @@ import {
   ErrorOutlineIcon,
   QuestionIcon,
   TruckIcon,
-  WarningIcon,
 } from '../assets/icons'
 import { Order } from '../types'
 
@@ -26,9 +25,9 @@ export const getOrderGeneralState = (
   status: OrderStatus,
   payment: OrderPaymentStatus,
 ): { state: string; color: string; icon: React.FC } => {
+  // A full refund closes the order. A partial one needs no action (e.g. shipping refunded on a
+  // shipped order), so the fulfillment state stays visible; the order view shows both states.
   if (payment === 'refunded') return { state: 'refunded', color: 'red', icon: ArrowUDownLeftIcon }
-  if (payment === 'partiallyRefunded')
-    return { state: 'attention', color: 'yellow', icon: WarningIcon }
 
   switch (status) {
     case 'created':
