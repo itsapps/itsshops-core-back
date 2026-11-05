@@ -21,8 +21,16 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
   Moldau", "Czechia". The `Country` type keeps only `code` + `title` (`emoji`, `continent`,
   `currency` were unused; the tax-country flag comes from `flagEmoji(code)`).
 
+### Fixed
+- Shop settings → Versand: "Gratis-Versand Berechnung" (`freeShippingCalculation`) is shown when
+  `coupons` **or** `vouchers` is on (was `vouchers` only, so coupon shops never saw it and the
+  frontend fell back to "after discount"). New documents start with `beforeDiscount` (was
+  `afterDiscount`).
+
 ### Upgrading
 - Nothing to do; existing European codes stay valid.
+- Coupon shops: check "Gratis-Versand Berechnung" in the Studio (unset now means "Vor Rabatt",
+  see core-front).
 
 ## 5.0.0
 

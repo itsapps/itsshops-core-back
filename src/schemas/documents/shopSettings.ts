@@ -32,7 +32,10 @@ export const shopSettings: ITSDocumentDefinition = {
     }
 
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
-    const vouchersEnabled = ctx.featureRegistry.isFeatureEnabled('shop.vouchers')
+    // Free-shipping threshold before/after discount matters as soon as anything discounts the cart.
+    const discountsEnabled =
+      ctx.featureRegistry.isFeatureEnabled('shop.coupons') ||
+      ctx.featureRegistry.isFeatureEnabled('shop.vouchers')
     // Without checkout nothing is sold online: no shipping, tax, invoice, billing or withdrawal
     // settings, and no legal pages linked from the checkout.
     const checkoutEnabled = ctx.featureRegistry.isFeatureEnabled('shop.checkout')
@@ -80,13 +83,13 @@ export const shopSettings: ITSDocumentDefinition = {
           validation: (rule) => rule.required().warning(),
         }),
 
-        ...(vouchersEnabled
+        ...(discountsEnabled
           ? [
               f('freeShippingCalculation', 'string', {
                 options: {
                   list: [{ value: 'beforeDiscount' }, { value: 'afterDiscount' }],
                 },
-                initialValue: 'afterDiscount',
+                initialValue: 'beforeDiscount',
               }),
             ]
           : []),
