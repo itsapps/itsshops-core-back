@@ -61,7 +61,13 @@ add variants inline), `WineSelector` / `WinePreview`.
     `statusHistory[].customerMessage`. "Notify customer" is pre-checked per target status
     (`notifyCustomerByDefault` in `orderTransitions.ts`: off for `delivered`, which is shop
     bookkeeping; on otherwise) and resets when another status is picked. `OrderMailDocumentAction` offers the same message field
-    (`CustomerMessageField`) but writes no history entry)
+    (`CustomerMessageField`) but writes no history entry.
+    **Refunds** (payment transitions `succeeded` → `refunded` / `partiallyRefunded`,
+    `partiallyRefunded` → `refunded` only — so **one partial refund per order**): calls core-front
+    `/api/payment/refund` first and patches the order only on success. The partial amount is typed
+    in euros (native `type="number"`: a dot always works, a comma only in a German-locale browser)
+    and sent as `Math.round(€ × 100)` cents — Stripe rejects fractional cents. Flow on the core-front
+    side: core-front `commerce-and-netlify.md` → "Refunds")
   - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`
   - `product` (feature `shop`) → `AddVariantsAction`
   - `category` (feature `shop.category`; schema disallows the plain `delete`, so it's re-added
@@ -83,7 +89,8 @@ add variants inline), `WineSelector` / `WinePreview`.
   fulfillment, withdrawals).
 - `WithdrawalOrderInput.tsx` — `orderWithdrawal.orderRef` input for assigning unmatched
   declarations (see `schemas.md` → `orderWithdrawal`).
-- `StatusIcon.tsx`, `YoutubePreview.tsx`, `DeployDialog.tsx` (triggers a Netlify build via the
+- `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund
+  overrides it — a partial refund needs no action, so it shows the fulfillment state), `YoutubePreview.tsx`, `DeployDialog.tsx` (triggers a Netlify build via the
   Netlify integration env/config), and the `CustomToolbar` (studio `toolMenu`).
 
 ## Where each is wired (`src/index.ts`)

@@ -58,6 +58,10 @@ time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
   the `shop.checkout` fields aren't optional but **absent**: `shopSettings` drops the billing / orders / shipping /
   returns / tax groups and the terms / withdrawal policy / shipping info pages, leaving `shopPage` +
   filters (+ stock). Values already stored there show as unknown fields.
+- `freeShippingCalculation` (group shipping, "Gratis-Versand Berechnung") is shown when
+  `shop.coupons` **or** `shop.vouchers` is on (was vouchers-only before 5.1.0, so coupon shops had
+  it unset); `initialValue: 'beforeDiscount'`. How core-front applies it: core-front
+  `commerce-and-netlify.md` → "Free shipping".
 
 **Mail-related fields (core-front reads them):** `settings.shopNotificationEmail` (optional; inbox
 for new-order mails + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
