@@ -36,6 +36,10 @@ Release before core-front 3.9.0 (whose orders carry `orderItemBundleItem`).
 - Product Manager "add variants": the price check (product price or every row's) also applies
   when adding variants to an existing product (uses the product's price).
 
+### Fixed
+- "Send mail" → partial-refund mail: asks for the refunded amount (same field as the status
+  dialog; send disabled until valid). Without it the mail stated the order total.
+
 ## 5.1.1
 
 ### Fixed
