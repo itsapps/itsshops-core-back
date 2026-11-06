@@ -312,7 +312,6 @@ export default {
     companyDetailsRecommended: 'Empfohlen – wird für Rechnungen und rechtliche Angaben in E-Mails verwendet',
     withdrawalUnmatchedWithOrder: 'Ein zugeordneter Widerruf kann nicht „Nicht zugeordnet“ sein.',
     withdrawalOrderHasOpen: 'Diese Bestellung hat bereits einen offenen Widerruf.',
-    deliveryMethodsAtLeastOneRate: 'Es muss zumindest eine Regel definiert sein.',
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
     countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',
     duplicateVolume: 'Jedes Volumen darf nur einmal vorkommen.',
@@ -517,9 +516,6 @@ export default {
         description:
           'Kartonarten: welche Flaschengrößen hineinkommen und was die Kartons kosten. Beim Bestellen wird die günstigste Kombination berechnet. Flaschengrößen ohne Gruppe kommen in die Gruppe der nächstgrößeren Flasche (1 pro Platz).',
       },
-      packagingConfigs: {
-        title: 'Weinverpackung (alt)',
-      },
       pickupFee: {
         title: 'Kosten für die Abholung',
         description: 'Auf 0 setzen, um die Abholung kostenlos zu machen.',
@@ -573,20 +569,6 @@ export default {
     preview: {
       perPlace_one: '1 Flasche pro Platz',
       perPlace_other: '{{count}} Flaschen pro Platz',
-    },
-  },
-  winePackage: {
-    title: 'Paket',
-    fields: {
-      count: { title: 'Flaschen pro Paket' },
-      price: { title: 'Preis', description: 'Brutto-Preis' },
-    },
-  },
-  winePackagingConfig: {
-    title: 'Volumen-Konfiguration',
-    fields: {
-      volume: { title: 'Flaschengröße' },
-      packages: { title: 'Pakete' },
     },
   },
   shippingRate: {

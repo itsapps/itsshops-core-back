@@ -930,40 +930,6 @@ export type PackagingGroup = {
   >
 }
 
-export type WinePackagingConfig = {
-  _type: 'winePackagingConfig'
-  volume?:
-    | 100
-    | 187
-    | 200
-    | 250
-    | 375
-    | 500
-    | 750
-    | 1000
-    | 1500
-    | 2000
-    | 2250
-    | 3000
-    | 4500
-    | 5000
-    | 6000
-    | 9000
-    | 12000
-    | 15000
-  packages?: Array<
-    {
-      _key: string
-    } & WinePackage
-  >
-}
-
-export type WinePackage = {
-  _type: 'winePackage'
-  count?: number
-  price?: number
-}
-
 export type ShippingRate = {
   _type: 'shippingRate'
   maxWeight?: number
@@ -1271,11 +1237,6 @@ export type ShippingMethod = {
     {
       _key: string
     } & PackagingGroup
-  >
-  packagingConfigs?: Array<
-    {
-      _key: string
-    } & WinePackagingConfig
   >
   freeShippingThreshold?: number
 }
@@ -1909,8 +1870,6 @@ export type AllSanitySchemaTypes =
   | PackagingGroupPackage
   | PackagingGroupBottle
   | PackagingGroup
-  | WinePackagingConfig
-  | WinePackage
   | ShippingRate
   | Seo
   | OrderStatusHistory

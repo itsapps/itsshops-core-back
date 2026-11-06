@@ -28,8 +28,6 @@ import { vatBreakdownItem } from './objects/orders/vatBreakdownItem'
 import { generatedZip } from './objects/generatedZip'
 import { seo } from './objects/seo'
 import { shippingRate } from './objects/shippingRate'
-import { winePackage } from './objects/winePackage'
-import { winePackagingConfig } from './objects/winePackagingConfig'
 import { packagingGroup } from './objects/packagingGroup'
 import { packagingGroupBottle } from './objects/packagingGroupBottle'
 import { packagingGroupPackage } from './objects/packagingGroupPackage'
@@ -81,8 +79,6 @@ export const getCoreObjects = (
     orderTotals,
     seo,
     shippingRate,
-    winePackage,
-    winePackagingConfig,
     packagingGroup,
     packagingGroupBottle,
     packagingGroupPackage,

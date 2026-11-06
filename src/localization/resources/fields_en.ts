@@ -310,7 +310,6 @@ export default {
     companyDetailsRecommended: 'Recommended – used on invoices and in the legal details of emails',
     withdrawalUnmatchedWithOrder: 'An assigned withdrawal cannot be "Unmatched".',
     withdrawalOrderHasOpen: 'This order already has an open withdrawal.',
-    deliveryMethodsAtLeastOneRate: 'At least one rule must be defined.',
     menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
     duplicateVolume: 'Each volume may only appear once.',
@@ -513,9 +512,6 @@ export default {
         description:
           'Box types: which bottle sizes go in them and what the boxes cost. The cheapest combination is calculated at checkout. Bottle sizes without a group go into the group of the next larger bottle (1 per place).',
       },
-      packagingConfigs: {
-        title: 'Wine packaging (old)',
-      },
       pickupFee: {
         title: 'Pickup fee',
         description: 'Set to 0 to make pickup free of charge.',
@@ -569,20 +565,6 @@ export default {
     preview: {
       perPlace_one: '1 bottle per place',
       perPlace_other: '{{count}} bottles per place',
-    },
-  },
-  winePackage: {
-    title: 'Package',
-    fields: {
-      count: { title: 'Bottles per package' },
-      price: { title: 'Price', description: 'Gross price' },
-    },
-  },
-  winePackagingConfig: {
-    title: 'Volume configuration',
-    fields: {
-      volume: { title: 'Bottle size' },
-      packages: { title: 'Packages' },
     },
   },
   shippingRate: {

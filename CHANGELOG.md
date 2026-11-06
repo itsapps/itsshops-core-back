@@ -40,6 +40,12 @@ Release before core-front 3.9.0 (whose orders carry `orderItemBundleItem`).
 - "Send mail" → partial-refund mail: asks for the refunded amount (same field as the status
   dialog; send disabled until valid). Without it the mail stated the order total.
 
+### Removed
+- `shippingMethod.packagingConfigs` (the hidden, read-only per-volume packaging superseded by
+  `packagingGroups` in 4.0.0) and its object types `winePackagingConfig` / `winePackage`. Nothing
+  read them any more. **Upgrading:** nothing to change; leftover values show as an unknown field in
+  the Studio until unset (`patch(id).unset(['packagingConfigs'])`).
+
 ## 5.1.1
 
 ### Fixed

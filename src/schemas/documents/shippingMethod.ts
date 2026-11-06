@@ -44,19 +44,6 @@ export const shippingMethod: ITSDocumentDefinition = {
         f('rates', 'array', {
           of: [{ type: 'shippingRate' }],
           // hidden: ({ parent }) => parent?.methodType === 'pickup',
-          // validation: (Rule) =>
-          //   Rule.custom((value, context) => {
-          //     const rates = value as unknown[] | undefined
-          //     const parent = context.parent as { methodType?: string; packagingConfigs?: unknown[] } | undefined
-          //     if (!parent?.methodType) return true
-          //     if (parent.methodType === 'delivery') {
-          //       const hasPackaging = (parent.packagingConfigs ?? []).length > 0
-          //       if (!hasPackaging && (!rates || rates.length === 0)) {
-          //         return t.default('validation.deliveryMethodsAtLeastOneRate')
-          //       }
-          //     }
-          //     return true
-          //   }),
         }),
         f('packagingGroups', 'array', {
           of: [{ type: 'packagingGroup' }],
@@ -79,13 +66,6 @@ export const shippingMethod: ITSDocumentDefinition = {
               }
               return true
             }),
-        }),
-        // Superseded by packagingGroups (core-back 4.0.0). Kept hidden for one release so a live
-        // frontend on the old core still prices while the groups are entered; remove afterwards.
-        f('packagingConfigs', 'array', {
-          of: [{ type: 'winePackagingConfig' }],
-          hidden: true,
-          readOnly: true,
         }),
         // f('taxCategory', 'reference', {
         //   to: [{ type: 'taxCategory' }],
