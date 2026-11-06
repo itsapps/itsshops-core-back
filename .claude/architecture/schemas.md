@@ -33,6 +33,24 @@ Order snapshot `fulfillmentPackagingLine`: `volumes[]` (group sizes), `packSize`
 `quantity`, `price`; old orders have `volume` instead (shown only when set; `OrderView` handles
 both).
 
+**Price & bundles (validation):** an `active` `productVariant` needs a price — its own or its
+product's (async `rule.custom` on `price`, error; other statuses/drafts free). Emptying a
+`product.price` warns when active variants have none of their own. A bundle variant
+(`bundleItems`): error on a duplicate item (any status), and while the bundle is `active` on a
+missing, non-active or unpriced item (one query, `validateBundleItems` in `productVariant.ts`); a
+variant whose `status` leaves `active` warns with the active bundles containing it (only with
+`shop.productKind.bundle`). The `bundleItem` picker and the Product Manager's BundleTab offer only
+active, priced non-bundle variants. **A bundle has no tax category** (`taxCategory` hidden on
+bundle variants/products; the Product Manager writes none): core-front splits the bundle price
+over its items by their single prices and taxes each share at the item's rate
+(`commerce-and-netlify.md` → Bundle VAT). The Product Manager writes published variants without
+schema validation, so its tabs enforce "global or row price" themselves (also when adding variants:
+`AddVariantsAction` passes the product's price as `globalPrice`).
+Order snapshot `orderItemBundle.items[]` (`orderItemBundleItem`): `variantId, productId, title,
+subtitle, sku, quantity` (per bundle), `price` (gross share of **one** bundle for all its units),
+`vatRate`, `vatAmount`; plain strings, read-only outside dev; older orders have only `itemCount`.
+`OrderView` lists the items with their rates instead of the bundle's subtitle.
+
 **Product specifications:** `product` and `productVariant` both have an optional `specifications`
 array of `productSpecification` (`label` + `value`, both `i18nString`; Studio label
 "Produktdetails" / "Product details"), for any product kind — e.g. "Material: 100% Baumwolle". A

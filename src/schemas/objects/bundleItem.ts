@@ -20,10 +20,11 @@ export const bundleItem: ITSSchemaDefinition = {
             // 'document' here is the item's productVariant being edited
             const parentProductId = document.product?._ref
 
-            // filter so only non-bundle variants of other products are shown
+            // only active, priced (own or product price) non-bundle variants of other products —
+            // the same rule as the Product Manager's BundleTab
             return {
               filter:
-                'kind != "bundle" && product._ref != $parentProductId && !(_id in path("drafts.**"))',
+                'kind != "bundle" && status == "active" && (defined(price) || defined(product->price)) && product._ref != $parentProductId && !(_id in path("drafts.**"))',
               params: {
                 parentProductId: parentProductId || '',
               },

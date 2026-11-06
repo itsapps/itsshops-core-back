@@ -278,8 +278,10 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
     if (!hideProductSection) {
       const defaultTitle = titles.find((ts) => ts.locale === defaultLocale)?.value
       if (!defaultTitle?.trim()) return false
-      if (!globalPrice && enabledCombinations.some((c) => !c.price)) return false
     }
+    // Active variants need a price — the global (product) one or the row's (also when adding
+    // variants to an existing product: `globalPrice` is then the product's price).
+    if (!globalPrice && enabledCombinations.some((c) => !c.price)) return false
     if (enabledCombinations.length === 0) return false
     return true
   }, [hideProductSection, titles, defaultLocale, globalPrice, enabledCombinations])

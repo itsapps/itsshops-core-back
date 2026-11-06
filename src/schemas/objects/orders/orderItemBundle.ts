@@ -11,6 +11,17 @@ export const orderItemBundle: ITSSchemaDefinition = {
         f('itemCount', 'number', {
           validation: (rule) => rule.required().positive().integer(),
         }),
+        // Contents + VAT split (written by checkout from 2026-11; older orders have none)
+        f('items', 'array', {
+          of: [{ type: 'orderItemBundleItem' }],
+          readOnly: !ctx.config.isDev,
+          options: {
+            ...(!ctx.config.isDev && {
+              disableActions: ['add', 'duplicate', 'addBefore', 'addAfter', 'copy', 'remove'],
+            }),
+            sortable: false,
+          },
+        }),
       ],
       preview: {
         select: {

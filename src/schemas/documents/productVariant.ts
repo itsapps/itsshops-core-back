@@ -1,4 +1,4 @@
-import { FieldDefinition } from 'sanity'
+import { FieldDefinition, NumberRule, Rule as SanityRule } from 'sanity'
 
 import { productKindIcons, ProductVariantIcon } from '../../assets/icons'
 import { WineSelector } from '../../components/products/WineSelector'
@@ -23,6 +23,7 @@ export const productVariant: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f, t } = ctx
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
+    const bundlesOn = ctx.featureRegistry.isFeatureEnabled('shop.productKind.bundle')
     const kindFields = getKindFields(ctx)
 
     const groupedData = ctx.builders.buildGroupedSchema([
@@ -40,6 +41,11 @@ export const productVariant: ITSDocumentDefinition = {
               layout: 'dropdown',
             },
             initialValue: 'active',
+            // A variant leaving `active` while active bundles contain it: warn (never block —
+            // checkout refuses those bundles, the page shows them sold out).
+            ...(bundlesOn && {
+              validation: (rule: SanityRule) => usedInActiveBundlesWarning(ctx, rule),
+            }),
           }),
 
           ...kindFields,
@@ -101,9 +107,14 @@ export const productVariant: ITSDocumentDefinition = {
       {
         name: 'pricing',
         fields: [
-          f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
+          // A bundle is taxed by its items (checkout splits its price over them) — no own category.
+          f('taxCategory', 'reference', {
+            to: [{ type: 'taxCategory' }],
+            group: 'vat',
+            hidden: ({ document }) => document?.kind === 'bundle',
+          }),
           ctx.builders.priceField({
-            validation: (Rule) => Rule.positive(),
+            validation: (Rule) => [Rule.positive(), activeNeedsPrice(ctx, Rule)],
             group: 'pricing',
           }),
           ctx.builders.priceField({
@@ -330,11 +341,145 @@ function getPhysicalFields(ctx: FieldContext): FieldDefinition[] {
   ]
 }
 
+// ─── Validation ───────────────────────────────────────────────────────────────
+
+const publishedId = (id: string | undefined) => (id ?? '').replace(/^drafts\./, '')
+
+/**
+ * Price (error): an `active` variant needs a price — its own or its product's. Other statuses
+ * publish without one; drafts can always be saved.
+ */
+function activeNeedsPrice(ctx: FieldContext, rule: NumberRule): NumberRule {
+  return rule.custom(async (value, context) => {
+    const doc = context.document as ProductVariant | undefined
+    if (!doc || (doc.status ?? 'active') !== 'active') return true
+    if (typeof value === 'number') return true
+    const productId = publishedId(doc.product?._ref)
+    if (!productId) return true
+    const client = context.getClient({ apiVersion: ctx.config.apiVersion })
+    const productPrice = await client.fetch<number | null>(`*[_id == $id][0].price`, {
+      id: productId,
+    })
+    return typeof productPrice === 'number'
+      ? true
+      : ctx.t.default(
+          'productVariant.validation.priceRequired',
+          "An active variant needs a price — its own or the product's",
+        )
+  })
+}
+
+/** Status (warning): name the active bundles that contain this variant when it leaves `active`. */
+function usedInActiveBundlesWarning(ctx: FieldContext, rule: SanityRule): SanityRule {
+  return rule
+    .custom(async (value, context) => {
+      if ((value ?? 'active') === 'active') return true
+      const id = publishedId(context.document?._id)
+      if (!id) return true
+      const client = context.getClient({ apiVersion: ctx.config.apiVersion })
+      const bundles = await client.fetch<
+        {
+          title: InternationalizedArrayString | null
+          productTitle: InternationalizedArrayString | null
+        }[]
+      >(
+        `*[_type == "productVariant" && kind == "bundle" && status == "active" && references($id) && !(_id in path("drafts.**"))]{title, "productTitle": product->title}`,
+        { id },
+      )
+      if (bundles.length === 0) return true
+      const names = bundles.map(
+        (b) => ctx.localizer.value(b.title) || ctx.localizer.value(b.productTitle) || '?',
+      )
+      return ctx.t.default(
+        'productVariant.validation.usedInActiveBundles',
+        `Used in ${bundles.length} active bundles: ${names.join(', ')}`,
+        {
+          count: bundles.length,
+          names: names.join(', '),
+        },
+      )
+    })
+    .warning()
+}
+
+type BundleItemValue = { _key?: string; product?: { _ref?: string } }
+type ItemCheck = {
+  _id: string
+  status: string | null
+  price: number | null
+  productPrice: number | null
+  title: InternationalizedArrayString | null
+  productTitle: InternationalizedArrayString | null
+}
+
+/**
+ * Bundle items (error):
+ * - every status: the same variant listed twice (raise its quantity instead);
+ * - only while the bundle is `active`: an item that is missing, not `active`, or has no price
+ *   (own or its product's — checkout splits the bundle's VAT by the items' prices).
+ * Only an error while active, so setting the bundle to `soldOut`/`archived` stays publishable.
+ */
+function validateBundleItems(ctx: FieldContext, rule: SanityRule): SanityRule {
+  return rule.custom(async (value, context) => {
+    const doc = context.document as ProductVariant | undefined
+    if (doc?.kind !== 'bundle' || !Array.isArray(value) || value.length === 0) return true
+    const refs = (value as BundleItemValue[])
+      .map((v) => publishedId(v?.product?._ref))
+      .filter(Boolean)
+    const isActive = (doc.status ?? 'active') === 'active'
+    const duplicates = [...new Set(refs.filter((id, i) => refs.indexOf(id) !== i))]
+    if (duplicates.length === 0 && !isActive) return true
+
+    const client = context.getClient({ apiVersion: ctx.config.apiVersion })
+    const found = await client.fetch<ItemCheck[]>(
+      `*[_id in $ids]{_id, status, price, "productPrice": product->price, title, "productTitle": product->title}`,
+      { ids: [...new Set(refs)] },
+    )
+    const byId = new Map(found.map((v) => [v._id, v]))
+    const name = (id: string) => {
+      const v = byId.get(id)
+      return (v && (ctx.localizer.value(v.title) || ctx.localizer.value(v.productTitle))) || id
+    }
+
+    if (duplicates.length) {
+      return ctx.t.default(
+        'productVariant.validation.duplicateItem',
+        `Listed more than once: ${duplicates.map(name).join(', ')} — raise its quantity instead`,
+        { names: duplicates.map(name).join(', ') },
+      )
+    }
+    const ids = [...new Set(refs)]
+    const inactive = ids.filter((id) => !byId.has(id) || byId.get(id)!.status !== 'active')
+    if (inactive.length) {
+      return ctx.t.default(
+        'productVariant.validation.inactiveItem',
+        `This bundle is active, but these items aren't: ${inactive.map(name).join(', ')}`,
+        { names: inactive.map(name).join(', ') },
+      )
+    }
+    const unpriced = ids.filter((id) => {
+      const v = byId.get(id)!
+      return typeof v.price !== 'number' && typeof v.productPrice !== 'number'
+    })
+    if (unpriced.length) {
+      return ctx.t.default(
+        'productVariant.validation.unpricedItem',
+        `These items have no price (needed to split the VAT): ${unpriced.map(name).join(', ')}`,
+        { names: unpriced.map(name).join(', ') },
+      )
+    }
+    return true
+  })
+}
+
 function getBundleFields(ctx: FieldContext): FieldDefinition[] {
   return [
     ctx.f('bundleItems', 'array', {
       of: [{ type: 'bundleItem' }],
-      validation: validateRequiredArrayIfKind('bundle'),
+      validation: (rule) => [
+        validateRequiredArrayIfKind('bundle')(rule),
+        validateBundleItems(ctx, rule),
+      ],
       hidden: ({ parent }: { parent: ProductVariant }) => parent?.kind !== 'bundle',
     }),
   ]

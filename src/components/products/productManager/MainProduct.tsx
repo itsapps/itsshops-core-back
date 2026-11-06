@@ -22,16 +22,22 @@ export function GlobalDefaults(props: GlobalDefaultsProps): ReactElement {
     onWeightChange,
   } = props
 
+  // A bundle is taxed by its items — no tax category to pick (see BundleTab's price hint).
+  const showTax = kind !== 'bundle'
+  const columns = 1 + (showTax ? 1 : 0) + (kind === 'physical' ? 1 : 0)
+
   return (
     <Stack gap={4}>
-      <Grid gridTemplateColumns={kind === 'physical' ? 3 : 2} gap={3}>
+      <Grid gridTemplateColumns={columns} gap={3}>
         <PriceField value={globalPrice} onChange={onPriceChange} />
-        <TaxCategoryField
-          value={globalTaxCategoryId}
-          taxCategories={taxCategories}
-          loadingTax={loadingTax}
-          onTaxChange={onTaxChange}
-        />
+        {showTax && (
+          <TaxCategoryField
+            value={globalTaxCategoryId}
+            taxCategories={taxCategories}
+            loadingTax={loadingTax}
+            onTaxChange={onTaxChange}
+          />
+        )}
         {kind === 'physical' && <WeightField value={globalWeight} onChange={onWeightChange} />}
       </Grid>
     </Stack>

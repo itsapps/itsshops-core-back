@@ -192,7 +192,7 @@ export function ProductCreator(): ReactElement {
         kind: 'bundle',
         titles,
         price: globalPrice,
-        taxId: globalTaxCategoryId,
+        // no tax category: a bundle is taxed by its items
         weight: globalWeight,
       })
       for (const row of rows) {

@@ -343,6 +343,10 @@ export default {
       variants_one: '{{count}} variant',
       variants_other: '{{count}} variants',
     },
+    validation: {
+      variantsWithoutPrice_one: '{{count}} active variant has no price of its own.',
+      variantsWithoutPrice_other: '{{count}} active variants have no price of their own.',
+    },
   },
   productVariant: {
     title: 'Product variant',
@@ -397,6 +401,14 @@ export default {
       bundleItems_zero: 'No products',
       bundleItems_one: '{{count}} product',
       bundleItems_other: '{{count}} products',
+    },
+    validation: {
+      priceRequired: "An active variant needs a price — its own or the product's.",
+      usedInActiveBundles_one: 'Part of an active bundle: {{names}}. It shows as sold out in the shop until it is changed.',
+      usedInActiveBundles_other: 'Part of {{count}} active bundles: {{names}}. They show as sold out in the shop until they are changed.',
+      duplicateItem: 'Listed more than once: {{names}} — raise its quantity instead.',
+      inactiveItem: "This bundle is active, but these items aren't: {{names}}. Set the bundle to sold out or swap the items.",
+      unpricedItem: "These items have no price (needed to split the bundle's VAT): {{names}}",
     },
   },
   wine: {
@@ -1097,6 +1109,27 @@ export default {
         title: 'Item count',
         description: 'Total quantity of all child items combined',
       },
+      items: {
+        title: 'Contents',
+        description: "The bundle's items with their price share and VAT rate (at the time of the order)",
+      },
+    },
+  },
+  orderItemBundleItem: {
+    title: 'Bundle item',
+    fields: {
+      variantId: { title: 'Variant ID' },
+      productId: { title: 'Product ID' },
+      title: { title: 'Title' },
+      subtitle: { title: 'Subtitle' },
+      sku: { title: 'SKU' },
+      quantity: { title: 'Quantity', description: 'Quantity per bundle' },
+      price: {
+        title: 'Price share',
+        description: 'Gross share of one bundle for all units together, in cents (split by single prices)',
+      },
+      vatRate: { title: 'VAT rate' },
+      vatAmount: { title: 'VAT amount', description: 'VAT in the price share × bundle quantity, in cents' },
     },
   },
   orderItemOption: {

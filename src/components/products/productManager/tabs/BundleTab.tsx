@@ -5,7 +5,6 @@ import {
   Button,
   Card,
   Flex,
-  Grid,
   Label,
   Stack,
   Text,
@@ -21,7 +20,6 @@ import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { uid } from '../../../../utils/utils'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
-import { TaxCategoryField } from '../fields/TaxCategoryField'
 import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
@@ -37,7 +35,7 @@ import { ProductTab } from './ProductTab'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function emptyBundleRow(): BundleVariantRow {
-  return { id: uid(), items: [], price: undefined, taxCategoryId: '', titles: [] }
+  return { id: uid(), items: [], price: undefined, titles: [] }
 }
 
 export const BundleVariantRowItem = memo(function BundleVariantRowItem({
@@ -91,8 +89,6 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
     canRemove,
     allVariantOptions,
     loadingVariants,
-    taxCategories,
-    loadingTax,
     locales,
     defaultLocale,
     titlePlaceholder,
@@ -103,7 +99,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
     onQuantityChange,
     onUpdateRow,
   } = props
-  const { studioT, structureT, schemaT } = useITSContext()
+  const { studioT, structureT, schemaT, componentT } = useITSContext()
   const [query, setQuery] = useState('')
 
   const handleRemoveRow = useCallback(() => onRemoveRow(row.id), [onRemoveRow, row.id])
@@ -120,11 +116,6 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
 
   const handlePriceChange = useCallback(
     (value: number | undefined) => onUpdateRow(row.id, 'price', value),
-    [onUpdateRow, row.id],
-  )
-
-  const handleTaxChange = useCallback(
-    (value: string) => onUpdateRow(row.id, 'taxCategoryId', value),
     [onUpdateRow, row.id],
   )
 
@@ -221,16 +212,13 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
           placeholder={titlePlaceholder}
         />
 
-        {/* Price + tax */}
-        <Grid gridTemplateColumns={2} gap={3}>
+        {/* Price (no tax category: VAT comes from the items) */}
+        <Stack gap={2}>
           <PriceField value={row.price} onChange={handlePriceChange} required={false} />
-          <TaxCategoryField
-            value={row.taxCategoryId}
-            taxCategories={taxCategories}
-            loadingTax={loadingTax}
-            onTaxChange={handleTaxChange}
-          />
-        </Grid>
+          <Text size={1} muted>
+            {componentT.default('productCreatorTool.bundle.vatFromItems', 'VAT is taken from the items')}
+          </Text>
+        </Stack>
       </Stack>
     </VariantRow>
   )
@@ -258,7 +246,8 @@ export function BundleTab(props: BundleTabProps): ReactElement {
   useEffect(() => {
     sanityClient
       .fetch<BundleVariantResult[]>(
-        `*[_type == "productVariant" && kind != "bundle" && status == "active" && !(_id in path("drafts.**"))]{
+        // Items need a price (own or product's): checkout splits the bundle's VAT by them.
+        `*[_type == "productVariant" && kind != "bundle" && status == "active" && (defined(price) || defined(product->price)) && !(_id in path("drafts.**"))]{
           _id,
           kind,
           "title": title,
@@ -368,8 +357,10 @@ export function BundleTab(props: BundleTabProps): ReactElement {
     if (!hideProductSection) {
       const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
       if (!defaultTitle?.trim()) return false
-      if (!globalPrice && rows.some((r) => !r.price)) return false
     }
+    // Active variants need a price — the global (product) one or the row's (also when adding
+    // variants to an existing product: `globalPrice` is then the product's price).
+    if (!globalPrice && rows.some((r) => !r.price)) return false
     if (rows.length === 0) return false
     if (rows.some((r) => r.items.length === 0)) return false
     return true

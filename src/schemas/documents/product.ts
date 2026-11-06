@@ -73,9 +73,35 @@ export const product: ITSDocumentDefinition = {
       {
         name: 'pricing',
         fields: [
-          f('taxCategory', 'reference', { to: [{ type: 'taxCategory' }], group: 'vat' }),
+          // A bundle is taxed by its items — no own category.
+          f('taxCategory', 'reference', {
+            to: [{ type: 'taxCategory' }],
+            group: 'vat',
+            hidden: ({ document }) => document?.kind === 'bundle',
+          }),
           ctx.builders.priceField({
-            validation: (Rule) => Rule.positive(),
+            validation: (Rule) => [
+              Rule.positive(),
+              // Emptying the product price leaves variants that relied on it unpriced (a variant's
+              // own price check only runs when it is edited) — warn, never block.
+              Rule.custom(async (value, context) => {
+                if (typeof value === 'number') return true
+                const id = (context.document?._id ?? '').replace(/^drafts\./, '')
+                if (!id) return true
+                const client = context.getClient({ apiVersion: ctx.config.apiVersion })
+                const count = await client.fetch<number>(
+                  `count(*[_type == "productVariant" && product._ref == $id && status == "active" && !defined(price) && !(_id in path("drafts.**"))])`,
+                  { id },
+                )
+                return count === 0
+                  ? true
+                  : ctx.t.default(
+                      'product.validation.variantsWithoutPrice',
+                      `${count} active variants have no price of their own`,
+                      { count },
+                    )
+              }).warning(),
+            ],
             group: 'pricing',
           }),
           ctx.builders.priceField({

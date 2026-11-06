@@ -53,7 +53,19 @@ type OrderItem = {
   packed?: boolean
   options?: OrderItemOption[]
   wine?: { vintage?: string; volume?: number }
-  bundle?: { itemCount: number }
+  bundle?: { itemCount: number; items?: OrderItemBundleItem[] }
+}
+
+/** Bundle contents snapshot: `quantity` per bundle, `price` = share of one bundle. */
+type OrderItemBundleItem = {
+  _key: string
+  title: string
+  subtitle?: string
+  sku?: string
+  quantity: number
+  price: number
+  vatRate: number
+  vatAmount: number
 }
 
 type VatBreakdownItem = {
@@ -582,6 +594,13 @@ function OrderItemRow({
   t: TranslatorFunction
 }) {
   const lineTotal = item.price * item.quantity
+  // A bundle with a contents snapshot lists its items (with their rates) instead of the
+  // subtitle ("2× A, 1× B"), and shows its parts' rates instead of the display rate.
+  const contents = item.bundle?.items ?? []
+  const rates = contents.length
+    ? [...new Set(contents.map((bi) => bi.vatRate))].sort((a, b) => a - b).join(' / ')
+    : String(item.vatRate)
+  const vatLabel = t('order.vatRate', `${rates}% Vat`, { vatRate: rates })
 
   return (
     <Card padding={3} radius={2} shadow={1} tone="transparent">
@@ -592,7 +611,16 @@ function OrderItemRow({
               {item.quantity}× {item.title}
             </Text>
           </Flex>
-          {item.subtitle && <Text muted>{item.subtitle}</Text>}
+          {item.subtitle && contents.length === 0 && <Text muted>{item.subtitle}</Text>}
+          {contents.length > 0 && (
+            <Stack as="ul" gap={2} style={{ margin: 0, paddingLeft: '1.25em' }}>
+              {contents.map((bi) => (
+                <Text as="li" key={bi._key} muted size={1}>
+                  {`${bi.quantity} × ${bi.title}${bi.subtitle ? ` – ${bi.subtitle}` : ''} · ${t('order.vatRate', `${bi.vatRate}% Vat`, { vatRate: bi.vatRate })}`}
+                </Text>
+              ))}
+            </Stack>
+          )}
           <Flex gap={3} wrap="wrap">
             {item.sku && (
               <Text muted style={{ fontFamily: 'monospace' }}>
@@ -605,7 +633,7 @@ function OrderItemRow({
               </Text>
             )} */}
             <Text muted>
-              {`${t('order.vatRate', `${item.vatRate}% Vat`, { vatRate: item.vatRate })} (${money(item.vatAmount)})`}
+              {`${vatLabel} (${money(item.vatAmount)})`}
             </Text>
           </Flex>
         </Stack>

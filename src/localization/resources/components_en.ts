@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
   productCreatorTool: {
+    bundle: {
+      vatFromItems: 'VAT is taken from the items (the price is split by their single prices).',
+    },
     name: 'product-manager',
     title: 'Product Manager',
     subtitle: 'Create products and variants in one step',

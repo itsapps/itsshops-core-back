@@ -18,6 +18,7 @@ import { fulfillmentPackagingLine } from './objects/orders/fulfillmentPackagingL
 import { orderCustomer } from './objects/orders/orderCustomer'
 import { orderItem } from './objects/orders/orderItem'
 import { orderItemBundle } from './objects/orders/orderItemBundle'
+import { orderItemBundleItem } from './objects/orders/orderItemBundleItem'
 import { orderItemOption } from './objects/orders/orderItemOption'
 import { orderItemWine } from './objects/orders/orderItemWine'
 import { orderStatusHistory } from './objects/orders/orderStatusHistory'
@@ -72,6 +73,7 @@ export const getCoreObjects = (
     orderCustomer,
     orderItem,
     orderItemBundle,
+    orderItemBundleItem,
     orderItemOption,
     orderItemWine,
     orderStatusHistory,

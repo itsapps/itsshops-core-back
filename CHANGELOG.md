@@ -4,6 +4,34 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased (bundles at checkout — planned 5.2.0)
+
+Release before core-front 3.9.0 (whose orders carry `orderItemBundleItem`).
+
+### Added
+- Order snapshot: `orderItemBundle.items[]` of the new object `orderItemBundleItem` (`variantId,
+  productId, title, subtitle, sku, quantity` per bundle, `price` = gross share of one bundle for all
+  its units, `vatRate`, `vatAmount`); read-only outside dev. The order view lists a bundle's items
+  with their VAT rates and shows the parts' rates ("13 / 20% MwSt") on the line.
+- Validation:
+  - an **active variant needs a price** — its own or its product's (error; other statuses and
+    drafts unaffected). Existing unpriced active variants show the error on their next edit;
+  - product: warning when its price is empty and active variants have none of their own;
+  - bundle items: error when the same variant is listed twice (raise its quantity instead), and —
+    only while the bundle is active — when an item is missing, not active, or has no price;
+  - variant status: warning when a variant leaving `active` is in active bundles (names them;
+    only with `shop.productKind.bundle`).
+- Product Manager: hint under the bundle price "VAT is taken from the items"
+  (`productCreatorTool.bundle.vatFromItems`).
+
+### Changed
+- A bundle has no tax category: the field is hidden on bundle variants and bundle products
+  (existing values stay, unused); the Product Manager no longer asks for or writes one.
+- Bundle item picker (reference field and Product Manager) offers only active variants with a
+  price (own or product's).
+- Product Manager "add variants": the price check (product price or every row's) also applies
+  when adding variants to an existing product (uses the product's price).
+
 ## 5.1.1
 
 ### Fixed

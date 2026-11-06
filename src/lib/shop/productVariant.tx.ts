@@ -114,7 +114,8 @@ export function addBundleVariantToTx(
   row: BundleVariantRow,
 ): void {
   tx.create({
-    ...baseVariant(productId, 'bundle', row.titles, row.price, row.taxCategoryId),
+    // no tax category: a bundle is taxed by its items (checkout splits its price over them)
+    ...baseVariant(productId, 'bundle', row.titles, row.price),
     bundleItems: row.items.map((item) => ({
       _type: 'bundleItem',
       _key: uid(),

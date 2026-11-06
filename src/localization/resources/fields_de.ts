@@ -346,6 +346,10 @@ export default {
       variants_one: '{{count}} Variante',
       variants_other: '{{count}} Varianten',
     },
+    validation: {
+      variantsWithoutPrice_one: '{{count}} aktive Variante hat keinen eigenen Preis.',
+      variantsWithoutPrice_other: '{{count}} aktive Varianten haben keinen eigenen Preis.',
+    },
   },
   productVariant: {
     title: 'Produktvariante',
@@ -401,6 +405,14 @@ export default {
       bundleItems_zero: 'Keine Produkte',
       bundleItems_one: '{{count}} Produkt',
       bundleItems_other: '{{count}} Produkte',
+    },
+    validation: {
+      priceRequired: 'Eine aktive Variante braucht einen Preis – einen eigenen oder den des Produkts.',
+      usedInActiveBundles_one: 'Ist in einem aktiven Paket enthalten: {{names}}. Das Paket ist im Shop ausverkauft, bis es geändert wird.',
+      usedInActiveBundles_other: 'Ist in {{count}} aktiven Paketen enthalten: {{names}}. Die Pakete sind im Shop ausverkauft, bis sie geändert werden.',
+      duplicateItem: 'Mehrfach enthalten: {{names}} – stattdessen die Menge erhöhen.',
+      inactiveItem: 'Das Paket ist aktiv, diese Produkte aber nicht: {{names}}. Paket auf „Ausverkauft“ stellen oder die Produkte tauschen.',
+      unpricedItem: 'Diese Produkte haben keinen Preis (nötig, um die MwSt. des Pakets aufzuteilen): {{names}}',
     },
   },
   wine: {
@@ -1104,6 +1116,27 @@ export default {
         title: 'Anzahl Positionen',
         description: 'Gesamtmenge aller untergeordneten Positionen',
       },
+      items: {
+        title: 'Inhalt',
+        description: 'Die Produkte des Pakets mit ihrem Preisanteil und MwSt.-Satz (zum Bestellzeitpunkt)',
+      },
+    },
+  },
+  orderItemBundleItem: {
+    title: 'Paketprodukt',
+    fields: {
+      variantId: { title: 'Varianten-ID' },
+      productId: { title: 'Produkt-ID' },
+      title: { title: 'Titel' },
+      subtitle: { title: 'Untertitel' },
+      sku: { title: 'SKU' },
+      quantity: { title: 'Menge', description: 'Menge pro Paket' },
+      price: {
+        title: 'Preisanteil',
+        description: 'Bruttoanteil an einem Paket für alle Stück zusammen, in Cent (aufgeteilt nach Einzelpreisen)',
+      },
+      vatRate: { title: 'MwSt.-Satz' },
+      vatAmount: { title: 'MwSt.-Betrag', description: 'MwSt. im Preisanteil × Paketmenge, in Cent' },
     },
   },
   orderItemOption: {

@@ -38,7 +38,7 @@ type ExistingVariant = Pick<ProductVariant, '_id' | 'weight'> & {
   optionRefs: VariantOptionReference['_ref'][] | undefined
   // weight: number | undefined
 }
-type ProductWithKind = Pick<Product, '_id'> & { kind: ProductKind }
+type ProductWithKind = Pick<Product, '_id'> & { kind: ProductKind; price?: number }
 // interface ProductDoc {
 //   _id: string
 //   kind: ProductKind
@@ -84,7 +84,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
       }>(
         `{
           "product": *[_type == "product" && _id == $productId][0]{
-            _id, kind,
+            _id, kind, price,
           },
           "variants": *[_type == "productVariant" && product._ref == $productId]{
             _id, kind,
@@ -180,7 +180,9 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
     () => ({
       kind: product?.kind || 'wine',
       titles: [],
-      globalPrice: undefined,
+      // The product's price: new variants without their own price inherit it (feeds the tabs'
+      // price check; the add-variants submit never writes it).
+      globalPrice: product?.price,
       globalTaxCategoryId: '',
       taxCategories,
       loadingTax,

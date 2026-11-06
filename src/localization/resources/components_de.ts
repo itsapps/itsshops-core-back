@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
   productCreatorTool: {
+    bundle: {
+      vatFromItems: 'Die MwSt. wird aus den enthaltenen Produkten übernommen (Preis aufgeteilt nach ihren Einzelpreisen).',
+    },
     name: 'produkt-manager',
     title: 'Produktmanager',
     subtitle: 'Produkte und Varianten erstellen in einem Schritt',

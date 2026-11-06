@@ -73,7 +73,6 @@ export interface BundleVariantRow {
   id: string
   items: BundleItem[]
   price: number | undefined
-  taxCategoryId: string
   titles: I18nTitleEntry[]
 }
 

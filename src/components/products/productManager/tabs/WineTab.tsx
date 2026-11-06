@@ -344,8 +344,10 @@ export function WineTab(props: WineTabProps): ReactElement {
     if (!hideProductSection) {
       const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
       if (!defaultTitle?.trim()) return false
-      if (!globalPrice && submittableRows.some((r) => !r.price)) return false
     }
+    // Active variants need a price — the global (product) one or the row's (also when adding
+    // variants to an existing product: `globalPrice` is then the product's price).
+    if (!globalPrice && submittableRows.some((r) => !r.price)) return false
     if (submittableRows.length === 0) return false
     return true
   }, [hideProductSection, titles, defaultLocale, globalPrice, submittableRows])
