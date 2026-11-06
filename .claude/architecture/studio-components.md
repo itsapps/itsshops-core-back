@@ -37,7 +37,13 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
   committed through `src/lib/hooks/useProductTransaction.ts`. Prices are entered in euros and
   converted to cents on submit.
 - Wine kind pulls options from the VinoFact client; physical/digital expands selected
-  variant-option groups into combinations; bundle composes existing variants with quantities.
+  variant-option groups into combinations; bundle composes existing variants with quantities
+  (picker: active, priced, non-bundle variants only).
+- **It writes published variants directly, so no schema validation runs** — the tabs' `canSubmit`
+  enforce what the schema would: "global (product) price or every row's price", also when adding
+  variants to an existing product (`AddVariantsAction` passes the product's price as
+  `globalPrice`). Bundles get **no tax category** (neither product nor variant rows; hint
+  `productCreatorTool.bundle.vatFromItems` under the price) — core-front taxes a bundle by its items.
 - Field sub-components in `fields/` (`I18nTitleField`, `PriceField`, `TaxCategoryField`,
   `WeightField`, `VariantRow`, …) are reused across tabs.
 
@@ -61,7 +67,10 @@ add variants inline), `WineSelector` / `WinePreview`.
     `statusHistory[].customerMessage`. "Notify customer" is pre-checked per target status
     (`notifyCustomerByDefault` in `orderTransitions.ts`: off for `delivered`, which is shop
     bookkeeping; on otherwise) and resets when another status is picked. `OrderMailDocumentAction` offers the same message field
-    (`CustomerMessageField`) but writes no history entry.
+    (`CustomerMessageField`) but writes no history entry. It hides the invoice mail and "attach
+    invoice PDF" when `shop.invoices` is off (invoices from another system, e.g. wineNET), and the
+    partial-refund mail asks for the refunded amount (same field as the status dialog; the order
+    stores no refund amounts — core-front `.claude/plans/refund-history.md`).
     **Refunds** (payment transitions `succeeded` → `refunded` / `partiallyRefunded`,
     `partiallyRefunded` → `refunded` only — so **one partial refund per order**): calls core-front
     `/api/payment/refund` first and patches the order only on success. The partial amount is typed
@@ -86,7 +95,8 @@ add variants inline), `WineSelector` / `WinePreview`.
 - `PriceInput.tsx` — currency input; the **only** component re-exported publicly
   (`src/components/index.ts`). Used by the `priceField` builder.
 - `OrderView.tsx` — the order document's overview view (order date, payment method, totals,
-  fulfillment, withdrawals).
+  fulfillment, withdrawals). A bundle line with `bundle.items` lists its items with their VAT
+  rates (instead of its subtitle) and shows the parts' rates ("13 / 20% MwSt").
 - `WithdrawalOrderInput.tsx` — `orderWithdrawal.orderRef` input for assigning unmatched
   declarations (see `schemas.md` → `orderWithdrawal`).
 - `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund
