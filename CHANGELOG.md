@@ -24,6 +24,10 @@ Release before core-front 3.9.0 (whose orders carry `orderItemBundleItem`).
 - Product Manager: hint under the bundle price "VAT is taken from the items"
   (`productCreatorTool.bundle.vatFromItems`).
 
+- `features.shop.invoices` (default `true`): `false` when another system issues the invoices
+  (e.g. wineNET) — the "Send mail" action offers no invoice mail and no "attach invoice PDF".
+  Pair with core-front's notify option `invoices: false`.
+
 ### Changed
 - A bundle has no tax category: the field is hidden on bundle variants and bundle products
   (existing values stay, unused); the Product Manager no longer asks for or writes one.

@@ -73,8 +73,11 @@ function OrderMailContent({
   order: OrderMailActionDoc
   onComplete: () => void
 }) {
-  const { componentT, frontendClient } = useITSContext()
+  const { componentT, frontendClient, featureRegistry } = useITSContext()
   const t = componentT.default
+  // Invoices issued elsewhere (features.shop.invoices: false): no invoice mail, no PDF.
+  const invoicesOn = featureRegistry.isFeatureEnabled('shop.invoices')
+  const mailTypes = invoicesOn ? MAIL_TYPES : MAIL_TYPES.filter((type) => type !== 'orderInvoice')
 
   const [mailType, setMailType] = useState<MailType>('orderConfirmation')
   const [attachInvoice, setAttachInvoice] = useState(false)
@@ -123,7 +126,7 @@ function OrderMailContent({
           </label>
         </Text>
         <Select id="order-mail-type-select" value={mailType} onChange={handleMailTypeChange}>
-          {MAIL_TYPES.map((type) => (
+          {mailTypes.map((type) => (
             <option key={type} value={type}>
               {t(`actions.order.mailTypes.${type}`, type)}
             </option>
@@ -131,20 +134,22 @@ function OrderMailContent({
         </Select>
       </Stack>
 
-      <Flex align="center" gap={2}>
-        <Checkbox
-          id="attach-invoice-checkbox"
-          checked={attachInvoice}
-          onChange={handleAttachInvoiceChange}
-        />
-        <Box flex={1}>
-          <Text>
-            <label htmlFor="attach-invoice-checkbox">
-              {t('actions.order.sendMailDialog.attachInvoice', 'Attach invoice PDF')}
-            </label>
-          </Text>
-        </Box>
-      </Flex>
+      {invoicesOn && (
+        <Flex align="center" gap={2}>
+          <Checkbox
+            id="attach-invoice-checkbox"
+            checked={attachInvoice}
+            onChange={handleAttachInvoiceChange}
+          />
+          <Box flex={1}>
+            <Text>
+              <label htmlFor="attach-invoice-checkbox">
+                {t('actions.order.sendMailDialog.attachInvoice', 'Attach invoice PDF')}
+              </label>
+            </Text>
+          </Box>
+        </Flex>
+      )}
 
       <CustomerMessageField value={customerMessage} onChange={handleCustomerMessageChange} />
 

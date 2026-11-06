@@ -58,6 +58,12 @@ export interface FeatureConfig {
     vinofact?: VinofactConfig
     vouchers?: boolean
     coupons?: boolean
+    /**
+     * Core issues invoices (default true). `false` when another system issues them (e.g.
+     * wineNET): the "Send mail" action offers no invoice mail and no PDF attachment. Pair with
+     * core-front's notify wrapper option `invoices: false`.
+     */
+    invoices?: boolean
   }>
   blog?: boolean
   users?: boolean
@@ -74,6 +80,7 @@ export interface ITSFeatureConfig {
     vinofact: VinofactConfig
     vouchers: boolean
     coupons: boolean
+    invoices: boolean
   }
   blog: boolean
   users: boolean

@@ -40,6 +40,7 @@ export type ITSFeatureKey =
   | 'shop.productKind.options'
   | 'shop.vouchers'
   | 'shop.coupons'
+  | 'shop.invoices'
   | 'blog'
   | 'users'
   | 'newsletter'
