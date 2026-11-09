@@ -132,7 +132,9 @@ export function OrderWithdrawalCreateAction(props: DocumentActionProps): Documen
 
   // Mirror the web endpoint's dedupe: block while an open withdrawal exists.
   // A closed (refunded/rejected) prior one does not block a fresh declaration.
-  if (openExists) {
+  // Not while the dialog is open: creating makes `openExists` true, and dropping the dialog then
+  // would cut off the confirmation mail (and hide its error).
+  if (openExists && !dialogOpen) {
     return {
       label,
       icon: OrderWithdrawalIcon,
@@ -408,24 +410,28 @@ export function WithdrawalAssignAction(
   const wd = props.published as WithdrawalActionDoc | null
   const { componentT } = useITSContext()
   const t = componentT.default
-  // Revision when the dialog opened: the patch is refused if the withdrawal changed since.
-  const [openedRev, setOpenedRev] = useState<string | null>(null)
+  // The withdrawal as the dialog opened it (its `_rev` guards the patch). The action stays while
+  // its dialog is open: the patch makes it inapplicable, and unmounting the dialog then would hide
+  // the mail step (and its error).
+  const [opened, setOpened] = useState<WithdrawalActionDoc | null>(null)
 
-  const handleOpen = useCallback(() => setOpenedRev(wd?._rev ?? null), [wd?._rev])
-  const handleClose = useCallback(() => setOpenedRev(null), [])
+  const handleOpen = useCallback(() => setOpened(wd), [wd])
+  const handleClose = useCallback(() => setOpened(null), [])
 
-  if (!wd || !withdrawalActionsFor(wd).assign) return null
+  if (!opened && (!wd || !withdrawalActionsFor(wd).assign)) return null
 
   const label = t('actions.orderWithdrawal.assign.title', 'Assign order')
   return {
     label,
     icon: OrderWithdrawalIcon,
     onHandle: handleOpen,
-    dialog: openedRev !== null && {
+    dialog: !!opened && {
       type: 'dialog',
       header: label,
       onClose: handleClose,
-      content: <AssignWithdrawalContent withdrawal={wd} rev={openedRev} onComplete={handleClose} />,
+      content: (
+        <AssignWithdrawalContent withdrawal={opened} rev={opened._rev} onComplete={handleClose} />
+      ),
     },
   }
 }
@@ -748,24 +754,25 @@ export function WithdrawalUnassignAction(
   const wd = props.published as WithdrawalActionDoc | null
   const { componentT } = useITSContext()
   const t = componentT.default
-  const [openedRev, setOpenedRev] = useState<string | null>(null)
+  // Snapshot + stays while open — see `WithdrawalAssignAction`.
+  const [opened, setOpened] = useState<WithdrawalActionDoc | null>(null)
 
-  const handleOpen = useCallback(() => setOpenedRev(wd?._rev ?? null), [wd?._rev])
-  const handleClose = useCallback(() => setOpenedRev(null), [])
+  const handleOpen = useCallback(() => setOpened(wd), [wd])
+  const handleClose = useCallback(() => setOpened(null), [])
 
-  if (!wd || !withdrawalActionsFor(wd).unassign || !wd.orderRef?._ref) return null
+  if (!opened && (!wd || !withdrawalActionsFor(wd).unassign || !wd.orderRef?._ref)) return null
 
   const label = t('actions.orderWithdrawal.unassign.title', 'Unassign order')
   return {
     label,
     icon: OrderWithdrawalIcon,
     onHandle: handleOpen,
-    dialog: openedRev !== null && {
+    dialog: !!opened && {
       type: 'dialog',
       header: label,
       onClose: handleClose,
       content: (
-        <UnassignWithdrawalContent withdrawal={wd} rev={openedRev} onComplete={handleClose} />
+        <UnassignWithdrawalContent withdrawal={opened} rev={opened._rev} onComplete={handleClose} />
       ),
     },
   }
@@ -943,27 +950,30 @@ export function WithdrawalResolveAction(
   const wd = props.published as WithdrawalActionDoc | null
   const { componentT } = useITSContext()
   const t = componentT.default
-  const [dialogOpen, setDialogOpen] = useState(false)
-
-  const handleOpen = useCallback(() => setDialogOpen(true), [])
-  const handleClose = useCallback(() => setDialogOpen(false), [])
+  // Snapshot + stays while open — see `WithdrawalAssignAction` (closing sets `refunded`).
+  const [opened, setOpened] = useState<{ withdrawalId: string; orderId: string } | null>(null)
 
   const orderId = wd?.orderRef?._ref
-  if (!wd || !orderId || !withdrawalActionsFor(wd).resolve) return null
+  const handleOpen = useCallback(() => {
+    if (wd && orderId) setOpened({ withdrawalId: wd._id, orderId })
+  }, [wd, orderId])
+  const handleClose = useCallback(() => setOpened(null), [])
+
+  if (!opened && (!wd || !orderId || !withdrawalActionsFor(wd).resolve)) return null
 
   const label = t('actions.orderWithdrawal.resolve.title', 'Refund & close')
   return {
     label,
     icon: ConfirmIcon,
     onHandle: handleOpen,
-    dialog: dialogOpen && {
+    dialog: !!opened && {
       type: 'dialog',
       header: label,
       onClose: handleClose,
       content: (
         <ResolveWithdrawalContent
-          withdrawalId={wd._id}
-          orderId={orderId}
+          withdrawalId={opened.withdrawalId}
+          orderId={opened.orderId}
           onComplete={handleClose}
         />
       ),

@@ -129,6 +129,11 @@ add variants inline), `WineSelector` / `WinePreview`.
     delete. (Sanity's strong `parent` reference blocks it anyway — the guard gives a clear message.)
   - `orderWithdrawal`: delete is disallowed in the schema (a matched withdrawal is a legal record)
     and re-added (non-dev) as a guarded delete that only allows `status == "unmatched"`.
+- **An action that hides itself where it doesn't apply must stay while its own dialog is open**
+  (the withdrawal actions + "Widerruf erfassen": `if (!opened && !applies) return null`, the
+  dialog gets the document as it was on open). Its own save makes it inapplicable; returning
+  `null` (or a description without `dialog`) then unmounts the dialog mid-run, so the mail step
+  finishes invisibly and its error is lost. Order actions never hide, so they don't need this.
 - Every dialog above (status, assign, unassign, refund & close, declare) shows a **success toast**
   when it closes (`@sanity/ui/toast`, announced to screen readers) naming what happened (and the
   mail recipient); errors stay in the dialog's `aria-live` line.
