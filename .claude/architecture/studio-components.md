@@ -68,15 +68,23 @@ add variants inline), `WineSelector` / `WinePreview`.
     (`notifyCustomerByDefault` in `orderTransitions.ts`: off for `delivered`, which is shop
     bookkeeping; on otherwise) and resets when another status is picked. `OrderMailDocumentAction` offers the same message field
     (`CustomerMessageField`) but writes no history entry. It hides the invoice mail and "attach
-    invoice PDF" when `shop.invoices` is off (invoices from another system, e.g. wineNET), and the
-    partial-refund mail asks for the refunded amount (same field as the status dialog; the order
-    stores no refund amounts — core-front `.claude/plans/refund-history.md`).
+    invoice PDF" when `shop.invoices` is off (invoices from another system, e.g. wineNET). Refund
+    mails have **no amount field** — core-front states the latest stored refund. They are offered
+    by payment status (`refundMailOffered` in `utils/orderRefunds.ts`: partial mail once
+    `partiallyRefunded`/`refunded`, full mail only `refunded`), and Send is disabled with a reason
+    under the select (`aria-describedby`) where core-front would refuse (`refundMailBlocked`: no
+    stored refund for the partial mail; stored refunds below the total for the full mail).
     **Refunds** (payment transitions `succeeded` → `refunded` / `partiallyRefunded`,
-    `partiallyRefunded` → `refunded` only — so **one partial refund per order**): calls core-front
-    `/api/payment/refund` first and patches the order only on success. The partial amount is typed
-    in euros (native `type="number"`: a dot always works, a comma only in a German-locale browser)
-    and sent as `Math.round(€ × 100)` cents — Stripe rejects fractional cents. Flow on the core-front
-    side: core-front `commerce-and-netlify.md` → "Refunds")
+    `partiallyRefunded` → `refunded` / `partiallyRefunded` — repeated partial refunds allowed):
+    calls core-front `/api/payment/refund` first and patches the order only on success. The
+    partial amount must be **below the remaining amount** (`remainingAmount(grandTotal, refunds)` —
+    the whole rest is "Refunded", else the Studio would set `partiallyRefunded` while the webhook
+    sets `refunded`; hint `enterAmountBelowRemaining`). It is typed in euros (native
+    `type="number"`: a dot always works, a comma only in a German-locale browser) and sent as
+    `Math.round(€ × 100)` cents — Stripe rejects fractional cents. The refund mail gets the amount
+    Stripe returned (`result.data.amount`). "Refund & close" (`WithdrawalActions.tsx`) states the
+    remaining amount and mails the refunded one. Flow on the core-front side: core-front
+    `commerce-and-netlify.md` → "Refunds")
   - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`
   - `product` (feature `shop`) → `AddVariantsAction`
   - `category` (feature `shop.category`; schema disallows the plain `delete`, so it's re-added
@@ -95,8 +103,12 @@ add variants inline), `WineSelector` / `WinePreview`.
 - `PriceInput.tsx` — currency input; the **only** component re-exported publicly
   (`src/components/index.ts`). Used by the `priceField` builder.
 - `OrderView.tsx` — the order document's overview view (order date, payment method, totals,
-  fulfillment, withdrawals). A bundle line with `bundle.items` lists its items with their VAT
-  rates (instead of its subtitle) and shows the parts' rates ("13 / 20% MwSt").
+  fulfillment, withdrawals, refunds). A bundle line with `bundle.items` lists its items with their
+  VAT rates (instead of its subtitle) and shows the parts' rates ("13 / 20% MwSt"). The
+  "Rückerstattungen" card (after the totals, `h4` like its neighbours) lists `order.refunds` — date
+  · amount · source, status in words when not succeeded (failed + Stripe's `failureReason`) — and
+  "Erstattet X · Offen Y" (`refundedTotal` / `remainingAmount`; failed/canceled don't count). Orders
+  are `liveEdit`, so `displayed` = `published`.
 - `WithdrawalOrderInput.tsx` — `orderWithdrawal.orderRef` input for assigning unmatched
   declarations (see `schemas.md` → `orderWithdrawal`).
 - `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund

@@ -86,6 +86,11 @@ for new-order mails + withdrawal notifications, empty → `senderEmail`); `compa
 `shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
 Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`
 (`orderPaymentMethod`: type, brand, last4, wallet — order only, not orderMeta).
+**`order` is `liveEdit`** (5.3.0): edits save straight to the published order — no draft whose
+publish would revert what the payment functions wrote meanwhile. `order.refunds[]`
+(`orderRefund`: `refundId`, `amount` cents, `createdAt`, `status` (Stripe's), `failureReason`,
+`source` `studio` | `stripe`, `reason`; group `history`, hidden outside dev) is written by core-front
+only (`syncOrderRefunds`, rebuilt from Stripe) — core-front `commerce-and-netlify.md` → Refunds.
 
 **Withdrawal-instruction settings (`shopSettings`, group returns):** `withdrawalPeriodStart`
 (FAGG Anhang I note [1] variant, default `multipleGoods`), `withdrawalExceptions` (§ 18 list),
