@@ -47,6 +47,22 @@ function useLinkedOrder(orderId: string | undefined): GuideOrder | null | undefi
   return loaded?.id === orderId ? loaded.order : undefined
 }
 
+/** One option of the unmatched step: bold case, then what to do. */
+function AssignOption({ lead, text }: { lead: string; text: string }) {
+  return (
+    <Flex as="li" gap={2} style={{ listStyle: 'none' }}>
+      <Text size={1} aria-hidden="true">
+        •
+      </Text>
+      <Box flex={1}>
+        <Text size={1}>
+          <strong>{lead}</strong> {text}
+        </Text>
+      </Box>
+    </Flex>
+  )
+}
+
 /**
  * Native `<details>` (keyboard + screen reader for free; the browser's focus outline is kept) with
  * the default marker replaced by a chevron that turns when open.
@@ -103,11 +119,8 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
     const k = 'actions.orderWithdrawal.guide.step'
     switch (next.step) {
       case 'assign':
-        stepText = t(
-          `${k}.assign`,
-          'Assign the order (“Assign order”) — if it is a customer, the refund period is already running (see below). Otherwise delete it after checking, by {{date}} at the latest.',
-          { date: next.assignBy ? date(next.assignBy) : '' },
-        )
+        // Rendered as two options below (`AssignOptions`).
+        stepText = t(`${k}.assignIntro`, 'Unmatched — the details match no order:')
         break
       case 'close':
         stepText = t(
@@ -167,6 +180,31 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
             {t('actions.orderWithdrawal.guide.title', 'Next step')}
           </Text>
           <Text size={1}>{loading ? t('ui.loading', 'Loading…') : stepText}</Text>
+          {next?.step === 'assign' && (
+            <Stack as="ul" role="list" gap={3} style={{ margin: 0, paddingInlineStart: 0 }}>
+              <AssignOption
+                lead={t(
+                  'actions.orderWithdrawal.guide.step.assignOrderLead',
+                  'Belongs to an order',
+                )}
+                text={t(
+                  'actions.orderWithdrawal.guide.step.assignOrder',
+                  '(e.g. a typo): “Assign order”. The refund period is already running (see below).',
+                )}
+              />
+              <AssignOption
+                lead={t(
+                  'actions.orderWithdrawal.guide.step.assignDeleteLead',
+                  'Belongs to no order',
+                )}
+                text={t(
+                  'actions.orderWithdrawal.guide.step.assignDelete',
+                  '(e.g. spam): delete it — by {{date}} at the latest, because a stranger’s data may be kept for 30 days at most.',
+                  { date: next.assignBy ? date(next.assignBy) : '' },
+                )}
+              />
+            </Stack>
+          )}
 
           {deadline && (
             <Stack gap={3}>

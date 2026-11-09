@@ -350,8 +350,13 @@ export default {
       guide: {
         title: 'Next step',
         step: {
-          assign:
-            'The details match no order. If it belongs to an order (e.g. a typo in the number or email): link it with “Assign order” — the refund period is already running (see below). If it belongs to no order (e.g. spam): delete it — it holds a stranger’s name and email, which data protection lets us keep for 30 days at most, i.e. until {{date}}.',
+          assignIntro: 'Unmatched — the details match no order:',
+          assignOrderLead: 'Belongs to an order',
+          assignOrder:
+            '(e.g. a typo): “Assign order”. The refund period is already running (see below).',
+          assignDeleteLead: 'Belongs to no order',
+          assignDelete:
+            '(e.g. spam): delete it — by {{date}} at the latest, because a stranger’s data may be kept for 30 days at most.',
           close: 'The order is already refunded → “Refund & close” closes the withdrawal.',
           refundNotShipped: 'Not shipped yet → “Refund & close” (also cancels the order).',
           refundNothingToWait: 'Nothing more to wait for → “Refund & close”.',

@@ -358,8 +358,13 @@ export default {
       guide: {
         title: 'Nächster Schritt',
         step: {
-          assign:
-            'Die Angaben passen zu keiner Bestellung. Gehört der Widerruf zu einer Bestellung (z. B. Tippfehler bei Nummer oder E-Mail): über „Bestellung zuordnen“ verknüpfen – die Erstattungsfrist läuft schon (siehe unten). Gehört er zu keiner Bestellung (z. B. Spam): löschen – er enthält Name und E-Mail einer fremden Person, die aus Datenschutzgründen höchstens 30 Tage gespeichert bleiben, also bis {{date}}.',
+          assignIntro: 'Nicht zugeordnet – passt zu keiner Bestellung:',
+          assignOrderLead: 'Gehört zu einer Bestellung',
+          assignOrder:
+            '(z. B. Tippfehler): „Bestellung zuordnen“. Die Erstattungsfrist läuft schon (siehe unten).',
+          assignDeleteLead: 'Gehört zu keiner Bestellung',
+          assignDelete:
+            '(z. B. Spam): löschen – bis spätestens {{date}}, weil fremde Daten höchstens 30 Tage gespeichert werden dürfen.',
           close:
             'Die Bestellung ist bereits erstattet → „Erstatten & abschließen“ schließt den Widerruf ab.',
           refundNotShipped:
