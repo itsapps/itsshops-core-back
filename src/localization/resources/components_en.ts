@@ -262,6 +262,8 @@ export default {
         orderCanceled: 'Canceled',
         orderRefunded: 'Refunded',
         orderRefundedPartially: 'Partially refunded',
+        // history only (withdrawal receipt, core-front) — not offered in "Send mail"
+        withdrawalReceipt: 'Withdrawal received',
       },
       updateStatus: {
         title: 'Update status',

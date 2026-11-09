@@ -268,6 +268,8 @@ export default {
         orderCanceled: 'Storniert',
         orderRefunded: 'Refundiert',
         orderRefundedPartially: 'Teilweise refundiert',
+        // history only (withdrawal receipt, core-front) — not offered in "Send mail"
+        withdrawalReceipt: 'Widerruf erhalten',
       },
       updateStatus: {
         title: 'Status aktualisieren',

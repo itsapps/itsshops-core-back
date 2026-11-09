@@ -11,7 +11,8 @@ Release before the core-front minor that writes `mail` history entries.
 ### Added
 - **Mail history entries:** `orderStatusHistory.type` gains `mail` (labels "E-Mail" / "Email");
   the order view titles them "E-Mail - <mail type>" (e.g. "E-Mail - Versendet") and shows their
-  customer message.
+  customer message. `withdrawalReceipt` ("Widerruf erhalten" / "Withdrawal received") labels
+  the withdrawal receipt's entry; it's not offered in "Send mail".
 - The order view and the dev schema preview translate the history `source`: Studio, Stripe,
   Warenwirtschaft / ERP, Automatisch / Automatic (unknown values stay raw).
 

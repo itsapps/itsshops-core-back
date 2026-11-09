@@ -116,7 +116,8 @@ type StatusHistoryEntry = {
   customerMessage?: string
 } & (
   | { type: 'payment' | 'fulfillment'; status: OrderStatus | OrderPaymentStatus }
-  | { type: 'mail'; status: MailType }
+  // `withdrawalReceipt`: the withdrawal receipt (core-front), not a MailType the Studio sends
+  | { type: 'mail'; status: MailType | 'withdrawalReceipt' }
 )
 
 type OrderRefund = {

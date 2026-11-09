@@ -111,7 +111,8 @@ add variants inline), `WineSelector` / `WinePreview`.
   "Erstattet X · Offen Y" (`refundedTotal` / `remainingAmount`; failed/canceled don't count). Orders
   are `liveEdit`, so `displayed` = `published`. The status history card translates `source`
   (`order.statusHistory.source.*`: Studio / Stripe / Warenwirtschaft / Automatisch; unknown values
-  raw) and titles `mail` entries "E-Mail - <mail type>" (`actions.order.mailTypes.*`).
+  raw) and titles `mail` entries "E-Mail - <mail type>" (`actions.order.mailTypes.*`, incl. the history-only
+  `withdrawalReceipt`).
 - `WithdrawalOrderInput.tsx` — `orderWithdrawal.orderRef` input for assigning unmatched
   declarations (see `schemas.md` → `orderWithdrawal`).
 - `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund
