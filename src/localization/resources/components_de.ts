@@ -318,6 +318,7 @@ export default {
         alreadyRefunded:
           'Die Bestellung ist bereits erstattet. Damit wird der Widerruf abgeschlossen.',
         notify: 'Erstattungsbestätigung per E-Mail senden',
+        draftOpen: 'Zuerst die Änderungen an diesem Widerruf veröffentlichen oder verwerfen',
       },
     },
     refund: {

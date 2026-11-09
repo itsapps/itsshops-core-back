@@ -21,6 +21,10 @@ Release before the core-front minor that writes `mail` history entries.
   before the mail went out, so a failed mail kept a message never sent) — core-front stores it on
   the `mail` entry. Old entries keep theirs.
 
+### Fixed
+- "Refund & close" on a withdrawal is disabled while the withdrawal has a draft — publishing the
+  older draft afterwards reverted its `refunded` status.
+
 ## 5.3.0
 
 Release before core-front 3.10.0 (which writes `order.refunds`).

@@ -310,6 +310,7 @@ export default {
         intro: 'This will refund {{amount}} to the customer and close the withdrawal.',
         alreadyRefunded: 'The order is already refunded. This will close the withdrawal.',
         notify: 'Send refund confirmation email',
+        draftOpen: 'Publish or discard your changes to this withdrawal first',
       },
     },
     refund: {

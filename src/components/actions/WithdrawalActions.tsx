@@ -12,6 +12,10 @@
  *
  * Both email paths go through `frontendClient.withdrawNotify`, which sends the
  * customer-facing mail only (the shop already knows).
+ *
+ *  - `WithdrawalResolveAction` (on `orderWithdrawal`): "Refund & close". Disabled while the
+ *    withdrawal has a draft: it sets `status` on the published record, and publishing the
+ *    older draft afterwards would revert it (withdrawals aren't `liveEdit`, unlike orders).
  */
 import { ConfirmIcon, OrderWithdrawalIcon, SendMailIcon } from '../../assets/icons'
 import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
@@ -320,9 +324,18 @@ export function WithdrawalResolveAction(
   if (!wd || !orderId || !isOpen) return null
 
   const label = t('actions.orderWithdrawal.resolve.title', 'Refund & close')
+  // Publishing an older draft afterwards would revert the `refunded` status set below.
+  const hasDraft = !!props.draft
   return {
     label,
     icon: ConfirmIcon,
+    disabled: hasDraft,
+    ...(hasDraft && {
+      title: t(
+        'actions.orderWithdrawal.resolve.draftOpen',
+        'Publish or discard your changes to this withdrawal first',
+      ),
+    }),
     onHandle: handleOpen,
     dialog: dialogOpen && {
       type: 'dialog',

@@ -86,7 +86,11 @@ add variants inline), `WineSelector` / `WinePreview`.
     Stripe returned (`result.data.amount`). "Refund & close" (`WithdrawalActions.tsx`) states the
     remaining amount and mails the refunded one. Flow on the core-front side: core-front
     `commerce-and-netlify.md` → "Refunds")
-  - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`
+  - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`. "Refund & close" is
+    disabled while the withdrawal has a draft (tooltip: publish or discard first): it sets `status`
+    on the published record, and publishing the older draft would revert it. Stopgap instead of
+    `liveEdit` for withdrawals, which would need a new lock for `WithdrawalOrderInput` (assigning
+    an order relies on the draft to stay correctable) and lose validation as a blocker.
   - `product` (feature `shop`) → `AddVariantsAction`
   - `category` (feature `shop.category`; schema disallows the plain `delete`, so it's re-added
     here, non-dev only) → with `shop.category.subcategories`: a guarded delete that blocks
