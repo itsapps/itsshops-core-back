@@ -4,6 +4,37 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 5.3.0
+
+Release before core-front 3.10.0 (which writes `order.refunds`).
+
+### Upgrading
+- **Orders are `liveEdit`:** edits (e.g. the tracking code) save straight to the order — no draft,
+  no "Publish" button. Before upgrading, check the dataset for open order drafts
+  (`*[_id in path("drafts.order-**")]`, raw perspective): carry wanted edits into the published
+  order by hand, then **discard** the drafts. Never publish one — it would revert what the payment
+  webhook wrote meanwhile (payment status, history, refunds). Tell the shop owner that orders have
+  no "Publish" any more.
+
+### Added
+- **Refunds on the order:** `order.refunds[]` of the new object `orderRefund` (`refundId`,
+  `amount` in cents, `createdAt`, `status`, `failureReason`, `source` `studio` | `stripe`,
+  `reason`), hidden outside dev, written by core-front only (from Stripe). The order view shows a
+  "Rückerstattungen" card: one line per refund (date · amount · source, status when not
+  succeeded, failure reason) and "Erstattet X · Offen Y".
+- **Second partial refund** from the status dialog (`partiallyRefunded → partiallyRefunded`).
+
+### Changed
+- Status dialog: a partial refund must be below the remaining amount (grand total minus stored
+  refunds; hint `actions.order.updateStatus.enterAmountBelowRemaining`, replaces
+  `enterValidAmount`). Refund mails state the amount Stripe actually refunded (was the grand total
+  for "Refunded").
+- "Refund & close": the dialog states the remaining amount; the mail the amount refunded.
+- "Send mail": no amount field (core-front states the latest stored refund). The partial-refund
+  mail is offered once the order is (partially) refunded, the full-refund mail only for a refunded
+  order; Send is disabled with a translated reason where core-front would refuse
+  (`sendMailDialog.noStoredRefund`, `sendMailDialog.notFullyRefunded`).
+
 ## 5.2.0
 
 Release before core-front 3.9.0 (whose orders carry `orderItemBundleItem`).
