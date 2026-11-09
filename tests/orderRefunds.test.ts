@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  buildRefundPatch,
   refundedTotal,
   refundMailBlocked,
   refundMailOffered,
@@ -62,5 +63,68 @@ describe('refund mails in "Send mail"', () => {
         { amount: 2000, status: 'succeeded' },
       ]),
     ).toBe(undefined)
+  })
+})
+
+describe('buildRefundPatch', () => {
+  let n = 0
+  const opts = { timestamp: '2026-11-09T10:00:00Z', newKey: () => `k${++n}` }
+  const entry = (type: string, status: string, note?: string) => ({
+    _key: expect.any(String),
+    _type: 'orderStatusHistory',
+    type,
+    status,
+    timestamp: opts.timestamp,
+    source: 'admin',
+    ...(note && { note }),
+  })
+
+  it('full refund of a shipped order → refunded, no cancel', () => {
+    expect(buildRefundPatch({ status: 'shipped' }, { ...opts, refund: 'full' })).toEqual({
+      set: { paymentStatus: 'refunded' },
+      historyEntries: [entry('payment', 'refunded')],
+    })
+  })
+
+  it('full refund of an undispatched order also cancels it', () => {
+    for (const status of ['created', 'processing'] as const) {
+      expect(buildRefundPatch({ status }, { ...opts, refund: 'full', markReturned: true })).toEqual(
+        {
+          set: { paymentStatus: 'refunded', status: 'canceled' },
+          historyEntries: [entry('payment', 'refunded'), entry('fulfillment', 'canceled')],
+        },
+      )
+    }
+  })
+
+  it('partial refund never cancels; markReturned → returned', () => {
+    expect(buildRefundPatch({ status: 'created' }, { ...opts, refund: 'partial' })).toEqual({
+      set: { paymentStatus: 'partiallyRefunded' },
+      historyEntries: [entry('payment', 'partiallyRefunded')],
+    })
+    expect(
+      buildRefundPatch({ status: 'delivered' }, { ...opts, refund: 'partial', markReturned: true }),
+    ).toEqual({
+      set: { paymentStatus: 'partiallyRefunded', status: 'returned' },
+      historyEntries: [entry('payment', 'partiallyRefunded'), entry('fulfillment', 'returned')],
+    })
+  })
+
+  it("'none' + markReturned → only returned; 'none' alone → nothing", () => {
+    expect(
+      buildRefundPatch({ status: 'shipped' }, { ...opts, refund: 'none', markReturned: true }),
+    ).toEqual({ set: { status: 'returned' }, historyEntries: [entry('fulfillment', 'returned')] })
+    expect(buildRefundPatch({ status: 'shipped' }, { ...opts, refund: 'none' })).toEqual({
+      set: {},
+      historyEntries: [],
+    })
+  })
+
+  it('note on every entry', () => {
+    const { historyEntries } = buildRefundPatch(
+      { status: 'processing' },
+      { ...opts, refund: 'full', note: 'Widerruf' },
+    )
+    expect(historyEntries.map((e) => e.note)).toEqual(['Widerruf', 'Widerruf'])
   })
 })

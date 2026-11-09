@@ -24,6 +24,7 @@ import {
   localizedStructure,
 } from '../structure/structure'
 import { variantOptionsMenu } from '../structure/variantOptions'
+import { withdrawalsMenu } from '../structure/withdrawals'
 import type { ITSContext, ITSStructureItem } from '../types'
 
 export const createStructure = (ctx: ITSContext): StructureResolver => {
@@ -42,7 +43,15 @@ export const createStructure = (ctx: ITSContext): StructureResolver => {
       icon: ShopIcon,
       feature: 'shop',
       children: [
-        ...mapItems(['order', 'orderWithdrawal', 'orderMeta']),
+        ...mapItems(['order']),
+        {
+          type: 'custom',
+          id: 'orderWithdrawal',
+          feature: 'shop',
+          component: withdrawalsMenu,
+          hidden: isDocHidden(ctx, 'orderWithdrawal'),
+        },
+        ...mapItems(['orderMeta']),
         {
           type: 'custom',
           id: 'products',

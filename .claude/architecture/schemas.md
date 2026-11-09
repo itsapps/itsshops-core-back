@@ -102,12 +102,18 @@ append-only — `mail` entries only by core-front after a sent mail.
 
 **`orderWithdrawal`:** a web declaration that matches no order is stored with status **`unmatched`**
 and no `orderRef`, holding the submitted `name` / `email` / `orderNumber` / `locale` (read-only).
-`orderRef` is editable only while the **published** status is `unmatched`
-(`components/WithdrawalOrderInput.tsx`: order suggestions by submitted number/email/name, the picker
-filter hides orders with an open withdrawal, and `status` follows the field — order set → `received`,
-cleared → `unmatched`); validation: `unmatched` ⇔ no order, and the chosen order has no other open
-withdrawal. Editor rule (in the field descriptions): assign or delete within 30 days. Matched
-records are never deleted. Flow + rationale: core-front `commerce-and-netlify.md` → "Withdrawal".
+Withdrawals are **`liveEdit`** (no draft, no "Publish"; ADR `orders-live-edit.md` → "Withdrawals").
+`orderRef` is read-only (non-dev): it is set by the web endpoint, "Widerruf erfassen" on the order,
+or the **"Bestellung zuordnen"** action, which also sets `status: received` and **`assignedAt`**
+(datetime, hidden outside dev; marks a Studio assignment — only those can be undone with "Zuordnung
+aufheben"). `status` has a custom input (`components/WithdrawalStatusInput.tsx`): a select with
+`received` / `processing` / `rejected` only — `unmatched` and `refunded` render read-only (`refunded`
+comes only from "Erstatten & abschließen"); "Abgelehnt" asks for an internal reason first and appends
+"Abgelehnt am 〈date〉: 〈reason〉" to `note`; reopening a rejected one is refused while the order has
+another open withdrawal. A document-level input (`components/WithdrawalGuideInput.tsx`) renders the
+guide box above the form (next step, refund deadline, "So geht's"; `studio-components.md`). Open
+statuses: `OPEN_STATUSES` in `utils/withdrawals.ts`. Editor rule (field descriptions): assign or
+delete within 30 days. Matched records are never deleted. Flow + rationale: core-front `commerce-and-netlify.md` → "Withdrawal".
 
 When a frontend feature starts depending on a settings field, add the matching conditional rule
 here. Validation only fires when an editor publishes — existing documents must be checked per shop

@@ -1,9 +1,7 @@
 import { OrderWithdrawalIcon as Icon } from '../../../assets/icons'
-import { WithdrawalOrderInput } from '../../../components/WithdrawalOrderInput'
+import { WithdrawalGuideInput } from '../../../components/WithdrawalGuideInput'
+import { WithdrawalStatusInput } from '../../../components/WithdrawalStatusInput'
 import { ITSDocumentDefinition } from '../../../types'
-
-/** Withdrawals that still block a new one on the same order. */
-const OPEN_STATUSES = ['received', 'processing']
 
 /**
  * A consumer's right-of-withdrawal ("Widerruf") declaration against an order.
@@ -15,9 +13,9 @@ const OPEN_STATUSES = ['received', 'processing']
  *
  * A web declaration that matches no order (or whose email differs from the order's)
  * is stored as `unmatched` without an order — a declaration is never lost. Editors
- * assign it to an order (status then follows: `received`) or delete it after
- * checking. Matched records are never deleted (proof that a declaration was
- * received); mark ineligible ones `rejected` instead. Delete is re-added as a
+ * assign it with "Assign order" (sets `received` + `assignedAt`; "Unassign" undoes a wrong
+ * pick) or delete it after checking. Matched records are never deleted (proof that a
+ * declaration was received); mark ineligible ones `rejected` instead. Delete is re-added as a
  * guarded action in `config/actions.ts` (unmatched only).
  */
 export const orderWithdrawal: ITSDocumentDefinition = {
@@ -32,36 +30,16 @@ export const orderWithdrawal: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f } = ctx
     return {
+      // Edits save straight to the published doc — no draft whose publish would revert what the
+      // actions wrote (status, orderRef). Assigning is an action, not a field edit.
+      liveEdit: true,
+      // Guide box above the form: next step, refund deadline, "how it works".
+      components: { input: WithdrawalGuideInput },
       fields: [
+        // Set by the web endpoint, "Declare withdrawal" or the "Assign order" action.
         f('orderRef', 'reference', {
           to: [{ type: 'order' }],
-          // Editable only while the published record is unmatched — the input
-          // renders read-only otherwise and keeps `status` in sync with the value.
-          components: { input: WithdrawalOrderInput },
-          options: {
-            // Orders that already have an open withdrawal can't be picked.
-            filter: `!(_id in *[_type == "orderWithdrawal" && status in $open && defined(orderRef._ref)].orderRef._ref)`,
-            filterParams: { open: OPEN_STATUSES },
-          },
-          validation: (rule) =>
-            rule.custom(async (value: { _ref?: string } | undefined, context) => {
-              const status = (context.document as { status?: string } | undefined)?.status
-              if (!value?._ref) {
-                return status === 'unmatched' ? true : ctx.t.default('validation.requiredField')
-              }
-              if (status === 'unmatched') {
-                return ctx.t.default('validation.withdrawalUnmatchedWithOrder')
-              }
-              // Guards races the picker filter can't: another open withdrawal on that order.
-              const selfId = (context.document?._id ?? '').replace(/^drafts\./, '')
-              const others = await context
-                .getClient({ apiVersion: ctx.config.apiVersion })
-                .fetch<number>(
-                  `count(*[_type == "orderWithdrawal" && orderRef._ref == $order && status in $open && !(_id in [$self, "drafts." + $self])])`,
-                  { order: value._ref, open: OPEN_STATUSES, self: selfId },
-                )
-              return others > 0 ? ctx.t.default('validation.withdrawalOrderHasOpen') : true
-            }),
+          readOnly: !ctx.config.isDev,
         }),
         f('declaredAt', 'datetime', {
           readOnly: !ctx.config.isDev,
@@ -80,9 +58,15 @@ export const orderWithdrawal: ITSDocumentDefinition = {
             layout: 'dropdown',
           },
           initialValue: 'received',
-          // `unmatched` is set by the endpoint and left only by assigning an order.
-          readOnly: ({ document }) => document?.status === 'unmatched',
+          // Offers received / processing / rejected only: `unmatched` is left by assigning an
+          // order, `refunded` is set by "Refund & close".
+          components: { input: WithdrawalStatusInput },
           validation: (rule) => rule.required(),
+        }),
+        // When "Assign order" linked the order (Studio assignments only — undo is offered for these).
+        f('assignedAt', 'datetime', {
+          readOnly: !ctx.config.isDev,
+          hidden: !ctx.config.isDev,
         }),
         // What the consumer submitted via the web form (FAGG §13a) — read-only proof.
         f('name', 'string', { readOnly: !ctx.config.isDev }),

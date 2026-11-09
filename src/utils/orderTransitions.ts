@@ -31,7 +31,9 @@ const fulfillmentTransitions: Record<OrderStatus, OrderStatus[]> = {
   created: ['processing', 'canceled'],
   processing: ['shipped', 'canceled'],
   shipped: ['delivered', 'returned'],
-  delivered: [],
+  // Shops set "delivered" once an order is done, so a withdrawal usually arrives on a delivered
+  // order — it must still be able to become `returned` (also after a partial refund).
+  delivered: ['returned'],
   returned: [],
   canceled: [],
 }

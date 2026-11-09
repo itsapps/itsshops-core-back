@@ -309,8 +309,6 @@ export default {
     requiredField: 'Required',
     recommendedField: 'Recommended',
     companyDetailsRecommended: 'Recommended – used on invoices and in the legal details of emails',
-    withdrawalUnmatchedWithOrder: 'An assigned withdrawal cannot be "Unmatched".',
-    withdrawalOrderHasOpen: 'This order already has an open withdrawal.',
     menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
     duplicateVolume: 'Each volume may only appear once.',
@@ -856,13 +854,13 @@ export default {
       orderRef: {
         title: 'Order',
         description:
-          'Unmatched: pick the matching order (then publish and "Resend confirmation") or delete the withdrawal after checking – within 30 days at the latest.',
+          'Unmatched: assign it with "Assign order" or delete it after checking – within 30 days at the latest.',
       },
       declaredAt: { title: 'Declared at' },
       status: {
         title: 'Status',
         description:
-          'Unmatched: assign it to an order or delete it after checking (within 30 days at the latest).',
+          'Unmatched: assign it with "Assign order" or delete it after checking – within 30 days at the latest. "Refunded" is set by "Refund & close" only.',
         options: {
           unmatched: 'Unmatched',
           received: 'Received',
@@ -871,6 +869,7 @@ export default {
           rejected: 'Rejected',
         },
       },
+      assignedAt: { title: 'Assigned at' },
       name: { title: 'Name (submitted)' },
       email: { title: 'Email (submitted)' },
       orderNumber: { title: 'Order number (submitted)' },

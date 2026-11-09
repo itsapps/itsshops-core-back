@@ -312,8 +312,6 @@ export default {
     recommendedField: 'Empfohlen',
     companyDetailsRecommended:
       'Empfohlen – wird für Rechnungen und rechtliche Angaben in E-Mails verwendet',
-    withdrawalUnmatchedWithOrder: 'Ein zugeordneter Widerruf kann nicht „Nicht zugeordnet“ sein.',
-    withdrawalOrderHasOpen: 'Diese Bestellung hat bereits einen offenen Widerruf.',
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
     countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',
     duplicateVolume: 'Jedes Volumen darf nur einmal vorkommen.',
@@ -867,13 +865,13 @@ export default {
       orderRef: {
         title: 'Bestellung',
         description:
-          'Nicht zugeordnet: passende Bestellung auswählen (danach veröffentlichen und „Bestätigung erneut senden“) oder den Widerruf nach Prüfung löschen – spätestens nach 30 Tagen.',
+          'Nicht zugeordnet: über „Bestellung zuordnen“ zuordnen oder nach Prüfung löschen – spätestens nach 30 Tagen.',
       },
       declaredAt: { title: 'Erklärt am' },
       status: {
         title: 'Status',
         description:
-          'Nicht zugeordnet: einer Bestellung zuordnen oder nach Prüfung löschen (spätestens nach 30 Tagen).',
+          'Nicht zugeordnet: über „Bestellung zuordnen“ zuordnen oder nach Prüfung löschen – spätestens nach 30 Tagen. „Erstattet“ setzt nur „Erstatten & abschließen“.',
         options: {
           unmatched: 'Nicht zugeordnet',
           received: 'Eingegangen',
@@ -882,6 +880,7 @@ export default {
           rejected: 'Abgelehnt',
         },
       },
+      assignedAt: { title: 'Zugeordnet am' },
       name: { title: 'Name (angegeben)' },
       email: { title: 'E-Mail (angegeben)' },
       orderNumber: { title: 'Bestellnummer (angegeben)' },

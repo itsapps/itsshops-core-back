@@ -6,9 +6,31 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
 
 ## Unreleased
 
-Release before the core-front minor that writes `mail` history entries.
+Release before the core-front minor that writes `mail` history entries (the withdrawal receipt's
+entry on the order; without it "Bestellung zuordnen" still works, the order just lacks the entry).
+
+### Upgrading
+- **Withdrawals are `liveEdit`:** before upgrading, check each dataset for withdrawal drafts
+  (`*[_id in path("drafts.**") && _type == "orderWithdrawal"]{_id, status, orderRef}`, raw
+  perspective — core-front's `itsshops sanity` CLI doesn't see drafts). Carry wanted edits over (a
+  draft that assigns an order → assign it with "Bestellung zuordnen" after the upgrade), then
+  **discard** the drafts.
+- Tell shop owners: no "Publish" for withdrawals; orders are assigned via "Bestellung zuordnen"
+  (undo: "Zuordnung aufheben"); refunds, also partial, via "Erstatten & abschließen"; "Zugestellt"
+  orders can now be set "Retourniert".
+- Removed translation keys: `validation.withdrawalUnmatchedWithOrder`,
+  `validation.withdrawalOrderHasOpen`, `actions.orderWithdrawal.assign.useOrder`,
+  `actions.orderWithdrawal.resolve.intro`. `WithdrawalOrderInput` is gone.
 
 ### Added
+- **Withdrawal guide box** above the withdrawal form: the next step (assign / refund / wait for the
+  goods / close …), "Erstattung bis 〈declared + 14 days〉" with the legal hint, "Überfällig seit …"
+  when past, and a collapsible "So geht's". The order view's withdrawals card shows the deadline too.
+- **"Bestellung zuordnen"** (unmatched withdrawals): suggestions + search by order number / email,
+  shows the order's customer before confirming, optional confirmation mail to the order's email.
+  **"Zuordnung aufheben"** undoes a Studio assignment (`assignedAt`) while still `received`.
+- Withdrawals list split into **"Offen"** (nearest deadline first) and **"Erledigt"**.
+- Status dialog: a refund on an order with an open withdrawal shows a notice linking to it.
 - **Mail history entries:** `orderStatusHistory.type` gains `mail` (labels "E-Mail" / "Email");
   the order view titles them "E-Mail - <mail type>" (e.g. "E-Mail - Versendet") and shows their
   customer message. `withdrawalReceipt` ("Widerruf erhalten" / "Withdrawal received") labels
@@ -17,13 +39,19 @@ Release before the core-front minor that writes `mail` history entries.
   Warenwirtschaft / ERP, Automatisch / Automatic (unknown values stay raw).
 
 ### Changed
+- **"Erstatten & abschließen"** refunds in full **or in part**, or only closes when something was
+  refunded already (no preselection then); optional "Ware ist zurück" sets the order `returned`;
+  the mail is `orderRefunded` / `orderRefundedPartially` with the refunded amount.
+- Both refund dialogs refuse a refund when the order changed since the dialog opened (another tab
+  or editor refunded meanwhile — `actions.refund.changedMeanwhile`).
+- **`delivered → returned`** is allowed (also after a partial refund).
+- Withdrawal status: the dropdown offers Eingegangen / In Bearbeitung / Abgelehnt only ("Erstattet"
+  comes from "Erstatten & abschließen"); "Abgelehnt" asks for an internal reason (appended to the
+  note); reopening a rejected one is refused while the order has another open withdrawal.
+- "Widerruf erfassen" refuses an empty or future date.
 - The status dialog no longer stores the customer message on its status entry (it was written
   before the mail went out, so a failed mail kept a message never sent) — core-front stores it on
   the `mail` entry. Old entries keep theirs.
-
-### Fixed
-- "Refund & close" on a withdrawal is disabled while the withdrawal has a draft — publishing the
-  older draft afterwards reverted its `refunded` status.
 
 ## 5.3.0
 

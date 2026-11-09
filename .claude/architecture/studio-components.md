@@ -80,17 +80,45 @@ add variants inline), `WineSelector` / `WinePreview`.
     calls core-front `/api/payment/refund` first and patches the order only on success. The
     partial amount must be **below the remaining amount** (`remainingAmount(grandTotal, refunds)` —
     the whole rest is "Refunded", else the Studio would set `partiallyRefunded` while the webhook
-    sets `refunded`; hint `enterAmountBelowRemaining`). It is typed in euros (native
+    sets `refunded`; hint `enterAmountBelowRemaining`). The refund itself is **`refundOrder`**
+    (`lib/shop/orderRefund.ts`, shared with "Refund & close"): it re-fetches the order and refuses
+    (`actions.refund.changedMeanwhile`) when its `paymentStatus` or refunded total differs from the
+    snapshot taken when the dialog opened (`refundSnapshot` — not the live prop; `payment-refund`
+    sends Stripe no idempotency key, so two tabs could refund twice), then refunds and commits one
+    patch built by `buildRefundPatch` (`utils/orderRefunds.ts`). When the order has an **open
+    withdrawal** (`useOpenWithdrawal`) and a refund is selected, a caution notice links to it
+    ("handle the refund there"; not a block). `delivered → returned` is always allowed (shops set
+    "Zugestellt" once done, so withdrawals arrive on delivered orders). It is typed in euros (native
     `type="number"`: a dot always works, a comma only in a German-locale browser) and sent as
     `Math.round(€ × 100)` cents — Stripe rejects fractional cents. The refund mail gets the amount
-    Stripe returned (`result.data.amount`). "Refund & close" (`WithdrawalActions.tsx`) states the
-    remaining amount and mails the refunded one. Flow on the core-front side: core-front
+    Stripe returned (`result.data.amount`). Flow on the core-front side: core-front
     `commerce-and-netlify.md` → "Refunds")
-  - `orderWithdrawal` → `WithdrawalResolveAction`, `WithdrawalResendAction`. "Refund & close" is
-    disabled while the withdrawal has a draft (tooltip: publish or discard first): it sets `status`
-    on the published record, and publishing the older draft would revert it. Stopgap instead of
-    `liveEdit` for withdrawals, which would need a new lock for `WithdrawalOrderInput` (assigning
-    an order relies on the draft to stay correctable) and lose validation as a blocker.
+  - `orderWithdrawal` (`WithdrawalActions.tsx`; each returns `null` where it doesn't apply —
+    `withdrawalActionsFor` in `utils/withdrawals.ts`):
+    - `WithdrawalAssignAction` "Bestellung zuordnen" (`unmatched` only): suggestions from the
+      submitted number / email / name + a search by order number or email (result count in an
+      `aria-live` line); "Auswählen" (`aria-pressed`) shows the order's number, name, email, date +
+      "send confirmation to the order's email" (default on). Confirm re-checks the order has no
+      open withdrawal, then **one** patch `ifRevisionId(rev when the dialog opened)` →
+      `orderRef`, `status: received`, `assignedAt` (revision mismatch → "changed meanwhile"), then
+      `withdrawNotify`.
+    - `WithdrawalUnassignAction` "Zuordnung aufheben" (`received` + `assignedAt` only): back to
+      `unmatched`, unsets `orderRef`/`assignedAt`, appends "Zuordnung zu #n aufgehoben, 〈date〉"
+      to `note` (revision-guarded). Web-matched and "Widerruf erfassen" records have no
+      `assignedAt`, so they can't be unassigned.
+    - `WithdrawalResolveAction` "Erstatten & abschließen" (open + `orderRef`): radio group in a
+      `fieldset`/`legend` from `resolveOptions` — nothing refunded: Vollständig (default) /
+      Teilweise; partially refunded: Vollständig / Teilweise / Nur abschließen, **no default**;
+      refunded: close only. Partial = euro field with the status dialog's rules; the hint says the
+      rest is not refunded (the withdrawal closes). "Ware ist zurück" when `returned` is a legal
+      next state (`returnedOffered`) → order `returned` in the same patch (or alone via
+      `buildRefundPatch(…, { refund: 'none', markReturned })`). Order patch first (`refundOrder`,
+      snapshot = the order fetched on open), withdrawal → `refunded` second (if that fails, the
+      guide's `close` step finishes it without a second refund), then `orderRefunded` /
+      `orderRefundedPartially` with the refunded amount.
+    - `WithdrawalResendAction` "Bestätigung erneut senden".
+    `OrderWithdrawalCreateAction` (on the order) refuses an empty or future "Erklärt am" (`max` =
+    now, `aria-invalid` + hint) — it drives the refund deadline.
   - `product` (feature `shop`) → `AddVariantsAction`
   - `category` (feature `shop.category`; schema disallows the plain `delete`, so it's re-added
     here, non-dev only) → with `shop.category.subcategories`: a guarded delete that blocks
@@ -117,8 +145,15 @@ add variants inline), `WineSelector` / `WinePreview`.
   (`order.statusHistory.source.*`: Studio / Stripe / Warenwirtschaft / Automatisch; unknown values
   raw) and titles `mail` entries "E-Mail - <mail type>" (`actions.order.mailTypes.*`, incl. the history-only
   `withdrawalReceipt`).
-- `WithdrawalOrderInput.tsx` — `orderWithdrawal.orderRef` input for assigning unmatched
-  declarations (see `schemas.md` → `orderWithdrawal`).
+- `WithdrawalGuideInput.tsx` — document-level input of `orderWithdrawal`: a `Card` above the form
+  with the next step (`withdrawalNextStep`: assign / close / refund / partial / wait / done /
+  rejected), the linked order read live (fetch + `listen`). Open withdrawals also show "Erstattung
+  bis 〈declaredAt + 14 d〉" with the legal hint (`withdrawalDeadline`: calendar date in the browser
+  timezone; tone `caution` from 3 days before, `critical` + "Überfällig seit …" text when past —
+  state in text, not colour only). A native `<details>` "So geht's" (closed) explains the whole
+  flow (`actions.orderWithdrawal.guide.howTo.*`). The order view's withdrawals card shows the same
+  "Erstattung bis" / "Überfällig seit" next to an open withdrawal's badge.
+- `WithdrawalStatusInput.tsx` — `orderWithdrawal.status` input (see `schemas.md` → `orderWithdrawal`).
 - `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund
   overrides it — a partial refund needs no action, so it shows the fulfillment state), `YoutubePreview.tsx`, `DeployDialog.tsx` (triggers a Netlify build via the
   Netlify integration env/config), and the `CustomToolbar` (studio `toolMenu`).
