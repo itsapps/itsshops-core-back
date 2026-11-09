@@ -8,13 +8,16 @@
  * - Reopening a rejected one (→ received / processing) is refused while the order has another
  *   open withdrawal.
  *
- * Writes go through `useDocumentOperation(…).patch` (the rejection also sets `note`, which a
- * field input can't reach via `onChange`).
+ * Writes go through the client (`sanityClient.patch(…).commit()`, like the document actions), not
+ * the form: the Studio commits form edits with `visibility: "async"`, and the desk list preview of
+ * a `liveEdit` document then re-fetches before the query index has the change — it kept the old
+ * status until a reload. A client commit is `sync`, so the listener event already sees the new
+ * value. The rejection sets `status` + `note` in one patch.
  */
 import { Box, Button, Card, Flex, Select, Stack, Text, TextArea } from '@sanity/ui'
 import type { ChangeEvent } from 'react'
 import { useCallback, useState } from 'react'
-import { type StringInputProps, useDocumentOperation, useFormValue } from 'sanity'
+import { type StringInputProps, useFormValue } from 'sanity'
 
 import { useITSContext } from '../context/ITSCoreProvider'
 import { OPEN_STATUSES } from '../utils/withdrawals'
@@ -29,12 +32,32 @@ export function WithdrawalStatusInput(props: StringInputProps) {
   const documentId = String(useFormValue(['_id']) ?? '').replace(/^drafts\./, '')
   const orderId = (useFormValue(['orderRef']) as { _ref?: string } | undefined)?._ref
   const note = useFormValue(['note']) as string | undefined
-  const { patch } = useDocumentOperation(documentId, 'orderWithdrawal')
 
   const [pendingReject, setPendingReject] = useState(false)
   const [reason, setReason] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
+
+  /** One synchronous client patch; an error is shown below the select. */
+  const save = useCallback(
+    async (fields: Record<string, string>): Promise<boolean> => {
+      setBusy(true)
+      try {
+        await sanityClient.patch(documentId).set(fields).commit()
+        return true
+      } catch (err) {
+        setMessage(
+          t('actions.order.error', 'Update failed: {{message}}', {
+            message: err instanceof Error ? err.message : String(err),
+          }),
+        )
+        return false
+      } finally {
+        setBusy(false)
+      }
+    },
+    [documentId, sanityClient, t],
+  )
 
   const statusLabel = (status: string) => t(`order.withdrawals.status.${status}`, status)
 
@@ -69,9 +92,9 @@ export function WithdrawalStatusInput(props: StringInputProps) {
           return
         }
       }
-      patch.execute([{ set: { status: next } }])
+      await save({ status: next })
     },
-    [value, orderId, documentId, sanityClient, patch, t],
+    [value, orderId, documentId, sanityClient, save, t],
   )
 
   const handleReasonChange = useCallback(
@@ -82,7 +105,7 @@ export function WithdrawalStatusInput(props: StringInputProps) {
     setPendingReject(false)
     setReason('')
   }, [])
-  const handleReject = useCallback(() => {
+  const handleReject = useCallback(async () => {
     const trimmed = reason.trim()
     if (!trimmed) return
     const line = t(
@@ -93,12 +116,14 @@ export function WithdrawalStatusInput(props: StringInputProps) {
         reason: trimmed,
       },
     )
-    patch.execute([
-      { set: { status: 'rejected', note: [note?.trim(), line].filter(Boolean).join('\n') } },
-    ])
+    const saved = await save({
+      status: 'rejected',
+      note: [note?.trim(), line].filter(Boolean).join('\n'),
+    })
+    if (!saved) return
     setPendingReject(false)
     setReason('')
-  }, [reason, note, patch, format, t])
+  }, [reason, note, save, format, t])
 
   // unmatched / refunded (and an empty value) aren't chosen here.
   if (readOnly || !value || !(SELECTABLE as readonly string[]).includes(value)) {

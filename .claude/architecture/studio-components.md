@@ -156,6 +156,12 @@ add variants inline), `WineSelector` / `WinePreview`.
   flow (`actions.orderWithdrawal.guide.howTo.*`). The order view's withdrawals card shows the same
   "Erstattung bis" / "Überfällig seit" next to an open withdrawal's badge.
 - `WithdrawalStatusInput.tsx` — `orderWithdrawal.status` input (see `schemas.md` → `orderWithdrawal`).
+  It writes with `sanityClient.patch(…).commit()`, not the form. **Rule for `liveEdit` documents:**
+  a custom input that changes a field shown in the desk list preview writes through the client
+  (sync commit), like the document actions. The Studio commits form edits with
+  `visibility: "async"`; the preview store then re-fetches (1 s debounce) before the query index has
+  the change and keeps the old value until the next change or a reload (ADR
+  `live-edit-preview-fields-written-by-client.md`).
 - `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund
   overrides it — a partial refund needs no action, so it shows the fulfillment state), `YoutubePreview.tsx`, `DeployDialog.tsx` (triggers a Netlify build via the
   Netlify integration env/config), and the `CustomToolbar` (studio `toolMenu`).
