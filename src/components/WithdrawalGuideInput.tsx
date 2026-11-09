@@ -168,9 +168,8 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
   }
 
   const deadline = next?.deadline
-  // An unmatched one always needs an action: at least `caution`.
-  const deadlineTone = deadline?.tone ?? 'default'
-  const tone = next?.step === 'assign' && deadlineTone === 'default' ? 'caution' : deadlineTone
+  // Colour = time pressure only (the same on every step): from the refund deadline.
+  const tone = deadline?.tone ?? 'default'
 
   return (
     <Stack gap={5}>
