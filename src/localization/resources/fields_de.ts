@@ -865,13 +865,13 @@ export default {
       orderRef: {
         title: 'Bestellung',
         description:
-          'Nicht zugeordnet: über „Bestellung zuordnen“ zuordnen oder nach Prüfung löschen – spätestens nach 30 Tagen.',
+          'Nicht zugeordnet: über „Bestellung zuordnen“ zuordnen oder, wenn er zu keiner Bestellung gehört, löschen – Datenschutz: höchstens 30 Tage aufbewahren.',
       },
       declaredAt: { title: 'Erklärt am' },
       status: {
         title: 'Status',
         description:
-          'Nicht zugeordnet: über „Bestellung zuordnen“ zuordnen oder nach Prüfung löschen – spätestens nach 30 Tagen. „Erstattet“ setzt nur „Erstatten & abschließen“.',
+          'Nicht zugeordnet: über „Bestellung zuordnen“ zuordnen oder, wenn er zu keiner Bestellung gehört, löschen – Datenschutz: höchstens 30 Tage aufbewahren. „Erstattet“ setzt nur „Erstatten & abschließen“.',
         options: {
           unmatched: 'Nicht zugeordnet',
           received: 'Eingegangen',

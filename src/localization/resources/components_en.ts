@@ -351,7 +351,7 @@ export default {
         title: 'Next step',
         step: {
           assign:
-            'Assign the order (“Assign order”) — if it is a customer, the refund period is already running (see below). Otherwise delete it after checking, by {{date}} at the latest.',
+            'The details match no order. If it belongs to an order (e.g. a typo in the number or email): link it with “Assign order” — the refund period is already running (see below). If it belongs to no order (e.g. spam): delete it — it holds a stranger’s name and email, which data protection lets us keep for 30 days at most, i.e. until {{date}}.',
           close: 'The order is already refunded → “Refund & close” closes the withdrawal.',
           refundNotShipped: 'Not shipped yet → “Refund & close” (also cancels the order).',
           refundNothingToWait: 'Nothing more to wait for → “Refund & close”.',
@@ -369,7 +369,7 @@ export default {
         howTo: {
           summary: 'How it works',
           assign:
-            'Unmatched: “Assign order” links the right order (confirmation to the order’s email) — or delete it after checking, within 30 days at the latest. Wrong pick: “Unassign order”.',
+            'Unmatched: “Assign order” links the right order (confirmation to the order’s email) — or, if it belongs to no order, delete it (data protection: keep it 30 days at most). Wrong pick: “Unassign order”.',
           notShipped:
             'Not shipped yet: “Refund & close” — refunds everything and cancels the order.',
           shipped:

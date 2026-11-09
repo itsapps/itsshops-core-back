@@ -359,7 +359,7 @@ export default {
         title: 'Nächster Schritt',
         step: {
           assign:
-            'Bestellung zuordnen („Bestellung zuordnen“) – ist es ein Kunde, läuft die Erstattungsfrist schon (siehe unten). Sonst nach Prüfung löschen, spätestens bis {{date}}.',
+            'Die Angaben passen zu keiner Bestellung. Gehört der Widerruf zu einer Bestellung (z. B. Tippfehler bei Nummer oder E-Mail): über „Bestellung zuordnen“ verknüpfen – die Erstattungsfrist läuft schon (siehe unten). Gehört er zu keiner Bestellung (z. B. Spam): löschen – er enthält Name und E-Mail einer fremden Person, die aus Datenschutzgründen höchstens 30 Tage gespeichert bleiben, also bis {{date}}.',
           close:
             'Die Bestellung ist bereits erstattet → „Erstatten & abschließen“ schließt den Widerruf ab.',
           refundNotShipped:
@@ -379,7 +379,7 @@ export default {
         howTo: {
           summary: 'So geht’s',
           assign:
-            'Nicht zugeordnet: über „Bestellung zuordnen“ der richtigen Bestellung zuordnen (Bestätigung an die E-Mail der Bestellung) – oder nach Prüfung löschen, spätestens nach 30 Tagen. Falsch zugeordnet: „Zuordnung aufheben“.',
+            'Nicht zugeordnet: über „Bestellung zuordnen“ der richtigen Bestellung zuordnen (Bestätigung an die E-Mail der Bestellung) – oder, wenn er zu keiner Bestellung gehört, löschen (Datenschutz: höchstens 30 Tage aufbewahren). Falsch zugeordnet: „Zuordnung aufheben“.',
           notShipped:
             'Noch nicht versendet: „Erstatten & abschließen“ – erstattet alles und storniert die Bestellung.',
           shipped:

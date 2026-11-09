@@ -854,13 +854,13 @@ export default {
       orderRef: {
         title: 'Order',
         description:
-          'Unmatched: assign it with "Assign order" or delete it after checking – within 30 days at the latest.',
+          'Unmatched: assign it with "Assign order" or, if it belongs to no order, delete it – data protection: keep it 30 days at most.',
       },
       declaredAt: { title: 'Declared at' },
       status: {
         title: 'Status',
         description:
-          'Unmatched: assign it with "Assign order" or delete it after checking – within 30 days at the latest. "Refunded" is set by "Refund & close" only.',
+          'Unmatched: assign it with "Assign order" or, if it belongs to no order, delete it – data protection: keep it 30 days at most. "Refunded" is set by "Refund & close" only.',
         options: {
           unmatched: 'Unmatched',
           received: 'Received',
