@@ -44,10 +44,11 @@ npm run watch       # pkg-utils watch (consumers npm link this)
 npm run link-watch  # plugin-kit link-watch
 npm run start       # sanity dev (host 0.0.0.0, port 3331) — core's own studio
 npm run test        # vitest (watch mode; `npx vitest run` once) — tests/vinofact.test.ts hits the
-                    #   live Vinofact API with dummy credentials and fails without a real token
+                    #   live Vinofact API with the SANITY_STUDIO_VINOFACT_* values from `.env`;
+                    #   skipped when they're missing
 npm run extract     # sanity schema extract --workspace de  → schema.json (input to typegen)
 npm run typegen     # sanity typegen generate                → src/types/sanity.types.ts (used; see datasets.md)
-npm run lint / format
+npm run lint / format   # eslint: 0 errors (warnings, mostly `any`, remain) — keep it at 0 errors
 ```
 
 Data ops on a dataset (count/delete documents by type, ad-hoc GROQ) use core-front's `itsshops`
