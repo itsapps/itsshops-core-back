@@ -204,7 +204,14 @@ export default {
         options: {
           payment: 'Payment',
           fulfillment: 'Shipping',
+          mail: 'Email',
         },
+      },
+      source: {
+        admin: 'Studio',
+        stripe: 'Stripe',
+        'wc-api': 'ERP',
+        system: 'Automatic',
       },
       note: 'Internal note',
       customerMessage: 'Message to customer',

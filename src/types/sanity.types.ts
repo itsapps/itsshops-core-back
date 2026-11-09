@@ -963,7 +963,7 @@ export type OrderRefund = {
 
 export type OrderStatusHistory = {
   _type: 'orderStatusHistory'
-  type?: 'payment' | 'fulfillment'
+  type?: 'payment' | 'fulfillment' | 'mail'
   status?: string
   timestamp?: string
   source?: string

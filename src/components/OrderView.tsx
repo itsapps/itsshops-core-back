@@ -12,6 +12,7 @@ import {
 import { refundedTotal, remainingAmount } from '../utils/orderRefunds'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { TranslatorFunction } from '../types/localization'
+import { type MailType } from '../types/mail'
 
 // ── Document shape ──────────────────────────────────────────────────────────
 // Mirrors the actual core-back schemas (see schemas/documents/orders/order.ts
@@ -109,13 +110,14 @@ type Fulfillment = {
 
 type StatusHistoryEntry = {
   _key: string
-  type: 'payment' | 'fulfillment'
-  status: OrderStatus | OrderPaymentStatus
   timestamp: string
   source?: string
   note?: string
   customerMessage?: string
-}
+} & (
+  | { type: 'payment' | 'fulfillment'; status: OrderStatus | OrderPaymentStatus }
+  | { type: 'mail'; status: MailType }
+)
 
 type OrderRefund = {
   _key: string
@@ -562,7 +564,9 @@ export const OrderView: UserViewComponent = (props) => {
                     <Stack gap={2}>
                       <Flex justify="space-between" gap={2} wrap="wrap">
                         <Text weight="medium">
-                          {`${tHistoryType(entry.type)} - ${schemaT.default(getStateTranslationKey(entry.status), entry.status)}`}
+                          {entry.type === 'mail'
+                            ? `${tHistoryType('mail')} - ${t(`actions.order.mailTypes.${entry.status}`, entry.status)}`
+                            : `${tHistoryType(entry.type)} - ${schemaT.default(getStateTranslationKey(entry.status), entry.status)}`}
                         </Text>
                         <Text muted>
                           {format.date(entry.timestamp, {
@@ -571,7 +575,11 @@ export const OrderView: UserViewComponent = (props) => {
                           })}
                         </Text>
                       </Flex>
-                      {entry.source && <Text muted>{entry.source}</Text>}
+                      {entry.source && (
+                        <Text muted>
+                          {t(`order.statusHistory.source.${entry.source}`, entry.source)}
+                        </Text>
+                      )}
                       {entry.customerMessage && (
                         <Text
                           muted

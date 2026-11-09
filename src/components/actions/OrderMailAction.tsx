@@ -6,7 +6,8 @@
  * lets an admin pick any `MailType` from a dropdown and send it on demand —
  * useful for re-sending a confirmation, sending the invoice PDF, etc.
  *
- * No document patch, no statusHistory entry — just a notify call (with an
+ * No document patch — just a notify call (core-front appends a `mail` history
+ * entry once the mail is sent) (with an
  * optional personal message shown in the mail). Refund mails state the latest refund stored
  * on the order (core-front resolves it); there is no amount field. They are offered only for a
  * matching payment status, and Send is disabled (with the reason) where core-front would refuse.

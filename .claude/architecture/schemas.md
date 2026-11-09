@@ -91,6 +91,10 @@ publish would revert what the payment functions wrote meanwhile. `order.refunds[
 (`orderRefund`: `refundId`, `amount` cents, `createdAt`, `status` (Stripe's), `failureReason`,
 `source` `studio` | `stripe`, `reason`; group `history`, hidden outside dev) is written by core-front
 only (`syncOrderRefunds`, rebuilt from Stripe) — core-front `commerce-and-netlify.md` → Refunds.
+`order.statusHistory[]` (`orderStatusHistory`: `type` payment / fulfillment / `mail`, `status` =
+state or mail type, `source` (`admin` / `stripe` / `wc-api` / `system`), `note`,
+`customerMessage`; hidden outside dev) is written by core-front and the order actions,
+append-only — `mail` entries only by core-front after a sent mail.
 
 **Withdrawal-instruction settings (`shopSettings`, group returns):** `withdrawalPeriodStart`
 (FAGG Anhang I note [1] variant, default `multipleGoods`), `withdrawalExceptions` (§ 18 list),

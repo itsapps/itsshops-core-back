@@ -18,7 +18,8 @@
  *   - patch the order document (set new status + append statusHistory, plus
  *     `fulfillment.trackingCode` when shipping) — committed before the mail,
  *     so the shipped mail already shows the tracking code. The history entry
- *     keeps the internal `note` and, when a mail is sent, the `customerMessage`
+ *     keeps the internal `note` only; the `customerMessage` lands on the `mail`
+ *     history entry core-front appends once the mail is sent
  *   - if notifyCustomer: call `frontendClient.notifyOrder` with the matching
  *     mailType from `mailTypeForStatus`
  *
@@ -226,7 +227,6 @@ function OrderActionContent({
       timestamp,
       source: 'admin',
       ...(trimmedNote && { note: trimmedNote }),
-      ...(trimmedCustomerMessage && { customerMessage: trimmedCustomerMessage }),
     }
 
     // Fully refunding a still-undispatched order also cancels fulfillment, so the

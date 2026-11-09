@@ -63,11 +63,12 @@ add variants inline), `WineSelector` / `WinePreview`.
     `fulfillment.trackingCode` in the same patch as the status, before the shipped mail is sent.
     Two separate texts: **internal note** → `statusHistory[].note`, studio only, never mailed;
     **message to customer** (shown only while "notify customer" sends a mail, max 2000 chars =
-    core-front `CUSTOMER_MESSAGE_MAX_LENGTH`) → `notifyOrder({ customerMessage })` and
-    `statusHistory[].customerMessage`. "Notify customer" is pre-checked per target status
+    core-front `CUSTOMER_MESSAGE_MAX_LENGTH`) → `notifyOrder({ customerMessage })`; core-front
+    stores it on the `mail` history entry it appends once the mail is sent (the status entry keeps
+    only the note). "Notify customer" is pre-checked per target status
     (`notifyCustomerByDefault` in `orderTransitions.ts`: off for `delivered`, which is shop
     bookkeeping; on otherwise) and resets when another status is picked. `OrderMailDocumentAction` offers the same message field
-    (`CustomerMessageField`) but writes no history entry. It hides the invoice mail and "attach
+    (`CustomerMessageField`) and patches nothing itself (core-front appends the `mail` entry). It hides the invoice mail and "attach
     invoice PDF" when `shop.invoices` is off (invoices from another system, e.g. wineNET). Refund
     mails have **no amount field** — core-front states the latest stored refund. They are offered
     by payment status (`refundMailOffered` in `utils/orderRefunds.ts`: partial mail once
@@ -108,7 +109,9 @@ add variants inline), `WineSelector` / `WinePreview`.
   "Rückerstattungen" card (after the totals, `h4` like its neighbours) lists `order.refunds` — date
   · amount · source, status in words when not succeeded (failed + Stripe's `failureReason`) — and
   "Erstattet X · Offen Y" (`refundedTotal` / `remainingAmount`; failed/canceled don't count). Orders
-  are `liveEdit`, so `displayed` = `published`.
+  are `liveEdit`, so `displayed` = `published`. The status history card translates `source`
+  (`order.statusHistory.source.*`: Studio / Stripe / Warenwirtschaft / Automatisch; unknown values
+  raw) and titles `mail` entries "E-Mail - <mail type>" (`actions.order.mailTypes.*`).
 - `WithdrawalOrderInput.tsx` — `orderWithdrawal.orderRef` input for assigning unmatched
   declarations (see `schemas.md` → `orderWithdrawal`).
 - `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund

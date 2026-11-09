@@ -996,6 +996,7 @@ export default {
         options: {
           payment: 'Payment',
           fulfillment: 'Fulfillment',
+          mail: 'Email',
         },
       },
       status: {

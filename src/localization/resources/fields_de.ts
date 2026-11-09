@@ -1006,6 +1006,7 @@ export default {
         options: {
           payment: 'Zahlung',
           fulfillment: 'Versand',
+          mail: 'E-Mail',
         },
       },
       status: {

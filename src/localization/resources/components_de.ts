@@ -209,7 +209,14 @@ export default {
         options: {
           payment: 'Zahlung',
           fulfillment: 'Versand',
+          mail: 'E-Mail',
         },
+      },
+      source: {
+        admin: 'Studio',
+        stripe: 'Stripe',
+        'wc-api': 'Warenwirtschaft',
+        system: 'Automatisch',
       },
       note: 'Interne Notiz',
       customerMessage: 'Nachricht an den Kunden',

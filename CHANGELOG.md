@@ -4,6 +4,22 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased
+
+Release before the core-front minor that writes `mail` history entries.
+
+### Added
+- **Mail history entries:** `orderStatusHistory.type` gains `mail` (labels "E-Mail" / "Email");
+  the order view titles them "E-Mail - <mail type>" (e.g. "E-Mail - Versendet") and shows their
+  customer message.
+- The order view and the dev schema preview translate the history `source`: Studio, Stripe,
+  Warenwirtschaft / ERP, Automatisch / Automatic (unknown values stay raw).
+
+### Changed
+- The status dialog no longer stores the customer message on its status entry (it was written
+  before the mail went out, so a failed mail kept a message never sent) — core-front stores it on
+  the `mail` entry. Old entries keep theirs.
+
 ## 5.3.0
 
 Release before core-front 3.10.0 (which writes `order.refunds`).

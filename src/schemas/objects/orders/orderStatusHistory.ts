@@ -1,4 +1,3 @@
-// import { getStateTranslationKey } from '../../../utils/orders';
 import { OrderStatusHistoryIcon } from '../../../assets/icons'
 import { getStateTranslationKey } from '../../../utils/orderTransitions'
 import { ITSSchemaDefinition } from '../../../types'
@@ -14,7 +13,7 @@ export const orderStatusHistory: ITSSchemaDefinition = {
     const fields = [
       f('type', 'string', {
         options: {
-          list: [{ value: 'payment' }, { value: 'fulfillment' }],
+          list: [{ value: 'payment' }, { value: 'fulfillment' }, { value: 'mail' }],
         },
         validation: (Rule) => Rule.required(),
       }),
@@ -33,7 +32,8 @@ export const orderStatusHistory: ITSSchemaDefinition = {
         rows: 2,
       }),
 
-      // Message sent to the customer with the status mail (OrderActions dialog).
+      // Message sent to the customer with this mail (`mail` entries, written by core-front;
+      // older status entries may carry one).
       f('customerMessage', 'text', {
         rows: 2,
       }),
@@ -56,10 +56,16 @@ export const orderStatusHistory: ITSSchemaDefinition = {
           const typeString = type
             ? ctx.schemaT.default(`orderStatusHistory.fields.type.options.${type}`, type)
             : 'No Type'
-          // const statusString = status ? ctx.t.default(getStateTranslationKey(status), status) : 'No Status'
-          const subtitle = [source, note].filter(Boolean).join(' - ')
+          const statusString =
+            type === 'mail'
+              ? ctx.componentT.default(`actions.order.mailTypes.${status}`, status)
+              : ctx.t.default(getStateTranslationKey(status), status)
+          const sourceString = source
+            ? ctx.componentT.default(`order.statusHistory.source.${source}`, source)
+            : undefined
+          const subtitle = [sourceString, note].filter(Boolean).join(' - ')
           return {
-            title: `${dateTime}: ${typeString} - ${ctx.t.default(getStateTranslationKey(status), status)}`,
+            title: `${dateTime}: ${typeString} - ${statusString}`,
             subtitle,
           }
         },
