@@ -7,10 +7,11 @@
  * useful for re-sending a confirmation, sending the invoice PDF, etc.
  *
  * No document patch, no statusHistory entry — just a notify call (with an
- * optional personal message shown in the mail).
+ * optional personal message shown in the mail). Refund mails state the latest refund stored
+ * on the order (core-front resolves it); there is no amount field.
  */
 import { SendMailIcon } from '../../assets/icons'
-import { Box, Button, Card, Checkbox, Flex, Select, Stack, Text, TextInput } from '@sanity/ui'
+import { Box, Button, Card, Checkbox, Flex, Select, Stack, Text } from '@sanity/ui'
 import type { ChangeEvent } from 'react'
 import { useCallback, useState } from 'react'
 import type { DocumentActionDescription, DocumentActionProps } from 'sanity'
@@ -33,7 +34,6 @@ const MAIL_TYPES: MailType[] = [
 
 type OrderMailActionDoc = {
   _id: string
-  totals?: { grandTotal?: number }
 }
 
 export function OrderMailDocumentAction(props: DocumentActionProps): DocumentActionDescription {
@@ -83,22 +83,6 @@ function OrderMailContent({
   const [mailType, setMailType] = useState<MailType>('orderConfirmation')
   const [attachInvoice, setAttachInvoice] = useState(false)
   const [customerMessage, setCustomerMessage] = useState('')
-  // The order doesn't store refunded amounts: a partial-refund mail needs the amount typed in
-  // (the notify function refuses one without it — it would otherwise state the order total).
-  const [partialAmount, setPartialAmount] = useState<number | undefined>()
-  const grandTotal = order.totals?.grandTotal ?? 0
-  const isPartialRefundMail = mailType === 'orderRefundedPartially'
-  const partialAmountCents =
-    partialAmount !== undefined && !Number.isNaN(partialAmount)
-      ? Math.round(partialAmount * 100)
-      : undefined
-  const isPartialAmountValid =
-    partialAmountCents !== undefined && partialAmountCents > 0 && partialAmountCents <= grandTotal
-  const handleAmountChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) =>
-      setPartialAmount(e.currentTarget.value === '' ? undefined : Number(e.currentTarget.value)),
-    [],
-  )
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<string>('')
 
@@ -122,8 +106,6 @@ function OrderMailContent({
     const trimmedCustomerMessage = customerMessage.trim()
     const result = await frontendClient.notifyOrder(mailType, order._id, {
       attachInvoice,
-      ...(isPartialRefundMail &&
-        partialAmountCents !== undefined && { refundAmount: partialAmountCents }),
       ...(trimmedCustomerMessage && { customerMessage: trimmedCustomerMessage }),
     })
     if (result.error) {
@@ -134,17 +116,7 @@ function OrderMailContent({
     setStatus(t('actions.order.sendMailSuccess', 'Customer notified'))
     setLoading(false)
     onComplete()
-  }, [
-    frontendClient,
-    mailType,
-    order._id,
-    attachInvoice,
-    customerMessage,
-    t,
-    onComplete,
-    isPartialRefundMail,
-    partialAmountCents,
-  ])
+  }, [frontendClient, mailType, order._id, attachInvoice, customerMessage, t, onComplete])
 
   return (
     <Stack padding={4} gap={4}>
@@ -162,32 +134,6 @@ function OrderMailContent({
           ))}
         </Select>
       </Stack>
-
-      {isPartialRefundMail && (
-        <Stack gap={2}>
-          <Text size={1} weight="medium">
-            <label htmlFor="order-mail-refund-amount-input">
-              {t('actions.order.updateStatus.refundAmountLabel', 'Refund amount (€)')}
-            </label>
-          </Text>
-          <TextInput
-            id="order-mail-refund-amount-input"
-            type="number"
-            min={0}
-            step="0.01"
-            value={partialAmount ?? ''}
-            onChange={handleAmountChange}
-            placeholder={t('actions.order.updateStatus.refundAmount', 'Refund amount')}
-            aria-invalid={partialAmount !== undefined && !isPartialAmountValid}
-            aria-describedby={isPartialAmountValid ? undefined : 'order-mail-refund-amount-hint'}
-          />
-          {!isPartialAmountValid && (
-            <Text size={1} muted id="order-mail-refund-amount-hint">
-              {t('actions.order.updateStatus.enterValidAmount', 'Enter a valid amount')}
-            </Text>
-          )}
-        </Stack>
-      )}
 
       {invoicesOn && (
         <Flex align="center" gap={2}>
@@ -214,7 +160,7 @@ function OrderMailContent({
           tone="primary"
           text={t('actions.order.sendMailDialog.send', 'Send')}
           loading={loading}
-          disabled={loading || (isPartialRefundMail && !isPartialAmountValid)}
+          disabled={loading}
           onClick={handleSend}
         />
       </Flex>

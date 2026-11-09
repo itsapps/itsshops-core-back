@@ -222,6 +222,21 @@ export default {
         rejected: 'Abgelehnt',
       },
     },
+    refunds: {
+      title: 'Rückerstattungen',
+      refunded: 'Erstattet',
+      remaining: 'Offen',
+      source: {
+        studio: 'Studio',
+        stripe: 'Stripe-Dashboard',
+      },
+      status: {
+        pending: 'Ausstehend',
+        failed: 'Fehlgeschlagen',
+        canceled: 'Abgebrochen',
+        requires_action: 'Aktion erforderlich',
+      },
+    },
   },
   actions: {
     order: {
@@ -250,7 +265,8 @@ export default {
         title: 'Status aktualisieren',
         refundAmount: 'Rückerstattungsbetrag eingeben',
         refundAmountLabel: 'Rückerstattungsbetrag (€)',
-        enterValidAmount: 'Bitte geben Sie einen gültigen Betrag ein',
+        enterAmountBelowRemaining:
+          'Bitte geben Sie einen Betrag unter dem offenen Betrag von {{remaining}} ein — für den ganzen Rest „Refundiert“ wählen',
         notifyCustomer: 'Kunde benachrichtigen',
         trackingCodeHint: 'Optional – wird in der Versandbestätigung angezeigt',
       },

@@ -6,7 +6,7 @@
  * state machine in `utils/orderTransitions.ts` and walks the admin through:
  *
  *   1. pick a target state (fulfillment or payment)
- *   2. for partial refunds: enter an amount; for `shipped` (delivery orders):
+ *   2. for partial refunds: enter an amount (below what's left to refund); for `shipped` (delivery orders):
  *      optionally enter/edit the tracking code
  *   3. optionally notify the customer, with an optional personal message
  *      that is shown in the mail
@@ -24,6 +24,7 @@
  *
  * The Stripe webhook also reconciles the paymentStatus, so direct patches and
  * webhook updates must remain idempotent — both paths set the same fields.
+ * `order.refunds` is written by core-front only (`payment-refund` + webhooks).
  */
 import { ConfirmIcon } from '../../assets/icons'
 import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
@@ -42,6 +43,7 @@ import {
   type OrderStatus,
   type StatusAction,
 } from '../../utils/orderTransitions'
+import { remainingAmount } from '../../utils/orderRefunds'
 
 /** Same limit as core-front's order-notify function (`CUSTOMER_MESSAGE_MAX_LENGTH`). */
 export const CUSTOMER_MESSAGE_MAX_LENGTH = 2000
@@ -52,6 +54,7 @@ type OrderActionDoc = {
   paymentStatus: OrderPaymentStatus
   paymentIntentId: string
   totals?: { grandTotal?: number }
+  refunds?: { amount: number; status?: string; createdAt?: string }[]
   customer?: { locale?: string }
   fulfillment?: { methodType?: 'delivery' | 'pickup'; trackingCode?: string }
 }
@@ -132,7 +135,7 @@ function OrderActionContent({
   paymentActions: StatusAction[]
   onComplete: () => void
 }) {
-  const { componentT, sanityClient, frontendClient } = useITSContext()
+  const { componentT, sanityClient, frontendClient, format } = useITSContext()
   const t = componentT.default
 
   const [selectedAction, setSelectedAction] = useState<StatusAction | undefined>()
@@ -146,11 +149,14 @@ function OrderActionContent({
 
   const isPartialRefund = selectedAction?.newState === 'partiallyRefunded'
   const grandTotal = order.totals?.grandTotal ?? 0
+  // What's left to refund. A partial refund must stay below it — the whole rest is "Refunded",
+  // otherwise the Studio would set partiallyRefunded while the webhook sets refunded.
+  const remaining = remainingAmount(grandTotal, order.refunds)
   // Euros → integer cents: 4.35 * 100 is 434.99999999999994, and Stripe only takes integers.
   const partialAmountCents =
     partialAmount !== undefined ? Math.round(partialAmount * 100) : undefined
   const isPartialRefundValid =
-    partialAmountCents !== undefined && partialAmountCents > 0 && partialAmountCents <= grandTotal
+    partialAmountCents !== undefined && partialAmountCents > 0 && partialAmountCents < remaining
   const notificationMailType = mailTypeForStatus(selectedAction?.newState)
   const sendsMail = notifyCustomer && !!notificationMailType
   const trimmedNote = note.trim()
@@ -190,6 +196,8 @@ function OrderActionContent({
     if (!selectedAction) return
     setLoading(true)
     setStatus('')
+    // Amount Stripe actually refunded — stated in the refund mail.
+    let refundedCents: number | undefined
 
     // 1. Refund first if this is a payment status change
     if (
@@ -204,6 +212,7 @@ function OrderActionContent({
         setLoading(false)
         return
       }
+      refundedCents = result.data?.amount ?? undefined
       setStatus(t('actions.refund.sendRefundSuccess', 'Refund successful'))
     }
 
@@ -273,13 +282,8 @@ function OrderActionContent({
     // Invoice PDF attachment is handled by the separate OrderMailAction (manual
     // mail picker) — status-transition mails never attach the invoice.
     if (sendsMail) {
-      // For refund mails, pass the refunded amount so it can be shown in the email.
-      let refundAmount: number | undefined
-      if (selectedAction.newState === 'refunded') {
-        refundAmount = grandTotal
-      } else if (selectedAction.newState === 'partiallyRefunded' && isPartialRefundValid) {
-        refundAmount = partialAmountCents!
-      }
+      // For refund mails, pass the amount just refunded so it can be shown in the email.
+      const refundAmount = refundedCents
       const result = await frontendClient.notifyOrder(notificationMailType, order._id, {
         ...(refundAmount !== undefined && { refundAmount }),
         ...(trimmedCustomerMessage && { customerMessage: trimmedCustomerMessage }),
@@ -299,7 +303,6 @@ function OrderActionContent({
     frontendClient,
     sanityClient,
     order,
-    grandTotal,
     isPartialRefund,
     isPartialRefundValid,
     partialAmountCents,
@@ -367,7 +370,11 @@ function OrderActionContent({
           />
           {!isPartialRefundValid && (
             <Text size={1} muted id="order-refund-amount-hint">
-              {t('actions.order.updateStatus.enterValidAmount', 'Enter a valid amount')}
+              {t(
+                'actions.order.updateStatus.enterAmountBelowRemaining',
+                'Enter an amount below the remaining {{remaining}} — choose “Refunded” for the whole rest',
+                { remaining: format.currency(remaining / 100) },
+              )}
             </Text>
           )}
         </Stack>

@@ -21,6 +21,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { DocumentActionDescription, DocumentActionProps, SanityClient } from 'sanity'
 
 import { useITSContext } from '../../context/ITSCoreProvider'
+import { remainingAmount } from '../../utils/orderRefunds'
 import { refundCancelsFulfillment } from '../../utils/orderTransitions'
 
 const OPEN_WITHDRAWAL_QUERY = `count(*[_type == "orderWithdrawal" && orderRef._ref == $id && status in ["received", "processing"]])`
@@ -289,6 +290,7 @@ type ResolveOrder = {
   status: string
   paymentStatus: string
   grandTotal?: number
+  refunds?: { amount: number; status?: string; createdAt?: string }[]
 }
 
 /**
@@ -358,7 +360,7 @@ function ResolveWithdrawalContent({
     let active = true
     sanityClient
       .fetch<ResolveOrder | null>(
-        `*[_id == $id][0]{ _id, orderNumber, paymentIntentId, status, paymentStatus, "grandTotal": totals.grandTotal }`,
+        `*[_id == $id][0]{ _id, orderNumber, paymentIntentId, status, paymentStatus, "grandTotal": totals.grandTotal, "refunds": refunds[]{ amount, status, createdAt } }`,
         { id: orderId },
       )
       .then((o) => {
@@ -383,6 +385,8 @@ function ResolveWithdrawalContent({
 
     // 1. Refund (only if not already refunded), then mirror the order-side patch
     //    of the refund action so Studio reflects it immediately.
+    // Amount Stripe actually refunded (the rest after earlier partial refunds) — stated in the mail.
+    let refundedCents: number | undefined
     if (order.paymentStatus !== 'refunded') {
       const result = await frontendClient.refundPayment(order.paymentIntentId)
       if (result.error) {
@@ -390,6 +394,7 @@ function ResolveWithdrawalContent({
         setLoading(false)
         return
       }
+      refundedCents = result.data?.amount ?? undefined
       const timestamp = new Date().toISOString()
       const setFields: Record<string, string> = { paymentStatus: 'refunded' }
       const historyEntries: Array<Record<string, unknown>> = [
@@ -442,7 +447,7 @@ function ResolveWithdrawalContent({
     // 3. Notify the customer of the refund (only when we just refunded).
     if (notify && !alreadyRefunded) {
       const r = await frontendClient.notifyOrder('orderRefunded', order._id, {
-        ...(typeof order.grandTotal === 'number' && { refundAmount: order.grandTotal }),
+        ...(typeof refundedCents === 'number' && { refundAmount: refundedCents }),
       })
       if (r.error) {
         setStatus(`${t('actions.order.error', 'Mail failed', { message: r.error })}`)
@@ -463,7 +468,11 @@ function ResolveWithdrawalContent({
     )
   }
 
-  const amount = typeof order.grandTotal === 'number' ? format.currency(order.grandTotal / 100) : ''
+  // What a full refund refunds now: the rest after earlier partial refunds.
+  const amount =
+    typeof order.grandTotal === 'number'
+      ? format.currency(remainingAmount(order.grandTotal, order.refunds) / 100)
+      : ''
 
   return (
     <Stack padding={4} gap={4}>

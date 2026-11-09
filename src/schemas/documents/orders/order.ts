@@ -64,6 +64,11 @@ export const order: ITSDocumentDefinition = {
           of: [{ type: 'orderStatusHistory' }],
           hidden: !ctx.config.isDev,
         }),
+        // Stripe refunds, written by core-front only (shown in the order view).
+        f('refunds', 'array', {
+          of: [{ type: 'orderRefund' }],
+          hidden: !ctx.config.isDev,
+        }),
       ],
     }
 
@@ -83,6 +88,9 @@ export const order: ITSDocumentDefinition = {
 
     return {
       ...shared,
+      // Edits save straight to the published doc: no draft whose publish would revert what the
+      // payment functions wrote meanwhile (paymentStatus, statusHistory, refunds).
+      liveEdit: true,
       preview: {
         select: {
           // stripeId: 'paymentIntentId',

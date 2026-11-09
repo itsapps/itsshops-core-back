@@ -922,6 +922,9 @@ export default {
       statusHistory: {
         title: 'Status history',
       },
+      refunds: {
+        title: 'Refunds',
+      },
       paymentIntentId: {
         title: 'Stripe Payment Intent ID',
       },
@@ -946,6 +949,32 @@ export default {
       brand: { title: 'Card brand' },
       last4: { title: 'Last 4 digits' },
       wallet: { title: 'Wallet' },
+    },
+  },
+  orderRefund: {
+    title: 'Refund',
+    fields: {
+      refundId: {
+        title: 'Stripe refund ID',
+      },
+      amount: {
+        title: 'Amount (cents)',
+      },
+      createdAt: {
+        title: 'Created at',
+      },
+      status: {
+        title: 'Status',
+      },
+      failureReason: {
+        title: 'Failure reason',
+      },
+      source: {
+        title: 'Source',
+      },
+      reason: {
+        title: 'Reason',
+      },
     },
   },
   orderStatusHistory: {

@@ -462,6 +462,11 @@ export type Order = {
       _key: string
     } & OrderStatusHistory
   >
+  refunds?: Array<
+    {
+      _key: string
+    } & OrderRefund
+  >
   payment?: OrderPaymentMethod
 }
 
@@ -943,6 +948,17 @@ export type Seo = {
   shareTitle?: InternationalizedArrayString
   shareDescription?: InternationalizedArrayString
   shareImage?: LocaleAltImage
+}
+
+export type OrderRefund = {
+  _type: 'orderRefund'
+  refundId?: string
+  amount?: number
+  createdAt?: string
+  status?: string
+  failureReason?: string
+  source?: string
+  reason?: string
 }
 
 export type OrderStatusHistory = {
@@ -1872,6 +1888,7 @@ export type AllSanitySchemaTypes =
   | PackagingGroup
   | ShippingRate
   | Seo
+  | OrderRefund
   | OrderStatusHistory
   | OrderItemWine
   | OrderItemOption

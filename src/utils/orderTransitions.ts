@@ -43,7 +43,8 @@ const fulfillmentTransitions: Record<OrderStatus, OrderStatus[]> = {
 
 const paymentTransitions: Record<OrderPaymentStatus, OrderPaymentStatus[]> = {
   succeeded: ['refunded', 'partiallyRefunded'],
-  partiallyRefunded: ['refunded'],
+  // A further partial refund stays partiallyRefunded (capped at the remaining amount).
+  partiallyRefunded: ['refunded', 'partiallyRefunded'],
   refunded: [],
 }
 

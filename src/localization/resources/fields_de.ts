@@ -927,6 +927,9 @@ export default {
       statusHistory: {
         title: 'Statusverlauf',
       },
+      refunds: {
+        title: 'Rückerstattungen',
+      },
       paymentIntentId: {
         title: 'Stripe Payment Intent ID',
       },
@@ -951,6 +954,32 @@ export default {
       brand: { title: 'Kartenmarke' },
       last4: { title: 'Letzte 4 Ziffern' },
       wallet: { title: 'Wallet' },
+    },
+  },
+  orderRefund: {
+    title: 'Rückerstattung',
+    fields: {
+      refundId: {
+        title: 'Stripe-Rückerstattungs-ID',
+      },
+      amount: {
+        title: 'Betrag (Cent)',
+      },
+      createdAt: {
+        title: 'Zeitpunkt',
+      },
+      status: {
+        title: 'Status',
+      },
+      failureReason: {
+        title: 'Fehlergrund',
+      },
+      source: {
+        title: 'Quelle',
+      },
+      reason: {
+        title: 'Grund',
+      },
     },
   },
   orderStatusHistory: {

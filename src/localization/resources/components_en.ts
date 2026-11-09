@@ -218,6 +218,21 @@ export default {
         rejected: 'Rejected',
       },
     },
+    refunds: {
+      title: 'Refunds',
+      refunded: 'Refunded',
+      remaining: 'Remaining',
+      source: {
+        studio: 'Studio',
+        stripe: 'Stripe dashboard',
+      },
+      status: {
+        pending: 'Pending',
+        failed: 'Failed',
+        canceled: 'Canceled',
+        requires_action: 'Action required',
+      },
+    },
   },
   actions: {
     order: {
@@ -245,7 +260,8 @@ export default {
         title: 'Update status',
         refundAmount: 'Enter refund amount',
         refundAmountLabel: 'Refund amount (€)',
-        enterValidAmount: 'Please enter a valid amount',
+        enterAmountBelowRemaining:
+          'Enter an amount below the remaining {{remaining}} — choose “Refunded” for the whole rest',
         notifyCustomer: 'Notify customer',
         trackingCodeHint: 'Optional – shown in the shipping confirmation',
       },

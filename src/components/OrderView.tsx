@@ -9,6 +9,7 @@ import {
   type OrderPaymentStatus,
   type OrderStatus,
 } from '../utils/orderTransitions'
+import { refundedTotal, remainingAmount } from '../utils/orderRefunds'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { TranslatorFunction } from '../types/localization'
 
@@ -116,6 +117,17 @@ type StatusHistoryEntry = {
   customerMessage?: string
 }
 
+type OrderRefund = {
+  _key: string
+  refundId: string
+  amount: number
+  createdAt?: string
+  status?: string
+  failureReason?: string
+  source?: 'studio' | 'stripe'
+  reason?: string
+}
+
 type AppliedCoupon = {
   _key: string
   code: string
@@ -149,6 +161,7 @@ interface OrderDocument extends SanityDocument {
   totals: OrderTotals
   fulfillment: Fulfillment
   statusHistory?: StatusHistoryEntry[]
+  refunds?: OrderRefund[]
   appliedCoupons?: AppliedCoupon[]
 }
 
@@ -403,6 +416,46 @@ export const OrderView: UserViewComponent = (props) => {
             <TotalRow label={t('order.total')} value={money(totals?.grandTotal)} bold />
           </Stack>
         </Card>
+
+        {/* ── Refunds (written by core-front from Stripe, oldest first) ──── */}
+        {order.refunds && order.refunds.length > 0 && (
+          <Card padding={3} radius={2} shadow={1} tone="transparent">
+            <Stack gap={3}>
+              <Heading as="h4" size={1}>
+                {t('order.refunds.title', 'Refunds')}
+              </Heading>
+              <Stack as="ul" gap={2} style={{ margin: 0, paddingLeft: '1.25em' }}>
+                {order.refunds.map((refund) => {
+                  const parts = [
+                    refund.createdAt
+                      ? format.date(refund.createdAt, { dateStyle: 'medium', timeStyle: 'short' })
+                      : undefined,
+                    money(refund.amount),
+                    refund.source
+                      ? t(`order.refunds.source.${refund.source}`, refund.source)
+                      : undefined,
+                  ]
+                  if (refund.status && refund.status !== 'succeeded') {
+                    const statusLabel = t(`order.refunds.status.${refund.status}`, refund.status)
+                    parts.push(
+                      refund.status === 'failed' && refund.failureReason
+                        ? `${statusLabel} (${refund.failureReason})`
+                        : statusLabel,
+                    )
+                  }
+                  return (
+                    <Text as="li" key={refund._key} size={1}>
+                      {parts.filter(Boolean).join(' · ')}
+                    </Text>
+                  )
+                })}
+              </Stack>
+              <Text size={1} weight="medium">
+                {`${t('order.refunds.refunded', 'Refunded')} ${money(refundedTotal(order.refunds))} · ${t('order.refunds.remaining', 'Remaining')} ${money(remainingAmount(totals?.grandTotal ?? 0, order.refunds))}`}
+              </Text>
+            </Stack>
+          </Card>
+        )}
 
         {/* ── Applied coupons ─────────────────────────────────────────── */}
         {order.appliedCoupons && order.appliedCoupons.length > 0 && (

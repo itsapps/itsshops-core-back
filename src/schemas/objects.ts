@@ -21,6 +21,7 @@ import { orderItemBundle } from './objects/orders/orderItemBundle'
 import { orderItemBundleItem } from './objects/orders/orderItemBundleItem'
 import { orderItemOption } from './objects/orders/orderItemOption'
 import { orderItemWine } from './objects/orders/orderItemWine'
+import { orderRefund } from './objects/orders/orderRefund'
 import { orderStatusHistory } from './objects/orders/orderStatusHistory'
 import { orderTotals } from './objects/orders/orderTotals'
 import { orderPaymentMethod } from './objects/orders/orderPaymentMethod'
@@ -75,6 +76,7 @@ export const getCoreObjects = (
     orderItemOption,
     orderItemWine,
     orderStatusHistory,
+    orderRefund,
     orderPaymentMethod,
     orderTotals,
     seo,
