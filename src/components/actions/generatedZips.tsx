@@ -64,8 +64,9 @@ function pathToString(path: ZipPathSegment[]): string {
 function getAtPath(doc: any, path: ZipPathSegment[]): any {
   let cur = doc
   for (const seg of path) {
-    if (cur == null) return undefined
-    if (typeof seg === 'object') cur = Array.isArray(cur) ? cur.find((x) => x?._key === seg._key) : undefined
+    if (cur === null || cur === undefined) return undefined
+    if (typeof seg === 'object')
+      cur = Array.isArray(cur) ? cur.find((x) => x?._key === seg._key) : undefined
     else cur = cur[seg as any]
   }
   return cur
@@ -74,10 +75,15 @@ function getAtPath(doc: any, path: ZipPathSegment[]): any {
 /** Stable non-crypto hash (djb2) of the assets (id + entry name), so renaming
  *  a source (e.g. a changed title) also regenerates the zip. */
 function hashAssets(assets: { id: string; name?: string }[]): string {
-  const str = assets.map((a) => `${a.id}:${a.name ?? ''}`).sort().join('|')
+  const str = assets
+    .map((a) => `${a.id}:${a.name ?? ''}`)
+    .sort()
+    .join('|')
   let h = 5381
+  /* eslint-disable no-bitwise -- djb2 hash */
   for (let i = 0; i < str.length; i++) h = (h * 33) ^ str.charCodeAt(i)
   return (h >>> 0).toString(16)
+  /* eslint-enable no-bitwise */
 }
 
 // ── sync ───────────────────────────────────────────────────────────────────
@@ -110,10 +116,9 @@ async function syncZips(
 
     // fetch originals (url + original filename), keyed by id
     const ids = specs.map((s) => s.id)
-    const fetched = await client.fetch<Array<{ _id: string; url: string; originalFilename?: string }>>(
-      `*[_id in $ids]{ _id, url, originalFilename }`,
-      { ids },
-    )
+    const fetched = await client.fetch<
+      Array<{ _id: string; url: string; originalFilename?: string }>
+    >(`*[_id in $ids]{ _id, url, originalFilename }`, { ids })
     const byId = new Map(fetched.map((a) => [a._id, a]))
 
     // name each entry by its desired base + original extension, de-duplicated
@@ -152,7 +157,12 @@ async function syncZips(
     const keptStale = queue.slice(0, retain)
     oldAssetIds.push(...queue.slice(retain)) // overflow → delete after publish
 
-    patches.push({ base: pathToString(target.path), ref: uploaded._id, hash: newHash, stale: keptStale })
+    patches.push({
+      base: pathToString(target.path),
+      ref: uploaded._id,
+      hash: newHash,
+      stale: keptStale,
+    })
   }
 
   if (!patches.length) return []
@@ -194,7 +204,10 @@ async function cleanupAssets(client: SanityClient, ids: string[], attempts = 6, 
 // ── action wrapper ───────────────────────────────────────────────────────────
 
 export function withGeneratedZips(options: GeneratedZipsOptions) {
-  return (actions: DocumentActionComponent[], context: DocumentActionsContext): DocumentActionComponent[] => {
+  return (
+    actions: DocumentActionComponent[],
+    context: DocumentActionsContext,
+  ): DocumentActionComponent[] => {
     if (!options.types.includes(context.schemaType)) return actions
 
     return actions.map((Action) => {
@@ -228,7 +241,8 @@ export function withGeneratedZips(options: GeneratedZipsOptions) {
             // published doc until this completes …
             origin.onHandle?.()
             // … then delete them once dereferenced (retries through propagation).
-            if (oldAssetIds.length) void cleanupAssets(sanityClient, oldAssetIds)
+            // Fire and forget: cleanupAssets catches its own errors.
+            if (oldAssetIds.length) cleanupAssets(sanityClient, oldAssetIds).catch(() => undefined)
           },
         }
       }

@@ -6,12 +6,7 @@
 // computed from the maps below.
 
 export type OrderStatus =
-  | 'created'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'canceled'
-  | 'returned'
+  'created' | 'processing' | 'shipped' | 'delivered' | 'canceled' | 'returned'
 
 export type OrderPaymentStatus = 'succeeded' | 'refunded' | 'partiallyRefunded'
 

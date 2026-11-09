@@ -1,15 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Label,
-  Stack,
-  Text,
-  TextInput,
-} from '@sanity/ui'
+import { Box, Button, Card, Flex, Label, Stack, Text, TextInput } from '@sanity/ui'
 import { Autocomplete } from '@sanity/ui/autocomplete'
 import { useToast } from '@sanity/ui/toast'
 import { ChangeEvent, ReactElement } from 'react'
@@ -216,7 +207,10 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
         <Stack gap={2}>
           <PriceField value={row.price} onChange={handlePriceChange} required={false} />
           <Text size={1} muted>
-            {componentT.default('productCreatorTool.bundle.vatFromItems', 'VAT is taken from the items')}
+            {componentT.default(
+              'productCreatorTool.bundle.vatFromItems',
+              'VAT is taken from the items',
+            )}
           </Text>
         </Stack>
       </Stack>

@@ -242,6 +242,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
 
   // Recompute combinations whenever selections change — always reset overrides
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset editable combinations when the selection changes
     setCombinations(buildCombinations(groups, selectedOptions, existingOptionSets))
   }, [groups, selectedOptions, existingOptionSets])
 

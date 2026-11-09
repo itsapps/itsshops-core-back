@@ -154,7 +154,7 @@ function OrderActionContent({
   const remaining = remainingAmount(grandTotal, order.refunds)
   // Euros → integer cents: 4.35 * 100 is 434.99999999999994, and Stripe only takes integers.
   const partialAmountCents =
-    partialAmount !== undefined ? Math.round(partialAmount * 100) : undefined
+    partialAmount === undefined ? undefined : Math.round(partialAmount * 100)
   const isPartialRefundValid =
     partialAmountCents !== undefined && partialAmountCents > 0 && partialAmountCents < remaining
   const notificationMailType = mailTypeForStatus(selectedAction?.newState)

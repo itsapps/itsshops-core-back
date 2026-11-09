@@ -54,6 +54,7 @@ export function DeployDialog(): ReactElement {
   useEffect(() => {
     const interval = open ? setInterval(() => fetchBuild(false), reloadInterval) : null
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- load the build when the dialog opens
     if (open) fetchBuild()
 
     // Always returns a function, but only clears if the interval exists

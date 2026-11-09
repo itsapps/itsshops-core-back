@@ -685,9 +685,7 @@ function OrderItemRow({
                 {item.weight} g
               </Text>
             )} */}
-            <Text muted>
-              {`${vatLabel} (${money(item.vatAmount)})`}
-            </Text>
+            <Text muted>{`${vatLabel} (${money(item.vatAmount)})`}</Text>
           </Flex>
         </Stack>
         <Stack gap={2} style={{ textAlign: 'right' }}>

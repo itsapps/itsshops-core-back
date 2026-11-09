@@ -63,7 +63,8 @@ export default {
   fields: {
     specifications: {
       title: 'Produktdetails',
-      description: 'Eigenschaften wie Material oder Schnitt, auf der Produktseite als Liste angezeigt (z. B. „Material: 100% Baumwolle“).',
+      description:
+        'Eigenschaften wie Material oder Schnitt, auf der Produktseite als Liste angezeigt (z. B. „Material: 100% Baumwolle“).',
     },
     kind: {
       title: 'Produktart',
@@ -309,7 +310,8 @@ export default {
     oneFieldMustExist: 'Mindestens eines erforderlich',
     requiredField: 'Erforderlich',
     recommendedField: 'Empfohlen',
-    companyDetailsRecommended: 'Empfohlen – wird für Rechnungen und rechtliche Angaben in E-Mails verwendet',
+    companyDetailsRecommended:
+      'Empfohlen – wird für Rechnungen und rechtliche Angaben in E-Mails verwendet',
     withdrawalUnmatchedWithOrder: 'Ein zugeordneter Widerruf kann nicht „Nicht zugeordnet“ sein.',
     withdrawalOrderHasOpen: 'Diese Bestellung hat bereits einen offenen Widerruf.',
     menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
@@ -329,7 +331,8 @@ export default {
     fields: {
       description: {
         title: 'Beschreibung',
-        description: "Wird auf der Produktseite angezeigt. Leerzeilen trennen Absätze. Bei Weinen ersetzt sie die Vinofact-Beschreibung.",
+        description:
+          'Wird auf der Produktseite angezeigt. Leerzeilen trennen Absätze. Bei Weinen ersetzt sie die Vinofact-Beschreibung.',
       },
       variants: {
         title: 'Produktvarianten',
@@ -355,11 +358,13 @@ export default {
     fields: {
       description: {
         title: 'Beschreibung',
-        description: "Ersetzt die Beschreibung des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.",
+        description:
+          'Ersetzt die Beschreibung des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.',
       },
       specifications: {
         title: 'Produktdetails',
-        description: "Ersetzt die Produktdetails des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.",
+        description:
+          'Ersetzt die Produktdetails des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.',
       },
       coverImage: {
         title: 'Cover-Bild',
@@ -406,12 +411,17 @@ export default {
       bundleItems_other: '{{count}} Produkte',
     },
     validation: {
-      priceRequired: 'Eine aktive Variante braucht einen Preis – einen eigenen oder den des Produkts.',
-      usedInActiveBundles_one: 'Ist in einem aktiven Paket enthalten: {{names}}. Das Paket ist im Shop ausverkauft, bis es geändert wird.',
-      usedInActiveBundles_other: 'Ist in {{count}} aktiven Paketen enthalten: {{names}}. Die Pakete sind im Shop ausverkauft, bis sie geändert werden.',
+      priceRequired:
+        'Eine aktive Variante braucht einen Preis – einen eigenen oder den des Produkts.',
+      usedInActiveBundles_one:
+        'Ist in einem aktiven Paket enthalten: {{names}}. Das Paket ist im Shop ausverkauft, bis es geändert wird.',
+      usedInActiveBundles_other:
+        'Ist in {{count}} aktiven Paketen enthalten: {{names}}. Die Pakete sind im Shop ausverkauft, bis sie geändert werden.',
       duplicateItem: 'Mehrfach enthalten: {{names}} – stattdessen die Menge erhöhen.',
-      inactiveItem: 'Das Paket ist aktiv, diese Produkte aber nicht: {{names}}. Paket auf „Ausverkauft“ stellen oder die Produkte tauschen.',
-      unpricedItem: 'Diese Produkte haben keinen Preis (nötig, um die MwSt. des Pakets aufzuteilen): {{names}}',
+      inactiveItem:
+        'Das Paket ist aktiv, diese Produkte aber nicht: {{names}}. Paket auf „Ausverkauft“ stellen oder die Produkte tauschen.',
+      unpricedItem:
+        'Diese Produkte haben keinen Preis (nötig, um die MwSt. des Pakets aufzuteilen): {{names}}',
     },
   },
   wine: {
@@ -548,7 +558,8 @@ export default {
     fields: {
       places: {
         title: 'Plätze',
-        description: 'Wie viele Flaschen hineinpassen (Flaschen mit „Flaschen pro Platz“ > 1 teilen sich einen Platz).',
+        description:
+          'Wie viele Flaschen hineinpassen (Flaschen mit „Flaschen pro Platz“ > 1 teilen sich einen Platz).',
       },
       price: { title: 'Preis', description: 'Brutto-Preis' },
     },
@@ -563,7 +574,8 @@ export default {
       volume: { title: 'Flaschengröße' },
       perPlace: {
         title: 'Flaschen pro Platz',
-        description: 'Wie viele Flaschen dieser Größe einen Platz belegen, z. B. 2 für 0,375 l in Kartons für 0,75 l.',
+        description:
+          'Wie viele Flaschen dieser Größe einen Platz belegen, z. B. 2 für 0,375 l in Kartons für 0,75 l.',
       },
     },
     preview: {
@@ -698,12 +710,16 @@ export default {
         description:
           'Nur ankreuzen, was auf Waren in diesem Shop tatsächlich zutrifft – jede Auswahl wird auf der Widerrufsseite und in jeder Bestellbestätigung als „kein Widerrufsrecht“ angeführt (§ 18 FAGG). Für einen normalen Weinverkauf trifft in der Regel keine Ausnahme zu. Im Zweifel mit der WKO bzw. Rechtsberatung klären.',
         options: {
-          customMade: 'Personalisiert / nach Kundenwunsch angefertigt – z. B. gravierte Flaschen, individuelle Etiketten',
+          customMade:
+            'Personalisiert / nach Kundenwunsch angefertigt – z. B. gravierte Flaschen, individuelle Etiketten',
           perishable: 'Schnell verderblich – z. B. frische Lebensmittel (nicht Wein)',
-          sealedHygiene: 'Versiegelt, aus Hygienegründen nicht rückgabefähig – nur nach geöffneter Versiegelung, z. B. Kosmetik',
+          sealedHygiene:
+            'Versiegelt, aus Hygienegründen nicht rückgabefähig – nur nach geöffneter Versiegelung, z. B. Kosmetik',
           mixed: 'Nach Lieferung untrennbar mit anderen Gütern vermischt – selten relevant',
-          alcoholMarketPrice: 'Subskription / En primeur – Wein zu heute fixem Preis, Lieferung frühestens 30 Tage später, Preis vom Markt abhängig',
-          sealedMedia: 'Versiegelte Ton-/Videoaufnahmen oder Software – nur nach geöffneter Versiegelung',
+          alcoholMarketPrice:
+            'Subskription / En primeur – Wein zu heute fixem Preis, Lieferung frühestens 30 Tage später, Preis vom Markt abhängig',
+          sealedMedia:
+            'Versiegelte Ton-/Videoaufnahmen oder Software – nur nach geöffneter Versiegelung',
           newspapers: 'Zeitungen, Zeitschriften – außer Abonnements',
         },
       },
@@ -1129,7 +1145,8 @@ export default {
       },
       items: {
         title: 'Inhalt',
-        description: 'Die Produkte des Pakets mit ihrem Preisanteil und MwSt.-Satz (zum Bestellzeitpunkt)',
+        description:
+          'Die Produkte des Pakets mit ihrem Preisanteil und MwSt.-Satz (zum Bestellzeitpunkt)',
       },
     },
   },
@@ -1144,10 +1161,14 @@ export default {
       quantity: { title: 'Menge', description: 'Menge pro Paket' },
       price: {
         title: 'Preisanteil',
-        description: 'Bruttoanteil an einem Paket für alle Stück zusammen, in Cent (aufgeteilt nach Einzelpreisen)',
+        description:
+          'Bruttoanteil an einem Paket für alle Stück zusammen, in Cent (aufgeteilt nach Einzelpreisen)',
       },
       vatRate: { title: 'MwSt.-Satz' },
-      vatAmount: { title: 'MwSt.-Betrag', description: 'MwSt. im Preisanteil × Paketmenge, in Cent' },
+      vatAmount: {
+        title: 'MwSt.-Betrag',
+        description: 'MwSt. im Preisanteil × Paketmenge, in Cent',
+      },
     },
   },
   orderItemOption: {
@@ -1423,7 +1444,8 @@ export default {
       },
       systemPage: {
         title: 'Systemseite',
-        description: 'Feste Shop-Seite, z. B. das Widerrufsformular. Ohne Titel wird der Seitenname verwendet. Der Widerrufs-Link heißt immer „Vertrag widerrufen“ (gesetzlich vorgegeben, § 13a FAGG) – ein eigener Titel wird dort ignoriert.',
+        description:
+          'Feste Shop-Seite, z. B. das Widerrufsformular. Ohne Titel wird der Seitenname verwendet. Der Widerrufs-Link heißt immer „Vertrag widerrufen“ (gesetzlich vorgegeben, § 13a FAGG) – ein eigener Titel wird dort ignoriert.',
         options: {
           orderWithdraw: 'Vertrag widerrufen',
         },

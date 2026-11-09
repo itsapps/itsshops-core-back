@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import { Box, Button, Card, Flex, Stack, Text } from '@sanity/ui'
 import { Autocomplete } from '@sanity/ui/autocomplete'
 import { Menu, MenuButton, MenuDivider, MenuItem } from '@sanity/ui/menu'
 import { useToast } from '@sanity/ui/toast'
@@ -101,6 +94,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
   }, [vinofactClient, toast])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch wines on mount
     loadWines()
   }, [loadWines])
 

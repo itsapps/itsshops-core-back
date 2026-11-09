@@ -1,17 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Flex,
-  Grid,
-  Label,
-  Select,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import { Badge, Box, Button, Card, Flex, Grid, Label, Select, Stack, Text } from '@sanity/ui'
 import { Autocomplete } from '@sanity/ui/autocomplete'
 import { useToast } from '@sanity/ui/toast'
 import { ChangeEvent, ReactElement } from 'react'
@@ -270,6 +259,7 @@ export function WineTab(props: WineTabProps): ReactElement {
 
   // Load wines from Vinofact
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch wines on mount
     loadWines()
   }, [loadWines])
 

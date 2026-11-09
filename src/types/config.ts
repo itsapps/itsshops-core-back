@@ -12,12 +12,7 @@ import {
 import { RecursivePartial } from './utils'
 
 export type AllowedDocumentReferenceType =
-  | 'productVariant'
-  | 'page'
-  | 'post'
-  | 'category'
-  | 'blog'
-  | string
+  'productVariant' | 'page' | 'post' | 'category' | 'blog' | string
 export type AllowedDocumentReferenceTypes = AllowedDocumentReferenceType[]
 
 export type ProductKind = 'wine' | 'physical' | 'digital' | 'bundle'

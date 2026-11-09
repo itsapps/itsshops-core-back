@@ -2,7 +2,8 @@
 export default {
   productCreatorTool: {
     bundle: {
-      vatFromItems: 'Die MwSt. wird aus den enthaltenen Produkten übernommen (Preis aufgeteilt nach ihren Einzelpreisen).',
+      vatFromItems:
+        'Die MwSt. wird aus den enthaltenen Produkten übernommen (Preis aufgeteilt nach ihren Einzelpreisen).',
     },
     name: 'produkt-manager',
     title: 'Produktmanager',

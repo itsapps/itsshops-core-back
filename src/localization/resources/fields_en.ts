@@ -63,7 +63,8 @@ export default {
   fields: {
     specifications: {
       title: 'Product details',
-      description: 'Properties such as material or cut, listed on the product page (e.g. “Material: 100% cotton”).',
+      description:
+        'Properties such as material or cut, listed on the product page (e.g. “Material: 100% cotton”).',
     },
     kind: {
       title: 'Product Kind',
@@ -327,7 +328,8 @@ export default {
     fields: {
       description: {
         title: 'Description',
-        description: "Shown on the product page. Blank lines separate paragraphs. For wines it replaces the Vinofact description.",
+        description:
+          'Shown on the product page. Blank lines separate paragraphs. For wines it replaces the Vinofact description.',
       },
       variants: {
         title: 'Product variants',
@@ -352,11 +354,13 @@ export default {
     fields: {
       description: {
         title: 'Description',
-        description: "Replaces the product's description for this variant. Leave empty to use the product's.",
+        description:
+          "Replaces the product's description for this variant. Leave empty to use the product's.",
       },
       specifications: {
         title: 'Product details',
-        description: "Replaces the product's details for this variant. Leave empty to use the product's.",
+        description:
+          "Replaces the product's details for this variant. Leave empty to use the product's.",
       },
       coverImage: {
         title: 'Cover image',
@@ -403,10 +407,13 @@ export default {
     },
     validation: {
       priceRequired: "An active variant needs a price — its own or the product's.",
-      usedInActiveBundles_one: 'Part of an active bundle: {{names}}. It shows as sold out in the shop until it is changed.',
-      usedInActiveBundles_other: 'Part of {{count}} active bundles: {{names}}. They show as sold out in the shop until they are changed.',
+      usedInActiveBundles_one:
+        'Part of an active bundle: {{names}}. It shows as sold out in the shop until it is changed.',
+      usedInActiveBundles_other:
+        'Part of {{count}} active bundles: {{names}}. They show as sold out in the shop until they are changed.',
       duplicateItem: 'Listed more than once: {{names}} — raise its quantity instead.',
-      inactiveItem: "This bundle is active, but these items aren't: {{names}}. Set the bundle to sold out or swap the items.",
+      inactiveItem:
+        "This bundle is active, but these items aren't: {{names}}. Set the bundle to sold out or swap the items.",
       unpricedItem: "These items have no price (needed to split the bundle's VAT): {{names}}",
     },
   },
@@ -559,7 +566,8 @@ export default {
       volume: { title: 'Bottle size' },
       perPlace: {
         title: 'Bottles per place',
-        description: 'How many bottles of this size take one place, e.g. 2 for 0.375 l in 0.75 l boxes.',
+        description:
+          'How many bottles of this size take one place, e.g. 2 for 0.375 l in 0.75 l boxes.',
       },
     },
     preview: {
@@ -695,9 +703,11 @@ export default {
         options: {
           customMade: 'Personalised / made to order – e.g. engraved bottles, custom labels',
           perishable: 'Liable to deteriorate rapidly – e.g. fresh food (not wine)',
-          sealedHygiene: 'Sealed, not returnable for hygiene reasons – only once unsealed, e.g. cosmetics',
+          sealedHygiene:
+            'Sealed, not returnable for hygiene reasons – only once unsealed, e.g. cosmetics',
           mixed: 'Inseparably mixed with other items after delivery – rarely relevant',
-          alcoholMarketPrice: 'En primeur / subscription – wine at a price fixed today, delivered 30+ days later, price depends on the market',
+          alcoholMarketPrice:
+            'En primeur / subscription – wine at a price fixed today, delivered 30+ days later, price depends on the market',
           sealedMedia: 'Sealed audio/video recordings or software – only once unsealed',
           newspapers: 'Newspapers, periodicals – except subscriptions',
         },
@@ -906,7 +916,8 @@ export default {
       },
       orderDate: {
         title: 'Order date',
-        description: 'When the order was placed (payment started); shown in the order confirmation.',
+        description:
+          'When the order was placed (payment started); shown in the order confirmation.',
       },
       payment: {
         title: 'Payment method',
@@ -1122,7 +1133,8 @@ export default {
       },
       items: {
         title: 'Contents',
-        description: "The bundle's items with their price share and VAT rate (at the time of the order)",
+        description:
+          "The bundle's items with their price share and VAT rate (at the time of the order)",
       },
     },
   },
@@ -1137,10 +1149,14 @@ export default {
       quantity: { title: 'Quantity', description: 'Quantity per bundle' },
       price: {
         title: 'Price share',
-        description: 'Gross share of one bundle for all units together, in cents (split by single prices)',
+        description:
+          'Gross share of one bundle for all units together, in cents (split by single prices)',
       },
       vatRate: { title: 'VAT rate' },
-      vatAmount: { title: 'VAT amount', description: 'VAT in the price share × bundle quantity, in cents' },
+      vatAmount: {
+        title: 'VAT amount',
+        description: 'VAT in the price share × bundle quantity, in cents',
+      },
     },
   },
   orderItemOption: {
@@ -1411,7 +1427,8 @@ export default {
       },
       systemPage: {
         title: 'System page',
-        description: 'A fixed shop page, e.g. the withdrawal form. Without a title, the page name is used. The withdrawal link is always labelled "Withdraw from contract here" (required by law, FAGG §13a) – a custom title is ignored there.',
+        description:
+          'A fixed shop page, e.g. the withdrawal form. Without a title, the page name is used. The withdrawal link is always labelled "Withdraw from contract here" (required by law, FAGG §13a) – a custom title is ignored there.',
         options: {
           orderWithdraw: 'Withdraw from contract',
         },

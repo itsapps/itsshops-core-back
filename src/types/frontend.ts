@@ -1,8 +1,7 @@
 import type { MailType } from './mail'
 
 export type FrontendResponse<T = unknown> =
-  | { data: T; error?: undefined }
-  | { error: string; data?: undefined }
+  { data: T; error?: undefined } | { error: string; data?: undefined }
 
 export type RefundResult = {
   refundId: string
