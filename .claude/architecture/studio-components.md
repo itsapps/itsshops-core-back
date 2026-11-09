@@ -95,8 +95,10 @@ add variants inline), `WineSelector` / `WinePreview`.
     `commerce-and-netlify.md` → "Refunds")
   - `orderWithdrawal` (`WithdrawalActions.tsx`; each returns `null` where it doesn't apply —
     `withdrawalActionsFor` in `utils/withdrawals.ts`):
-    - `WithdrawalAssignAction` "Bestellung zuordnen" (`unmatched` only): suggestions from the
-      submitted number / email / name + a search by order number or email (result count in an
+    - `WithdrawalAssignAction` "Bestellung zuordnen" (`unmatched` only): up to 5 suggestions from
+      the submitted number / email / name, ranked exact order number → email → name (newest first
+      within each; else newer orders sharing only the email push the right one out), each card
+      saying what matches ("Passt: Bestellnummer, E-Mail") + a search by order number or email (result count in an
       `aria-live` line); "Auswählen" (`aria-pressed`) shows the order's number, name, email, date +
       "send confirmation to the order's email" (default on). Confirm re-checks the order has no
       open withdrawal, then **one** patch `ifRevisionId(rev when the dialog opened)` →
@@ -127,6 +129,9 @@ add variants inline), `WineSelector` / `WinePreview`.
     delete. (Sanity's strong `parent` reference blocks it anyway — the guard gives a clear message.)
   - `orderWithdrawal`: delete is disallowed in the schema (a matched withdrawal is a legal record)
     and re-added (non-dev) as a guarded delete that only allows `status == "unmatched"`.
+- Every dialog above (status, assign, unassign, refund & close, declare) shows a **success toast**
+  when it closes (`@sanity/ui/toast`, announced to screen readers) naming what happened (and the
+  mail recipient); errors stay in the dialog's `aria-live` line.
 - **Consumer hook, last:** `ctx.config.documentActions?.(actions, context)` — lets a project add or
   wrap actions over the final core set. `withGeneratedZips` (exported from the package root) is the
   shipped example; Jurtschitsch uses it on `page`.

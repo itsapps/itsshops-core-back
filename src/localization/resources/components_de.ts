@@ -285,6 +285,8 @@ export default {
         openWithdrawal:
           'Diese Bestellung hat einen offenen Widerruf – die Erstattung dort durchführen („Erstatten & abschließen“ schließt auch den Widerruf ab).',
         openWithdrawalLink: 'Zum Widerruf',
+        success: 'Status „{{status}}“ gesetzt',
+        successMailed: 'Status „{{status}}“ gesetzt – Kunde benachrichtigt',
       },
       sendMailDialog: {
         title: 'Email senden',
@@ -308,6 +310,8 @@ export default {
         notify: 'Bestätigungs-E-Mail an Kunden senden',
         error: 'Widerruf konnte nicht erstellt werden',
         alreadyOpen: 'Für diese Bestellung existiert bereits ein offener Widerruf',
+        success: 'Widerruf erfasst',
+        successMailed: 'Widerruf erfasst – Bestätigung an {{email}} gesendet',
       },
       assign: {
         title: 'Bestellung zuordnen',
@@ -320,12 +324,17 @@ export default {
         noResults: 'Keine Bestellung gefunden',
         picked: 'Zuordnen zu Bestellung #{{orderNumber}}',
         notify: 'Bestätigung an die E-Mail der Bestellung senden ({{email}})',
+        matches: 'Passt: {{fields}}',
+        match: { orderNumber: 'Bestellnummer', email: 'E-Mail', name: 'Name' },
+        success: 'Bestellung #{{orderNumber}} zugeordnet',
+        successMailed: 'Bestellung #{{orderNumber}} zugeordnet – Bestätigung an {{email}} gesendet',
       },
       unassign: {
         title: 'Zuordnung aufheben',
         confirm:
           'Den Widerruf von Bestellung #{{orderNumber}} lösen? Er ist dann wieder „Nicht zugeordnet“ und kann der richtigen Bestellung zugeordnet werden.',
         noteLine: 'Zuordnung zu #{{orderNumber}} aufgehoben, {{date}}',
+        success: 'Zuordnung zu #{{orderNumber}} aufgehoben',
       },
       changedMeanwhile: 'Der Widerruf wurde inzwischen geändert – Dialog schließen und neu öffnen',
       deleteOnlyUnmatched: 'Nur nicht zugeordnete Widerrufe können gelöscht werden.',
@@ -345,6 +354,8 @@ export default {
         partialHint: 'Der Widerruf wird abgeschlossen; der Rest wird nicht erstattet.',
         closeOnly: 'Nur abschließen ({{amount}} bereits erstattet, keine weitere Erstattung)',
         markReturned: 'Ware ist zurück (Bestellung → „Retourniert“)',
+        successRefund: '{{amount}} erstattet, Widerruf abgeschlossen',
+        successClosed: 'Widerruf abgeschlossen',
         notify: 'Erstattungsbestätigung per E-Mail senden',
         closeFailed:
           'Die Bestellung ist aktualisiert, aber der Widerruf konnte nicht abgeschlossen werden ({{message}}) – nochmals „Erstatten & abschließen“ drücken; dann wird nur abgeschlossen.',

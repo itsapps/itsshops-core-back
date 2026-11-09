@@ -279,6 +279,8 @@ export default {
         openWithdrawal:
           'This order has an open withdrawal — handle the refund there (“Refund & close” also closes the withdrawal).',
         openWithdrawalLink: 'Open the withdrawal',
+        success: 'Status “{{status}}” set',
+        successMailed: 'Status “{{status}}” set — customer notified',
       },
       sendMailDialog: {
         title: 'Send email',
@@ -300,6 +302,8 @@ export default {
         notify: 'Send confirmation email to customer',
         error: 'Could not create the withdrawal',
         alreadyOpen: 'An open withdrawal already exists for this order',
+        success: 'Withdrawal declared',
+        successMailed: 'Withdrawal declared — confirmation sent to {{email}}',
       },
       assign: {
         title: 'Assign order',
@@ -312,12 +316,17 @@ export default {
         noResults: 'No order found',
         picked: 'Assign to order #{{orderNumber}}',
         notify: 'Send the confirmation to the order’s email ({{email}})',
+        matches: 'Matches: {{fields}}',
+        match: { orderNumber: 'order number', email: 'email', name: 'name' },
+        success: 'Assigned to order #{{orderNumber}}',
+        successMailed: 'Assigned to order #{{orderNumber}} — confirmation sent to {{email}}',
       },
       unassign: {
         title: 'Unassign order',
         confirm:
           'Unlink this withdrawal from order #{{orderNumber}}? It becomes “Unmatched” again and can be assigned to the right order.',
         noteLine: 'Unassigned from order #{{orderNumber}}, {{date}}',
+        success: 'Unassigned from order #{{orderNumber}}',
       },
       changedMeanwhile:
         'The withdrawal was changed meanwhile — close this dialog and open it again',
@@ -337,6 +346,8 @@ export default {
         partialHint: 'The withdrawal is closed; the rest is not refunded.',
         closeOnly: 'Close only ({{amount}} already refunded, no further refund)',
         markReturned: 'Goods are back (order → “Returned”)',
+        successRefund: '{{amount}} refunded, withdrawal closed',
+        successClosed: 'Withdrawal closed',
         notify: 'Send refund confirmation email',
         closeFailed:
           'The order is updated, but the withdrawal could not be closed ({{message}}) — press “Refund & close” again; it then only closes.',

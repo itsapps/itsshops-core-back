@@ -36,6 +36,7 @@ import type { ChangeEvent, JSX } from 'react'
 import { useCallback, useState } from 'react'
 import type { DocumentActionDescription, DocumentActionProps } from 'sanity'
 import { IntentLink } from 'sanity/router'
+import { useToast } from '@sanity/ui/toast'
 
 import { useITSContext } from '../../context/ITSCoreProvider'
 import { refundOrder, refundSnapshot } from '../../lib/shop/orderRefund'
@@ -143,6 +144,7 @@ function OrderActionContent({
 }) {
   const { componentT, sanityClient, frontendClient, format } = useITSContext()
   const t = componentT.default
+  const toast = useToast()
 
   const [selectedAction, setSelectedAction] = useState<StatusAction | undefined>()
   const [notifyCustomer, setNotifyCustomer] = useState(true)
@@ -287,12 +289,25 @@ function OrderActionContent({
         setLoading(false)
         return
       }
-      setStatus(t('actions.order.sendMailSuccess', 'Customer notified'))
     }
 
     setLoading(false)
+    const statusLabel = selectedAction.label
+    toast.push({
+      status: 'success',
+      title: sendsMail
+        ? t(
+            'actions.order.updateStatus.successMailed',
+            'Status “{{status}}” set — customer notified',
+            { status: statusLabel },
+          )
+        : t('actions.order.updateStatus.success', 'Status “{{status}}” set', {
+            status: statusLabel,
+          }),
+    })
     onComplete()
   }, [
+    toast,
     selectedAction,
     frontendClient,
     sanityClient,

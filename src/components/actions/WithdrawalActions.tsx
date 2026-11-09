@@ -166,6 +166,7 @@ function CreateWithdrawalContent({
 }) {
   const { componentT, sanityClient, frontendClient, format } = useITSContext()
   const t = componentT.default
+  const toast = useToast()
 
   const [reason, setReason] = useState('')
   // `datetime-local` value in local wall-clock, defaulting to now. It drives the refund
@@ -231,6 +232,7 @@ function CreateWithdrawalContent({
       return
     }
 
+    let mailedTo: string | undefined
     if (notify) {
       const result = await frontendClient.withdrawNotify(createdId)
       if (result.error) {
@@ -240,11 +242,22 @@ function CreateWithdrawalContent({
         setLoading(false)
         return
       }
+      mailedTo = result.data?.to
     }
 
     setLoading(false)
+    toast.push({
+      status: 'success',
+      title: mailedTo
+        ? t(
+            'actions.orderWithdrawal.create.successMailed',
+            'Withdrawal declared — confirmation sent to {{email}}',
+            { email: mailedTo },
+          )
+        : t('actions.orderWithdrawal.create.success', 'Withdrawal declared'),
+    })
     onComplete()
-  }, [dateStr, reason, notify, orderId, sanityClient, frontendClient, t, onComplete])
+  }, [dateStr, reason, notify, orderId, sanityClient, frontendClient, toast, t, onComplete])
 
   return (
     <Stack padding={4} gap={4}>
@@ -344,6 +357,8 @@ type WithdrawalActionDoc = {
 
 type OrderCandidate = {
   _id: string
+  /** Suggestions only: which submitted details match (order number, email, name). */
+  matches?: ('orderNumber' | 'email' | 'name' | null)[]
   orderNumber?: string
   createdAt: string
   name?: string
@@ -351,23 +366,36 @@ type OrderCandidate = {
   total?: number
 }
 
-const CANDIDATE_PROJECTION = `{
+const CANDIDATE_FIELDS = `
   _id,
   orderNumber,
   "createdAt": _createdAt,
   "name": customer.billingAddress.name,
   "email": customer.contactEmail,
-  "total": totals.grandTotal
+  "total": totals.grandTotal`
+const CANDIDATE_PROJECTION = `{${CANDIDATE_FIELDS}
 }`
 /** Orders without an open withdrawal (a second one can't be assigned). */
 const NO_OPEN_WITHDRAWAL = `!(_id in *[_type == "orderWithdrawal" && status in $open && defined(orderRef._ref)].orderRef._ref)`
 
+// Exact order number first, then email, then name (newest first within each): otherwise newer
+// orders sharing only the email or name push the right one out of the 5 slots.
 const SUGGESTIONS_QUERY = `*[_type == "order" && !(_id in path("drafts.**")) && (
     orderNumber == $orderNumber ||
     lower(customer.contactEmail) == $email ||
     lower(customer.billingAddress.name) == $name
   ) && ${NO_OPEN_WITHDRAWAL}
-] | order(_createdAt desc)[0...5]${CANDIDATE_PROJECTION}`
+] | order(
+    select(orderNumber == $orderNumber => 0, lower(customer.contactEmail) == $email => 1, 2) asc,
+    _createdAt desc
+  )[0...5]{
+  ${CANDIDATE_FIELDS},
+  "matches": [
+    select(orderNumber == $orderNumber => "orderNumber"),
+    select(lower(customer.contactEmail) == $email => "email"),
+    select(lower(customer.billingAddress.name) == $name => "name")
+  ]
+}`
 
 const SEARCH_QUERY = `*[_type == "order" && !(_id in path("drafts.**")) && (
     orderNumber == $q || lower(customer.contactEmail) == lower($q)
@@ -413,6 +441,7 @@ function AssignWithdrawalContent({
 }) {
   const { componentT, sanityClient, frontendClient, format } = useITSContext()
   const t = componentT.default
+  const toast = useToast()
 
   const [suggestions, setSuggestions] = useState<OrderCandidate[] | null>(null)
   const [query, setQuery] = useState('')
@@ -504,6 +533,7 @@ function AssignWithdrawalContent({
       return
     }
 
+    let mailedTo: string | undefined
     if (notify) {
       const result = await frontendClient.withdrawNotify(withdrawal._id)
       if (result.error) {
@@ -513,11 +543,25 @@ function AssignWithdrawalContent({
         setLoading(false)
         return
       }
+      mailedTo = result.data?.to
     }
 
     setLoading(false)
+    const orderNumber = picked.orderNumber ?? ''
+    toast.push({
+      status: 'success',
+      title: mailedTo
+        ? t(
+            'actions.orderWithdrawal.assign.successMailed',
+            'Assigned to order #{{orderNumber}} — confirmation sent to {{email}}',
+            { orderNumber, email: mailedTo },
+          )
+        : t('actions.orderWithdrawal.assign.success', 'Assigned to order #{{orderNumber}}', {
+            orderNumber,
+          }),
+    })
     onComplete()
-  }, [picked, notify, rev, withdrawal._id, sanityClient, frontendClient, t, onComplete])
+  }, [picked, notify, rev, withdrawal._id, sanityClient, frontendClient, toast, t, onComplete])
 
   const candidateLine = (c: OrderCandidate) =>
     [
@@ -659,6 +703,10 @@ function CandidateCard({
   const { componentT } = useITSContext()
   const t = componentT.default
   const handleClick = useCallback(() => onSelect(c), [onSelect, c])
+  const reasons = (c.matches ?? [])
+    .filter((m): m is 'orderNumber' | 'email' | 'name' => !!m)
+    .map((m) => t(`actions.orderWithdrawal.assign.match.${m}`, m))
+    .join(', ')
   return (
     <Card padding={3} radius={2} border tone={selected ? 'primary' : 'default'}>
       <Flex align="center" gap={3}>
@@ -670,6 +718,13 @@ function CandidateCard({
             <Text size={1} muted>
               {line}
             </Text>
+            {reasons && (
+              <Text size={1}>
+                {t('actions.orderWithdrawal.assign.matches', 'Matches: {{fields}}', {
+                  fields: reasons,
+                })}
+              </Text>
+            )}
           </Stack>
         </Box>
         <Button
@@ -727,6 +782,7 @@ function UnassignWithdrawalContent({
 }) {
   const { componentT, sanityClient, format } = useITSContext()
   const t = componentT.default
+  const toast = useToast()
   const orderId = withdrawal.orderRef?._ref ?? ''
 
   const [orderNumber, setOrderNumber] = useState<string | null>(null)
@@ -775,8 +831,28 @@ function UnassignWithdrawalContent({
       return
     }
     setLoading(false)
+    toast.push({
+      status: 'success',
+      title: t(
+        'actions.orderWithdrawal.unassign.success',
+        'Unassigned from order #{{orderNumber}}',
+        {
+          orderNumber: orderNumber ?? '',
+        },
+      ),
+    })
     onComplete()
-  }, [orderNumber, withdrawal._id, withdrawal.note, rev, sanityClient, format, t, onComplete])
+  }, [
+    orderNumber,
+    withdrawal._id,
+    withdrawal.note,
+    rev,
+    sanityClient,
+    format,
+    toast,
+    t,
+    onComplete,
+  ])
 
   return (
     <Stack padding={4} gap={4}>
@@ -927,6 +1003,7 @@ function ResolveWithdrawalContent({
 }) {
   const { componentT, sanityClient, frontendClient, format } = useITSContext()
   const t = componentT.default
+  const toast = useToast()
 
   // Fetched once when the dialog opens — also the snapshot for the stale check.
   const [order, setOrder] = useState<ResolveOrder | null>(null)
@@ -1039,8 +1116,23 @@ function ResolveWithdrawalContent({
     }
 
     setLoading(false)
+    toast.push({
+      status: 'success',
+      title:
+        refunds && typeof refundedCents === 'number'
+          ? t(
+              'actions.orderWithdrawal.resolve.successRefund',
+              '{{amount}} refunded, withdrawal closed',
+              {
+                amount: format.currency(refundedCents / 100),
+              },
+            )
+          : t('actions.orderWithdrawal.resolve.successClosed', 'Withdrawal closed'),
+    })
     onComplete()
   }, [
+    format,
+    toast,
     order,
     choice,
     refunds,

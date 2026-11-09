@@ -31,6 +31,7 @@ entry on the order; without it "Bestellung zuordnen" still works, the order just
   **"Zuordnung aufheben"** undoes a Studio assignment (`assignedAt`) while still `received`.
 - Withdrawals list split into **"Offen"** (nearest deadline first) and **"Erledigt"**.
 - Status dialog: a refund on an order with an open withdrawal shows a notice linking to it.
+- Success messages (toasts) after the status dialog and every withdrawal dialog.
 - **Mail history entries:** `orderStatusHistory.type` gains `mail` (labels "E-Mail" / "Email");
   the order view titles them "E-Mail - <mail type>" (e.g. "E-Mail - Versendet") and shows their
   customer message. `withdrawalReceipt` ("Widerruf erhalten" / "Withdrawal received") labels
