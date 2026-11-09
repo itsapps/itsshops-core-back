@@ -6,10 +6,12 @@
  * Reads the linked order live (fetch + listen), so the step follows refunds / status changes
  * made elsewhere (order dialog, Stripe dashboard via the webhook).
  */
-import { Box, Card, Stack, Text } from '@sanity/ui'
+import { Box, Card, Flex, Stack, Text } from '@sanity/ui'
 import { useEffect, useState } from 'react'
 import type { ObjectInputProps } from 'sanity'
+import { styled } from 'styled-components'
 
+import { ChevronRightIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { withdrawalNextStep, type WithdrawalOrderLike } from '../utils/withdrawals'
 
@@ -45,6 +47,36 @@ function useLinkedOrder(orderId: string | undefined): GuideOrder | null | undefi
   return loaded?.id === orderId ? loaded.order : undefined
 }
 
+/**
+ * Native `<details>` (keyboard + screen reader for free; the browser's focus outline is kept) with
+ * the default marker replaced by a chevron that turns when open.
+ */
+const HowTo = styled.details`
+  & > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 3px;
+  }
+  & > summary::-webkit-details-marker {
+    display: none;
+  }
+  & > summary .chevron {
+    font-size: 1.25rem;
+    transition: transform 150ms ease;
+  }
+  &[open] > summary .chevron {
+    transform: rotate(90deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    & > summary .chevron {
+      transition: none;
+    }
+  }
+`
+
 const HOW_TO_STEPS = ['assign', 'notShipped', 'shipped', 'partial', 'reject', 'deadline'] as const
 
 export function WithdrawalGuideInput(props: ObjectInputProps) {
@@ -73,7 +105,7 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
       case 'assign':
         stepText = t(
           `${k}.assign`,
-          'Assign the order (“Assign order”) or delete the withdrawal after checking — by {{date}} at the latest.',
+          'Assign the order (“Assign order”) — if it is a customer, the refund period is already running (see below). Otherwise delete it after checking, by {{date}} at the latest.',
           { date: next.assignBy ? date(next.assignBy) : '' },
         )
         break
@@ -123,7 +155,9 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
   }
 
   const deadline = next?.deadline
-  const tone = deadline?.tone ?? (next?.step === 'assign' ? 'caution' : 'default')
+  // An unmatched one always needs an action: at least `caution`.
+  const deadlineTone = deadline?.tone ?? 'default'
+  const tone = next?.step === 'assign' && deadlineTone === 'default' ? 'caution' : deadlineTone
 
   return (
     <Stack gap={5}>
@@ -153,26 +187,34 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
             </Stack>
           )}
 
-          <details>
-            <summary style={{ cursor: 'pointer' }}>
-              <Box as="span" style={{ display: 'inline' }}>
-                <Text as="span" size={1} weight="medium">
-                  {t('actions.orderWithdrawal.guide.howTo.summary', 'How it works')}
-                </Text>
-              </Box>
+          <HowTo>
+            <summary>
+              <ChevronRightIcon aria-hidden="true" className="chevron" />
+              <Text as="span" size={1} weight="medium">
+                {t('actions.orderWithdrawal.guide.howTo.summary', 'How it works')}
+              </Text>
             </summary>
-            <Box paddingTop={3}>
-              <ol style={{ margin: 0, paddingInlineStart: '1.25rem' }}>
-                {HOW_TO_STEPS.map((s) => (
-                  <li key={s} style={{ marginBottom: '0.5rem' }}>
-                    <Text as="span" size={1}>
-                      {t(`actions.orderWithdrawal.guide.howTo.${s}`, s)}
+            <Stack
+              as="ol"
+              role="list"
+              gap={3}
+              paddingTop={3}
+              style={{ margin: 0, paddingInlineStart: 0 }}
+            >
+              {HOW_TO_STEPS.map((s, i) => (
+                <Flex as="li" key={s} gap={2} style={{ listStyle: 'none' }}>
+                  <Box style={{ minWidth: '1.25rem' }}>
+                    <Text size={1} weight="medium" aria-hidden="true">
+                      {i + 1}.
                     </Text>
-                  </li>
-                ))}
-              </ol>
-            </Box>
-          </details>
+                  </Box>
+                  <Box flex={1}>
+                    <Text size={1}>{t(`actions.orderWithdrawal.guide.howTo.${s}`, s)}</Text>
+                  </Box>
+                </Flex>
+              ))}
+            </Stack>
+          </HowTo>
         </Stack>
       </Card>
       {props.renderDefault(props)}

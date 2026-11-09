@@ -359,7 +359,7 @@ export default {
         title: 'Nächster Schritt',
         step: {
           assign:
-            'Bestellung zuordnen („Bestellung zuordnen“) oder den Widerruf nach Prüfung löschen – spätestens bis {{date}}.',
+            'Bestellung zuordnen („Bestellung zuordnen“) – ist es ein Kunde, läuft die Erstattungsfrist schon (siehe unten). Sonst nach Prüfung löschen, spätestens bis {{date}}.',
           close:
             'Die Bestellung ist bereits erstattet → „Erstatten & abschließen“ schließt den Widerruf ab.',
           refundNotShipped:

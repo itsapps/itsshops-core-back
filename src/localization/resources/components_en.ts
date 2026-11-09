@@ -351,7 +351,7 @@ export default {
         title: 'Next step',
         step: {
           assign:
-            'Assign the order (“Assign order”) or delete the withdrawal after checking — by {{date}} at the latest.',
+            'Assign the order (“Assign order”) — if it is a customer, the refund period is already running (see below). Otherwise delete it after checking, by {{date}} at the latest.',
           close: 'The order is already refunded → “Refund & close” closes the withdrawal.',
           refundNotShipped: 'Not shipped yet → “Refund & close” (also cancels the order).',
           refundNothingToWait: 'Nothing more to wait for → “Refund & close”.',

@@ -80,9 +80,9 @@ export type WithdrawalNextStep = {
   step: WithdrawalStep
   /** `refund` only: why there is nothing to wait for. */
   why?: 'notShipped' | 'nothingToWait'
-  /** Open withdrawals: the refund deadline. */
+  /** Open and unmatched withdrawals: the refund deadline. */
   deadline?: WithdrawalDeadline
-  /** `assign`: delete-or-assign-by date (declaredAt + 30 days). */
+  /** `assign`: delete-by date for non-customers (declaredAt + 30 days). */
   assignBy?: Date
   /** `partial` / `done`: cents refunded so far (counted stored refunds; 0 if none stored). */
   refundedCents?: number
@@ -111,10 +111,13 @@ export const withdrawalNextStep = (
   today: Date = new Date(),
 ): WithdrawalNextStep => {
   const { status, declaredAt } = withdrawal
+  const deadline = declaredAt ? withdrawalDeadline(declaredAt, today) : undefined
   if (status === 'unmatched') {
+    // If it's a customer (mistyped number / email), the refund period already runs.
     return {
       step: 'assign',
       ...(declaredAt && { assignBy: localDatePlus(declaredAt, UNMATCHED_DAYS) }),
+      ...(deadline && { deadline }),
     }
   }
   if (status === 'refunded') {
@@ -125,7 +128,6 @@ export const withdrawalNextStep = (
   if (status === 'rejected') return { step: 'rejected' }
 
   // received / processing
-  const deadline = declaredAt ? withdrawalDeadline(declaredAt, today) : undefined
   const withDeadline = (next: WithdrawalNextStep): WithdrawalNextStep =>
     deadline ? { ...next, deadline } : next
   if (!order) return withDeadline({ step: 'noOrder' })

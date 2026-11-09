@@ -147,10 +147,12 @@ add variants inline), `WineSelector` / `WinePreview`.
   `withdrawalReceipt`).
 - `WithdrawalGuideInput.tsx` — document-level input of `orderWithdrawal`: a `Card` above the form
   with the next step (`withdrawalNextStep`: assign / close / refund / partial / wait / done /
-  rejected), the linked order read live (fetch + `listen`). Open withdrawals also show "Erstattung
-  bis 〈declaredAt + 14 d〉" with the legal hint (`withdrawalDeadline`: calendar date in the browser
+  rejected), the linked order read live (fetch + `listen`). Open **and unmatched** withdrawals also
+  show "Erstattung bis 〈declaredAt + 14 d〉" with the legal hint (unmatched: if it's a customer
+  who mistyped, the period already runs; the 30-day date is only for deleting non-customers' data) (`withdrawalDeadline`: calendar date in the browser
   timezone; tone `caution` from 3 days before, `critical` + "Überfällig seit …" text when past —
-  state in text, not colour only). A native `<details>` "So geht's" (closed) explains the whole
+  state in text, not colour only). A native `<details>` "So geht's" (closed; styled summary — chevron instead of the browser marker,
+  rotates when open) explains the whole
   flow (`actions.orderWithdrawal.guide.howTo.*`). The order view's withdrawals card shows the same
   "Erstattung bis" / "Überfällig seit" next to an open withdrawal's badge.
 - `WithdrawalStatusInput.tsx` — `orderWithdrawal.status` input (see `schemas.md` → `orderWithdrawal`).

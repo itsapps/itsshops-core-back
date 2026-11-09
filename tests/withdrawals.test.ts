@@ -50,10 +50,11 @@ describe('withdrawalNextStep', () => {
     refunds: refunds as never,
   })
 
-  it('unmatched → assign by declaredAt + 30 days', () => {
+  it('unmatched → assign (delete by declaredAt + 30 days), refund deadline already running', () => {
     expect(withdrawalNextStep({ status: 'unmatched', declaredAt: declared }, null, today)).toEqual({
       step: 'assign',
       assignBy: local(2026, 12, 1, 0),
+      deadline: { dueDate: local(2026, 11, 15, 0), tone: 'default' },
     })
   })
 
