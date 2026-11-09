@@ -14,3 +14,5 @@ that future-you would otherwise re-litigate.
   `type: 'file'` definitions (`ITSFileDefinition`), not a customer-side plugin.
 - [country-lists-shop-vs-all.md](country-lists-shop-vs-all.md) — every country where a person
   lives (customer address), the shop's list where it sells/delivers (tax, shipping, orders).
+- [orders-live-edit.md](orders-live-edit.md) — orders save without drafts, so a publish can't
+  revert what the payment functions wrote; discard old order drafts on upgrade.

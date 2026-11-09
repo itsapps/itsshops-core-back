@@ -11,7 +11,8 @@ Release before core-front 3.10.0 (which writes `order.refunds`).
 ### Upgrading
 - **Orders are `liveEdit`:** edits (e.g. the tracking code) save straight to the order — no draft,
   no "Publish" button. Before upgrading, check the dataset for open order drafts
-  (`*[_id in path("drafts.order-**")]`, raw perspective): carry wanted edits into the published
+  (`*[_id in path("drafts.order-**")]`, raw perspective — core-front's `itsshops sanity` CLI
+  doesn't see drafts): carry wanted edits into the published
   order by hand, then **discard** the drafts. Never publish one — it would revert what the payment
   webhook wrote meanwhile (payment status, history, refunds). Tell the shop owner that orders have
   no "Publish" any more.
