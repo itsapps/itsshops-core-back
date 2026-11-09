@@ -270,6 +270,9 @@ export default {
         selectMailType: 'Select email type',
         attachInvoice: 'Attach invoice PDF',
         send: 'Send',
+        noStoredRefund: 'No refund is stored for this order — the mail cannot state an amount.',
+        notFullyRefunded:
+          'The order is not fully refunded ({{refunded}} of {{total}}) — send the partial-refund mail.',
       },
     },
     orderWithdrawal: {

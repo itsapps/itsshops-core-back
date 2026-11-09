@@ -17,3 +17,31 @@ export const refundedTotal = (refunds?: RefundLike[]): number =>
  */
 export const remainingAmount = (grandTotal: number, refunds?: RefundLike[]): number =>
   Math.max(0, grandTotal - refundedTotal(refunds))
+
+type RefundMailType = 'orderRefunded' | 'orderRefundedPartially'
+
+/**
+ * Whether "Send mail" offers a refund mail for the payment status: the partial-refund mail once
+ * anything was refunded, the full-refund mail only for a refunded order.
+ */
+export const refundMailOffered = (mailType: RefundMailType, paymentStatus?: string): boolean =>
+  mailType === 'orderRefunded'
+    ? paymentStatus === 'refunded'
+    : paymentStatus === 'partiallyRefunded' || paymentStatus === 'refunded'
+
+/**
+ * Why core-front would refuse a refund mail sent without an amount ("Send mail") — mirrors its
+ * `sendOrderNotification`: the partial-refund mail states the latest stored refund (none →
+ * refused); the full-refund mail is refused while stored refunds don't cover the total (no stored
+ * refunds at all → it states the total).
+ */
+export const refundMailBlocked = (
+  mailType: RefundMailType,
+  grandTotal: number,
+  refunds?: RefundLike[],
+): 'noStoredRefund' | 'notFullyRefunded' | undefined => {
+  if (mailType === 'orderRefundedPartially') {
+    return (refunds ?? []).some(counts) ? undefined : 'noStoredRefund'
+  }
+  return refunds?.length && refundedTotal(refunds) < grandTotal ? 'notFullyRefunded' : undefined
+}

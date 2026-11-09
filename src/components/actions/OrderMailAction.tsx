@@ -8,7 +8,8 @@
  *
  * No document patch, no statusHistory entry — just a notify call (with an
  * optional personal message shown in the mail). Refund mails state the latest refund stored
- * on the order (core-front resolves it); there is no amount field.
+ * on the order (core-front resolves it); there is no amount field. They are offered only for a
+ * matching payment status, and Send is disabled (with the reason) where core-front would refuse.
  */
 import { SendMailIcon } from '../../assets/icons'
 import { Box, Button, Card, Checkbox, Flex, Select, Stack, Text } from '@sanity/ui'
@@ -19,6 +20,7 @@ import type { DocumentActionDescription, DocumentActionProps } from 'sanity'
 import { useITSContext } from '../../context/ITSCoreProvider'
 import { CustomerMessageField } from './OrderActions'
 import type { MailType } from '../../utils/orderTransitions'
+import { refundMailBlocked, refundMailOffered, refundedTotal } from '../../utils/orderRefunds'
 
 const MAIL_TYPES: MailType[] = [
   'orderConfirmation',
@@ -34,7 +36,13 @@ const MAIL_TYPES: MailType[] = [
 
 type OrderMailActionDoc = {
   _id: string
+  paymentStatus?: string
+  totals?: { grandTotal?: number }
+  refunds?: { amount: number; status?: string }[]
 }
+
+const isRefundMail = (type: MailType): type is 'orderRefunded' | 'orderRefundedPartially' =>
+  type === 'orderRefunded' || type === 'orderRefundedPartially'
 
 export function OrderMailDocumentAction(props: DocumentActionProps): DocumentActionDescription {
   const { published } = props
@@ -74,17 +82,42 @@ function OrderMailContent({
   order: OrderMailActionDoc
   onComplete: () => void
 }) {
-  const { componentT, frontendClient, featureRegistry } = useITSContext()
+  const { componentT, frontendClient, featureRegistry, format } = useITSContext()
   const t = componentT.default
   // Invoices issued elsewhere (features.shop.invoices: false): no invoice mail, no PDF.
   const invoicesOn = featureRegistry.isFeatureEnabled('shop.invoices')
-  const mailTypes = invoicesOn ? MAIL_TYPES : MAIL_TYPES.filter((type) => type !== 'orderInvoice')
+  const mailTypes = MAIL_TYPES.filter(
+    (type) =>
+      (invoicesOn || type !== 'orderInvoice') &&
+      (!isRefundMail(type) || refundMailOffered(type, order.paymentStatus)),
+  )
 
   const [mailType, setMailType] = useState<MailType>('orderConfirmation')
   const [attachInvoice, setAttachInvoice] = useState(false)
   const [customerMessage, setCustomerMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<string>('')
+
+  const grandTotal = order.totals?.grandTotal ?? 0
+  const blocked = isRefundMail(mailType)
+    ? refundMailBlocked(mailType, grandTotal, order.refunds)
+    : undefined
+  let blockedHint = ''
+  if (blocked === 'noStoredRefund') {
+    blockedHint = t(
+      'actions.order.sendMailDialog.noStoredRefund',
+      'No refund is stored for this order — the mail cannot state an amount',
+    )
+  } else if (blocked === 'notFullyRefunded') {
+    blockedHint = t(
+      'actions.order.sendMailDialog.notFullyRefunded',
+      'The order is not fully refunded ({{refunded}} of {{total}}) — send the partial-refund mail',
+      {
+        refunded: format.currency(refundedTotal(order.refunds) / 100),
+        total: format.currency(grandTotal / 100),
+      },
+    )
+  }
 
   const handleMailTypeChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => setMailType(e.currentTarget.value as MailType),
@@ -126,13 +159,23 @@ function OrderMailContent({
             {t('actions.order.sendMailDialog.selectMailType', 'Select mail type')}
           </label>
         </Text>
-        <Select id="order-mail-type-select" value={mailType} onChange={handleMailTypeChange}>
+        <Select
+          id="order-mail-type-select"
+          value={mailType}
+          onChange={handleMailTypeChange}
+          aria-describedby={blockedHint ? 'order-mail-blocked-hint' : undefined}
+        >
           {mailTypes.map((type) => (
             <option key={type} value={type}>
               {t(`actions.order.mailTypes.${type}`, type)}
             </option>
           ))}
         </Select>
+        {blockedHint && (
+          <Text size={1} muted id="order-mail-blocked-hint">
+            {blockedHint}
+          </Text>
+        )}
       </Stack>
 
       {invoicesOn && (
@@ -160,7 +203,7 @@ function OrderMailContent({
           tone="primary"
           text={t('actions.order.sendMailDialog.send', 'Send')}
           loading={loading}
-          disabled={loading}
+          disabled={loading || !!blocked}
           onClick={handleSend}
         />
       </Flex>

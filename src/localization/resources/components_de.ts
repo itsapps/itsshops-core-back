@@ -275,6 +275,10 @@ export default {
         selectMailType: 'Email-Typ auswählen',
         attachInvoice: 'Rechnungs-PDF anhängen',
         send: 'Senden',
+        noStoredRefund:
+          'Für diese Bestellung ist keine Rückerstattung gespeichert — die Email kann keinen Betrag nennen.',
+        notFullyRefunded:
+          'Die Bestellung ist nicht vollständig erstattet ({{refunded}} von {{total}}) — bitte die Email zur Teilrückerstattung senden.',
       },
     },
     orderWithdrawal: {
