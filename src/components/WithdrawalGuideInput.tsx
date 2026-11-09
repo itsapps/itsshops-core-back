@@ -1,7 +1,8 @@
 /**
  * Document-level input of `orderWithdrawal`: a guide box above the form — the next step
  * (`withdrawalNextStep`), the refund deadline with the legal hint for open withdrawals, and a
- * collapsible "How it works" for the whole flow. Then the normal form (`renderDefault`).
+ * collapsible "How it works" for the whole flow — outside the box, so the box's colour (deadline
+ * pressure) never tints the generic help. Then the normal form (`renderDefault`).
  *
  * Reads the linked order live (fetch + listen), so the step follows refunds / status changes
  * made elsewhere (order dialog, Stripe dashboard via the webhook).
@@ -172,7 +173,7 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
   const tone = deadline?.tone ?? 'default'
 
   return (
-    <Stack gap={5}>
+    <Stack gap={4}>
       <Card padding={4} radius={2} border tone={tone}>
         <Stack gap={4}>
           <Text size={1} weight="semibold">
@@ -223,37 +224,36 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
               </Text>
             </Stack>
           )}
-
-          <HowTo>
-            <summary>
-              <ChevronRightIcon aria-hidden="true" className="chevron" />
-              <Text as="span" size={1} weight="medium">
-                {t('actions.orderWithdrawal.guide.howTo.summary', 'How it works')}
-              </Text>
-            </summary>
-            <Stack
-              as="ol"
-              role="list"
-              gap={3}
-              paddingTop={3}
-              style={{ margin: 0, paddingInlineStart: 0 }}
-            >
-              {HOW_TO_STEPS.map((s, i) => (
-                <Flex as="li" key={s} gap={2} style={{ listStyle: 'none' }}>
-                  <Box style={{ minWidth: '1.25rem' }}>
-                    <Text size={1} weight="medium" aria-hidden="true">
-                      {i + 1}.
-                    </Text>
-                  </Box>
-                  <Box flex={1}>
-                    <Text size={1}>{t(`actions.orderWithdrawal.guide.howTo.${s}`, s)}</Text>
-                  </Box>
-                </Flex>
-              ))}
-            </Stack>
-          </HowTo>
         </Stack>
       </Card>
+      <HowTo>
+        <summary>
+          <ChevronRightIcon aria-hidden="true" className="chevron" />
+          <Text as="span" size={1} weight="medium">
+            {t('actions.orderWithdrawal.guide.howTo.summary', 'How it works')}
+          </Text>
+        </summary>
+        <Stack
+          as="ol"
+          role="list"
+          gap={3}
+          paddingTop={3}
+          style={{ margin: 0, paddingInlineStart: 0 }}
+        >
+          {HOW_TO_STEPS.map((s, i) => (
+            <Flex as="li" key={s} gap={2} style={{ listStyle: 'none' }}>
+              <Box style={{ minWidth: '1.25rem' }}>
+                <Text size={1} weight="medium" aria-hidden="true">
+                  {i + 1}.
+                </Text>
+              </Box>
+              <Box flex={1}>
+                <Text size={1}>{t(`actions.orderWithdrawal.guide.howTo.${s}`, s)}</Text>
+              </Box>
+            </Flex>
+          ))}
+        </Stack>
+      </HowTo>
       {props.renderDefault(props)}
     </Stack>
   )

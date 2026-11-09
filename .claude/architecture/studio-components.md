@@ -151,7 +151,7 @@ add variants inline), `WineSelector` / `WinePreview`.
   show "Erstattung bis 〈declaredAt + 14 d〉" with the legal hint (unmatched: if it's a customer
   who mistyped, the period already runs; the 30-day date is only for deleting non-customers' data) (`withdrawalDeadline`: calendar date in the browser
   timezone; tone `caution` from 3 days before, `critical` + "Überfällig seit …" text when past —
-  state in text, not colour only). A native `<details>` "So geht's" (closed; styled summary — chevron instead of the browser marker,
+  state in text, not colour only). A native `<details>` "So geht's" below the box (neutral, never tinted; closed; styled summary — chevron instead of the browser marker,
   rotates when open) explains the whole
   flow (`actions.orderWithdrawal.guide.howTo.*`). The order view's withdrawals card shows the same
   "Erstattung bis" / "Überfällig seit" next to an open withdrawal's badge.
