@@ -26,7 +26,8 @@ entry on the order; without it "Bestellung zuordnen" still works, the order just
 - **Withdrawal guide box** above the withdrawal form: the next step (assign / refund / wait for the
   goods / close …), "Erstattung bis 〈declared + 14 days〉" with the legal hint, "Überfällig seit …"
   when past, and a collapsible "So geht's". The order view's withdrawals card shows the deadline too.
-- **"Bestellung zuordnen"** (unmatched withdrawals): suggestions + search by order number / email,
+- **"Bestellung zuordnen"** (unmatched withdrawals): suggestions (exact order number first, each
+  saying what matches) + search by order number / email,
   shows the order's customer before confirming, optional confirmation mail to the order's email.
   **"Zuordnung aufheben"** undoes a Studio assignment (`assignedAt`) while still `received`.
 - Withdrawals list split into **"Offen"** (nearest deadline first) and **"Erledigt"**.
