@@ -9,7 +9,10 @@ reimplement the structure.
 
 `createStructure(ctx)` defines `coreManifest` — groups and items keyed by stable `id`s:
 - `website` → page, post, menu
-- `shop` (feature `shop`) → orders, products (custom pane), productVariant, variantOptions (custom),
+- `shop` (feature `shop`) → orders, withdrawals (custom `structure/withdrawals.ts`, id
+  `orderWithdrawal`: "Offen" = unmatched/received/processing by `declaredAt` asc, "Erledigt" =
+  refunded/rejected newest first; both `canHandleIntent` for `orderWithdrawal` so the order view's
+  links resolve), orderMeta, products (custom pane), productVariant, variantOptions (custom),
   categories (custom), manufacturer, voucher, coupon
 - divider
 - `customers` (feature `shop`) → customer, customerGroup

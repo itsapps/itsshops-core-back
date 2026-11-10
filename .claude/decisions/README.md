@@ -14,5 +14,9 @@ that future-you would otherwise re-litigate.
   `type: 'file'` definitions (`ITSFileDefinition`), not a customer-side plugin.
 - [country-lists-shop-vs-all.md](country-lists-shop-vs-all.md) — every country where a person
   lives (customer address), the shop's list where it sells/delivers (tax, shipping, orders).
-- [orders-live-edit.md](orders-live-edit.md) — orders save without drafts, so a publish can't
-  revert what the payment functions wrote; discard old order drafts on upgrade.
+- [orders-live-edit.md](orders-live-edit.md) — orders and withdrawals save without drafts, so a
+  publish can't revert what functions/actions wrote; withdrawals are assigned by an action (with
+  undo) instead of an editable field; discard old drafts on upgrade.
+- [live-edit-preview-fields-written-by-client.md](live-edit-preview-fields-written-by-client.md) —
+  on a `liveEdit` document, a custom input that changes a list-preview field writes with a sync
+  client commit, not the form (async form commits leave the desk preview stale).

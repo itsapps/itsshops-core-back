@@ -219,11 +219,14 @@ export default {
     withdrawals: {
       title: 'Withdrawals',
       status: {
+        unmatched: 'Unmatched',
         received: 'Received',
         processing: 'Processing',
         refunded: 'Refunded',
         rejected: 'Rejected',
       },
+      refundBy: 'Refund by {{date}}',
+      overdueSince: 'Overdue since {{date}}',
     },
     refunds: {
       title: 'Refunds',
@@ -273,6 +276,11 @@ export default {
           'Enter an amount below the remaining {{remaining}} — choose “Refunded” for the whole rest',
         notifyCustomer: 'Notify customer',
         trackingCodeHint: 'Optional – shown in the shipping confirmation',
+        openWithdrawal:
+          'This order has an open withdrawal — handle the refund there (“Refund & close” also closes the withdrawal).',
+        openWithdrawalLink: 'Open the withdrawal',
+        success: 'Status “{{status}}” set',
+        successMailed: 'Status “{{status}}” set — customer notified',
       },
       sendMailDialog: {
         title: 'Send email',
@@ -288,16 +296,40 @@ export default {
       create: {
         title: 'Declare withdrawal',
         declaredAt: 'Declared on',
+        declaredAtHint: 'Date the withdrawal was received',
+        declaredAtInvalid: 'Enter the date the withdrawal was received — not in the future',
         reason: 'Reason / affected items (optional)',
         notify: 'Send confirmation email to customer',
         error: 'Could not create the withdrawal',
         alreadyOpen: 'An open withdrawal already exists for this order',
+        success: 'Withdrawal declared',
+        successMailed: 'Withdrawal declared — confirmation sent to {{email}}',
       },
       assign: {
+        title: 'Assign order',
         suggestions: 'Possible orders',
         noSuggestions: 'No order matches the submitted details — search below.',
-        useOrder: 'Use this order',
+        select: 'Select',
+        searchLabel: 'Order number or email',
+        search: 'Search',
+        results: '{{count}} order(s) found',
+        noResults: 'No order found',
+        picked: 'Assign to order #{{orderNumber}}',
+        notify: 'Send the confirmation to the order’s email ({{email}})',
+        matches: 'Matches: {{fields}}',
+        match: { orderNumber: 'order number', email: 'email', name: 'name' },
+        success: 'Assigned to order #{{orderNumber}}',
+        successMailed: 'Assigned to order #{{orderNumber}} — confirmation sent to {{email}}',
       },
+      unassign: {
+        title: 'Unassign order',
+        confirm:
+          'Unlink this withdrawal from order #{{orderNumber}}? It becomes “Unmatched” again and can be assigned to the right order.',
+        noteLine: 'Unassigned from order #{{orderNumber}}, {{date}}',
+        success: 'Unassigned from order #{{orderNumber}}',
+      },
+      changedMeanwhile:
+        'The withdrawal was changed meanwhile — close this dialog and open it again',
       deleteOnlyUnmatched: 'Only unmatched withdrawals can be deleted.',
       notifyError: 'Saved, but the email could not be sent',
       resend: {
@@ -307,10 +339,64 @@ export default {
       },
       resolve: {
         title: 'Refund & close',
-        intro: 'This will refund {{amount}} to the customer and close the withdrawal.',
         alreadyRefunded: 'The order is already refunded. This will close the withdrawal.',
+        choiceLegend: 'Refund',
+        full: 'Full (rest {{amount}})',
+        partial: 'Partial',
+        partialHint: 'The withdrawal is closed; the rest is not refunded.',
+        closeOnly: 'Close only ({{amount}} already refunded, no further refund)',
+        markReturned: 'Goods are back (order → “Returned”)',
+        successRefund: '{{amount}} refunded, withdrawal closed',
+        successClosed: 'Withdrawal closed',
         notify: 'Send refund confirmation email',
-        draftOpen: 'Publish or discard your changes to this withdrawal first',
+        closeFailed:
+          'The order is updated, but the withdrawal could not be closed ({{message}}) — press “Refund & close” again; it then only closes.',
+      },
+      status: {
+        rejectReason: 'Reason (internal)',
+        rejectHint: 'Saved in the internal note. Telling the customer is up to you.',
+        reject: 'Reject',
+        rejectedNote: 'Rejected on {{date}}: {{reason}}',
+      },
+      guide: {
+        title: 'Next step',
+        step: {
+          assignIntro: 'Unmatched — the details match no order:',
+          assignOrderLead: 'Belongs to an order',
+          assignOrder:
+            '(e.g. a typo): “Assign order”. The refund period is already running (see below).',
+          assignDeleteLead: 'Belongs to no order',
+          assignDelete:
+            '(e.g. spam): delete it — by {{date}} at the latest, because a stranger’s data may be kept for 30 days at most.',
+          close: 'The order is already refunded → “Refund & close” closes the withdrawal.',
+          refundNotShipped: 'Not shipped yet → “Refund & close” (also cancels the order).',
+          refundNothingToWait: 'Nothing more to wait for → “Refund & close”.',
+          partial:
+            '{{amount}} already refunded (e.g. via the order’s “Update status” or the Stripe dashboard) → “Refund & close”: refund the rest or close only.',
+          wait: 'Wait for the goods (set “Processing”). Once they are back or the customer proves dispatch → “Refund & close” (full or partial).',
+          done: 'Refunded {{amount}}, last on {{date}}.',
+          doneNoAmount: 'Refunded.',
+          rejected: 'Closed as rejected (see the internal note).',
+          noOrder: 'The linked order was not found.',
+        },
+        deadline:
+          'Refund by {{date}} (14 days from receiving the withdrawal). Holding it back is allowed until the goods are back or the customer proves dispatch.',
+        overdue: 'Overdue since {{date}}',
+        howTo: {
+          summary: 'How it works',
+          assign:
+            'Unmatched: “Assign order” links the right order (confirmation to the order’s email) — or, if it belongs to no order, delete it (data protection: keep it 30 days at most). Wrong pick: “Unassign order”.',
+          notShipped:
+            'Not shipped yet: “Refund & close” — refunds everything and cancels the order.',
+          shipped:
+            'Shipped or delivered: set “Processing” and wait for the goods. Once back (or dispatch proven): “Refund & close”, full or partial (e.g. a deduction for an opened bottle), and tick “Goods are back”.',
+          partial:
+            'A partial refund closes the withdrawal — the rest is not refunded. If something was refunded already, choose “Close only” or refund the rest.',
+          reject:
+            'No right of withdrawal: status “Rejected” with a reason (internal). Telling the customer is up to you.',
+          deadline:
+            'Deadline: refund within 14 days of receiving the withdrawal. Holding it back is allowed until the goods are back or the customer proves dispatch.',
+        },
       },
     },
     refund: {
@@ -320,6 +406,7 @@ export default {
       alreadyRefunded: 'This order has already been refunded',
       error: 'Error during refund: {{message}}',
       sendRefundSuccess: 'Refund successful',
+      changedMeanwhile: 'The order was changed meanwhile — close this dialog and open it again',
     },
   },
   deployments: {

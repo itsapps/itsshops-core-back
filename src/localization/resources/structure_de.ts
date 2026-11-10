@@ -10,7 +10,7 @@ export default {
 
   shop: { title: 'Shop' },
   order: { title: 'Bestellungen' },
-  orderWithdrawal: { title: 'Widerrufe' },
+  orderWithdrawal: { title: 'Widerrufe', open: 'Offen', closed: 'Erledigt' },
   orderMeta: { title: 'Bestellungen (Temporär)' },
   products: {
     title: 'Produkte',

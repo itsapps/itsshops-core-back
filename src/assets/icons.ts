@@ -1,6 +1,7 @@
 import { AddIcon as Add } from '@sanity/icons/Add'
 import { BasketIcon as Basket } from '@sanity/icons/Basket'
 import { CheckmarkCircleIcon as CheckmarkCircle } from '@sanity/icons/CheckmarkCircle'
+import { ChevronRightIcon as ChevronRight } from '@sanity/icons/ChevronRight'
 import { CloseIcon as Close } from '@sanity/icons/Close'
 import { CogIcon as Cog } from '@sanity/icons/Cog'
 import { DocumentIcon as Document } from '@sanity/icons/Document'
@@ -73,6 +74,7 @@ export const CarouselIcon = PiImages
 export const CategoryListIcon = PiSquaresFour
 export const CategoryIcon = Schema
 export const CheckIcon = PiCheck
+export const ChevronRightIcon = ChevronRight
 export const CircleIcon = PiCircle
 export const ClockIcon = PiClock
 export const CloseIcon = Close

@@ -100,7 +100,8 @@ studios run with `ignoreExtensions: false` → `normalizeFeatures()` (everything
 
 When a customer backend consumes this package via `npm link`, React/Sanity can get duplicated,
 breaking hooks. The fix lives in the **customer's** `sanity.cli.ts` (vite `resolve.dedupe` for
-`react`, `react-dom`, `sanity`, `styled-components`), **not** in this repo's `sanity.cli.ts` (which
+`react`, `react-dom`, `sanity`, `styled-components`, `@sanity/ui`; copy Jurtschitsch's
+`sanity.cli.ts`), **not** in this repo's `sanity.cli.ts` (which
 stays minimal). Check there if a linked studio throws invalid-hook-call errors.
 
 The same duplication hits **types**: the link points at the whole core repo, so `dist/index.d.ts`

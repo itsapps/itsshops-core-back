@@ -10,6 +10,7 @@ import {
   type OrderStatus,
 } from '../utils/orderTransitions'
 import { refundedTotal, remainingAmount } from '../utils/orderRefunds'
+import { isOpenWithdrawal, withdrawalDeadline } from '../utils/withdrawals'
 import { useITSContext } from '../context/ITSCoreProvider'
 import { TranslatorFunction } from '../types/localization'
 import { type MailType } from '../types/mail'
@@ -265,6 +266,23 @@ function useOrderWithdrawals(orderId: string | undefined): WithdrawalDoc[] {
   return withdrawals
 }
 
+/** "Refund by 〈date〉" (+ "Overdue since 〈date〉") for an open withdrawal — state in text, not colour. */
+function WithdrawalDeadlineText({ declaredAt }: { declaredAt: string }) {
+  const { componentT, format } = useITSContext()
+  const t = componentT.default
+  const { dueDate, overdueSince } = withdrawalDeadline(declaredAt)
+  const date = (d: Date) => format.date(d, { dateStyle: 'medium' })
+  return (
+    <Text size={1} weight={overdueSince ? 'semibold' : 'regular'}>
+      {overdueSince
+        ? t('order.withdrawals.overdueSince', 'Overdue since {{date}}', {
+            date: date(overdueSince),
+          })
+        : t('order.withdrawals.refundBy', 'Refund by {{date}}', { date: date(dueDate) })}
+    </Text>
+  )
+}
+
 /** Bottle sizes of a packaging line, largest first: "0.75 l / 0.375 l" (ml below 1 l, as before). */
 function formatVolumes(volumes: number[]): string {
   return [...volumes]
@@ -379,9 +397,14 @@ export const OrderView: UserViewComponent = (props) => {
                           </Text>
                           {w.reason && <Text>{w.reason}</Text>}
                         </Stack>
-                        <Badge tone={WITHDRAWAL_TONES[w.status] ?? 'default'}>
-                          {t(`order.withdrawals.status.${w.status}`, w.status)}
-                        </Badge>
+                        <Flex direction="column" align="flex-end" gap={2}>
+                          <Badge tone={WITHDRAWAL_TONES[w.status] ?? 'default'}>
+                            {t(`order.withdrawals.status.${w.status}`, w.status)}
+                          </Badge>
+                          {isOpenWithdrawal(w.status) && (
+                            <WithdrawalDeadlineText declaredAt={w.declaredAt} />
+                          )}
+                        </Flex>
                       </Flex>
                     </Card>
                   </IntentLink>

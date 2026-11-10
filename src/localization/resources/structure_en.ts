@@ -10,7 +10,7 @@ export default {
 
   shop: { title: 'Shop' },
   order: { title: 'Orders' },
-  orderWithdrawal: { title: 'Withdrawals' },
+  orderWithdrawal: { title: 'Withdrawals', open: 'Open', closed: 'Done' },
   orderMeta: { title: 'Orders (Temporary)' },
   products: {
     title: 'Products',

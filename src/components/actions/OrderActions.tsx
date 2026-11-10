@@ -14,8 +14,11 @@
  *   5. confirm
  *
  * On confirm:
- *   - if a refund: call `frontendClient.refundPayment` first; bail on failure
- *   - patch the order document (set new status + append statusHistory, plus
+ *   - if a refund: `refundOrder` (`lib/shop/orderRefund.ts`, shared with the withdrawal's
+ *     "Refund & close") — refuses when the order changed since the dialog opened, refunds via
+ *     `frontendClient.refundPayment`, then patches payment status + history; bail on failure.
+ *     An open withdrawal on the order gets a notice pointing to its "Refund & close"
+ *   - otherwise patch the order document (set new status + append statusHistory, plus
  *     `fulfillment.trackingCode` when shipping) — committed before the mail,
  *     so the shipped mail already shows the tracking code. The history entry
  *     keeps the internal `note` only; the `customerMessage` lands on the `mail`
@@ -28,18 +31,21 @@
  * `order.refunds` is written by core-front only (`payment-refund` + webhooks).
  */
 import { ConfirmIcon } from '../../assets/icons'
-import { Box, Button, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
+import { Box, Button, Card, Checkbox, Flex, Stack, Text, TextArea, TextInput } from '@sanity/ui'
 import type { ChangeEvent, JSX } from 'react'
 import { useCallback, useState } from 'react'
 import type { DocumentActionDescription, DocumentActionProps } from 'sanity'
+import { IntentLink } from 'sanity/router'
+import { useToast } from '@sanity/ui/toast'
 
 import { useITSContext } from '../../context/ITSCoreProvider'
+import { refundOrder, refundSnapshot } from '../../lib/shop/orderRefund'
+import { refundErrorText, useOpenWithdrawal } from './WithdrawalActions'
 import {
   getAllowedFulfillmentTransitions,
   getAllowedPaymentTransitions,
   mailTypeForStatus,
   notifyCustomerByDefault,
-  refundCancelsFulfillment,
   type OrderPaymentStatus,
   type OrderStatus,
   type StatusAction,
@@ -138,6 +144,7 @@ function OrderActionContent({
 }) {
   const { componentT, sanityClient, frontendClient, format } = useITSContext()
   const t = componentT.default
+  const toast = useToast()
 
   const [selectedAction, setSelectedAction] = useState<StatusAction | undefined>()
   const [notifyCustomer, setNotifyCustomer] = useState(true)
@@ -147,7 +154,14 @@ function OrderActionContent({
   const [trackingCode, setTrackingCode] = useState(order.fulfillment?.trackingCode ?? '')
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<string>('')
+  // The order as the dialog opened it: `order` is the live published doc, so comparing against
+  // it would never see a refund made meanwhile in another tab.
+  const [expected] = useState(() => refundSnapshot(order))
+  const openWithdrawal = useOpenWithdrawal(order._id)
 
+  const isRefund =
+    selectedAction?.type === 'payment' &&
+    (selectedAction.newState === 'refunded' || selectedAction.newState === 'partiallyRefunded')
   const isPartialRefund = selectedAction?.newState === 'partiallyRefunded'
   const grandTotal = order.totals?.grandTotal ?? 0
   // What's left to refund. A partial refund must stay below it — the whole rest is "Refunded",
@@ -200,82 +214,64 @@ function OrderActionContent({
     // Amount Stripe actually refunded — stated in the refund mail.
     let refundedCents: number | undefined
 
-    // 1. Refund first if this is a payment status change
-    if (
-      selectedAction.type === 'payment' &&
-      (selectedAction.newState === 'refunded' || selectedAction.newState === 'partiallyRefunded')
-    ) {
-      const result = await frontendClient.refundPayment(order.paymentIntentId, {
-        ...(isPartialRefund && isPartialRefundValid && { amount: partialAmountCents! }),
+    if (isRefund) {
+      // 1a. Refund + order patch (payment status, history; cancel if undispatched).
+      const result = await refundOrder({
+        sanityClient,
+        frontendClient,
+        order,
+        expected,
+        refund: isPartialRefund ? 'partial' : 'full',
+        ...(isPartialRefund && isPartialRefundValid && { amountCents: partialAmountCents }),
+        ...(trimmedNote && { note: trimmedNote }),
       })
-      if (result.error) {
-        setStatus(`${t('actions.refund.error', 'Refund failed', { message: result.error })}`)
+      if (!result.ok) {
+        setStatus(refundErrorText(result, t))
         setLoading(false)
         return
       }
-      refundedCents = result.data?.amount ?? undefined
+      refundedCents = result.refundedCents
       setStatus(t('actions.refund.sendRefundSuccess', 'Refund successful'))
-    }
-
-    // 2. Patch the order document with the new state + history entry
-    const timestamp = new Date().toISOString()
-    const historyEntry = {
-      _key: crypto.randomUUID(),
-      _type: 'orderStatusHistory' as const,
-      type: selectedAction.type,
-      status: selectedAction.newState,
-      timestamp,
-      source: 'admin',
-      ...(trimmedNote && { note: trimmedNote }),
-    }
-
-    // Fully refunding a still-undispatched order also cancels fulfillment, so the
-    // order doesn't stay stuck reading as `created`/`processing`. Post-dispatch
-    // refunds (shipped/delivered) keep their fulfillment status — those can still
-    // be marked `returned` later.
-    const setFields: Record<string, string> = {
-      [selectedAction.type === 'fulfillment' ? 'status' : 'paymentStatus']: selectedAction.newState,
-    }
-    const historyEntries = [historyEntry]
-    if (
-      selectedAction.type === 'payment' &&
-      selectedAction.newState === 'refunded' &&
-      refundCancelsFulfillment(order.status)
-    ) {
-      setFields.status = 'canceled'
-      historyEntries.push({
+    } else {
+      // 1b. Fulfillment (or other) transition: patch the new state + history entry.
+      const timestamp = new Date().toISOString()
+      const historyEntry = {
         _key: crypto.randomUUID(),
         _type: 'orderStatusHistory' as const,
-        type: 'fulfillment',
-        status: 'canceled',
+        type: selectedAction.type,
+        status: selectedAction.newState,
         timestamp,
         source: 'admin',
         ...(trimmedNote && { note: trimmedNote }),
-      })
-    }
-
-    // Tracking code is saved in the same patch, before the shipped mail is sent.
-    const trimmedTrackingCode = trackingCode.trim()
-    const trackingCodeChanged =
-      showTrackingCode && trimmedTrackingCode !== (order.fulfillment?.trackingCode ?? '')
-    if (trackingCodeChanged && trimmedTrackingCode) {
-      setFields['fulfillment.trackingCode'] = trimmedTrackingCode
-    }
-
-    try {
-      let patch = sanityClient.patch(order._id).set(setFields)
-      if (trackingCodeChanged && !trimmedTrackingCode) {
-        patch = patch.unset(['fulfillment.trackingCode'])
       }
-      await patch
-        .append('statusHistory', historyEntries)
-        .commit({ autoGenerateArrayKeys: false, returnDocuments: false })
-    } catch (err) {
-      setStatus(
-        `${t('actions.order.error', 'Update failed', { message: err instanceof Error ? err.message : String(err) })}`,
-      )
-      setLoading(false)
-      return
+      const setFields: Record<string, string> = {
+        [selectedAction.type === 'fulfillment' ? 'status' : 'paymentStatus']:
+          selectedAction.newState,
+      }
+
+      // Tracking code is saved in the same patch, before the shipped mail is sent.
+      const trimmedTrackingCode = trackingCode.trim()
+      const trackingCodeChanged =
+        showTrackingCode && trimmedTrackingCode !== (order.fulfillment?.trackingCode ?? '')
+      if (trackingCodeChanged && trimmedTrackingCode) {
+        setFields['fulfillment.trackingCode'] = trimmedTrackingCode
+      }
+
+      try {
+        let patch = sanityClient.patch(order._id).set(setFields)
+        if (trackingCodeChanged && !trimmedTrackingCode) {
+          patch = patch.unset(['fulfillment.trackingCode'])
+        }
+        await patch
+          .append('statusHistory', [historyEntry])
+          .commit({ autoGenerateArrayKeys: false, returnDocuments: false })
+      } catch (err) {
+        setStatus(
+          `${t('actions.order.error', 'Update failed', { message: err instanceof Error ? err.message : String(err) })}`,
+        )
+        setLoading(false)
+        return
+      }
     }
 
     // 3. Optionally notify the customer.
@@ -293,16 +289,31 @@ function OrderActionContent({
         setLoading(false)
         return
       }
-      setStatus(t('actions.order.sendMailSuccess', 'Customer notified'))
     }
 
     setLoading(false)
+    const statusLabel = selectedAction.label
+    toast.push({
+      status: 'success',
+      title: sendsMail
+        ? t(
+            'actions.order.updateStatus.successMailed',
+            'Status “{{status}}” set — customer notified',
+            { status: statusLabel },
+          )
+        : t('actions.order.updateStatus.success', 'Status “{{status}}” set', {
+            status: statusLabel,
+          }),
+    })
     onComplete()
   }, [
+    toast,
     selectedAction,
     frontendClient,
     sanityClient,
     order,
+    expected,
+    isRefund,
     isPartialRefund,
     isPartialRefundValid,
     partialAmountCents,
@@ -348,6 +359,28 @@ function OrderActionContent({
             ))}
           </Flex>
         </>
+      )}
+
+      {isRefund && openWithdrawal && (
+        <Card padding={3} radius={2} border tone="caution">
+          <Stack gap={3}>
+            <Text size={1}>
+              {t(
+                'actions.order.updateStatus.openWithdrawal',
+                'This order has an open withdrawal — handle the refund there (“Refund & close” also closes the withdrawal).',
+              )}
+            </Text>
+            <Text size={1}>
+              <IntentLink
+                intent="edit"
+                params={{ id: openWithdrawal._id, type: 'orderWithdrawal' }}
+                onClick={onComplete}
+              >
+                {t('actions.order.updateStatus.openWithdrawalLink', 'Open the withdrawal')}
+              </IntentLink>
+            </Text>
+          </Stack>
+        </Card>
       )}
 
       {isPartialRefund && (

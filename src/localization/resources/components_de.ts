@@ -224,11 +224,14 @@ export default {
     withdrawals: {
       title: 'Widerrufe',
       status: {
+        unmatched: 'Nicht zugeordnet',
         received: 'Eingegangen',
         processing: 'In Bearbeitung',
         refunded: 'Erstattet',
         rejected: 'Abgelehnt',
       },
+      refundBy: 'Erstattung bis {{date}}',
+      overdueSince: 'Überfällig seit {{date}}',
     },
     refunds: {
       title: 'Rückerstattungen',
@@ -279,6 +282,11 @@ export default {
           'Bitte geben Sie einen Betrag unter dem offenen Betrag von {{remaining}} ein — für den ganzen Rest „Refundiert“ wählen',
         notifyCustomer: 'Kunde benachrichtigen',
         trackingCodeHint: 'Optional – wird in der Versandbestätigung angezeigt',
+        openWithdrawal:
+          'Diese Bestellung hat einen offenen Widerruf – die Erstattung dort durchführen („Erstatten & abschließen“ schließt auch den Widerruf ab).',
+        openWithdrawalLink: 'Zum Widerruf',
+        success: 'Status „{{status}}“ gesetzt',
+        successMailed: 'Status „{{status}}“ gesetzt – Kunde benachrichtigt',
       },
       sendMailDialog: {
         title: 'Email senden',
@@ -295,16 +303,40 @@ export default {
       create: {
         title: 'Widerruf erfassen',
         declaredAt: 'Erklärt am',
+        declaredAtHint: 'Datum, an dem der Widerruf eingegangen ist',
+        declaredAtInvalid:
+          'Datum eingeben, an dem der Widerruf eingegangen ist – nicht in der Zukunft',
         reason: 'Grund / betroffene Artikel (optional)',
         notify: 'Bestätigungs-E-Mail an Kunden senden',
         error: 'Widerruf konnte nicht erstellt werden',
         alreadyOpen: 'Für diese Bestellung existiert bereits ein offener Widerruf',
+        success: 'Widerruf erfasst',
+        successMailed: 'Widerruf erfasst – Bestätigung an {{email}} gesendet',
       },
       assign: {
+        title: 'Bestellung zuordnen',
         suggestions: 'Mögliche Bestellungen',
         noSuggestions: 'Keine Bestellung passt zu den Angaben – unten suchen.',
-        useOrder: 'Diese Bestellung verwenden',
+        select: 'Auswählen',
+        searchLabel: 'Bestellnummer oder E-Mail',
+        search: 'Suchen',
+        results: '{{count}} Bestellung(en) gefunden',
+        noResults: 'Keine Bestellung gefunden',
+        picked: 'Zuordnen zu Bestellung #{{orderNumber}}',
+        notify: 'Bestätigung an die E-Mail der Bestellung senden ({{email}})',
+        matches: 'Passt: {{fields}}',
+        match: { orderNumber: 'Bestellnummer', email: 'E-Mail', name: 'Name' },
+        success: 'Bestellung #{{orderNumber}} zugeordnet',
+        successMailed: 'Bestellung #{{orderNumber}} zugeordnet – Bestätigung an {{email}} gesendet',
       },
+      unassign: {
+        title: 'Zuordnung aufheben',
+        confirm:
+          'Den Widerruf von Bestellung #{{orderNumber}} lösen? Er ist dann wieder „Nicht zugeordnet“ und kann der richtigen Bestellung zugeordnet werden.',
+        noteLine: 'Zuordnung zu #{{orderNumber}} aufgehoben, {{date}}',
+        success: 'Zuordnung zu #{{orderNumber}} aufgehoben',
+      },
+      changedMeanwhile: 'Der Widerruf wurde inzwischen geändert – Dialog schließen und neu öffnen',
       deleteOnlyUnmatched: 'Nur nicht zugeordnete Widerrufe können gelöscht werden.',
       notifyError: 'Gespeichert, aber die E-Mail konnte nicht gesendet werden',
       resend: {
@@ -314,11 +346,67 @@ export default {
       },
       resolve: {
         title: 'Erstatten & abschließen',
-        intro: 'Damit werden {{amount}} an den Kunden erstattet und der Widerruf abgeschlossen.',
         alreadyRefunded:
           'Die Bestellung ist bereits erstattet. Damit wird der Widerruf abgeschlossen.',
+        choiceLegend: 'Erstattung',
+        full: 'Vollständig (Rest {{amount}})',
+        partial: 'Teilweise',
+        partialHint: 'Der Widerruf wird abgeschlossen; der Rest wird nicht erstattet.',
+        closeOnly: 'Nur abschließen ({{amount}} bereits erstattet, keine weitere Erstattung)',
+        markReturned: 'Ware ist zurück (Bestellung → „Retourniert“)',
+        successRefund: '{{amount}} erstattet, Widerruf abgeschlossen',
+        successClosed: 'Widerruf abgeschlossen',
         notify: 'Erstattungsbestätigung per E-Mail senden',
-        draftOpen: 'Zuerst die Änderungen an diesem Widerruf veröffentlichen oder verwerfen',
+        closeFailed:
+          'Die Bestellung ist aktualisiert, aber der Widerruf konnte nicht abgeschlossen werden ({{message}}) – nochmals „Erstatten & abschließen“ drücken; dann wird nur abgeschlossen.',
+      },
+      status: {
+        rejectReason: 'Begründung (intern)',
+        rejectHint: 'Wird in der internen Notiz gespeichert. Den Kunden informieren Sie selbst.',
+        reject: 'Ablehnen',
+        rejectedNote: 'Abgelehnt am {{date}}: {{reason}}',
+      },
+      guide: {
+        title: 'Nächster Schritt',
+        step: {
+          assignIntro: 'Nicht zugeordnet – passt zu keiner Bestellung:',
+          assignOrderLead: 'Gehört zu einer Bestellung',
+          assignOrder:
+            '(z. B. Tippfehler): „Bestellung zuordnen“. Die Erstattungsfrist läuft schon (siehe unten).',
+          assignDeleteLead: 'Gehört zu keiner Bestellung',
+          assignDelete:
+            '(z. B. Spam): löschen – bis spätestens {{date}}, weil fremde Daten höchstens 30 Tage gespeichert werden dürfen.',
+          close:
+            'Die Bestellung ist bereits erstattet → „Erstatten & abschließen“ schließt den Widerruf ab.',
+          refundNotShipped:
+            'Noch nicht versendet → „Erstatten & abschließen“ (storniert auch die Bestellung).',
+          refundNothingToWait: 'Es gibt nichts mehr abzuwarten → „Erstatten & abschließen“.',
+          partial:
+            '{{amount}} bereits erstattet (z. B. über „Status aktualisieren“ der Bestellung oder im Stripe-Dashboard) → „Erstatten & abschließen“: den Rest erstatten oder nur abschließen.',
+          wait: 'Auf die Ware warten (Status „In Bearbeitung“ setzen). Sobald sie zurück ist oder der Versand nachgewiesen wird → „Erstatten & abschließen“ (vollständig oder teilweise).',
+          done: '{{amount}} erstattet, zuletzt am {{date}}.',
+          doneNoAmount: 'Erstattet.',
+          rejected: 'Als abgelehnt abgeschlossen (siehe interne Notiz).',
+          noOrder: 'Die verknüpfte Bestellung wurde nicht gefunden.',
+        },
+        deadline:
+          'Erstattung bis {{date}} (14 Tage ab Eingang des Widerrufs). Zurückhalten erlaubt, bis die Ware zurück ist oder der Versand nachgewiesen wird.',
+        overdue: 'Überfällig seit {{date}}',
+        howTo: {
+          summary: 'So geht’s',
+          assign:
+            'Nicht zugeordnet: über „Bestellung zuordnen“ der richtigen Bestellung zuordnen (Bestätigung an die E-Mail der Bestellung) – oder, wenn er zu keiner Bestellung gehört, löschen (Datenschutz: höchstens 30 Tage aufbewahren). Falsch zugeordnet: „Zuordnung aufheben“.',
+          notShipped:
+            'Noch nicht versendet: „Erstatten & abschließen“ – erstattet alles und storniert die Bestellung.',
+          shipped:
+            'Versendet oder zugestellt: Status „In Bearbeitung“ setzen und auf die Ware warten. Ist sie zurück (oder der Versand nachgewiesen): „Erstatten & abschließen“, vollständig oder teilweise (z. B. Abzug für eine geöffnete Flasche), und „Ware ist zurück“ anhaken.',
+          partial:
+            'Eine Teilerstattung schließt den Widerruf ab – der Rest wird nicht erstattet. Wurde schon etwas erstattet, „Nur abschließen“ wählen oder den Rest erstatten.',
+          reject:
+            'Kein Widerrufsrecht: Status „Abgelehnt“ mit Begründung (intern). Den Kunden informieren Sie selbst.',
+          deadline:
+            'Frist: Erstattung innerhalb von 14 Tagen ab Eingang des Widerrufs. Zurückhalten ist erlaubt, bis die Ware zurück ist oder der Versand nachgewiesen wird.',
+        },
       },
     },
     refund: {
@@ -328,6 +416,8 @@ export default {
       alreadyRefunded: 'Diese Bestellung wurde bereits rückerstattet',
       error: 'Fehler während der Rückerstattung: {{message}}',
       sendRefundSuccess: 'Rückerstattung erfolgreich',
+      changedMeanwhile:
+        'Die Bestellung wurde inzwischen geändert – Dialog schließen und neu öffnen',
     },
   },
   deployments: {

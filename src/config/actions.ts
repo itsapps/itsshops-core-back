@@ -7,8 +7,10 @@ import { OrderDocumentAction } from '../components/actions/OrderActions'
 import { OrderMailDocumentAction } from '../components/actions/OrderMailAction'
 import {
   OrderWithdrawalCreateAction,
+  WithdrawalAssignAction,
   WithdrawalResendAction,
   WithdrawalResolveAction,
+  WithdrawalUnassignAction,
 } from '../components/actions/WithdrawalActions'
 import { AddVariantsAction } from '../components/products/AddVariantsAction'
 import { ITSContext, ITSFeatureKey, ITSSanityDefinedAction } from '../types'
@@ -62,7 +64,10 @@ export function actionResolver(
     actions.push(OrderWithdrawalCreateAction)
   }
   if (context.schemaType === 'orderWithdrawal') {
+    // Each returns null where it doesn't apply (`withdrawalActionsFor`).
+    actions.push(WithdrawalAssignAction)
     actions.push(WithdrawalResolveAction)
+    actions.push(WithdrawalUnassignAction)
     actions.push(WithdrawalResendAction)
     // Delete is disallowed in the schema (a matched withdrawal is a legal record) and
     // re-added here for unmatched declarations only (junk / non-customers' data).
