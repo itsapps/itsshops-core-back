@@ -4,10 +4,11 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
-## Unreleased
+## 5.4.0
 
-Release before the core-front minor that writes `mail` history entries (the withdrawal receipt's
-entry on the order; without it "Bestellung zuordnen" still works, the order just lacks the entry).
+Release before core-front 3.11.0, which writes `mail` history entries (incl. the withdrawal
+receipt's entry on the order; without it "Bestellung zuordnen" still works, the order just lacks
+the entry).
 
 ### Upgrading
 - **Withdrawals are `liveEdit`:** before upgrading, check each dataset for withdrawal drafts
