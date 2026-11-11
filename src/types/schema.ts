@@ -47,6 +47,12 @@ export type ITSFeatureKey =
 
 interface ITSBaseDefinition {
   name: string
+  /**
+   * Name used for labels (`<baseName>.title`, `<baseName>.fields.*`), the schema extension
+   * (`schemaExtensions[baseName]`) and groups/fieldsets — for types generated from one
+   * definition (menu item levels: `menuItem`, `menuItem1`, …). Defaults to `name`.
+   */
+  baseName?: string
   feature?: ITSFeatureKey
   title?: string
   description?: string

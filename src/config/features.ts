@@ -1,11 +1,12 @@
 import { getCoreDocuments } from '../schemas/documents'
 import { getCoreObjects } from '../schemas/objects'
+import { menuLevels } from '../schemas/objects/menuItem'
 import { CoreBackConfig, ITSFeatureKey, ITSFeatureRegistry, ITSSchemaDefinition } from '../types'
 
 export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistry => {
   const docs = getCoreDocuments(config.documents)
   // const allDocs: ITSDocumentDefinition[] = docs.filter(doc => doc.type === 'document');
-  const objects = getCoreObjects(config.objects)
+  const objects = getCoreObjects(config.objects, menuLevels(config.schemaSettings.menus))
   const schemas = [...docs, ...objects]
   // const allObjs: ITSObjectDefinition[] = objects.filter(obj => obj.type === 'object');
 

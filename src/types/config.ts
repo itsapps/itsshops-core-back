@@ -24,7 +24,7 @@ export interface ITSCoreSchemaSettings {
   }
   menus: {
     allowedReferences: AllowedDocumentReferenceTypes
-    disableSubmenus: boolean
+    /** Menu levels, top level included: 1 = flat (default), 2 = top-level links + submenus of links. */
     maxDepth: number
   }
   productKinds: ProductKinds

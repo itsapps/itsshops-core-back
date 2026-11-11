@@ -16,6 +16,8 @@ export const category: ITSDocumentDefinition = {
   type: 'document',
   icon: CategoryIcon,
   feature: 'shop.category',           // feature-registry gate (omit = always on)
+  // baseName: 'menuItem',            // types generated from one definition share its labels,
+                                      // schemaExtensions key and groups (menu item levels)
   disallowedActions: ['delete'],      // also: allowCreate, isSingleton, hideInStructure
   build: (ctx) => {                   // ctx: FieldContext = ITSContext + { f, factory, builders }
     const { f, builders } = ctx

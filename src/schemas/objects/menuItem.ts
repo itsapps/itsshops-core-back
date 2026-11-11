@@ -2,13 +2,30 @@ import { linkIcons, LinkIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
 import { enabledSystemPages as getEnabledSystemPages } from '../systemPages'
 
-export const menuItem: ITSSchemaDefinition = {
-  name: 'menuItem',
+/** Type name of the menu item at `level` (0 = top level): menuItem, menuItem1, menuItem2, … */
+export const menuItemTypeName = (level: number) => (level === 0 ? 'menuItem' : `menuItem${level}`)
+
+/** Number of menu levels the Studio offers, top level included (1 = flat menus). */
+export const menuLevels = (menus: { maxDepth: number }) => Math.max(1, menus.maxDepth)
+
+/**
+ * One item type per menu level, all built from this definition; labels, schema extension and
+ * preview are shared through `baseName: 'menuItem'`. Sanity choice lists are static, so a level
+ * gets the `submenu` choice and a `children` field only when a deeper level exists — the last
+ * level is link-only and no depth rule is needed. `maxDepth` counts levels, top level included.
+ */
+export const menuItemTypes = (levels: number): ITSSchemaDefinition[] =>
+  Array.from({ length: levels }, (_, level) => createMenuItem(level, levels))
+
+const createMenuItem = (level: number, levels: number): ITSSchemaDefinition => ({
+  name: menuItemTypeName(level),
+  baseName: 'menuItem',
   type: 'object',
   icon: LinkIcon,
   build: (ctx) => {
     const { f } = ctx
-    const submenusEnabled = !ctx.config.schemaSettings.menus.disableSubmenus
+    // a submenu at this level holds items of the next level
+    const submenusEnabled = level < levels - 1
     const enabledSystemPages = getEnabledSystemPages(ctx)
 
     const allFields = [
@@ -91,31 +108,17 @@ export const menuItem: ITSSchemaDefinition = {
       ...(submenusEnabled
         ? [
             f('children', 'array', {
-              of: [{ type: 'menuItem' }],
-              // Don't allow infinite nesting if you don't want to
+              of: [{ type: menuItemTypeName(level + 1) }],
               hidden: ({ parent }: any) => parent?.linkType !== 'submenu',
               // hidden: ({ parent }: any) => !!parent?.url || !!parent?.reference
               validation: (rule) =>
                 rule.custom((value: any[] | undefined, context) => {
                   const parent = context.parent as any
-                  const path = context.path || []
-                  // 1. Logic: If it's a submenu, it MUST have at least one child
+                  // A submenu must have at least one child
                   if (parent?.linkType === 'submenu' && (!value || value.length === 0)) {
                     return context.i18n.t('validation:array.minimum-length', {
                       minLength: 1,
                     })
-                  }
-
-                  // 2. Depth Logic: Check nesting limit
-                  const depth = path.filter((p) => p === 'children').length
-                  const maxDepth = ctx.config.schemaSettings.menus.maxDepth
-
-                  if (depth > maxDepth) {
-                    return ctx.t.default(
-                      'validation.menuMaxDepthExceeded',
-                      `Maximum depth is ${maxDepth}`,
-                      { maxDepth },
-                    )
                   }
 
                   return true
@@ -170,4 +173,4 @@ export const menuItem: ITSSchemaDefinition = {
       },
     }
   },
-}
+})

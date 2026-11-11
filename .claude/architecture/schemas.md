@@ -17,7 +17,7 @@ builders, auto-translation, validation shortcuts) see
 ## Objects (`src/schemas/objects/`)
 
 `address`, `addressStrict`, `businessAddress`, `company`, `bankAccount`, `seo`, `internalLink`,
-`menuItem`, `baseImage`, `cropImage`, `localeImage`, `localeAltImage`, `bundleItem`,
+`menuItem` (+ `menuItem1`, … one per menu level — "Menu levels" below), `baseImage`, `cropImage`, `localeImage`, `localeAltImage`, `bundleItem`,
 `productSpecification`, `shippingRate`, `taxRule`, `generatedZip`, wine objects (`wine`),
 packaging groups (`packagingGroup`,
 `packagingGroupPackage`, `packagingGroupBottle`), and `orders/`.
@@ -119,7 +119,17 @@ When a frontend feature starts depending on a settings field, add the matching c
 here. Validation only fires when an editor publishes — existing documents must be checked per shop
 before go-live.
 
-`menuItem` `linkType`: `internal` | `external` | `submenu` (unless `menus.disableSubmenus`) |
+**Menu levels:** `menus.maxDepth` = number of menu levels, **top level included** (1 = flat, the
+default; 2 = top-level links + submenus of links). Core builds one item type per level from the
+`menuItem` definition (`src/schemas/objects/menuItem.ts` → `menuItemTypes`): `menuItem` (top
+level), `menuItem1`, `menuItem2`, … Only levels below the last offer `submenu` and a `children`
+field (typed as the next level), so the last level is link-only — Sanity choice lists are static,
+hence per-level types instead of a depth rule. All level types share `menuItem`'s labels, `schemaExtensions.menuItem` and preview via
+the definition's `baseName`. Existing submenu children stored as `menuItem` move with
+`scripts/migrate-menu-item-levels.mjs` (CHANGELOG). core-front's `menu.maxDepth` counts the same
+way.
+
+`menuItem` `linkType`: `internal` | `external` | `submenu` (on every level but the last; none with `maxDepth: 1`) |
 `system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The
 options come from the feature-filtered list in `src/schemas/systemPages.ts`, currently only
 `orderWithdraw` (requires `shop.checkout`). Rich-text link annotations can offer the same list via
