@@ -90,6 +90,11 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
 - `apiVersion` is pinned to `v2025-05-25`.
 - `integrations.netlify` is read entirely from `SANITY_STUDIO_NETLIFY_*` env; `integrations.vinofact`
   from `config.integrations.vinofact` or `SANITY_STUDIO_VINOFACT_*` env (only when vinofact is on).
+  **These end up in the public Studio bundle**, including `accessToken` (an account-wide Netlify
+  PAT), the functions `secret` and the Vinofact token. This is a known leak; the fix (secrets
+  document via `@sanity/studio-secrets`, Netlify build hook) is planned in core-front
+  `/Users/kampfgnu/Documents/programming/jamstack/itsshops-core-front/.claude/plans/studio-auth-and-security-hardening.md`.
+  See the rule in `CLAUDE.md` → "Config".
 
 **`ignoreExtensions: true` (the superset switch):** set by the root `sanity.config.ts` for local
 schema dev / typegen. It forces `allFeatures()` (every feature on), uses base `localizedFieldTypes`

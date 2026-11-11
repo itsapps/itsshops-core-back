@@ -115,6 +115,15 @@ Customer backends extend core via `ItsshopsConfig`: `documents[]`, `objects[]`, 
 it into the internal `CoreBackConfig`. Field list lives in `src/types/` (`config`, `registry`,
 `schema`).
 
+**Rule: never put a credential in `SANITY_STUDIO_*` env or in Studio config.** The Studio is a
+public SPA: Vite compiles those values into JS that anyone can download from the Studio URL without
+logging in (the Sanity login protects data, not code). Only public values belong there (project id,
+dataset, endpoint URLs, site id). **Known violation:** `SANITY_STUDIO_NETLIFY_ACCESS_TOKEN`,
+`SANITY_STUDIO_NETLIFY_FUNCTIONS_SECRET` and `SANITY_STUDIO_VINOFACT_API_TOKEN` are still bundled;
+they're being removed per core-front
+`/Users/kampfgnu/Documents/programming/jamstack/itsshops-core-front/.claude/plans/studio-auth-and-security-hardening.md`.
+Don't add more.
+
 ## Feature flags (superset of frontend)
 
 Resolved by `createFeatureRegistry` (`src/config/features.ts`) into a `featureMap`; schemas carry an
