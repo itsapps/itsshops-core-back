@@ -309,7 +309,6 @@ export default {
     requiredField: 'Required',
     recommendedField: 'Recommended',
     companyDetailsRecommended: 'Recommended – used on invoices and in the legal details of emails',
-    menuMaxDepthExceeded: 'Menus can have at most {{maxDepth}} levels.',
     countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
     duplicateVolume: 'Each volume may only appear once.',
     duplicatePlaces: 'Each box size may only appear once.',

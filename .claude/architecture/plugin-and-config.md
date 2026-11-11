@@ -77,6 +77,7 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
 - `schemaExtensions` — per-schema field/group/preview/icon additions (see [schema-authoring.md](schema-authoring.md))
 - `structure` — desk manifest overrides (see [studio-structure.md](studio-structure.md))
 - `schemaSettings` — `{ links.allowedReferences, menus.{disableSubmenus,maxDepth,allowedReferences}, productKinds }`
+  (`menus.maxDepth` = menu levels, top level included — `schemas.md` → "Menu levels")
 - `documentActions` — consumer action hook (see [studio-components.md](studio-components.md))
 - `integrations.vinofact` — VinoFact credentials
 

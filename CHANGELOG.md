@@ -4,6 +4,29 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased
+
+Menu items per level. `menus.maxDepth` = number of menu levels, top level included (1 = flat,
+default; 2 = top-level links + submenus of links).
+
+### Upgrading
+- **Projects with submenus** (`disableSubmenus: false`): items inside a submenu are now type
+  `menuItem1` (`menuItem2`, … for deeper levels). Run once per dataset (drafts included,
+  idempotent): `SANITY_WRITE_TOKEN=<editor> node
+  node_modules/@itsapps/itsshops-core-back/scripts/migrate-menu-item-levels.mjs --project <id>
+  --dataset <name> [--dry]`. Without it the Studio flags those items as an unknown type. The
+  frontend is not affected (it reads fields, not `_type`).
+- `maxDepth` now means what it says: with `maxDepth: 2` (jurtschitsch) the Studio offers exactly
+  top-level links + submenus of links; a submenu inside a submenu is no longer possible.
+  Projects without submenus: nothing to do.
+
+### Changed
+- One item type per menu level (`menuItem`, `menuItem1`, …): the last level offers no
+  `submenu` choice and no `children` field. Replaces the depth validation, which also fired on a
+  link's own empty `children` (so at `maxDepth: 1` no submenu validated).
+- Schema definitions may set `baseName`: labels, `schemaExtensions` and groups follow it, so
+  generated types share one definition (`schemaExtensions.menuItem` applies to every level).
+
 ## 5.4.0
 
 Release before core-front 3.11.0, which writes `mail` history entries (incl. the withdrawal

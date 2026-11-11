@@ -16,17 +16,18 @@ export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
 }
 
 function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): SchemaTypeDefinition {
-  const extension = ctx.config.schemaExtensions?.[definition.name]
   const name = definition.name
+  // labels, extension and groups follow the base name (shared by generated types)
+  const key = definition.baseName ?? name
+  const extension = ctx.config.schemaExtensions?.[key]
 
-  // const factory = createFieldFactory(name, ctx);
-  const factory = createFactory(name, ctx)
+  const factory = createFactory(key, ctx)
   const builders = createBuilders(factory, ctx)
   const fieldCtx: FieldContext = { ...ctx, f: factory.fields, factory, builders }
 
   const icon = extension?.icon ?? definition.icon
-  const title = definition.title ?? ctx.schemaT.default(`${name}.title`)
-  const description = definition.description ?? ctx.schemaT.strict(`${name}.description`)
+  const title = definition.title ?? ctx.schemaT.default(`${key}.title`)
+  const description = definition.description ?? ctx.schemaT.strict(`${key}.description`)
 
   const base = {
     name,
@@ -37,7 +38,7 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
   if (definition.type === 'document' || definition.type === 'object') {
     const built = definition.build(fieldCtx)
     const { fields, groups, fieldsets } = shapeSchema({
-      docName: name,
+      docName: key,
       ctx: fieldCtx,
       coreGroups: built.groups,
       coreFieldsets: built.fieldsets,

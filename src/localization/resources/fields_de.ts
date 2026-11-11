@@ -312,7 +312,6 @@ export default {
     recommendedField: 'Empfohlen',
     companyDetailsRecommended:
       'Empfohlen – wird für Rechnungen und rechtliche Angaben in E-Mails verwendet',
-    menuMaxDepthExceeded: 'Menüs können maximal {{maxDepth}} Schichten haben.',
     countryCodeNoDuplicates: 'Für {{countryCode}} gibt es bereits eine Konfiguration.',
     duplicateVolume: 'Jedes Volumen darf nur einmal vorkommen.',
     duplicatePlaces: 'Jede Kartongröße darf nur einmal vorkommen.',

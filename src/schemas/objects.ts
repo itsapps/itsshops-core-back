@@ -10,7 +10,7 @@ import { cropImage } from './objects/cropImage'
 import { internalLink } from './objects/internalLink'
 import { localeAltImage } from './objects/localeAltImage'
 import { localeImage } from './objects/localeImage'
-import { menuItem } from './objects/menuItem'
+import { menuItemTypes } from './objects/menuItem'
 import { productSpecification } from './objects/productSpecification'
 import { appliedCoupon } from './objects/orders/appliedCoupon'
 import { fulfillment } from './objects/orders/fulfillment'
@@ -46,6 +46,8 @@ import { privacyPolicySection } from './objects/privacyPolicySection'
 
 export const getCoreObjects = (
   extensions: ITSSchemaDefinition[] | undefined,
+  /** menu levels, top level included (`menuLevels(schemaSettings.menus)`) */
+  menuLevels = 1,
 ): ITSSchemaDefinition[] => {
   return [
     address,
@@ -66,7 +68,7 @@ export const getCoreObjects = (
     generatedZip,
     localeAltImage,
     localeImage,
-    menuItem,
+    ...menuItemTypes(menuLevels),
     productSpecification,
     appliedCoupon,
     orderCustomer,

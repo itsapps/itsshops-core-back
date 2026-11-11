@@ -53,6 +53,7 @@
     "dist",
     "sanity.json",
     "src",
+    "scripts",
     "v2-incompatible.js"
   ],
   "scripts": {
