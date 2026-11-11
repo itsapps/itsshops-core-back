@@ -6,8 +6,7 @@ import { enabledSystemPages as getEnabledSystemPages } from '../systemPages'
 export const menuItemTypeName = (level: number) => (level === 0 ? 'menuItem' : `menuItem${level}`)
 
 /** Number of menu levels the Studio offers, top level included (1 = flat menus). */
-export const menuLevels = (menus: { disableSubmenus: boolean; maxDepth: number }) =>
-  menus.disableSubmenus ? 1 : Math.max(1, menus.maxDepth)
+export const menuLevels = (menus: { maxDepth: number }) => Math.max(1, menus.maxDepth)
 
 /**
  * One item type per menu level, all built from this definition; labels, schema extension and

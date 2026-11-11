@@ -10,7 +10,10 @@ Menu items per level. `menus.maxDepth` = number of menu levels, top level includ
 default; 2 = top-level links + submenus of links).
 
 ### Upgrading
-- **Projects with submenus** (`disableSubmenus: false`): items inside a submenu are now type
+- **`menus.disableSubmenus` is removed** — `maxDepth` alone decides (`1` = flat, the default;
+  `2` = submenus). Delete the line from `schemaSettings.menus` (TypeScript flags it otherwise);
+  with `disableSubmenus: false` keep/set `maxDepth: 2`.
+- **Projects with submenus**: items inside a submenu are now type
   `menuItem1` (`menuItem2`, … for deeper levels). Run once per dataset (drafts included,
   idempotent): `SANITY_WRITE_TOKEN=<editor> node
   node_modules/@itsapps/itsshops-core-back/scripts/migrate-menu-item-levels.mjs --project <id>

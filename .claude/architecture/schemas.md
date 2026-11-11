@@ -124,13 +124,12 @@ default; 2 = top-level links + submenus of links). Core builds one item type per
 `menuItem` definition (`src/schemas/objects/menuItem.ts` → `menuItemTypes`): `menuItem` (top
 level), `menuItem1`, `menuItem2`, … Only levels below the last offer `submenu` and a `children`
 field (typed as the next level), so the last level is link-only — Sanity choice lists are static,
-hence per-level types instead of a depth rule. `disableSubmenus` (default `true`) forces one
-level. All level types share `menuItem`'s labels, `schemaExtensions.menuItem` and preview via
+hence per-level types instead of a depth rule. All level types share `menuItem`'s labels, `schemaExtensions.menuItem` and preview via
 the definition's `baseName`. Existing submenu children stored as `menuItem` move with
 `scripts/migrate-menu-item-levels.mjs` (CHANGELOG). core-front's `menu.maxDepth` counts the same
 way.
 
-`menuItem` `linkType`: `internal` | `external` | `submenu` (on every level but the last, unless `menus.disableSubmenus`) |
+`menuItem` `linkType`: `internal` | `external` | `submenu` (on every level but the last; none with `maxDepth: 1`) |
 `system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The
 options come from the feature-filtered list in `src/schemas/systemPages.ts`, currently only
 `orderWithdraw` (requires `shop.checkout`). Rich-text link annotations can offer the same list via

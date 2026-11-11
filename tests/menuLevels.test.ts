@@ -24,11 +24,10 @@ const built = (levels: number) =>
   })
 
 describe('menu levels (maxDepth = levels, top level included)', () => {
-  it('counts levels; submenus off or maxDepth 1 = flat', () => {
-    expect(menuLevels({ disableSubmenus: true, maxDepth: 3 })).toBe(1)
-    expect(menuLevels({ disableSubmenus: false, maxDepth: 1 })).toBe(1)
-    expect(menuLevels({ disableSubmenus: false, maxDepth: 2 })).toBe(2)
-    expect(menuLevels({ disableSubmenus: false, maxDepth: 0 })).toBe(1)
+  it('counts levels; maxDepth 1 (or less) = flat', () => {
+    expect(menuLevels({ maxDepth: 1 })).toBe(1)
+    expect(menuLevels({ maxDepth: 2 })).toBe(2)
+    expect(menuLevels({ maxDepth: 0 })).toBe(1)
   })
 
   it('names one type per level', () => {
