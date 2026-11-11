@@ -13,12 +13,11 @@ default; 2 = top-level links + submenus of links).
 - **`menus.disableSubmenus` is removed** — `maxDepth` alone decides (`1` = flat, the default;
   `2` = submenus). Delete the line from `schemaSettings.menus` (TypeScript flags it otherwise);
   with `disableSubmenus: false` keep/set `maxDepth: 2`.
-- **Projects with submenus**: items inside a submenu are now type
-  `menuItem1` (`menuItem2`, … for deeper levels). Run once per dataset (drafts included,
-  idempotent): `SANITY_WRITE_TOKEN=<editor> node
-  node_modules/@itsapps/itsshops-core-back/scripts/migrate-menu-item-levels.mjs --project <id>
-  --dataset <name> [--dry]`. Without it the Studio flags those items as an unknown type. The
-  frontend is not affected (it reads fields, not `_type`).
+- **Projects with submenus**: items inside a submenu are now type `menuItem1` (`menuItem2`, …
+  for deeper levels). Existing ones are stored as `menuItem` and must be relabelled by nesting
+  level, drafts included — otherwise the Studio flags them as an unknown type. The frontend is
+  not affected (it reads fields, not `_type`). Only jurtschitsch has submenus; its one-off
+  script: jurtschitsch backend `scripts/migrate-menu-item-levels.mjs`.
 - `maxDepth` now means what it says: with `maxDepth: 2` (jurtschitsch) the Studio offers exactly
   top-level links + submenus of links; a submenu inside a submenu is no longer possible.
   Projects without submenus: nothing to do.

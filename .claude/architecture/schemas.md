@@ -125,8 +125,8 @@ default; 2 = top-level links + submenus of links). Core builds one item type per
 level), `menuItem1`, `menuItem2`, … Only levels below the last offer `submenu` and a `children`
 field (typed as the next level), so the last level is link-only — Sanity choice lists are static,
 hence per-level types instead of a depth rule. All level types share `menuItem`'s labels, `schemaExtensions.menuItem` and preview via
-the definition's `baseName`. Existing submenu children stored as `menuItem` move with
-`scripts/migrate-menu-item-levels.mjs` (CHANGELOG). core-front's `menu.maxDepth` counts the same
+the definition's `baseName`. Existing submenu children stored as `menuItem` must be
+relabelled `menuItem1` (CHANGELOG; jurtschitsch's one-off script, not shipped by core). core-front's `menu.maxDepth` counts the same
 way.
 
 `menuItem` `linkType`: `internal` | `external` | `submenu` (on every level but the last; none with `maxDepth: 1`) |

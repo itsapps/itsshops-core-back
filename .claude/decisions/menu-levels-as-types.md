@@ -29,8 +29,8 @@ field, so one shared type cannot drop the `submenu` choice at the last level.
 ## Consequences
 
 - A data change for projects with submenus: children stored as `menuItem` must become
-  `menuItem1` — `scripts/migrate-menu-item-levels.mjs` (shipped via `files`; idempotent, drafts
-  included). The frontend reads fields, not `_type`, so it is unaffected.
+  `menuItem1` (drafts included). Only jurtschitsch has submenus, so the one-off script lives
+  there (backend `scripts/migrate-menu-item-levels.mjs`), not in core. The frontend reads fields, not `_type`, so it is unaffected.
 - A third level appears only by raising `maxDepth` in both repos; the frontend templates must
   render it then.
 - Rejected: a `linkType` rule (keeps the visible but invalid choice) and a custom input that
