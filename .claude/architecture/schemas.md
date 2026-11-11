@@ -17,7 +17,7 @@ builders, auto-translation, validation shortcuts) see
 ## Objects (`src/schemas/objects/`)
 
 `address`, `addressStrict`, `businessAddress`, `company`, `bankAccount`, `seo`, `internalLink`,
-`menuItem`, `baseImage`, `cropImage`, `localeImage`, `localeAltImage`, `bundleItem`,
+`menuItem` (+ `menuItem1`, … one per menu level — "Menu levels" below), `baseImage`, `cropImage`, `localeImage`, `localeAltImage`, `bundleItem`,
 `productSpecification`, `shippingRate`, `taxRule`, `generatedZip`, wine objects (`wine`),
 packaging groups (`packagingGroup`,
 `packagingGroupPackage`, `packagingGroupBottle`), and `orders/`.

@@ -5,6 +5,8 @@ then `Context` / `Decision` / `Consequences`. Only record a decision that's actu
 that future-you would otherwise re-litigate.
 
 - [sanity-6-platform.md](sanity-6-platform.md) — on Sanity 6 / @sanity/ui v4 / React 19
+- [menu-levels-as-types.md](menu-levels-as-types.md) — one menu item type per level (`menuItem`,
+  `menuItem1`, …); `maxDepth` counts levels incl. the top level, in both cores.
 - [feature-tagged-schemas.md](feature-tagged-schemas.md) — gate schemas/structure/actions with a
   `.feature` tag + the registry, not branches.
 - [typegen-coexists-with-handwritten-types.md](typegen-coexists-with-handwritten-types.md) — the
