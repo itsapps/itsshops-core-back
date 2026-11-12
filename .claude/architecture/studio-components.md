@@ -88,9 +88,11 @@ add variants inline), `WineSelector` / `WinePreview`.
     (`lib/shop/orderRefund.ts`, shared with "Refund & close"): it re-fetches the order and refuses
     (`actions.refund.changedMeanwhile`) when its `paymentStatus` or refunded total differs from the
     snapshot taken when the dialog opened (`refundSnapshot` — not the live prop), then refunds
-    (`frontendClient.refundPayment(order._id, …)` — core-front loads the PaymentIntent from the
-    order; two confirms at once are caught there by its idempotency key, the second gets a 409 →
-    `refundFailed`, no patch, no mail) and commits one
+    (`frontendClient.refundPayment(order._id, { amount?, expectedRefunded })` — core-front loads
+    the PaymentIntent from the order and compares `expectedRefunded` (the snapshot's refunded
+    total) with Stripe's **live** refunds, because the re-fetch only sees refunds already synced
+    onto the order (2–3 s later); a mismatch → `REFUND_CONFLICT` → `changedMeanwhile`, no patch, no
+    mail) and commits one
     patch built by `buildRefundPatch` (`utils/orderRefunds.ts`). When the order has an **open
     withdrawal** (`useOpenWithdrawal`) and a refund is selected, a caution notice links to it
     ("handle the refund there"; not a block). `delivered → returned` is always allowed (shops set

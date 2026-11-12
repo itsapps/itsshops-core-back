@@ -226,7 +226,10 @@ describe('refundOrder stale check', () => {
       now: () => new Date('2026-11-09T10:00:00Z'),
     })
     expect(result).toEqual({ ok: true, refundedCents: 3000 })
-    expect(m.frontendClient.refundPayment).toHaveBeenCalledWith('order-1', { amount: 3000 })
+    expect(m.frontendClient.refundPayment).toHaveBeenCalledWith('order-1', {
+      amount: 3000,
+      expectedRefunded: 0,
+    })
     expect(m.set).toHaveBeenCalledWith({ paymentStatus: 'partiallyRefunded' })
   })
 
@@ -262,6 +265,57 @@ describe('refundOrder stale check', () => {
     })
     expect(result).toEqual({ ok: false, code: 'changedMeanwhile' })
     expect(m.frontendClient.refundPayment).not.toHaveBeenCalled()
+  })
+
+  it('full refund sends the snapshot total, no amount', async () => {
+    const m = setup({
+      paymentStatus: 'partiallyRefunded',
+      refunds: [{ amount: 700, status: 'succeeded' }],
+    })
+    await refundOrder({
+      sanityClient: m.sanityClient as never,
+      frontendClient: m.frontendClient,
+      order,
+      expected: { paymentStatus: 'partiallyRefunded', refundedCents: 700 },
+      refund: 'full',
+    })
+    expect(m.frontendClient.refundPayment).toHaveBeenCalledWith('order-1', {
+      expectedRefunded: 700,
+    })
+  })
+
+  it('core-front REFUND_CONFLICT (other tab refunded, not synced yet) → changedMeanwhile, no patch', async () => {
+    const m = setup({ paymentStatus: 'succeeded', refunds: [] })
+    m.frontendClient.refundPayment.mockResolvedValue({
+      error: 'The order was refunded meanwhile',
+      code: 'REFUND_CONFLICT',
+    })
+    const result = await refundOrder({
+      sanityClient: m.sanityClient as never,
+      frontendClient: m.frontendClient,
+      order,
+      expected: { paymentStatus: 'succeeded', refundedCents: 0 },
+      refund: 'partial',
+      amountCents: 200,
+    })
+    expect(result).toEqual({ ok: false, code: 'changedMeanwhile' })
+    expect(m.sanityClient.patch).not.toHaveBeenCalled()
+  })
+
+  it('another core-front error → refundFailed with its message', async () => {
+    const m = setup({ paymentStatus: 'succeeded', refunds: [] })
+    m.frontendClient.refundPayment.mockResolvedValue({
+      error: 'card declined',
+      code: 'REFUND_FAILED',
+    })
+    const result = await refundOrder({
+      sanityClient: m.sanityClient as never,
+      frontendClient: m.frontendClient,
+      order,
+      expected: { paymentStatus: 'succeeded', refundedCents: 0 },
+      refund: 'full',
+    })
+    expect(result).toEqual({ ok: false, code: 'refundFailed', message: 'card declined' })
   })
 
   it("refund 'none' + markReturned → no refund call, returned patch", async () => {

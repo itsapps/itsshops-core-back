@@ -25,8 +25,11 @@ and backend in the same session.
   the deploy-status badge).
 - **Deploy dialog**: build hook + Netlify's status badge; no "building" state and no cancel any
   more (cancel in Netlify).
-- **Refunds**: `ITSFrontendClient.refundPayment(orderId, options)` (was `paymentIntentId`) —
-  needs core-front ≥ 5.0.0 (it 400s an old body, and an old core-front 400s the new one).
+- **Refunds**: `ITSFrontendClient.refundPayment(orderId, { amount?, expectedRefunded? })` (was
+  `paymentIntentId`) — needs core-front ≥ 5.0.0 (it 400s an old body, and an old core-front 400s
+  the new one). `refundOrder` sends the dialog's refunded total as `expectedRefunded`; core-front
+  refuses with `REFUND_CONFLICT` when another tab/editor refunded meanwhile → "changed meanwhile"
+  (before, a second tab within 2–3 s refunded again). `FrontendResponse` errors carry `code`.
 - **`./external`**: `createNetlifyClient` and the `NetlifyClient` / `NetlifyBuild` types are
   removed. `NetlifyConfig` lost `accessToken` + `secret`, `VinofactIntegrationConfig` lost
   `accessToken`.

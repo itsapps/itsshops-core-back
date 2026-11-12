@@ -51,7 +51,14 @@ export const createFrontendClient = (
         (data && typeof data === 'object' && 'error' in data && (data as any).error?.message) ||
         (data && typeof data === 'object' && 'message' in data && (data as any).message) ||
         response.statusText
-      return { error: message }
+      const code =
+        data &&
+        typeof data === 'object' &&
+        'error' in data &&
+        typeof (data as any).error?.code === 'string'
+          ? ((data as any).error.code as string)
+          : undefined
+      return { error: message, ...(code && { code }) }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Network error'
       // eslint-disable-next-line no-console
@@ -73,6 +80,9 @@ export const createFrontendClient = (
       post<RefundResult>('/api/payment/refund', {
         orderId,
         ...(options.amount !== undefined && { amount: options.amount }),
+        ...(options.expectedRefunded !== undefined && {
+          expectedRefunded: options.expectedRefunded,
+        }),
       }),
     withdrawNotify: (withdrawalId: string) =>
       post<WithdrawNotifyResult>('/api/order/withdraw-notify', { withdrawalId }),
