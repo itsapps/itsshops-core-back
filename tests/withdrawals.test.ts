@@ -196,7 +196,7 @@ describe('withdrawalActionsFor', () => {
 })
 
 describe('refundOrder stale check', () => {
-  const order = { _id: 'order-1', status: 'shipped' as const, paymentIntentId: 'pi_1' }
+  const order = { _id: 'order-1', status: 'shipped' as const }
   const setup = (current: object) => {
     const commit = vi.fn().mockResolvedValue({})
     const append = vi.fn(() => ({ commit }))
@@ -226,7 +226,7 @@ describe('refundOrder stale check', () => {
       now: () => new Date('2026-11-09T10:00:00Z'),
     })
     expect(result).toEqual({ ok: true, refundedCents: 3000 })
-    expect(m.frontendClient.refundPayment).toHaveBeenCalledWith('pi_1', { amount: 3000 })
+    expect(m.frontendClient.refundPayment).toHaveBeenCalledWith('order-1', { amount: 3000 })
     expect(m.set).toHaveBeenCalledWith({ paymentStatus: 'partiallyRefunded' })
   })
 

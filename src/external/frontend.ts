@@ -64,9 +64,9 @@ export const createFrontendClient = (
         ...(options.refundAmount !== undefined && { refundAmount: options.refundAmount }),
         ...(options.customerMessage && { customerMessage: options.customerMessage }),
       }),
-    refundPayment: (paymentIntentId: string, options = {}) =>
+    refundPayment: (orderId: string, options = {}) =>
       post<RefundResult>('/api/payment/refund', {
-        paymentIntentId,
+        orderId,
         ...(options.amount !== undefined && { amount: options.amount }),
       }),
     withdrawNotify: (withdrawalId: string) =>

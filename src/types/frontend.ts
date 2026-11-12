@@ -31,11 +31,12 @@ export type ITSFrontendClient = {
     options?: { attachInvoice?: boolean; refundAmount?: number; customerMessage?: string },
   ) => Promise<FrontendResponse<NotifyResult>>
   /**
-   * Trigger a Stripe refund. Pass `amount` (cents) for partial refunds; omit
-   * for a full refund.
+   * Trigger a Stripe refund of the order's payment (core-front looks up the
+   * PaymentIntent from the order). Pass `amount` (cents) for partial refunds;
+   * omit for a full refund.
    */
   refundPayment: (
-    paymentIntentId: string,
+    orderId: string,
     options?: { amount?: number },
   ) => Promise<FrontendResponse<RefundResult>>
   /**
