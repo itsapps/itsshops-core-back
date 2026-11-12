@@ -9,6 +9,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { AddIcon, CloseIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { uid } from '../../../../utils/utils'
+import { compareLabels, variantLabel } from '../../../../utils/variantLabel'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
 import { VariantRow } from '../fields/VariantRow'
@@ -258,25 +259,9 @@ export function BundleTab(props: BundleTabProps): ReactElement {
       .finally(() => setLoadingVariants(false))
   }, [sanityClient, toast])
 
+  // Product — own title — vintage/volume or options (all of them, also with an own title)
   const getVariantLabel = useCallback(
-    (v: BundleVariantResult): string => {
-      const productTitle = localizer.value(v.productTitle) ?? ''
-      const variantTitle = localizer.value(v.title)
-      if (variantTitle) return `${productTitle} — ${variantTitle}`
-
-      if (v.kind === 'wine') {
-        const parts = [
-          v.wineVolume
-            ? format.number(v.wineVolume / 1000, { style: 'unit', unit: 'liter' })
-            : null,
-          v.wineVintage ?? null,
-        ].filter(Boolean)
-        const sub = parts.join(' • ')
-        return sub ? `${productTitle} — ${sub}` : productTitle
-      }
-
-      return productTitle || v._id
-    },
+    (v: BundleVariantResult): string => variantLabel({ localizer, format }, v) || v._id,
     [localizer, format],
   )
 
@@ -287,9 +272,14 @@ export function BundleTab(props: BundleTabProps): ReactElement {
   //     .map((v) => ({ value: v._id, payload: v }))
   // }, [variants, query, getVariantLabel])
 
+  // Sorted by label: products alphabetically, their variants next to each other
   const allVariantOptions = useMemo(
-    () => variants.map((v) => ({ value: v._id, payload: v })),
-    [variants],
+    () =>
+      variants
+        .map((v) => ({ value: v._id, payload: v, label: getVariantLabel(v) }))
+        .sort((a, b) => compareLabels(a.label, b.label))
+        .map(({ value, payload }) => ({ value, payload })),
+    [variants, getVariantLabel],
   )
 
   const addRow = useCallback(() => setRows((r) => [...r, emptyBundleRow()]), [])
