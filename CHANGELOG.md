@@ -39,6 +39,12 @@ and backend in the same session.
 - After the Studio redeploy: rotate the Vinofact token — old deploys stay reachable at their
   Netlify permalinks.
 
+### Fixed
+- Bundles: the Product Manager's variant dropdown is sorted and always shows vintage/volume
+  (wine) or the options (physical/digital), also for variants with their own title; bundle items
+  in the variant form show them as subtitle (`src/utils/variantLabel.ts`, shared with the variant
+  preview). Nothing to change.
+
 ### Upgrading (menu levels)
 `menus.maxDepth` = number of menu levels, top level included (1 = flat, default; 2 = top-level
 links + submenus of links).
