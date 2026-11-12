@@ -4,7 +4,7 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
-## Unreleased (6.0.0)
+## 6.0.0
 
 Menu items per level, and the security hardening: no credentials in the Studio bundle (secrets
 document + Integrations dialog), Deploy via build hook, refunds by order id, Presentation preview
