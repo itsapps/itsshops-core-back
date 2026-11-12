@@ -4,9 +4,10 @@
  *
  * `expected` is a snapshot of the order taken when the dialog opened; the order is re-fetched and
  * the refund refused when its payment status or refunded total changed meanwhile (two tabs / two
- * editors). Two confirms at the same moment are covered by core-front's `payment-refund`: it
- * derives a Stripe idempotency key from the order's refund count (one refund), and answers a
- * replayed key with 409 → `refundFailed` here, so the second tab patches nothing and sends no mail.
+ * editors). That re-fetch only sees refunds already synced onto the order (2–3 s after Stripe),
+ * so the snapshot also goes to core-front's `payment-refund` as `expectedRefunded`, which compares
+ * it with Stripe's live refunds; a mismatch (and a replayed idempotency key for truly simultaneous
+ * requests) answers `REFUND_CONFLICT` → `changedMeanwhile` here: no patch, no mail.
  * The server loads the PaymentIntent from the order — the Studio only sends the order id.
  *
  * Mails stay with the callers.
@@ -73,10 +74,13 @@ export async function refundOrder({
 
   let refundedCents: number | undefined
   if (refund !== 'none') {
-    const result = await frontendClient.refundPayment(
-      order._id,
-      refund === 'partial' && amountCents !== undefined ? { amount: amountCents } : undefined,
-    )
+    const result = await frontendClient.refundPayment(order._id, {
+      ...(refund === 'partial' && amountCents !== undefined && { amount: amountCents }),
+      // core-front compares it with Stripe's live refunds: catches a second tab whose refund
+      // isn't synced onto the order yet (the re-fetch above only sees synced refunds).
+      expectedRefunded: expected.refundedCents,
+    })
+    if (result.code === 'REFUND_CONFLICT') return { ok: false, code: 'changedMeanwhile' }
     if (result.error) return { ok: false, code: 'refundFailed', message: result.error }
     refundedCents = result.data?.amount ?? undefined
   }
