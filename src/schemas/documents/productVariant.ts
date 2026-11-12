@@ -245,7 +245,11 @@ export const productVariant: ITSDocumentDefinition = {
             archived: '⚪',
           }
           const statusIcon = statusIcons[status] ?? ''
-          const subtitle = [statusIcon, kindSubtitle].filter(Boolean).join(' ')
+          // With an own title the product name isn't in the title — put it in front of the details,
+          // so reference pickers / search tell "Reserve" of one wine from another's.
+          const productHint = vTitle && pTitle ? pTitle : ''
+          const details = [productHint, kindSubtitle].filter(Boolean).join(' · ')
+          const subtitle = [statusIcon, details].filter(Boolean).join(' ')
 
           return {
             title,

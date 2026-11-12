@@ -43,7 +43,9 @@ and backend in the same session.
 - Bundles: the Product Manager's variant dropdown is sorted and always shows vintage/volume
   (wine) or the options (physical/digital), also for variants with their own title; bundle items
   in the variant form show them as subtitle (`src/utils/variantLabel.ts`, shared with the variant
-  preview). Nothing to change.
+  preview). A variant with its own title now has the product name in front of its preview
+  subtitle ("Grüner Veltliner · 0,75 l • 2023"), so reference pickers, search and the flat variant
+  list tell same-named variants of different products apart. Nothing to change.
 
 ### Upgrading (menu levels)
 `menus.maxDepth` = number of menu levels, top level included (1 = flat, default; 2 = top-level
