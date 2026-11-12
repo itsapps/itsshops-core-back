@@ -18,7 +18,10 @@ export type NotifyResult = {
 }
 
 export type WithdrawNotifyResult = {
+  /** The order's address (matched) or the submitted one (unmatched). */
   to: string
+  /** Every address a receipt went to (core-front ≥ 5.0.0): `to` + the submitted one if it differs. */
+  recipients?: string[]
 }
 
 export type ITSFrontendClient = {

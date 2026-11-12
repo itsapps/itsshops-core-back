@@ -51,9 +51,10 @@ and backend in the same session.
   list tell same-named variants of different products apart. Nothing to change.
 - Withdrawal "Resend confirmation" opens a confirm dialog (recipient shown) that stays open with a
   loading button until the mail went out, then closes with the toast; errors stay in the dialog.
-  Before, the menu closed at once and nothing showed progress. It names the address core-front really
-  sends to: the assigned order's customer email (with a note when the withdrawal was submitted
-  with another one), else the submitted email.
+  Before, the menu closed at once and nothing showed progress. It names the addresses core-front really
+  sends to: the assigned order's customer email and, when it differs, the address the withdrawal
+  was submitted with (core-front 5.0.0 sends to both), else the submitted email. The assign
+  dialog and the success toasts name both too.
 
 ### Upgrading (menu levels)
 `menus.maxDepth` = number of menu levels, top level included (1 = flat, default; 2 = top-level

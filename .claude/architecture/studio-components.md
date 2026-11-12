@@ -128,9 +128,11 @@ add variants inline), `WineSelector` / `WinePreview`.
       guide's `close` step finishes it without a second refund), then `orderRefunded` /
       `orderRefundedPartially` with the refunded amount.
     - `WithdrawalResendAction` "Bestätigung erneut senden": confirm dialog (stays open with a
-      loading button, closes on success) naming the real recipient — core-front
-      `order-withdraw-notify` sends to the **assigned order's** customer email, else (unmatched)
-      the submitted one; a hint shows when the two differ (editor-assigned withdrawals).
+      loading button, closes on success) naming the real recipients — core-front
+      `order-withdraw-notify` sends to the **assigned order's** customer email **and** the submitted
+      one when they differ (editor-assigned withdrawals), else (unmatched) the submitted one. The
+      assign dialog's "send confirmation" checkbox and both success toasts name both addresses
+      (`mailedToText`, from the response's `recipients`).
     `OrderWithdrawalCreateAction` (on the order) refuses an empty or future "Erklärt am" (`max` =
     now, `aria-invalid` + hint) — it drives the refund deadline.
   - `product` (feature `shop`) → `AddVariantsAction`

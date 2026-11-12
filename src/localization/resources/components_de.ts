@@ -325,6 +325,8 @@ export default {
         noResults: 'Keine Bestellung gefunden',
         picked: 'Zuordnen zu Bestellung #{{orderNumber}}',
         notify: 'Bestätigung an die E-Mail der Bestellung senden ({{email}})',
+        notifyBoth:
+          'Bestätigung an die E-Mail der Bestellung ({{email}}) und an die beim Widerruf angegebene Adresse ({{submitted}}) senden',
         matches: 'Passt: {{fields}}',
         match: { orderNumber: 'Bestellnummer', email: 'E-Mail', name: 'Name' },
         success: 'Bestellung #{{orderNumber}} zugeordnet',
@@ -340,11 +342,12 @@ export default {
       changedMeanwhile: 'Der Widerruf wurde inzwischen geändert – Dialog schließen und neu öffnen',
       deleteOnlyUnmatched: 'Nur nicht zugeordnete Widerrufe können gelöscht werden.',
       notifyError: 'Gespeichert, aber die E-Mail konnte nicht gesendet werden',
+      recipientsBoth: '{{first}} und {{second}}',
       resend: {
         title: 'Bestätigung erneut senden',
         confirm: 'Die Widerrufsbestätigung erneut an {{email}} senden?',
-        orderAddress:
-          'Der Widerruf wurde mit {{submitted}} abgegeben; er ist einer Bestellung zugeordnet, daher geht die Bestätigung an die Adresse der Bestellung.',
+        confirmBoth:
+          'Die Widerrufsbestätigung erneut an die Adresse der Bestellung ({{email}}) und an die beim Widerruf angegebene Adresse ({{submitted}}) senden?',
         send: 'Senden',
         success: 'Bestätigungs-E-Mail gesendet',
         error: 'E-Mail konnte nicht gesendet werden',

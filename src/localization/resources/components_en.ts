@@ -317,6 +317,8 @@ export default {
         noResults: 'No order found',
         picked: 'Assign to order #{{orderNumber}}',
         notify: 'Send the confirmation to the order’s email ({{email}})',
+        notifyBoth:
+          'Send the confirmation to the order’s email ({{email}}) and to the address the withdrawal was submitted with ({{submitted}})',
         matches: 'Matches: {{fields}}',
         match: { orderNumber: 'order number', email: 'email', name: 'name' },
         success: 'Assigned to order #{{orderNumber}}',
@@ -333,11 +335,12 @@ export default {
         'The withdrawal was changed meanwhile — close this dialog and open it again',
       deleteOnlyUnmatched: 'Only unmatched withdrawals can be deleted.',
       notifyError: 'Saved, but the email could not be sent',
+      recipientsBoth: '{{first}} and {{second}}',
       resend: {
         title: 'Resend confirmation',
         confirm: 'Send the withdrawal confirmation to {{email}} again?',
-        orderAddress:
-          'The withdrawal was submitted with {{submitted}}; it is assigned to an order, so the confirmation goes to the order’s address.',
+        confirmBoth:
+          'Send the withdrawal confirmation again to the order’s address ({{email}}) and to the address it was submitted with ({{submitted}})?',
         send: 'Send',
         success: 'Confirmation email sent',
         error: 'Email could not be sent',
