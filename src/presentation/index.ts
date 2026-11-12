@@ -64,6 +64,10 @@ export const createPresentations = (ctx: ITSContext): PresentationPluginOptions 
     resolve: { locations: getLocations(ctx), mainDocuments },
     previewUrl: {
       initial: `${ctx.config.integrations.netlify.endpoint}/api/preview/${ctx.locale}`,
+      // Presentation creates a short-lived secret and opens `enable` (resolved against `initial`'s
+      // origin); core-front's preview-enable validates it and sets the preview session cookie.
+      // No share access: no link-based draft preview without a Studio login.
+      previewMode: { enable: '/api/preview/enable', shareAccess: false },
     },
   }
 }
