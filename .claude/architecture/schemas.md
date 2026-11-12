@@ -45,6 +45,17 @@ over its items by their single prices and taxes each share at the item's rate
 (`commerce-and-netlify.md` → Bundle VAT). The Product Manager writes published variants without
 schema validation, so its tabs enforce "global or row price" themselves (also when adding variants:
 `AddVariantsAction` passes the product's price as `globalPrice`).
+
+**Variant labels (`src/utils/variantLabel.ts`):** `variantDetails` (wine "0,75 l • 2023",
+physical/digital the option titles) is shared by the `productVariant` preview subtitle, the
+`bundleItem` preview (title "2× Product — Title", subtitle = details) and the BundleTab dropdown
+(`variantLabel` "Product — Title — details", sorted with `compareLabels`). A variant with its own
+title puts the product name in front of its preview subtitle, so pickers/search tell same-named
+variants of different products apart. **Search limit:** Studio search (also reference pickers, e.g.
+portable-text internal links) matches only fields on the variant document — it doesn't follow
+`product` — so an untitled variant isn't found by its product's name, only by its own fields (e.g.
+the vintage). Fixing it would need a denormalised search field kept in sync on product publish
+(left out, owner 2026-11-12).
 Order snapshot `orderItemBundle.items[]` (`orderItemBundleItem`): `variantId, productId, title,
 subtitle, sku, quantity` (per bundle), `price` (gross share of **one** bundle for all its units),
 `vatRate`, `vatAmount`; plain strings, read-only outside dev; older orders have only `itemCount`.
