@@ -335,6 +335,8 @@ export default {
       notifyError: 'Saved, but the email could not be sent',
       resend: {
         title: 'Resend confirmation',
+        confirm: 'Send the withdrawal confirmation to {{email}} again?',
+        send: 'Send',
         success: 'Confirmation email sent',
         error: 'Email could not be sent',
       },

@@ -892,39 +892,90 @@ function UnassignWithdrawalContent({
 export function WithdrawalResendAction(
   props: DocumentActionProps,
 ): DocumentActionDescription | null {
+  const wd = props.published as WithdrawalActionDoc | null
+  const { componentT } = useITSContext()
+  const t = componentT.default
+  // Snapshot + stays while open — see `WithdrawalAssignAction`.
+  const [opened, setOpened] = useState<WithdrawalActionDoc | null>(null)
+
+  const handleOpen = useCallback(() => setOpened(wd), [wd])
+  const handleClose = useCallback(() => setOpened(null), [])
+
+  const label = t('actions.orderWithdrawal.resend.title', 'Resend confirmation')
+  return {
+    label,
+    icon: SendMailIcon,
+    disabled: !wd?._id,
+    onHandle: handleOpen,
+    dialog: !!opened && {
+      type: 'dialog',
+      header: label,
+      onClose: handleClose,
+      content: <ResendWithdrawalContent withdrawal={opened} onComplete={handleClose} />,
+    },
+  }
+}
+
+/** Confirm → send; stays open with a loading button until the mail went out, closes on success. */
+function ResendWithdrawalContent({
+  withdrawal,
+  onComplete,
+}: {
+  withdrawal: WithdrawalActionDoc
+  onComplete: () => void
+}) {
   const { componentT, frontendClient } = useITSContext()
   const t = componentT.default
   const toast = useToast()
   const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState('')
 
-  const id = (props.published as { _id: string } | null)?._id
-
-  const handle = useCallback(async () => {
-    if (!id) return
+  const handleSend = useCallback(async () => {
     setLoading(true)
-    const result = await frontendClient.withdrawNotify(id)
+    setStatus('')
+    const result = await frontendClient.withdrawNotify(withdrawal._id)
     setLoading(false)
     if (result.error) {
-      toast.push({
-        status: 'error',
-        title: t('actions.orderWithdrawal.resend.error', 'Email could not be sent'),
-        description: result.error,
-      })
-    } else {
-      toast.push({
-        status: 'success',
-        title: t('actions.orderWithdrawal.resend.success', 'Confirmation email sent'),
-      })
+      setStatus(
+        `${t('actions.orderWithdrawal.resend.error', 'Email could not be sent')}: ${result.error}`,
+      )
+      return
     }
-    props.onComplete()
-  }, [id, frontendClient, toast, t, props])
+    toast.push({
+      status: 'success',
+      title: t('actions.orderWithdrawal.resend.success', 'Confirmation email sent'),
+    })
+    onComplete()
+  }, [frontendClient, withdrawal._id, toast, t, onComplete])
 
-  return {
-    label: t('actions.orderWithdrawal.resend.title', 'Resend confirmation'),
-    icon: SendMailIcon,
-    disabled: loading || !id,
-    onHandle: handle,
-  }
+  return (
+    <Stack padding={4} gap={4}>
+      <Text>
+        {t(
+          'actions.orderWithdrawal.resend.confirm',
+          'Send the withdrawal confirmation to {{email}} again?',
+          { email: withdrawal.email ?? '' },
+        )}
+      </Text>
+      <Flex gap={2} justify="flex-end">
+        <Button
+          mode="ghost"
+          text={t('ui.dialog.cancel', 'Cancel')}
+          disabled={loading}
+          onClick={onComplete}
+        />
+        <Button
+          tone="primary"
+          icon={SendMailIcon}
+          text={t('actions.orderWithdrawal.resend.send', 'Send')}
+          loading={loading}
+          disabled={loading}
+          onClick={handleSend}
+        />
+      </Flex>
+      <StatusLine status={status} />
+    </Stack>
+  )
 }
 
 // ── Refund & close ──────────────────────────────────────────────────────────

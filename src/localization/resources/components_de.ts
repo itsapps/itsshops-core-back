@@ -342,6 +342,8 @@ export default {
       notifyError: 'Gespeichert, aber die E-Mail konnte nicht gesendet werden',
       resend: {
         title: 'Bestätigung erneut senden',
+        confirm: 'Die Widerrufsbestätigung erneut an {{email}} senden?',
+        send: 'Senden',
         success: 'Bestätigungs-E-Mail gesendet',
         error: 'E-Mail konnte nicht gesendet werden',
       },

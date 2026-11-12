@@ -46,6 +46,9 @@ and backend in the same session.
   preview). A variant with its own title now has the product name in front of its preview
   subtitle ("Grüner Veltliner · 0,75 l • 2023"), so reference pickers, search and the flat variant
   list tell same-named variants of different products apart. Nothing to change.
+- Withdrawal "Resend confirmation" opens a confirm dialog (recipient shown) that stays open with a
+  loading button until the mail went out, then closes with the toast; errors stay in the dialog.
+  Before, the menu closed at once and nothing showed progress.
 
 ### Upgrading (menu levels)
 `menus.maxDepth` = number of menu levels, top level included (1 = flat, default; 2 = top-level
