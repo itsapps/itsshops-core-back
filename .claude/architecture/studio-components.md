@@ -92,7 +92,8 @@ add variants inline), `WineSelector` / `WinePreview`.
     the PaymentIntent from the order and compares `expectedRefunded` (the snapshot's refunded
     total) with Stripe's **live** refunds, because the re-fetch only sees refunds already synced
     onto the order (2–3 s later); a mismatch → `REFUND_CONFLICT` → `changedMeanwhile`, no patch, no
-    mail) and commits one
+    mail — two-tab test on Tinhof staging, 2026-11-12: equal and different amounts, only the first
+    refunded) and commits one
     patch built by `buildRefundPatch` (`utils/orderRefunds.ts`). When the order has an **open
     withdrawal** (`useOpenWithdrawal`) and a refund is selected, a caution notice links to it
     ("handle the refund there"; not a block). `delivered → returned` is always allowed (shops set
