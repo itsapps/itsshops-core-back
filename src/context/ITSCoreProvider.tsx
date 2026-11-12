@@ -1,9 +1,10 @@
+import { useSecrets } from '@sanity/studio-secrets'
 import { createContext, ReactNode, useContext, useMemo } from 'react'
 import { type SanityClient, useClient, useTranslation } from 'sanity'
 
 import { createFrontendClient } from '../external/frontend'
 import { createVinofactClient } from '../external/vinofact'
-import { ITSContext, ITSProviderContext } from '../types'
+import { ITSContext, ITSIntegrationSecrets, ITSProviderContext, SECRETS_NAMESPACE } from '../types'
 import { createImageBuilder } from '../utils/imageBuilder'
 
 // import { useCurrentLocale } from './your-locale-hook' // Replace with your actual hook
@@ -14,6 +15,11 @@ export const ITSCoreProvider = ({ children, ctx }: { children: ReactNode; ctx: I
   const { t } = useTranslation('studio')
   const baseClient: SanityClient = useClient({ apiVersion: ctx.config.apiVersion })
   const isDev = ctx.config.isDev
+  // Credentials live in the dataset (`secrets.itsshops`, readable by logged-in members only),
+  // never in the bundle. Entered in the toolbar's Integrations dialog.
+  const { secrets } = useSecrets<ITSIntegrationSecrets>(SECRETS_NAMESPACE)
+  const functionsSecret = secrets?.functionsSecret ?? ''
+  const vinofactToken = secrets?.vinofactToken ?? ''
 
   const sanityClient = useMemo(() => {
     if (!isDev) return baseClient
@@ -69,20 +75,20 @@ export const ITSCoreProvider = ({ children, ctx }: { children: ReactNode; ctx: I
   const imageBuilder = useMemo(() => createImageBuilder(sanityClient), [sanityClient])
 
   const frontendClient = useMemo(() => {
-    const { endpoint, secret } = ctx.config.integrations.netlify
-    return createFrontendClient(ctx.locale, endpoint, secret)
-  }, [ctx.locale, ctx.config.integrations.netlify])
+    const { endpoint } = ctx.config.integrations.netlify
+    return createFrontendClient(
+      ctx.locale,
+      endpoint,
+      functionsSecret,
+      ctx.componentT.default('integrations.missingSecrets'),
+    )
+  }, [ctx.locale, ctx.config.integrations.netlify, ctx.componentT, functionsSecret])
 
   const vinofactClient = useMemo(() => {
     const vinofact = ctx.config.integrations.vinofact
-    if (!vinofact?.endpoint || !vinofact?.accessToken) return undefined
-    return createVinofactClient(
-      ctx.locale,
-      vinofact.endpoint,
-      vinofact.accessToken,
-      vinofact.profileSlug,
-    )
-  }, [ctx.config.integrations.vinofact, ctx.locale])
+    if (!vinofact?.endpoint || !vinofactToken) return undefined
+    return createVinofactClient(ctx.locale, vinofact.endpoint, vinofactToken, vinofact.profileSlug)
+  }, [ctx.config.integrations.vinofact, ctx.locale, vinofactToken])
 
   const value = useMemo(
     () => ({

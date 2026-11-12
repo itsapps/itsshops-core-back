@@ -56,8 +56,9 @@ export default {
   },
   vinofact: {
     notInitialized: {
-      title: 'Vinofact client not initialized.',
-      description: 'Check your shop configuration features.',
+      title: 'Vinofact-Client nicht initialisiert.',
+      description:
+        'Prüfe die Shop-Features in der Konfiguration oder bitte eine Administratorin / einen Administrator, die Integrations-Einstellungen einzutragen.',
     },
     winesLoadedError: {
       title: 'Vinofact Weine konnten nicht geladen werden.',
@@ -420,8 +421,30 @@ export default {
         'Die Bestellung wurde inzwischen geändert – Dialog schließen und neu öffnen',
     },
   },
+  integrations: {
+    title: 'Integrationen',
+    dialogTitle: 'Integrations-Einstellungen',
+    keys: {
+      functionsSecret: {
+        title: 'Server-Functions-Secret',
+        description:
+          'Muss mit SERVER_FUNCTIONS_SECRET des Frontends dieser Umgebung übereinstimmen (Netlify-Env). Für Rückerstattungen und Kundenmails.',
+      },
+      netlifyBuildHook: {
+        title: 'Netlify-Build-Hook',
+        description:
+          'Build-Hook-URL des Frontends dieser Umgebung (Netlify → Project configuration → Build hooks). Für den Veröffentlichen-Button.',
+      },
+      vinofactToken: {
+        title: 'Vinofact-API-Token',
+        description: 'Token für den Vinofact-Weinimport.',
+      },
+    },
+    missingSecrets:
+      'Integrations-Einstellungen fehlen. Bitte eine Administratorin / einen Administrator, sie einzutragen (Werkzeugleiste → Integrationen).',
+  },
   deployments: {
-    title: 'Veröffentlichungen',
+    title: 'Veröffentlichungen',
     dialog: {
       header: 'Webpage-Veröffentlichungen',
       actions: {
@@ -432,6 +455,13 @@ export default {
       },
       noInfos: 'Keine Informationen verfügbar',
       defaultDeploymentTitle: 'Von Sanity initiiert',
+      titleLabel: 'Notiz zur Veröffentlichung (optional)',
+      statusAlt: 'Netlify-Veröffentlichungsstatus',
+      statusHint: 'Der Status aktualisiert sich alle 10 Sekunden. Details: „Netlify“.',
+      requested: 'Veröffentlichung angefordert',
+      requestFailed: 'Veröffentlichung konnte nicht angefordert werden',
+      noHook:
+        'Kein Build-Hook eingetragen. Eine Administratorin / ein Administrator kann ihn unter Werkzeugleiste → Integrationen eintragen.',
     },
     status: {
       title: 'Status',

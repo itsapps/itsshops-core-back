@@ -55,7 +55,8 @@ export default {
   vinofact: {
     notInitialized: {
       title: 'Vinofact client not initialized.',
-      description: 'Check your shop configuration features.',
+      description:
+        'Check your shop configuration features, or ask an administrator to enter the integration settings.',
     },
     winesLoadedError: {
       title: 'Could not load Vinofact wines.',
@@ -409,6 +410,28 @@ export default {
       changedMeanwhile: 'The order was changed meanwhile — close this dialog and open it again',
     },
   },
+  integrations: {
+    title: 'Integrations',
+    dialogTitle: 'Integration settings',
+    keys: {
+      functionsSecret: {
+        title: 'Server functions secret',
+        description:
+          'Must match SERVER_FUNCTIONS_SECRET of this environment\'s frontend (Netlify env). Used for refunds and customer mails.',
+      },
+      netlifyBuildHook: {
+        title: 'Netlify build hook',
+        description:
+          'Build hook URL of this environment\'s frontend (Netlify → Project configuration → Build hooks). Used by the Deploy button.',
+      },
+      vinofactToken: {
+        title: 'Vinofact API token',
+        description: 'Token for the Vinofact wine import.',
+      },
+    },
+    missingSecrets:
+      'Integration settings are missing. Ask an administrator to enter them (toolbar → Integrations).',
+  },
   deployments: {
     title: 'Deployments',
     dialog: {
@@ -421,6 +444,12 @@ export default {
       },
       noInfos: 'No information available',
       defaultDeploymentTitle: 'Triggered from Sanity',
+      titleLabel: 'Deploy note (optional)',
+      statusAlt: 'Netlify deploy status',
+      statusHint: 'The status refreshes every 10 seconds. Details: "Netlify".',
+      requested: 'Build requested',
+      requestFailed: 'Build could not be requested',
+      noHook: 'No build hook set. An administrator can enter it under toolbar → Integrations.',
     },
     status: {
       title: 'Status',

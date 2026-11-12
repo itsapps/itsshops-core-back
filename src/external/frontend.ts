@@ -13,7 +13,10 @@ import type {
  * Studio-side client for the customer's deployed core-front server functions.
  *
  * Both endpoints are authenticated via the `x-server-secret` header — `secret`
- * must match `SERVER_FUNCTIONS_SECRET` in the core-front Netlify environment.
+ * (the secrets document's `functionsSecret`) must match `SERVER_FUNCTIONS_SECRET`
+ * in the core-front Netlify environment. Without a secret (not entered yet, or
+ * still loading) every call returns `{ error: missingSecretMessage }` without
+ * a request; callers show `result.error` in a toast.
  *
  * The endpoint paths assume the customer has wired the core-front handlers
  * under `/api/payment/refund` and `/api/order/notify`.
@@ -22,8 +25,10 @@ export const createFrontendClient = (
   locale: string,
   endpoint: string,
   secret: string,
+  missingSecretMessage: string,
 ): ITSFrontendClient => {
   const post = async <T>(path: string, payload: unknown): Promise<FrontendResponse<T>> => {
+    if (!secret) return { error: missingSecretMessage }
     const requestId = uuidv4().replaceAll('-', '')
     try {
       const response = await fetch(endpoint + path, {

@@ -14,6 +14,7 @@ import { HomeIcon as Home } from '@sanity/icons/Home'
 import { LaunchIcon as Launch } from '@sanity/icons/Launch'
 import { OlistIcon as Olist } from '@sanity/icons/Olist'
 import { PackageIcon as Package } from '@sanity/icons/Package'
+import { PlugIcon as Plug } from '@sanity/icons/Plug'
 import { SchemaIcon as Schema } from '@sanity/icons/Schema'
 import { SearchIcon as Search } from '@sanity/icons/Search'
 import { SparkleIcon as Sparkle } from '@sanity/icons/Sparkle'
@@ -81,6 +82,7 @@ export const CloseIcon = Close
 export const ConfirmIcon = CheckmarkCircle
 export const CustomerIcon = User
 export const DeployIcon = PiRocketLaunch
+export const IntegrationsIcon = Plug
 export const EditIcon = Edit
 export const EllipsisHorizontalIcon = EllipsisHorizontal
 export const NotificationIcon = Envelope

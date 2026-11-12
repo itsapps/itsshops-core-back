@@ -36,9 +36,9 @@ export interface VinofactConfig {
   enabled: boolean
 }
 
+/** Public values only — the API token lives in the secrets document (`integrations.vinofactToken`). */
 export interface VinofactIntegrationConfig {
   endpoint: string
-  accessToken: string
   profileSlug: string
 }
 
@@ -107,18 +107,24 @@ export interface ITSi18nConfig {
   countries: Country[]
 }
 
+/**
+ * Public values only. Everything in `SANITY_STUDIO_*` and `sanity.config.ts` is compiled into the
+ * Studio bundle, which anyone can download — credentials go into the secrets document
+ * (`@sanity/studio-secrets`, namespace `itsshops`, Integrations dialog).
+ */
 export interface NetlifyConfig {
-  accessToken: string
+  /** The core-front frontend's Netlify site id (deploy-status badge). */
   siteId: string
+  /** Netlify project name ("Open in Netlify" link). */
   projectName: string
+  /** Public URL of the deployed core-front (server functions). */
   endpoint: string
-  secret: string
 }
 
 export interface IntegrationsConfig {
-  // The customer's deployed core-front. `endpoint` is the public URL,
-  // `secret` must match SERVER_FUNCTIONS_SECRET in the core-front Netlify env.
-  // Studio document actions (refund, notify) call /api/* paths under endpoint.
+  // The customer's deployed core-front. `endpoint` is the public URL; Studio document actions
+  // (refund, notify) call /api/* paths under it with the `functionsSecret` from the secrets
+  // document, which must match SERVER_FUNCTIONS_SECRET in the core-front Netlify env.
   netlify: NetlifyConfig
   vinofact?: VinofactIntegrationConfig
 }

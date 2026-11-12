@@ -249,7 +249,7 @@ export function WineTab(props: WineTabProps): ReactElement {
     } catch (err: any) {
       toast.push({
         status: 'error',
-        title: componentT.default('vinofact.winesLoadedError.description'),
+        title: componentT.default('vinofact.winesLoadedError.title'),
         description: err.message,
       })
     } finally {

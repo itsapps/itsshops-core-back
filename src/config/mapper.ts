@@ -72,17 +72,14 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
   const countries = createCountries(uiLocales)
 
   const netlify = {
-    accessToken: process.env.SANITY_STUDIO_NETLIFY_ACCESS_TOKEN ?? '',
     siteId: process.env.SANITY_STUDIO_NETLIFY_SITE_ID ?? '',
     projectName: process.env.SANITY_STUDIO_NETLIFY_PROJECT_NAME ?? '',
     endpoint: process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_ENDPOINT ?? '',
-    secret: process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_SECRET ?? '',
   }
 
   const vinofact = features.shop.vinofact.enabled
     ? (config.integrations?.vinofact ?? {
         endpoint: process.env.SANITY_STUDIO_VINOFACT_API_URL ?? '',
-        accessToken: process.env.SANITY_STUDIO_VINOFACT_API_TOKEN ?? '',
         profileSlug: process.env.SANITY_STUDIO_VINOFACT_PROFILE_SLUG ?? '',
       })
     : undefined
