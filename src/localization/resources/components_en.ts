@@ -429,6 +429,12 @@ export default {
         description: 'Token for the Vinofact wine import.',
       },
     },
+    show: 'Show value',
+    hide: 'Hide value',
+    save: 'Save',
+    cancel: 'Cancel',
+    saved: 'Integration settings saved',
+    saveFailed: 'Integration settings could not be saved',
     missingSecrets:
       'Integration settings are missing. Ask an administrator to enter them (toolbar → Integrations).',
   },

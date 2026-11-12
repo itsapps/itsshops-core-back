@@ -440,6 +440,12 @@ export default {
         description: 'Token für den Vinofact-Weinimport.',
       },
     },
+    show: 'Wert anzeigen',
+    hide: 'Wert verbergen',
+    save: 'Speichern',
+    cancel: 'Abbrechen',
+    saved: 'Integrations-Einstellungen gespeichert',
+    saveFailed: 'Integrations-Einstellungen konnten nicht gespeichert werden',
     missingSecrets:
       'Integrations-Einstellungen fehlen. Bitte eine Administratorin / einen Administrator, sie einzutragen (Werkzeugleiste → Integrationen).',
   },

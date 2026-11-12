@@ -8,6 +8,8 @@ import { DocumentIcon as Document } from '@sanity/icons/Document'
 import { EditIcon as Edit } from '@sanity/icons/Edit'
 import { EllipsisHorizontalIcon as EllipsisHorizontal } from '@sanity/icons/EllipsisHorizontal'
 import { EnvelopeIcon as Envelope } from '@sanity/icons/Envelope'
+import { EyeClosedIcon as EyeClosed } from '@sanity/icons/EyeClosed'
+import { EyeOpenIcon as EyeOpen } from '@sanity/icons/EyeOpen'
 import { ErrorOutlineIcon as ErrorOutline } from '@sanity/icons/ErrorOutline'
 import { FilterIcon as Filter } from '@sanity/icons/Filter'
 import { HomeIcon as Home } from '@sanity/icons/Home'
@@ -84,6 +86,8 @@ export const CustomerIcon = User
 export const DeployIcon = PiRocketLaunch
 export const IntegrationsIcon = Plug
 export const EditIcon = Edit
+export const ShowIcon = EyeOpen
+export const HideIcon = EyeClosed
 export const EllipsisHorizontalIcon = EllipsisHorizontal
 export const NotificationIcon = Envelope
 export const ErrorOutlineIcon = ErrorOutline
