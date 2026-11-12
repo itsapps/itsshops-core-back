@@ -44,8 +44,8 @@ npm run watch       # pkg-utils watch (consumers npm link this)
 npm run link-watch  # plugin-kit link-watch
 npm run start       # sanity dev (host 0.0.0.0, port 3331) — core's own studio
 npm run test        # vitest (watch mode; `npx vitest run` once) — tests/vinofact.test.ts hits the
-                    #   live Vinofact API with the SANITY_STUDIO_VINOFACT_* values from `.env`;
-                    #   skipped when they're missing
+                    #   live Vinofact API with SANITY_STUDIO_VINOFACT_API_URL/_PROFILE_SLUG +
+                    #   VINOFACT_API_TOKEN (no prefix → not bundled) from `.env`; skipped when missing
 npm run extract     # sanity schema extract --workspace de  → schema.json (input to typegen)
 npm run typegen     # sanity typegen generate                → src/types/sanity.types.ts (used; see datasets.md)
 npm run lint / format   # eslint: 0 errors (warnings, mostly `any`, remain) — keep it at 0 errors
@@ -105,7 +105,7 @@ src/
 ├── structure/       # desk structure building blocks
 ├── lib/             # shop/ (productVariant tx) + hooks/ (price input, product transaction)
 ├── external/        # externally re-exported surface
-└── types/           # ItsshopsConfig, context, registry, schema, blocks, fields, mail, netlify, vinofact (hand-written) + sanity.types.ts (typegen-generated, used via the barrel — see datasets.md)
+└── types/           # ItsshopsConfig, context, registry, schema, secrets, blocks, fields, mail, vinofact (hand-written) + sanity.types.ts (typegen-generated, used via the barrel — see datasets.md)
 ```
 
 ## Config: `ItsshopsConfig`
@@ -118,11 +118,10 @@ it into the internal `CoreBackConfig`. Field list lives in `src/types/` (`config
 **Rule: never put a credential in `SANITY_STUDIO_*` env or in Studio config.** The Studio is a
 public SPA: Vite compiles those values into JS that anyone can download from the Studio URL without
 logging in (the Sanity login protects data, not code). Only public values belong there (project id,
-dataset, endpoint URLs, site id). **Known violation:** `SANITY_STUDIO_NETLIFY_ACCESS_TOKEN`,
-`SANITY_STUDIO_NETLIFY_FUNCTIONS_SECRET` and `SANITY_STUDIO_VINOFACT_API_TOKEN` are still bundled;
-they're being removed per core-front
-`/Users/kampfgnu/Documents/programming/jamstack/itsshops-core-front/.claude/plans/studio-auth-and-security-hardening.md`.
-Don't add more.
+dataset, endpoint URLs, site id). Credentials the Studio must send live in the dataset document
+`secrets.itsshops` (`@sanity/studio-secrets`, keys in `src/types/secrets.ts`), entered by an
+administrator in the toolbar's Integrations dialog; a Netlify PAT is not used at all (Deploy = build
+hook). Background: core-front `.claude/plans/studio-auth-and-security-hardening.md`.
 
 ## Feature flags (superset of frontend)
 

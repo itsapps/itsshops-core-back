@@ -39,8 +39,8 @@ const getLocations = (ctx: ITSContext) => {
 const mainDocuments = defineDocuments([
   {
     route: 'api/preview/:locale',
-    // type: 'page',
-    filter: `_type == "page"`,
+    // core-front renders the home page for this route (settings.homePage)
+    filter: `_type == "page" && _id == *[_type == "settings"][0].homePage._ref`,
     // filter: `_type == "page"`,
     // resolve(ctx) {
     //   const {params} = ctx
@@ -64,6 +64,11 @@ export const createPresentations = (ctx: ITSContext): PresentationPluginOptions 
     resolve: { locations: getLocations(ctx), mainDocuments },
     previewUrl: {
       initial: `${ctx.config.integrations.netlify.endpoint}/api/preview/${ctx.locale}`,
+      // Presentation creates a short-lived secret and opens `enable` (resolved against `initial`'s
+      // origin); core-front's preview-enable validates it and stores a preview session token in
+      // the iframe's sessionStorage. Not under /api/preview/ (clashes with /api/preview/:locale).
+      // No share access: no link-based draft preview without a Studio login.
+      previewMode: { enable: '/api/preview-enable', shareAccess: false },
     },
   }
 }

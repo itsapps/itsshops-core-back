@@ -4,6 +4,7 @@ import { ToolMenuProps } from 'sanity'
 
 import { useITSContext } from '../context/ITSCoreProvider'
 import { DeployDialog } from './DeployDialog'
+import { IntegrationsDialog } from './IntegrationsDialog'
 // import { CreateProductFromWines } from './products/CreateProductFromWines'
 
 export function CustomToolbar(props: ToolMenuProps): ReactElement {
@@ -20,6 +21,7 @@ export function CustomToolbar(props: ToolMenuProps): ReactElement {
       <Box flex={1}>{renderDefault({ ...props, tools: availableTools })}</Box>
       <Box>
         <Flex padding={1} gap={2} align={'center'}>
+          <IntegrationsDialog />
           <DeployDialog />
           {/* <CreateProductFromWines /> */}
         </Flex>

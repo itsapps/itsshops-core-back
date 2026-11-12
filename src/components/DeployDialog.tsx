@@ -1,81 +1,80 @@
-import { Badge, Button, Card, Dialog, Flex, Spinner, Stack, Text, TextArea } from '@sanity/ui'
-import { ChangeEvent, ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { useSecrets } from '@sanity/studio-secrets'
+import { Box, Button, Card, Dialog, Flex, Stack, Text, TextArea } from '@sanity/ui'
+import { useToast } from '@sanity/ui/toast'
+import { ChangeEvent, ReactElement, useCallback, useEffect, useId, useState } from 'react'
 
 import { DeployIcon } from '../assets/icons'
 import { useITSContext } from '../context/ITSCoreProvider'
-import { createNetlifyClient } from '../external/netlify'
-import { NetlifyBuild } from '../types'
+import { type ITSIntegrationSecrets, SECRETS_NAMESPACE } from '../types'
 
-const getStatus = (build: NetlifyBuild | null): 'building' | 'ready' | 'error' | 'none' => {
-  if (!build) return 'none'
-  if (!build.done) return 'building'
-  if (build.error) return 'error'
-  return 'ready'
-}
+const REFRESH_MS = 10000
+/** Deploy stays disabled this long after a trigger (double clicks; the hook gives no build id). */
+const COOLDOWN_MS = 10000
 
-const statusTones: Record<string, 'positive' | 'caution' | 'critical' | 'default'> = {
-  ready: 'positive',
-  building: 'caution',
-  error: 'critical',
-}
-
+/**
+ * Deploys the frontend through its Netlify **build hook** (secrets document, `netlifyBuildHook`) —
+ * no Netlify token in the Studio: a hook can only start a build of one site/branch. The status is
+ * Netlify's public deploy-status badge (an image; its state isn't readable from here, so there's no
+ * "building" lock or cancel — details via "Netlify").
+ */
 export function DeployDialog(): ReactElement {
-  const coreContext = useITSContext()
-  const { componentT, config } = coreContext
+  const { componentT, config } = useITSContext()
   const t = componentT.default
-  const reloadInterval = 10000
-  const { accessToken, siteId, projectName } = config.integrations.netlify
+  const toast = useToast()
+  const { siteId, projectName } = config.integrations.netlify
+  const { secrets } = useSecrets<ITSIntegrationSecrets>(SECRETS_NAMESPACE)
+  const hook = secrets?.netlifyBuildHook ?? ''
+  const titleId = useId()
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [build, setBuild] = useState<NetlifyBuild | null>(null)
-  const [actionLoading, setActionLoading] = useState(false)
   const [title, setTitle] = useState('')
-
-  const client = useMemo(() => {
-    return createNetlifyClient(accessToken, siteId)
-  }, [accessToken, siteId])
-
-  const fetchBuild = useCallback(
-    async (isSilent = false) => {
-      if (!isSilent) setLoading(true)
-      try {
-        const latestBuilds = await client.getLatestBuilds()
-        const latest = latestBuilds?.[0] || null
-        setBuild(latest)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        if (!isSilent) setLoading(false)
-      }
-    },
-    [client],
-  )
+  const [requesting, setRequesting] = useState(false)
+  const [coolingDown, setCoolingDown] = useState(false)
+  const [tick, setTick] = useState(() => Date.now())
 
   useEffect(() => {
-    const interval = open ? setInterval(() => fetchBuild(false), reloadInterval) : null
+    if (!open) return undefined
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fresh badge when the dialog opens
+    setTick(Date.now())
+    const interval = setInterval(() => setTick(Date.now()), REFRESH_MS)
+    return () => clearInterval(interval)
+  }, [open])
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- load the build when the dialog opens
-    if (open) fetchBuild()
-
-    // Always returns a function, but only clears if the interval exists
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [open, fetchBuild, reloadInterval])
+  useEffect(() => {
+    if (!coolingDown) return undefined
+    const timeout = setTimeout(() => setCoolingDown(false), COOLDOWN_MS)
+    return () => clearTimeout(timeout)
+  }, [coolingDown])
 
   const handleTrigger = useCallback(async () => {
-    setActionLoading(true)
+    if (!hook) return
+    setRequesting(true)
+    const triggerTitle = title.trim() || t('deployments.dialog.defaultDeploymentTitle')
     try {
-      // sleep for a second
-      await client.triggerBuild(title ? title : t('deployments.dialog.defaultDeploymentTitle'))
-      setTitle('')
-      await fetchBuild()
+      const res = await fetch(`${hook}?trigger_title=${encodeURIComponent(triggerTitle)}`, {
+        method: 'POST',
+      })
+      if (res.ok) {
+        toast.push({ status: 'success', title: t('deployments.dialog.requested') })
+        setTitle('')
+        setCoolingDown(true)
+        setTick(Date.now())
+      } else {
+        toast.push({
+          status: 'error',
+          title: t('deployments.dialog.requestFailed'),
+          description: `${res.status} ${res.statusText}`.trim(),
+        })
+      }
     } catch (err) {
-      console.error(err)
+      toast.push({
+        status: 'error',
+        title: t('deployments.dialog.requestFailed'),
+        description: err instanceof Error ? err.message : String(err),
+      })
     } finally {
-      setActionLoading(false)
+      setRequesting(false)
     }
-  }, [client, fetchBuild, title, t])
+  }, [hook, title, t, toast])
 
   const goToNetlify = useCallback(() => {
     window.open(
@@ -85,135 +84,20 @@ export function DeployDialog(): ReactElement {
     )
   }, [projectName])
 
-  const handleCancel = useCallback(async () => {
-    if (!build?.deploy_id) return
-    setActionLoading(true)
-    try {
-      await client.cancelDeploy(build.deploy_id)
-      await fetchBuild()
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setActionLoading(false)
-    }
-  }, [build, fetchBuild, client])
   const handleOpen = useCallback(() => setOpen(true), [])
   const handleClose = useCallback(() => setOpen(false), [])
-
-  const status = getStatus(build)
-
   const handleTitleChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setTitle(e.currentTarget.value)
   }, [])
 
-  const dialogContent = useMemo(() => {
-    if (loading && !build) {
-      return (
-        <Flex align="center" justify="center" padding={4}>
-          <Spinner muted />
-        </Flex>
-      )
-    }
-
-    if (!build) {
-      return (
-        <Text size={1} muted>
-          {t('deployments.dialog.noInfos')}
-        </Text>
-      )
-    }
-
-    return (
-      <>
-        <Flex align="center" gap={3}>
-          <Text size={2} weight="bold">
-            {t('deployments.status.title')}
-          </Text>
-          <Badge padding={2} tone={statusTones[status] || 'default'}>
-            {t(`deployments.status.options.${status}`)}
-          </Badge>
-          {status === 'building' && <Spinner muted />}
-        </Flex>
-
-        {build.error && (
-          <Card tone="critical" padding={3} radius={2} border>
-            <Text size={1}>{build.error}</Text>
-          </Card>
-        )}
-
-        <Text size={1} muted>
-          {t('deployments.startedOn')}{' '}
-          {build.created_at
-            ? coreContext.format.date(build.created_at, {
-                dateStyle: 'medium',
-                timeStyle: 'medium',
-              })
-            : '-'}
-        </Text>
-
-        {status !== 'building' && (
-          <TextArea
-            onChange={handleTitleChange}
-            padding={3}
-            rows={3}
-            placeholder={t('ui.actions.optionalNote')}
-            value={title}
-          />
-        )}
-        <Stack>
-          <Flex gap={3} justify="space-between">
-            <Flex gap={3}>
-              <Button
-                text={t('deployments.dialog.actions.goToNetlify')}
-                tone="default"
-                onClick={goToNetlify}
-              />
-            </Flex>
-            <Flex gap={3}>
-              <Button
-                text={t('deployments.dialog.actions.close')}
-                mode="ghost"
-                onClick={handleClose}
-              />
-              {status === 'building' ? (
-                <Button
-                  text={t('deployments.dialog.actions.cancel')}
-                  tone="critical"
-                  onClick={handleCancel}
-                  loading={actionLoading}
-                />
-              ) : (
-                <Button
-                  text={t('deployments.dialog.actions.deploy')}
-                  tone="primary"
-                  onClick={handleTrigger}
-                  loading={actionLoading || loading}
-                  disabled={loading} // Prevent double clicks while silent fetching
-                />
-              )}
-            </Flex>
-          </Flex>
-        </Stack>
-      </>
-    )
-  }, [
-    loading,
-    build,
-    status,
-    t,
-    actionLoading,
-    title,
-    handleTitleChange,
-    goToNetlify,
-    handleCancel,
-    handleTrigger,
-    handleClose,
-    coreContext.format,
-  ])
-
   return (
     <Stack>
-      <Button icon={DeployIcon} title={t('deployments.title')} onClick={handleOpen} />
+      <Button
+        icon={DeployIcon}
+        title={t('deployments.title')}
+        aria-label={t('deployments.title')}
+        onClick={handleOpen}
+      />
 
       {open && (
         <Dialog
@@ -223,7 +107,70 @@ export function DeployDialog(): ReactElement {
           width={1}
         >
           <Card padding={4}>
-            <Stack gap={4}>{dialogContent}</Stack>
+            <Stack gap={4}>
+              {siteId && (
+                <Stack gap={2}>
+                  <Flex align="center" gap={3}>
+                    <Text size={2} weight="bold">
+                      {t('deployments.status.title')}
+                    </Text>
+                    <img
+                      src={`https://api.netlify.com/api/v1/badges/${encodeURIComponent(siteId)}/deploy-status?t=${tick}`}
+                      alt={t('deployments.dialog.statusAlt')}
+                      height={20}
+                    />
+                  </Flex>
+                  <Text size={1} muted>
+                    {t('deployments.dialog.statusHint')}
+                  </Text>
+                </Stack>
+              )}
+
+              {hook ? (
+                <Stack gap={2}>
+                  <Text as="label" htmlFor={titleId} size={1} weight="medium">
+                    {t('deployments.dialog.titleLabel')}
+                  </Text>
+                  <TextArea
+                    id={titleId}
+                    onChange={handleTitleChange}
+                    padding={3}
+                    rows={3}
+                    value={title}
+                  />
+                </Stack>
+              ) : (
+                <Card tone="caution" padding={3} radius={2} border>
+                  <Text size={1}>{t('deployments.dialog.noHook')}</Text>
+                </Card>
+              )}
+
+              <Flex gap={3} justify="space-between">
+                <Box>
+                  {projectName && (
+                    <Button
+                      text={t('deployments.dialog.actions.goToNetlify')}
+                      tone="default"
+                      onClick={goToNetlify}
+                    />
+                  )}
+                </Box>
+                <Flex gap={3}>
+                  <Button
+                    text={t('deployments.dialog.actions.close')}
+                    mode="ghost"
+                    onClick={handleClose}
+                  />
+                  <Button
+                    text={t('deployments.dialog.actions.deploy')}
+                    tone="primary"
+                    onClick={handleTrigger}
+                    loading={requesting}
+                    disabled={!hook || requesting || coolingDown}
+                  />
+                </Flex>
+              </Flex>
+            </Stack>
           </Card>
         </Dialog>
       )}

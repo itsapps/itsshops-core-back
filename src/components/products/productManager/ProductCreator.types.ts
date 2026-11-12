@@ -61,6 +61,7 @@ export interface BundleVariantResult {
   kind: string
   wineVolume?: number
   wineVintage?: string
+  optionTitles?: unknown[] | null
 }
 
 export interface BundleItem {

@@ -22,3 +22,5 @@ that future-you would otherwise re-litigate.
 - [live-edit-preview-fields-written-by-client.md](live-edit-preview-fields-written-by-client.md) —
   on a `liveEdit` document, a custom input that changes a list-preview field writes with a sync
   client commit, not the form (async form commits leave the desk preview stale).
+- [studio-secrets-in-dataset.md](studio-secrets-in-dataset.md) — Studio credentials in the dataset
+  (`@sanity/studio-secrets`, admin-only Integrations dialog); no Netlify PAT, Deploy via build hook.

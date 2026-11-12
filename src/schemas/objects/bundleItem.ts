@@ -1,5 +1,6 @@
 import { BundleItemIcon } from '../../assets/icons'
 import { ITSSchemaDefinition } from '../../types'
+import { variantDetails } from '../../utils/variantLabel'
 
 export const bundleItem: ITSSchemaDefinition = {
   name: 'bundleItem',
@@ -40,14 +41,39 @@ export const bundleItem: ITSSchemaDefinition = {
         quantity: 'quantity',
         image: 'product.image.image',
         productImage: 'product.product.image.image',
+        kind: 'product.kind',
+        wineVolume: 'product.wine.volume',
+        wineVintage: 'product.wine.vintage',
+        optionTitle0: 'product.options.0.title',
+        optionTitle1: 'product.options.1.title',
+        optionTitle2: 'product.options.2.title',
       },
-      prepare({ variantTitle, productTitle, quantity, image, productImage }) {
+      prepare({
+        variantTitle,
+        productTitle,
+        quantity,
+        image,
+        productImage,
+        kind,
+        wineVolume,
+        wineVintage,
+        optionTitle0,
+        optionTitle1,
+        optionTitle2,
+      }) {
         const vTitle = ctx.localizer.value(variantTitle)
         const pTitle = ctx.localizer.value(productTitle)
         const count = quantity || 0
-        const title = vTitle || pTitle ? `${count}x ${vTitle || `[${pTitle}]`}` : ''
+        const name = [pTitle, vTitle].filter(Boolean).join(' — ')
         return {
-          title,
+          title: name ? `${count}× ${name}` : '',
+          // vintage/volume (wine) or options (physical/digital) — also when the variant has its own title
+          subtitle: variantDetails(ctx, {
+            kind,
+            wineVolume,
+            wineVintage,
+            optionTitles: [optionTitle0, optionTitle1, optionTitle2],
+          }),
           media: ctx.localizer.value(image) || ctx.localizer.value(productImage) || BundleItemIcon,
         }
       },

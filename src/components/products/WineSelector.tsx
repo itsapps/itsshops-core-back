@@ -55,7 +55,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
 
   // const hasError = validationErrors.length > 0
 
-  const { vinofactClient, studioT } = useITSContext()
+  const { vinofactClient, studioT, componentT } = useITSContext()
   const toast = useToast()
 
   const [wines, setWines] = useState<VinofactWine[]>([])
@@ -67,8 +67,8 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
     if (!vinofactClient) {
       toast.push({
         status: 'error',
-        title: 'Vinofact client not initialized.',
-        description: 'Check your shop configuration features.',
+        title: componentT.default('vinofact.notInitialized.title'),
+        description: componentT.default('vinofact.notInitialized.description'),
       })
       return
     }
@@ -84,14 +84,14 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
     } catch (err: any) {
       toast.push({
         status: 'error',
-        title: 'Fetch Failed',
+        title: componentT.default('vinofact.winesLoadedError.title'),
         description: err.message,
       })
-      setError(err.message || 'Failed to fetch wines from Vinofact.')
+      setError(err.message || componentT.default('vinofact.winesLoadedError.title'))
     } finally {
       setLoading(false)
     }
-  }, [vinofactClient, toast])
+  }, [vinofactClient, toast, componentT])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch wines on mount

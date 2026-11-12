@@ -12,7 +12,11 @@ every custom component uses. It augments the per-locale `ITSContext` with runtim
 - `sanityClient` — `useClient({ apiVersion })`. **In dev it's a Proxy that logs every `fetch`**
   (query, params, timing; slow queries >500ms flagged red). Use this, not a raw client.
 - `studioT` — the studio i18next `t`
-- `imageBuilder`, `frontendClient` (Netlify functions client), `vinofactClient` (when configured)
+- `imageBuilder`, `frontendClient` (core-front functions client, `external/frontend.ts`; sends the
+  secrets document's `functionsSecret` as `x-server-secret` — without one (not entered / still
+  loading) every call returns `{ error: integrations.missingSecrets }` without a request, shown by
+  the callers' toasts), `vinofactClient` (only once `vinofactToken` is in the secrets document;
+  missing → the `vinofact.notInitialized` toast)
 - plus all of `ITSContext`: `config`, `featureRegistry`, `locale`, `localizer`, `format`,
   `constants`, `t`/`schemaT`/`structureT`/`componentT`, `i18nFieldTypes`.
 
@@ -83,8 +87,13 @@ add variants inline), `WineSelector` / `WinePreview`.
     sets `refunded`; hint `enterAmountBelowRemaining`). The refund itself is **`refundOrder`**
     (`lib/shop/orderRefund.ts`, shared with "Refund & close"): it re-fetches the order and refuses
     (`actions.refund.changedMeanwhile`) when its `paymentStatus` or refunded total differs from the
-    snapshot taken when the dialog opened (`refundSnapshot` — not the live prop; `payment-refund`
-    sends Stripe no idempotency key, so two tabs could refund twice), then refunds and commits one
+    snapshot taken when the dialog opened (`refundSnapshot` — not the live prop), then refunds
+    (`frontendClient.refundPayment(order._id, { amount?, expectedRefunded })` — core-front loads
+    the PaymentIntent from the order and compares `expectedRefunded` (the snapshot's refunded
+    total) with Stripe's **live** refunds, because the re-fetch only sees refunds already synced
+    onto the order (2–3 s later); a mismatch → `REFUND_CONFLICT` → `changedMeanwhile`, no patch, no
+    mail — two-tab test on Tinhof staging, 2026-11-12: equal and different amounts, only the first
+    refunded) and commits one
     patch built by `buildRefundPatch` (`utils/orderRefunds.ts`). When the order has an **open
     withdrawal** (`useOpenWithdrawal`) and a refund is selected, a caution notice links to it
     ("handle the refund there"; not a block). `delivered → returned` is always allowed (shops set
@@ -118,7 +127,12 @@ add variants inline), `WineSelector` / `WinePreview`.
       snapshot = the order fetched on open), withdrawal → `refunded` second (if that fails, the
       guide's `close` step finishes it without a second refund), then `orderRefunded` /
       `orderRefundedPartially` with the refunded amount.
-    - `WithdrawalResendAction` "Bestätigung erneut senden".
+    - `WithdrawalResendAction` "Bestätigung erneut senden": confirm dialog (stays open with a
+      loading button, closes on success) naming the real recipients — core-front
+      `order-withdraw-notify` sends to the **assigned order's** customer email **and** the submitted
+      one when they differ (editor-assigned withdrawals), else (unmatched) the submitted one. The
+      assign dialog's "send confirmation" checkbox and both success toasts name both addresses
+      (`mailedToText`, from the response's `recipients`).
     `OrderWithdrawalCreateAction` (on the order) refuses an empty or future "Erklärt am" (`max` =
     now, `aria-invalid` + hint) — it drives the refund deadline.
   - `product` (feature `shop`) → `AddVariantsAction`
@@ -173,8 +187,19 @@ add variants inline), `WineSelector` / `WinePreview`.
   the change and keeps the old value until the next change or a reload (ADR
   `live-edit-preview-fields-written-by-client.md`).
 - `StatusIcon.tsx` (order list preview media: fulfillment status icon; only a **full** refund
-  overrides it — a partial refund needs no action, so it shows the fulfillment state), `YoutubePreview.tsx`, `DeployDialog.tsx` (triggers a Netlify build via the
-  Netlify integration env/config), and the `CustomToolbar` (studio `toolMenu`).
+  overrides it — a partial refund needs no action, so it shows the fulfillment state), `YoutubePreview.tsx`, and the `CustomToolbar` (studio `toolMenu`) with:
+  - `IntegrationsDialog.tsx` (plug icon, **administrators only** — UI only, every member can still
+    read the document): edits the secrets document (plugin-and-config.md → "Secrets") with masked
+    inputs + a show/hide toggle per field (`aria-pressed`, field name in the label). Own dialog, not
+    the package's `SettingsView` (can't mask, swallows write errors); writes the package's format
+    itself (`createIfNotExists` + `set({ secrets })`), toasts saved/failed.
+  - `DeployDialog.tsx`: Deploy `POST`s `<netlifyBuildHook>?trigger_title=…` (CORS works, a readable
+    `200` → "Build requested" toast; disabled ~10 s after); status = Netlify's public badge
+    `api/v1/badges/<siteId>/deploy-status` as an `<img>` refreshed every 10 s (cache-busting
+    query) — its state isn't readable, so there's no building lock and no cancel ("Netlify" link
+    for details). No hook → Deploy disabled + hint. Upgrade path if editors miss the status: a
+    core-front `/api/studio/deploy` proxy with the PAT in server env (core-front plan
+    `studio-auth-and-security-hardening.md` → B).
 
 ## Where each is wired (`src/index.ts`)
 

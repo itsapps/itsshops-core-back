@@ -11,6 +11,7 @@ import {
   VariantOptionReference,
 } from '../../types'
 import { validateRequiredArrayIfKind } from '../../utils/validation'
+import { variantDetails } from '../../utils/variantLabel'
 
 export const productVariant: ITSDocumentDefinition = {
   name: 'productVariant',
@@ -244,7 +245,11 @@ export const productVariant: ITSDocumentDefinition = {
             archived: '⚪',
           }
           const statusIcon = statusIcons[status] ?? ''
-          const subtitle = [statusIcon, kindSubtitle].filter(Boolean).join(' ')
+          // With an own title the product name isn't in the title — put it in front of the details,
+          // so reference pickers / search tell "Reserve" of one wine from another's.
+          const productHint = vTitle && pTitle ? pTitle : ''
+          const details = [productHint, kindSubtitle].filter(Boolean).join(' · ')
+          const subtitle = [statusIcon, details].filter(Boolean).join(' ')
 
           return {
             title,
@@ -276,19 +281,15 @@ function buildSubtitle(
   },
 ): string {
   switch (kind) {
-    case 'wine': {
-      const liter =
-        data.wineVolume && Number.isInteger(data.wineVolume)
-          ? ctx.format.number(data.wineVolume / 1000, { style: 'unit', unit: 'liter' })
-          : data.wineVolume
-      return [liter, data.wineVintage].filter(Boolean).join(' • ')
-    }
+    case 'wine':
     case 'physical':
     case 'digital':
-      return data.options.titles
-        .map((o) => ctx.localizer.value(o))
-        .filter(Boolean)
-        .join(' • ')
+      return variantDetails(ctx, {
+        kind,
+        wineVolume: data.wineVolume,
+        wineVintage: data.wineVintage,
+        optionTitles: data.options.titles,
+      })
     case 'bundle':
       return ctx.schemaT.default(
         'productVariant.preview.bundleItems',

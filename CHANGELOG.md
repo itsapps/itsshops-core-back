@@ -4,12 +4,62 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
-## Unreleased
+## Unreleased (6.0.0)
 
-Menu items per level. `menus.maxDepth` = number of menu levels, top level included (1 = flat,
-default; 2 = top-level links + submenus of links).
+Menu items per level, and the security hardening: no credentials in the Studio bundle (secrets
+document + Integrations dialog), Deploy via build hook, refunds by order id, Presentation preview
+mode. Release together with core-front 5.0.0 (refund contract + preview) — per customer, frontend
+and backend in the same session.
 
-### Upgrading
+### Upgrading (security hardening)
+- **Credentials move out of env/config.** Remove `SANITY_STUDIO_NETLIFY_ACCESS_TOKEN`,
+  `SANITY_STUDIO_NETLIFY_FUNCTIONS_SECRET` and `SANITY_STUDIO_VINOFACT_API_TOKEN` from `.env*`
+  **and** from both Studio Netlify projects. `integrations.vinofact.accessToken` in
+  `sanity.config.ts` no longer exists (TypeScript flags it) — delete it. Then, as administrator,
+  toolbar → **Integrations** (plug icon), once per dataset: the frontend's
+  `SERVER_FUNCTIONS_SECRET` (a **new** one — rotate it in the frontend's Netlify env too), its
+  Netlify **build hook** URL (Netlify → frontend project → Build hooks, one per branch) and the
+  Vinofact token. Until then refunds/mails show "Integration settings are missing" and Deploy is
+  disabled.
+- `SANITY_STUDIO_NETLIFY_SITE_ID` must be the **frontend** project of that environment (now also
+  the deploy-status badge).
+- **Deploy dialog**: build hook + Netlify's status badge; no "building" state and no cancel any
+  more (cancel in Netlify).
+- **Refunds**: `ITSFrontendClient.refundPayment(orderId, { amount?, expectedRefunded? })` (was
+  `paymentIntentId`) — needs core-front ≥ 5.0.0 (it 400s an old body, and an old core-front 400s
+  the new one). `refundOrder` sends the dialog's refunded total as `expectedRefunded`; core-front
+  refuses with `REFUND_CONFLICT` when another tab/editor refunded meanwhile → "changed meanwhile"
+  (before, a second tab within 2–3 s refunded again). `FrontendResponse` errors carry `code`.
+- **`./external`**: `createNetlifyClient` and the `NetlifyClient` / `NetlifyBuild` types are
+  removed. `NetlifyConfig` lost `accessToken` + `secret`, `VinofactIntegrationConfig` lost
+  `accessToken`.
+- **Presentation** opens `/api/preview-enable` first: the frontend needs core-front 5.0.0's
+  `preview_enable.mts` wrapper and the widened `preview.mts` path (core-front CHANGELOG).
+- Tests that read `SANITY_STUDIO_VINOFACT_API_TOKEN` (customer `tests/utils/vinofact.ts`): rename to
+  `VINOFACT_API_TOKEN` in the code and `.env` (no prefix → not bundled).
+- After `npm install`: `npm ls @sanity/ui` must show one version (`@sanity/studio-secrets` needs
+  `^4.4.10`).
+- After the Studio redeploy: rotate the Vinofact token — old deploys stay reachable at their
+  Netlify permalinks.
+
+### Fixed
+- Bundles: the Product Manager's variant dropdown is sorted and always shows vintage/volume
+  (wine) or the options (physical/digital), also for variants with their own title; bundle items
+  in the variant form show them as subtitle (`src/utils/variantLabel.ts`, shared with the variant
+  preview). A variant with its own title now has the product name in front of its preview
+  subtitle ("Grüner Veltliner · 0,75 l • 2023"), so reference pickers, search and the flat variant
+  list tell same-named variants of different products apart. Nothing to change.
+- Withdrawal "Resend confirmation" opens a confirm dialog (recipient shown) that stays open with a
+  loading button until the mail went out, then closes with the toast; errors stay in the dialog.
+  Before, the menu closed at once and nothing showed progress. It names the addresses core-front really
+  sends to: the assigned order's customer email and, when it differs, the address the withdrawal
+  was submitted with (core-front 5.0.0 sends to both), else the submitted email. The assign
+  dialog and the success toasts name both too.
+
+### Upgrading (menu levels)
+`menus.maxDepth` = number of menu levels, top level included (1 = flat, default; 2 = top-level
+links + submenus of links).
+
 - **`menus.disableSubmenus` is removed** — `maxDepth` alone decides (`1` = flat, the default;
   `2` = submenus). Delete the line from `schemaSettings.menus` (TypeScript flags it otherwise);
   with `disableSubmenus: false` keep/set `maxDepth: 2`.

@@ -244,7 +244,7 @@ function CreateWithdrawalContent({
         setLoading(false)
         return
       }
-      mailedTo = result.data?.to
+      mailedTo = mailedToText(result.data, t)
     }
 
     setLoading(false)
@@ -334,6 +334,21 @@ function CreateWithdrawalContent({
 }
 
 /** Result / error line of a dialog, announced politely. */
+/** "a@x" or "a@x and b@y" — every address core-front sent the receipt to. */
+function mailedToText(
+  data: { to: string; recipients?: string[] } | undefined,
+  t: TranslatorFunction,
+): string | undefined {
+  let list: string[] = []
+  if (data?.recipients?.length) list = data.recipients
+  else if (data?.to) list = [data.to]
+  if (list.length < 2) return list[0]
+  return t('actions.orderWithdrawal.recipientsBoth', '{{first}} and {{second}}', {
+    first: list[0],
+    second: list[1],
+  })
+}
+
 function StatusLine({ status }: { status: string }) {
   return (
     <Box marginTop={status ? 3 : 0} aria-live="polite">
@@ -549,7 +564,7 @@ function AssignWithdrawalContent({
         setLoading(false)
         return
       }
-      mailedTo = result.data?.to
+      mailedTo = mailedToText(result.data, t)
     }
 
     setLoading(false)
@@ -666,11 +681,19 @@ function AssignWithdrawalContent({
               <Box flex={1}>
                 <Text size={1}>
                   <label htmlFor="withdrawal-assign-notify">
-                    {t(
-                      'actions.orderWithdrawal.assign.notify',
-                      'Send the confirmation to the order’s email ({{email}})',
-                      { email: picked.email ?? '' },
-                    )}
+                    {picked.email &&
+                    withdrawal.email &&
+                    picked.email.trim().toLowerCase() !== withdrawal.email.trim().toLowerCase()
+                      ? t(
+                          'actions.orderWithdrawal.assign.notifyBoth',
+                          'Send the confirmation to the order’s email ({{email}}) and to the address the withdrawal was submitted with ({{submitted}})',
+                          { email: picked.email, submitted: withdrawal.email },
+                        )
+                      : t(
+                          'actions.orderWithdrawal.assign.notify',
+                          'Send the confirmation to the order’s email ({{email}})',
+                          { email: picked.email ?? '' },
+                        )}
                   </label>
                 </Text>
               </Box>
@@ -892,39 +915,129 @@ function UnassignWithdrawalContent({
 export function WithdrawalResendAction(
   props: DocumentActionProps,
 ): DocumentActionDescription | null {
-  const { componentT, frontendClient } = useITSContext()
+  const wd = props.published as WithdrawalActionDoc | null
+  const { componentT } = useITSContext()
+  const t = componentT.default
+  // Snapshot + stays while open — see `WithdrawalAssignAction`.
+  const [opened, setOpened] = useState<WithdrawalActionDoc | null>(null)
+
+  const handleOpen = useCallback(() => setOpened(wd), [wd])
+  const handleClose = useCallback(() => setOpened(null), [])
+
+  const label = t('actions.orderWithdrawal.resend.title', 'Resend confirmation')
+  return {
+    label,
+    icon: SendMailIcon,
+    disabled: !wd?._id,
+    onHandle: handleOpen,
+    dialog: !!opened && {
+      type: 'dialog',
+      header: label,
+      onClose: handleClose,
+      content: <ResendWithdrawalContent withdrawal={opened} onComplete={handleClose} />,
+    },
+  }
+}
+
+/**
+ * Confirm → send; stays open with a loading button until the mail went out, closes on success.
+ * Names the addresses core-front's `order-withdraw-notify` really uses: the assigned order's
+ * customer email plus the submitted one when it differs, else (unmatched) the submitted one.
+ */
+function ResendWithdrawalContent({
+  withdrawal,
+  onComplete,
+}: {
+  withdrawal: WithdrawalActionDoc
+  onComplete: () => void
+}) {
+  const { componentT, frontendClient, sanityClient } = useITSContext()
   const t = componentT.default
   const toast = useToast()
   const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState('')
+  const orderId = withdrawal.orderRef?._ref
+  const submitted = withdrawal.email ?? ''
+  // null = loading the order's address
+  const [orderEmail, setOrderEmail] = useState<string | null>(orderId ? null : '')
 
-  const id = (props.published as { _id: string } | null)?._id
+  useEffect(() => {
+    if (!orderId) return undefined
+    let active = true
+    sanityClient
+      .fetch<string | null>(`*[_id == $id][0].customer.contactEmail`, { id: orderId })
+      .then((email) => {
+        if (active) setOrderEmail(email ?? '')
+      })
+      .catch(() => {
+        if (active) setOrderEmail('')
+      })
+    return () => {
+      active = false
+    }
+  }, [orderId, sanityClient])
 
-  const handle = useCallback(async () => {
-    if (!id) return
+  const recipient = orderEmail || submitted
+  const differs =
+    !!orderEmail &&
+    !!submitted &&
+    orderEmail.trim().toLowerCase() !== submitted.trim().toLowerCase()
+
+  let question: string
+  if (orderEmail === null) question = t('ui.loading', 'Loading…')
+  else if (differs)
+    question = t(
+      'actions.orderWithdrawal.resend.confirmBoth',
+      'Send the withdrawal confirmation again to the order’s address ({{email}}) and to the address it was submitted with ({{submitted}})?',
+      { email: recipient, submitted },
+    )
+  else
+    question = t(
+      'actions.orderWithdrawal.resend.confirm',
+      'Send the withdrawal confirmation to {{email}} again?',
+      { email: recipient },
+    )
+
+  const handleSend = useCallback(async () => {
     setLoading(true)
-    const result = await frontendClient.withdrawNotify(id)
+    setStatus('')
+    const result = await frontendClient.withdrawNotify(withdrawal._id)
     setLoading(false)
     if (result.error) {
-      toast.push({
-        status: 'error',
-        title: t('actions.orderWithdrawal.resend.error', 'Email could not be sent'),
-        description: result.error,
-      })
-    } else {
-      toast.push({
-        status: 'success',
-        title: t('actions.orderWithdrawal.resend.success', 'Confirmation email sent'),
-      })
+      setStatus(
+        `${t('actions.orderWithdrawal.resend.error', 'Email could not be sent')}: ${result.error}`,
+      )
+      return
     }
-    props.onComplete()
-  }, [id, frontendClient, toast, t, props])
+    toast.push({
+      status: 'success',
+      title: t('actions.orderWithdrawal.resend.success', 'Confirmation email sent'),
+    })
+    onComplete()
+  }, [frontendClient, withdrawal._id, toast, t, onComplete])
 
-  return {
-    label: t('actions.orderWithdrawal.resend.title', 'Resend confirmation'),
-    icon: SendMailIcon,
-    disabled: loading || !id,
-    onHandle: handle,
-  }
+  return (
+    <Stack padding={4} gap={4}>
+      <Text>{question}</Text>
+      <Flex gap={2} justify="flex-end">
+        <Button
+          mode="ghost"
+          text={t('ui.dialog.cancel', 'Cancel')}
+          disabled={loading}
+          onClick={onComplete}
+        />
+        <Button
+          tone="primary"
+          icon={SendMailIcon}
+          text={t('actions.orderWithdrawal.resend.send', 'Send')}
+          loading={loading}
+          disabled={loading || orderEmail === null}
+          onClick={handleSend}
+        />
+      </Flex>
+      <StatusLine status={status} />
+    </Stack>
+  )
 }
 
 // ── Refund & close ──────────────────────────────────────────────────────────

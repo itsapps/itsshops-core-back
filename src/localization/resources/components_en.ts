@@ -55,7 +55,8 @@ export default {
   vinofact: {
     notInitialized: {
       title: 'Vinofact client not initialized.',
-      description: 'Check your shop configuration features.',
+      description:
+        'Check your shop configuration features, or ask an administrator to enter the integration settings.',
     },
     winesLoadedError: {
       title: 'Could not load Vinofact wines.',
@@ -316,6 +317,8 @@ export default {
         noResults: 'No order found',
         picked: 'Assign to order #{{orderNumber}}',
         notify: 'Send the confirmation to the order’s email ({{email}})',
+        notifyBoth:
+          'Send the confirmation to the order’s email ({{email}}) and to the address the withdrawal was submitted with ({{submitted}})',
         matches: 'Matches: {{fields}}',
         match: { orderNumber: 'order number', email: 'email', name: 'name' },
         success: 'Assigned to order #{{orderNumber}}',
@@ -332,8 +335,13 @@ export default {
         'The withdrawal was changed meanwhile — close this dialog and open it again',
       deleteOnlyUnmatched: 'Only unmatched withdrawals can be deleted.',
       notifyError: 'Saved, but the email could not be sent',
+      recipientsBoth: '{{first}} and {{second}}',
       resend: {
         title: 'Resend confirmation',
+        confirm: 'Send the withdrawal confirmation to {{email}} again?',
+        confirmBoth:
+          'Send the withdrawal confirmation again to the order’s address ({{email}}) and to the address it was submitted with ({{submitted}})?',
+        send: 'Send',
         success: 'Confirmation email sent',
         error: 'Email could not be sent',
       },
@@ -409,6 +417,34 @@ export default {
       changedMeanwhile: 'The order was changed meanwhile — close this dialog and open it again',
     },
   },
+  integrations: {
+    title: 'Integrations',
+    dialogTitle: 'Integration settings',
+    keys: {
+      functionsSecret: {
+        title: 'Server functions secret',
+        description:
+          'Must match SERVER_FUNCTIONS_SECRET of this environment\'s frontend (Netlify env). Used for refunds and customer mails.',
+      },
+      netlifyBuildHook: {
+        title: 'Netlify build hook',
+        description:
+          'Build hook URL of this environment\'s frontend (Netlify → Project configuration → Build hooks). Used by the Deploy button.',
+      },
+      vinofactToken: {
+        title: 'Vinofact API token',
+        description: 'Token for the Vinofact wine import.',
+      },
+    },
+    show: 'Show value',
+    hide: 'Hide value',
+    save: 'Save',
+    cancel: 'Cancel',
+    saved: 'Integration settings saved',
+    saveFailed: 'Integration settings could not be saved',
+    missingSecrets:
+      'Integration settings are missing. Ask an administrator to enter them (toolbar → Integrations).',
+  },
   deployments: {
     title: 'Deployments',
     dialog: {
@@ -421,6 +457,12 @@ export default {
       },
       noInfos: 'No information available',
       defaultDeploymentTitle: 'Triggered from Sanity',
+      titleLabel: 'Deploy note (optional)',
+      statusAlt: 'Netlify deploy status',
+      statusHint: 'The status refreshes every 10 seconds. Details: "Netlify".',
+      requested: 'Build requested',
+      requestFailed: 'Build could not be requested',
+      noHook: 'No build hook set. An administrator can enter it under toolbar → Integrations.',
     },
     status: {
       title: 'Status',
