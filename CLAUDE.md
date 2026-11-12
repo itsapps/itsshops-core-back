@@ -105,7 +105,7 @@ src/
 ├── structure/       # desk structure building blocks
 ├── lib/             # shop/ (productVariant tx) + hooks/ (price input, product transaction)
 ├── external/        # externally re-exported surface
-└── types/           # ItsshopsConfig, context, registry, schema, blocks, fields, mail, netlify, vinofact (hand-written) + sanity.types.ts (typegen-generated, used via the barrel — see datasets.md)
+└── types/           # ItsshopsConfig, context, registry, schema, secrets, blocks, fields, mail, vinofact (hand-written) + sanity.types.ts (typegen-generated, used via the barrel — see datasets.md)
 ```
 
 ## Config: `ItsshopsConfig`

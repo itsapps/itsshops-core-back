@@ -9,6 +9,10 @@
    - `visionTool()` — **dev only** (`context.config.isDev`)
    - `media()`
    - `presentationTool(createPresentations(...))` (`src/presentation/`)
+     — `previewUrl.initial` = `<netlify.endpoint>/api/preview/<locale>` (core-front renders the
+     home page), `previewMode: { enable: '/api/preview-enable', shareAccess: false }` (core-front
+     validates Sanity's preview secret; no share-access links). Flow: core-front
+     `commerce-and-netlify.md` → "Draft preview".
    - translation package + i18n bundles (`src/localization/sanityTranslation.ts`)
    - `assist({ translate: { field: { documentTypes: <enabled docs>, languages } } })`
    - `schema.types = buildSchemas(context)`, `schema.templates = templateResolver`
@@ -79,7 +83,8 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
 - `schemaSettings` — `{ links.allowedReferences, menus.{maxDepth,allowedReferences}, productKinds }`
   (`menus.maxDepth` = menu levels, top level included — `schemas.md` → "Menu levels")
 - `documentActions` — consumer action hook (see [studio-components.md](studio-components.md))
-- `integrations.vinofact` — VinoFact credentials
+- `integrations.vinofact` — VinoFact `{ endpoint, profileSlug }` (public values; the token is a
+  secret, below)
 
 **Resolution rules (`mapConfig`):**
 - precedence for ids: `config.projectId ?? SANITY_STUDIO_PROJECT`; dataset ←
@@ -88,13 +93,27 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
 - `schemaSettings` = core defaults `deepMerge` customer. **Throws** if `shop` is enabled but
   `productKinds` is empty.
 - `apiVersion` is pinned to `v2025-05-25`.
-- `integrations.netlify` is read entirely from `SANITY_STUDIO_NETLIFY_*` env; `integrations.vinofact`
-  from `config.integrations.vinofact` or `SANITY_STUDIO_VINOFACT_*` env (only when vinofact is on).
-  **These end up in the public Studio bundle**, including `accessToken` (an account-wide Netlify
-  PAT), the functions `secret` and the Vinofact token. This is a known leak; the fix (secrets
-  document via `@sanity/studio-secrets`, Netlify build hook) is planned in core-front
-  `/Users/kampfgnu/Documents/programming/jamstack/itsshops-core-front/.claude/plans/studio-auth-and-security-hardening.md`.
-  See the rule in `CLAUDE.md` → "Config".
+- `integrations.netlify` = `{ siteId, projectName, endpoint }` from `SANITY_STUDIO_NETLIFY_SITE_ID` /
+  `_PROJECT_NAME` / `_FUNCTIONS_ENDPOINT`; `integrations.vinofact` = `{ endpoint, profileSlug }`
+  from `config.integrations.vinofact` or `SANITY_STUDIO_VINOFACT_API_URL` / `_PROFILE_SLUG` (only
+  when vinofact is on). All of it is in the public bundle — public values only (rule in `CLAUDE.md`
+  → "Config").
+
+### Secrets (`@sanity/studio-secrets`)
+
+Credentials the Studio must send live in the dataset document **`secrets.itsshops`** (type
+`pluginSecrets`, field `secrets`; namespace + keys in `src/types/secrets.ts`): `functionsSecret`
+(= the frontend's `SERVER_FUNCTIONS_SECRET`, refunds + mails), `netlifyBuildHook` (Deploy button),
+`vinofactToken` (vinofact only). The dotted id makes it readable by **logged-in members only** —
+also in a public dataset — but by **every** member, viewers included (custom roles need
+Enterprise), so core-front's endpoints validate everything themselves. Per dataset:
+`development` = staging values, `production` = live values. It is part of every dataset export
+(backups). Read in `ITSCoreProvider` / `DeployDialog` with `useSecrets`; written by
+`IntegrationsDialog` (studio-components.md). No Netlify account token anywhere — Deploy posts to a
+build hook. Why: `decisions/studio-secrets-in-dataset.md`.
+
+Needs **one** `@sanity/ui` copy (studio-secrets depends on `^4.4.10`; two copies split the theme
+context) — check `npm ls @sanity/ui` in core-back and each customer backend after a pin.
 
 **`ignoreExtensions: true` (the superset switch):** set by the root `sanity.config.ts` for local
 schema dev / typegen. It forces `allFeatures()` (every feature on), uses base `localizedFieldTypes`
