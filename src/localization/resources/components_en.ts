@@ -336,6 +336,8 @@ export default {
       resend: {
         title: 'Resend confirmation',
         confirm: 'Send the withdrawal confirmation to {{email}} again?',
+        orderAddress:
+          'The withdrawal was submitted with {{submitted}}; it is assigned to an order, so the confirmation goes to the order’s address.',
         send: 'Send',
         success: 'Confirmation email sent',
         error: 'Email could not be sent',

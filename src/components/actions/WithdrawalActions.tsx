@@ -916,7 +916,11 @@ export function WithdrawalResendAction(
   }
 }
 
-/** Confirm → send; stays open with a loading button until the mail went out, closes on success. */
+/**
+ * Confirm → send; stays open with a loading button until the mail went out, closes on success.
+ * Shows the address core-front's `order-withdraw-notify` really uses: the assigned order's
+ * customer email, else (unmatched) the submitted one.
+ */
 function ResendWithdrawalContent({
   withdrawal,
   onComplete,
@@ -924,11 +928,35 @@ function ResendWithdrawalContent({
   withdrawal: WithdrawalActionDoc
   onComplete: () => void
 }) {
-  const { componentT, frontendClient } = useITSContext()
+  const { componentT, frontendClient, sanityClient } = useITSContext()
   const t = componentT.default
   const toast = useToast()
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState('')
+  const orderId = withdrawal.orderRef?._ref
+  const submitted = withdrawal.email ?? ''
+  // null = loading the order's address
+  const [orderEmail, setOrderEmail] = useState<string | null>(orderId ? null : '')
+
+  useEffect(() => {
+    if (!orderId) return undefined
+    let active = true
+    sanityClient
+      .fetch<string | null>(`*[_id == $id][0].customer.contactEmail`, { id: orderId })
+      .then((email) => {
+        if (active) setOrderEmail(email ?? '')
+      })
+      .catch(() => {
+        if (active) setOrderEmail('')
+      })
+    return () => {
+      active = false
+    }
+  }, [orderId, sanityClient])
+
+  const recipient = orderEmail || submitted
+  const differs =
+    !!orderEmail && !!submitted && orderEmail.toLowerCase() !== submitted.toLowerCase()
 
   const handleSend = useCallback(async () => {
     setLoading(true)
@@ -951,12 +979,23 @@ function ResendWithdrawalContent({
   return (
     <Stack padding={4} gap={4}>
       <Text>
-        {t(
-          'actions.orderWithdrawal.resend.confirm',
-          'Send the withdrawal confirmation to {{email}} again?',
-          { email: withdrawal.email ?? '' },
-        )}
+        {orderEmail === null
+          ? t('ui.loading', 'Loading…')
+          : t(
+              'actions.orderWithdrawal.resend.confirm',
+              'Send the withdrawal confirmation to {{email}} again?',
+              { email: recipient },
+            )}
       </Text>
+      {differs && (
+        <Text size={1} muted>
+          {t(
+            'actions.orderWithdrawal.resend.orderAddress',
+            'The withdrawal was submitted with {{submitted}}; it is assigned to an order, so the confirmation goes to the order’s address.',
+            { submitted },
+          )}
+        </Text>
+      )}
       <Flex gap={2} justify="flex-end">
         <Button
           mode="ghost"
@@ -969,7 +1008,7 @@ function ResendWithdrawalContent({
           icon={SendMailIcon}
           text={t('actions.orderWithdrawal.resend.send', 'Send')}
           loading={loading}
-          disabled={loading}
+          disabled={loading || orderEmail === null}
           onClick={handleSend}
         />
       </Flex>
