@@ -4,11 +4,11 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
-## Unreleased
+## 6.1.0
 
 - **`shop.productFreeShipping`** (default off, needs checkout): variant field `grantsFreeShipping`
   ("Versandkostenfrei", pricing group, hidden on digital) — the whole order ships free. Pairs with
-  core-front's product free shipping (plan core-front `.claude/plans/product-free-shipping.md`).
+  core-front 5.1.0's product free shipping (plan core-front `.claude/plans/product-free-shipping.md`).
 - **Order snapshot `fulfillment.freeShippingReason`** (`product` / `threshold` / `coupon`), shown
   in the order view under the shipping total.
 
