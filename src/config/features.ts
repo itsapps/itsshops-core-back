@@ -36,7 +36,13 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
       (config.schemaSettings.productKinds.includes('physical') ||
         config.schemaSettings.productKinds.includes('digital')),
     'shop.vouchers': shopEnabled && !!config.features.shop?.vouchers,
-    'shop.coupons': shopEnabled && !!config.features.shop?.coupons,
+    // Coupons and product free shipping only work in checkout.
+    'shop.coupons':
+      shopEnabled && config.features.shop?.checkout !== false && !!config.features.shop?.coupons,
+    'shop.productFreeShipping':
+      shopEnabled &&
+      config.features.shop?.checkout !== false &&
+      !!config.features.shop?.productFreeShipping,
     'shop.invoices': shopEnabled && config.features.shop?.invoices !== false,
     blog: !!config.features.blog,
     users: !!config.features.users,

@@ -36,6 +36,11 @@ export const fulfillment: ITSSchemaDefinition = {
         validation: (rule) => rule.required().min(0).integer(),
         hidden: lockSnapshot,
       }),
+      // Why a delivery method cost 0 (set only then): product > threshold > coupon.
+      f('freeShippingReason', 'string', {
+        options: { list: [{ value: 'product' }, { value: 'threshold' }, { value: 'coupon' }] },
+        hidden: lockSnapshot,
+      }),
 
       // This handles the tax on the shipping fee itself
       f('taxSnapshot', 'vatBreakdownItem', { hidden: lockSnapshot }),

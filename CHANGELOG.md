@@ -4,6 +4,19 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased
+
+- **`shop.productFreeShipping`** (default off, needs checkout): variant field `grantsFreeShipping`
+  ("Versandkostenfrei", pricing group, hidden on digital) — the whole order ships free. Pairs with
+  core-front's product free shipping (plan core-front `.claude/plans/product-free-shipping.md`).
+- **Order snapshot `fulfillment.freeShippingReason`** (`product` / `threshold` / `coupon`), shown
+  in the order view under the shipping total.
+
+### Upgrading
+- **Coupons now need checkout:** `shop.coupons` is off with `features.shop.checkout: false` (no
+  active shop affected).
+- Enable with `features.shop.productFreeShipping: true` in the backend config.
+
 ## 6.0.0
 
 Menu items per level, and the security hardening: no credentials in the Studio bundle (secrets

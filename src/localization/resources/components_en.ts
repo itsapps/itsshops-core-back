@@ -179,6 +179,11 @@ export default {
     invoiceNumber: 'Invoice number',
     vatRate: '{{vatRate}}% VAT',
     shippingVat: 'incl. {{vatRate}}% VAT',
+    freeShippingReason: {
+      product: 'Free shipping (product)',
+      threshold: 'Free shipping (order value)',
+      coupon: 'Free shipping (coupon)',
+    },
     status: {
       title: 'Status',
       options: {

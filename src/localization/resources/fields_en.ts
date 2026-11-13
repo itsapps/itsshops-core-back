@@ -349,6 +349,10 @@ export default {
   productVariant: {
     title: 'Product variant',
     fields: {
+      grantsFreeShipping: {
+        title: 'Free shipping',
+        description: 'Makes the whole order ship free (all delivery methods).',
+      },
       description: {
         title: 'Description',
         description:
@@ -1190,6 +1194,14 @@ export default {
       shippingCost: {
         title: 'Shipping cost',
         description: 'The fee charged to the customer',
+      },
+      freeShippingReason: {
+        title: 'Reason for free shipping',
+        options: {
+          product: 'Product',
+          threshold: 'Order value',
+          coupon: 'Coupon',
+        },
       },
       taxSnapshot: {
         title: 'Shipping tax',

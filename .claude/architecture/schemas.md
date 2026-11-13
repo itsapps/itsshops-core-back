@@ -95,6 +95,14 @@ time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
 for new-order mails + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
 `registerNumber` / `registerCourt` (rendered in every mail footer only when set);
 `shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
+`shippingMethod.methodType` offers only `delivery`: `pickup` and `pickupFee` are commented out
+(pickup isn't supported end to end; the `fulfillment.pickupLocation` field and `OrderActions`
+pickup checks are leftovers). core-front `commerce-and-netlify.md` → "Pickup is not supported".
+`productVariant.grantsFreeShipping` (boolean, `pricing` group, only with `shop.productFreeShipping`,
+hidden on digital variants): the whole order ships free (every delivery method). Order snapshot
+`fulfillment.freeShippingReason` (`product` / `threshold` / `coupon`, set by core-front only when
+a delivery method cost 0; not flag-gated, hidden outside dev). Mechanism: core-front
+`commerce-and-netlify.md` → "Product free shipping".
 Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`
 (`orderPaymentMethod`: type, brand, last4, wallet — order only, not orderMeta).
 **`order` is `liveEdit`** (5.3.0): edits save straight to the published order — no draft whose

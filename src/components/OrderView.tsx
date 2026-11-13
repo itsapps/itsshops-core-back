@@ -103,6 +103,7 @@ type Fulfillment = {
   methodTitle?: string
   methodType: 'delivery' | 'pickup'
   shippingCost: number
+  freeShippingReason?: 'product' | 'threshold' | 'coupon'
   trackingCode?: string
   pickupLocation?: string
   taxSnapshot?: VatBreakdownItem
@@ -419,6 +420,13 @@ export const OrderView: UserViewComponent = (props) => {
           <Stack gap={3}>
             <TotalRow label={t('order.subtotal')} value={money(totals?.subtotal)} />
             <TotalRow label={t('order.shipping')} value={money(totals?.shipping)} />
+            {totals?.shipping === 0 && fulfillment?.freeShippingReason && (
+              <TotalRow
+                label={t(`order.freeShippingReason.${fulfillment.freeShippingReason}`)}
+                value=""
+                muted
+              />
+            )}
             {fulfillment?.taxSnapshot && fulfillment.shippingCost > 0 && (
               <TotalRow
                 label={t('order.shippingVat', `incl. ${fulfillment.taxSnapshot.rate}% VAT`, {

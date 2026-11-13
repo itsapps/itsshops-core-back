@@ -130,7 +130,7 @@ optional `.feature` tag and are filtered out when their feature is disabled.
 
 ```
 shop, shop.checkout, shop.manufacturer, shop.stock, shop.category, shop.category.subcategories,
-shop.vinofact, shop.vouchers, shop.coupons, shop.invoices,
+shop.vinofact, shop.vouchers, shop.coupons, shop.productFreeShipping, shop.invoices,
 shop.productKind.{wine,physical,digital,bundle}, shop.productKind.options  (physical|digital),
 blog, users, newsletter
 ```
@@ -141,3 +141,5 @@ the frontend); off hides the checkout-only `shopSettings` groups (billing, order
 returns, tax) and pages (terms, withdrawal policy, shipping info), and the `orderWithdraw` system link.
 `shop.invoices` defaults to **on**; `features.shop.invoices: false` (invoices issued by another
 system, e.g. wineNET) removes the invoice mail and PDF attachment from the "Send mail" action.
+`shop.coupons` and `shop.productFreeShipping` (default off; the variant field `grantsFreeShipping`)
+need checkout — both are off with `checkout: false`.

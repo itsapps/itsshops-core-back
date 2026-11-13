@@ -184,6 +184,11 @@ export default {
     invoiceNumber: 'Rechungsnummer',
     vatRate: '{{vatRate}}% MwSt',
     shippingVat: 'davon {{vatRate}}% MwSt',
+    freeShippingReason: {
+      product: 'Versandkostenfrei durch Produkt',
+      threshold: 'Versandkostenfrei ab Bestellwert',
+      coupon: 'Versandkostenfrei durch Gutschein',
+    },
     status: {
       title: 'Status',
       options: {

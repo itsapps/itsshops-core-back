@@ -354,6 +354,7 @@ export type OrderWithdrawal = {
   orderRef?: OrderReference
   declaredAt?: string
   status?: 'unmatched' | 'received' | 'processing' | 'refunded' | 'rejected'
+  assignedAt?: string
   name?: string
   email?: string
   orderNumber?: string
@@ -423,6 +424,7 @@ export type Fulfillment = {
   deliveryTime?: string
   methodType?: 'delivery' | 'pickup'
   shippingCost?: number
+  freeShippingReason?: 'product' | 'threshold' | 'coupon'
   taxSnapshot?: VatBreakdownItem
   packagingLines?: Array<
     {
@@ -1474,6 +1476,7 @@ export type ProductVariant = {
   taxCategory?: TaxCategoryReference
   price?: number
   compareAtPrice?: number
+  grantsFreeShipping?: boolean
   image?: LocaleAltImage
   seo?: Seo
   stock?: number

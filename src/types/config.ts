@@ -53,6 +53,8 @@ export interface FeatureConfig {
     vinofact?: VinofactConfig
     vouchers?: boolean
     coupons?: boolean
+    /** Variants can make the whole order ship free (`grantsFreeShipping`). Needs checkout. Default false. */
+    productFreeShipping?: boolean
     /**
      * Core issues invoices (default true). `false` when another system issues them (e.g.
      * wineNET): the "Send mail" action offers no invoice mail and no PDF attachment. Pair with
@@ -75,6 +77,7 @@ export interface ITSFeatureConfig {
     vinofact: VinofactConfig
     vouchers: boolean
     coupons: boolean
+    productFreeShipping: boolean
     invoices: boolean
   }
   blog: boolean

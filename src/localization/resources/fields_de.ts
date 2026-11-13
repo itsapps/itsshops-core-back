@@ -353,6 +353,10 @@ export default {
   productVariant: {
     title: 'Produktvariante',
     fields: {
+      grantsFreeShipping: {
+        title: 'Versandkostenfrei',
+        description: 'Macht die ganze Bestellung versandkostenfrei (alle Versandarten).',
+      },
       description: {
         title: 'Beschreibung',
         description:
@@ -1202,6 +1206,14 @@ export default {
       shippingCost: {
         title: 'Versandkosten',
         description: 'Die dem Kunden verrechneten Versandkosten',
+      },
+      freeShippingReason: {
+        title: 'Grund für Gratis-Versand',
+        options: {
+          product: 'Produkt',
+          threshold: 'Bestellwert',
+          coupon: 'Gutschein',
+        },
       },
       taxSnapshot: {
         title: 'Versandsteuer',
