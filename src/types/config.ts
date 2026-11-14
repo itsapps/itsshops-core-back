@@ -36,7 +36,11 @@ export interface VinofactConfig {
   enabled: boolean
 }
 
-/** Public values only — the API token lives in the secrets document (`integrations.vinofactToken`). */
+/**
+ * Public values only, from env (`SANITY_STUDIO_VINOFACT_API_URL` / `_PROFILE_SLUG`) — the API token
+ * lives in the secrets document (`integrations.vinofactToken`). `endpoint` `''` = VinoFact's
+ * default origin (`vinofactEndpoint`).
+ */
 export interface VinofactIntegrationConfig {
   endpoint: string
   profileSlug: string
@@ -144,7 +148,6 @@ export interface ItsshopsConfig {
   workspaceName?: string
   workspaceIcon?: ComponentType
   settings: ConfigSettings
-  integrations?: { vinofact?: VinofactIntegrationConfig }
   i18n?: I18nConfig
   features?: FeatureConfig
   schemaSettings?: SchemaSettingsInput

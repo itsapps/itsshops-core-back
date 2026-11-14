@@ -44,8 +44,9 @@ npm run watch       # pkg-utils watch (consumers npm link this)
 npm run link-watch  # plugin-kit link-watch
 npm run start       # sanity dev (host 0.0.0.0, port 3331) — core's own studio
 npm run test        # vitest (watch mode; `npx vitest run` once) — tests/vinofact.test.ts hits the
-                    #   live Vinofact API with SANITY_STUDIO_VINOFACT_API_URL/_PROFILE_SLUG +
-                    #   VINOFACT_API_TOKEN (no prefix → not bundled) from `.env`; skipped when missing
+                    #   live Vinofact API (dated) with SANITY_STUDIO_VINOFACT_PROFILE_SLUG +
+                    #   VINOFACT_API_TOKEN (no prefix → not bundled) from `.env`, optional
+                    #   SANITY_STUDIO_VINOFACT_API_URL (origin override); skipped when missing
 npm run extract     # sanity schema extract --workspace de  → schema.json (input to typegen)
 npm run typegen     # sanity typegen generate                → src/types/sanity.types.ts (used; see datasets.md)
 npm run lint / format   # eslint: 0 errors (warnings, mostly `any`, remain) — keep it at 0 errors

@@ -24,10 +24,12 @@ import {
   CombinationRow,
   TaxCategory,
   WineRow,
+  WineSubmitOptions,
 } from './productManager/ProductCreator.types'
 import { BundleTab } from './productManager/tabs/BundleTab'
 import { PhysicalDigitalTab } from './productManager/tabs/PhysicalDigitalTab'
 import { WineTab } from './productManager/tabs/WineTab'
+import { useBackgroundBottleImport } from './useBottleImageImport'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -138,16 +140,22 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
 
   // ─── Submit handlers ────────────────────────────────────────────────────────
   const { submitting, commitTransaction } = useProductTransaction({ titles: [] })
+  const importBottleImagesInBackground = useBackgroundBottleImport()
 
   const handleWineSubmit = useCallback(
-    async (rows: WineRow[]) => {
+    async (rows: WineRow[], options: WineSubmitOptions) => {
       if (!product) return
 
       const tx = client.transaction()
-      rows.forEach((r) => addWineVariantToTx(tx, productId, r))
-      await commitTransaction(tx, rows.length, onClose)
+      const targets = rows.flatMap((r) => {
+        const variantId = addWineVariantToTx(tx, productId, r)
+        return variantId && r.wine ? [{ variantId, wineId: r.wine.id }] : []
+      })
+      const ok = await commitTransaction(tx, rows.length, onClose)
+      // Not awaited: the dialog closes as before, the import's toasts outlive it.
+      if (ok && options.importBottleImages) importBottleImagesInBackground(targets)
     },
-    [client, product, productId, onClose, commitTransaction],
+    [client, product, productId, onClose, commitTransaction, importBottleImagesInBackground],
   )
 
   const handlePhysicalDigitalSubmit = useCallback(

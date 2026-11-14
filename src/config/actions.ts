@@ -13,6 +13,7 @@ import {
   WithdrawalUnassignAction,
 } from '../components/actions/WithdrawalActions'
 import { AddVariantsAction } from '../components/products/AddVariantsAction'
+import { ImportBottleImagesAction } from '../components/products/ImportBottleImagesAction'
 import { ITSContext, ITSFeatureKey, ITSSanityDefinedAction } from '../types'
 
 const globallyDisallowedActions: ITSSanityDefinedAction[] = ['schedule']
@@ -85,6 +86,10 @@ export function actionResolver(
   }
   if (isEnabledSchema(context.schemaType, 'product', 'shop')) {
     actions.push(AddVariantsAction)
+  }
+  // Returns null for non-wine products.
+  if (isEnabledSchema(context.schemaType, 'product', 'shop.vinofact')) {
+    actions.push(ImportBottleImagesAction)
   }
   // category: plain delete is disallowed in the schema and re-added here — guarded
   // (blocks deleting a parent) when subcategories are enabled, plain otherwise.

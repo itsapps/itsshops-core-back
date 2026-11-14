@@ -109,8 +109,13 @@ export interface ProductKindTabProps {
   hideProductSection?: boolean
 }
 
+export interface WineSubmitOptions {
+  /** Copy each new variant's VinoFact bottle image into its `image` after the commit. */
+  importBottleImages: boolean
+}
+
 export interface WineTabProps extends ProductKindTabProps {
-  onSubmit: (rows: WineRow[]) => Promise<void>
+  onSubmit: (rows: WineRow[], options: WineSubmitOptions) => Promise<void>
   existingWineKeys?: Set<string>
 }
 

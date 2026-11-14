@@ -83,8 +83,6 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
 - `schemaSettings` — `{ links.allowedReferences, menus.{maxDepth,allowedReferences}, productKinds }`
   (`menus.maxDepth` = menu levels, top level included — `schemas.md` → "Menu levels")
 - `documentActions` — consumer action hook (see [studio-components.md](studio-components.md))
-- `integrations.vinofact` — VinoFact `{ endpoint, profileSlug }` (public values; the token is a
-  secret, below)
 
 **Resolution rules (`mapConfig`):**
 - precedence for ids: `config.projectId ?? SANITY_STUDIO_PROJECT`; dataset ←
@@ -95,8 +93,12 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
 - `apiVersion` is pinned to `v2025-05-25`.
 - `integrations.netlify` = `{ siteId, projectName, endpoint }` from `SANITY_STUDIO_NETLIFY_SITE_ID` /
   `_PROJECT_NAME` / `_FUNCTIONS_ENDPOINT`; `integrations.vinofact` = `{ endpoint, profileSlug }`
-  from `config.integrations.vinofact` or `SANITY_STUDIO_VINOFACT_API_URL` / `_PROFILE_SLUG` (only
-  when vinofact is on). All of it is in the public bundle — public values only (rule in `CLAUDE.md`
+  from env only — `SANITY_STUDIO_VINOFACT_API_URL` (optional; only its origin is used, `''` =
+  `https://www.vinofact.com`) / `_PROFILE_SLUG` (only when vinofact is on; no config field). The
+  client (`src/external/vinofact.ts`) calls VinoFact's **dated** GraphQL API
+  `<origin>/api/graphql/v<VINOFACT_API_VERSION>/` (`vinofactEndpoint`, built per request); bump
+  `VINOFACT_API_VERSION` together with core-front's (same date) and re-copy `VINOFACT_LOCALES`
+  from VinoFact's `LocalizedString` then. The token comes from the secrets document. All of it is in the public bundle — public values only (rule in `CLAUDE.md`
   → "Config").
 
 ### Secrets (`@sanity/studio-secrets`)

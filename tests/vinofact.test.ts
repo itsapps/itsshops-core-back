@@ -12,11 +12,23 @@ const endpoint = process.env.SANITY_STUDIO_VINOFACT_API_URL
 const token = process.env.VINOFACT_API_TOKEN
 const profileSlug = process.env.SANITY_STUDIO_VINOFACT_PROFILE_SLUG
 
-describe.skipIf(!endpoint || !token || !profileSlug)('Vinofact (live, needs .env)', () => {
+describe.skipIf(!token || !profileSlug)('Vinofact (live, needs .env)', () => {
   it('gets wines', async () => {
-    const client = createVinofactClient('de', endpoint!, token!, profileSlug!)
+    const client = createVinofactClient('de', endpoint ?? '', token!, profileSlug!)
     const data = await client.getWines()
 
     expect(Array.isArray(data.wines)).toBe(true)
+  })
+
+  it('gets bottle images on the dated API', async () => {
+    const client = createVinofactClient('de', endpoint ?? '', token!, profileSlug!)
+    const { wines } = await client.getWines()
+    const ids = wines.slice(0, 3).map((w) => w.id)
+    const data = await client.getBottleImages(ids, ['de', 'en'])
+
+    expect(Array.isArray(data.wines)).toBe(true)
+    for (const w of data.wines) {
+      if (w.bottleImage) expect(w.bottleImage.url).toContain('{{width}}')
+    }
   })
 })

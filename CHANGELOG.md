@@ -4,6 +4,26 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased (minor)
+
+- **VinoFact bottle images → Sanity** (plan core-front `.claude/plans/vinofact-bottle-image-import.md`):
+  copy a wine's VinoFact bottle shot into the variant's own `image` — a button under the variant's
+  image ("Flaschenbild aus VinoFact übernehmen"), a product action for all variants without an
+  image, and a Product Manager checkbox for new variants. Existing alt texts are kept, VinoFact's
+  alt (per language) fills empty ones. Only with `shop.vinofact`.
+- **Product Manager:** after creating a product, the toast has an "Produkt öffnen" button and the
+  tool shows a persistent "Zuletzt angelegt: …" link.
+- **VinoFact dated API `v2026-11-14`:** the Studio calls `<origin>/api/graphql/v2026-11-14/`
+  (`VINOFACT_API_VERSION` in `src/external/vinofact.ts`). `SANITY_STUDIO_VINOFACT_API_URL` is
+  optional — only its origin is used, default `https://www.vinofact.com`.
+- The unused config field `integrations.vinofact` is removed — endpoint and profile slug come from
+  env only (no customer set it).
+
+### Upgrading
+- Nothing to change: it uses the `vinofactToken` already required since 6.0.0. Existing
+  `SANITY_STUDIO_VINOFACT_API_URL` values keep working (their path is ignored); remove them once
+  this version is live (core-front plan → Rollout step 5).
+
 ## 6.1.0
 
 - **`shop.productFreeShipping`** (default off, needs checkout): variant field `grantsFreeShipping`

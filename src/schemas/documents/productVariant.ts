@@ -1,6 +1,7 @@
 import { FieldDefinition, NumberRule, Rule as SanityRule } from 'sanity'
 
 import { productKindIcons, ProductVariantIcon } from '../../assets/icons'
+import { VinofactImageInput } from '../../components/products/VinofactImageInput'
 import { WineSelector } from '../../components/products/WineSelector'
 import {
   FieldContext,
@@ -26,6 +27,7 @@ export const productVariant: ITSDocumentDefinition = {
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
     const bundlesOn = ctx.featureRegistry.isFeatureEnabled('shop.productKind.bundle')
     const freeShippingOn = ctx.featureRegistry.isFeatureEnabled('shop.productFreeShipping')
+    const vinofactOn = ctx.featureRegistry.isFeatureEnabled('shop.vinofact')
     const kindFields = getKindFields(ctx)
 
     const groupedData = ctx.builders.buildGroupedSchema([
@@ -136,7 +138,14 @@ export const productVariant: ITSDocumentDefinition = {
       },
       {
         name: 'media',
-        fields: [f('image', 'localeAltImage')],
+        fields: [
+          // With VinoFact: a button below the image copies the wine's bottle image into it.
+          f(
+            'image',
+            'localeAltImage',
+            vinofactOn ? { components: { input: VinofactImageInput } } : {},
+          ),
+        ],
       },
       {
         name: 'seo',

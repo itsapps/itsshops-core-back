@@ -75,11 +75,17 @@ function baseVariant(
     ...(taxId && { taxCategory: { _type: 'reference', _ref: taxId } }),
   }
 }
-export function addWineVariantToTx(tx: Transaction, productId: string, row: WineRow): void {
-  if (!row.wine || !row.volume) return
+/** Returns the created variant's id (published), or `undefined` when the row is incomplete. */
+export function addWineVariantToTx(
+  tx: Transaction,
+  productId: string,
+  row: WineRow,
+): string | undefined {
+  if (!row.wine || !row.volume) return undefined
 
+  const variant = baseVariant(productId, 'wine', row.titles, row.price, row.taxCategoryId)
   tx.create({
-    ...baseVariant(productId, 'wine', row.titles, row.price, row.taxCategoryId),
+    ...variant,
     wine: {
       _type: 'wine',
       vinofactWineId: row.wine.id,
@@ -87,6 +93,7 @@ export function addWineVariantToTx(tx: Transaction, productId: string, row: Wine
       volume: parseInt(row.volume, 10),
     },
   })
+  return variant._id
 }
 
 export function addPhysicalDigitalVariantToTx(

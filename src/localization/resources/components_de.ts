@@ -26,6 +26,7 @@ export default {
     messages: {
       productCreated: {
         title: 'Produkt erstellt',
+        open: 'Produkt öffnen',
         description_one: '{{title}} mit einer Variante.',
         description_other: '{{title}} mit {{count}} Varianten.',
       },
@@ -37,6 +38,7 @@ export default {
         warning: '⚠️ {{count}} Varianten — bist Du sicher?',
       },
     },
+    lastCreated: 'Zuletzt angelegt: {{title}}',
     submit_zero: 'Produkt erstellen',
     submit_one: 'Produkt erstellen',
     submit_other: 'Produkt mit {{count}} Varianten erstellen',
@@ -62,6 +64,32 @@ export default {
     },
     winesLoadedError: {
       title: 'Vinofact Weine konnten nicht geladen werden.',
+    },
+    importFailed: {
+      title: 'Flaschenbilder konnten nicht übernommen werden',
+    },
+    bottleImage: {
+      import: 'Flaschenbild aus VinoFact übernehmen',
+      reimport: 'Flaschenbild neu aus VinoFact übernehmen',
+      confirm: {
+        title: 'Flaschenbild neu übernehmen?',
+        text: 'Das Flaschenbild aus VinoFact ersetzt das aktuelle Bild; Zuschnitt und Fokuspunkt werden zurückgesetzt. Vorhandene Alt-Texte bleiben erhalten — um den Alt-Text aus VinoFact zu übernehmen, leere das Alt-Text-Feld vorher.',
+        confirm: 'Ersetzen',
+        cancel: 'Abbrechen',
+      },
+      imported: 'Flaschenbild aus VinoFact übernommen',
+      noImage: 'Kein Flaschenbild in VinoFact',
+      noImageDescription: 'VinoFact hat für diesen Wein kein Flaschenbild.',
+      failed: 'Flaschenbild konnte nicht übernommen werden',
+    },
+    bottleImages: {
+      action: 'Flaschenbilder aus VinoFact übernehmen',
+      running: 'Flaschenbilder werden übernommen…',
+      notPublished: 'Erst verfügbar, wenn das Produkt veröffentlicht ist.',
+      allHaveImage: 'Alle Varianten haben schon ein Bild',
+      summaryTitle: 'Flaschenbilder aus VinoFact',
+      summary: '{{imported}} übernommen, {{noImage}} ohne Bild in VinoFact, {{failed}} Fehler',
+      checkbox: 'Flaschenbilder aus VinoFact übernehmen',
     },
   },
 

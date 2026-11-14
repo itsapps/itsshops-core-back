@@ -38,8 +38,20 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
 - Shapes (rows, combinations, bundle items, props) live in `ProductCreator.types.ts`.
 - On submit it builds a Sanity transaction via `src/lib/shop/productVariant.tx.ts`
   (`addProductToTx`, `addWineVariantToTx`, `addPhysicalDigitalVariantToTx`, `addBundleVariantToTx`),
-  committed through `src/lib/hooks/useProductTransaction.ts`. Prices are entered in euros and
+  committed through `src/lib/hooks/useProductTransaction.tsx` (`commitTransaction` resolves
+  `true` after a successful commit; errors become a toast). Prices are entered in euros and
   converted to cents on submit.
+- **Product link after creation:** the success toast carries an "Produkt öffnen" button (toast
+  `duration` 10 s; it navigates with the router captured in the hook — the toast portal is
+  outside the router context, so no `IntentLink` there). Because a toast times out (WCAG 2.2.1),
+  `ProductCreator` also shows a persistent "Zuletzt angelegt: <title>" card under the header with
+  an `IntentLink`, cleared on the next submit. `AddVariantsAction` passes no link (the product
+  is open).
+- **Bottle images (`shop.vinofact`):** `WineTab` has a checkbox "Flaschenbilder aus VinoFact
+  übernehmen" (default on, only with a `vinofactClient`; also in `AddVariantsAction`'s dialog).
+  After a successful commit the submit runs `useBackgroundBottleImport` (not awaited — the form
+  resets / the dialog closes as before) on the new, published variants; summary or error toast.
+  `addWineVariantToTx` returns the created variant id for it.
 - Wine kind pulls options from the VinoFact client; physical/digital expands selected
   variant-option groups into combinations; bundle composes existing variants with quantities
   (picker: active, priced, non-bundle variants only).
@@ -53,6 +65,28 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
 
 Related product components: `AddVariantsAction` / `AddVariantsPane` (document action on `product` to
 add variants inline), `WineSelector` / `WinePreview`.
+
+### VinoFact bottle image import (`shop.vinofact`)
+
+Copies a wine's VinoFact bottle image into the variant's own `image` — one-off, afterwards an
+ordinary Sanity image (nothing loads from i.vinofact.com at page view). Plan + decisions: core-front
+`.claude/plans/vinofact-bottle-image-import.md`. Logic in `src/lib/shop/vinofactImage.ts` (no
+React; tests `tests/vinofactImage.test.ts`):
+- `getBottleImages(ids, fieldLocales)` on the VinoFact client (dated API, below) →
+  `bottleImageUrl` fills the URL template with the intrinsic size (3000×3000 when unknown) →
+  `fetchBottleImage` (a **plain** `fetch` — no headers, so the browser sends a simple CORS
+  request; VinoFact's `/r/` answers `Access-Control-Allow-Origin: *`) → `uploadBottleImage`
+  (`source: { name: 'vinofact', id, url }`) → `buildLocaleAltImage`.
+- **Alt merge:** per content locale an existing non-blank alt is kept (same `_key`), VinoFact's
+  alt fills only empty ones; other languages are dropped; crop/hotspot are reset (new image).
+  To take VinoFact's alt, the editor clears the field first.
+- Three entry points: **field button** `VinofactImageInput` under the variant's image (wine
+  variants with a VinoFact id; through the form → draft; "neu übernehmen" asks first in a
+  `Dialog`); **product action** `ImportBottleImagesAction` (variants without an image asset;
+  reads them with `perspective: 'raw'` and patches the draft when one exists, else published —
+  `bottleImageTargets`); **Product Manager** checkbox (above). Uploads run one after another;
+  per-variant failures are counted ("3 übernommen, 1 ohne Bild in VinoFact, 0 Fehler"), a failing
+  VinoFact request gives the `vinofact.importFailed` toast.
 
 ## Document actions (`src/config/actions.ts`)
 
@@ -135,7 +169,8 @@ add variants inline), `WineSelector` / `WinePreview`.
       (`mailedToText`, from the response's `recipients`).
     `OrderWithdrawalCreateAction` (on the order) refuses an empty or future "Erklärt am" (`max` =
     now, `aria-invalid` + hint) — it drives the refund deadline.
-  - `product` (feature `shop`) → `AddVariantsAction`
+  - `product` (feature `shop`) → `AddVariantsAction`; (feature `shop.vinofact`) →
+    `ImportBottleImagesAction` (null for non-wine products, disabled until published)
   - `category` (feature `shop.category`; schema disallows the plain `delete`, so it's re-added
     here, non-dev only) → with `shop.category.subcategories`: a guarded delete that blocks
     deleting a category which still has subcategories (`createCustomDocumentAction`, a reusable

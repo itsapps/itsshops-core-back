@@ -1,10 +1,22 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import { Badge, Box, Button, Card, Flex, Grid, Label, Select, Stack, Text } from '@sanity/ui'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Checkbox,
+  Flex,
+  Grid,
+  Label,
+  Select,
+  Stack,
+  Text,
+} from '@sanity/ui'
 import { Autocomplete } from '@sanity/ui/autocomplete'
 import { useToast } from '@sanity/ui/toast'
 import { ChangeEvent, ReactElement } from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import { AddIcon, CloseIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
@@ -227,6 +239,8 @@ export function WineTab(props: WineTabProps): ReactElement {
   const [rows, setRows] = useState<WineRow[]>([emptyWineRow()])
   const [queries, setQueries] = useState<Record<string, string>>({})
   const titleAutoSet = useRef(false)
+  const [importBottleImages, setImportBottleImages] = useState(true)
+  const bottleImagesId = useId()
 
   const loadWines = useCallback(async () => {
     if (!vinofactClient) {
@@ -344,12 +358,12 @@ export function WineTab(props: WineTabProps): ReactElement {
 
   const handleSubmit = useCallback(async () => {
     if (!canSubmit) return
-    await onSubmit(rows)
+    await onSubmit(rows, { importBottleImages: !!vinofactClient && importBottleImages })
     // Reset wine-specific state on success
     setRows([emptyWineRow()])
     setQueries({})
     titleAutoSet.current = false
-  }, [canSubmit, onSubmit, rows])
+  }, [canSubmit, onSubmit, rows, vinofactClient, importBottleImages])
 
   const volumeOptions = constants.volumeOptions ?? []
   const lastSelectedWine = [...rows].reverse().find((r) => r.wine)?.wine
@@ -404,6 +418,26 @@ export function WineTab(props: WineTabProps): ReactElement {
           />
         )}
       </Flex>
+
+      {/* Copy each new variant's VinoFact bottle image into its image after creating it */}
+      {vinofactClient && (
+        <Flex align="center" gap={2}>
+          <Checkbox
+            id={bottleImagesId}
+            checked={importBottleImages}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setImportBottleImages(e.currentTarget.checked)
+            }
+          />
+          <Box flex={1}>
+            <Text size={1}>
+              <label htmlFor={bottleImagesId}>
+                {componentT.default('vinofact.bottleImages.checkbox')}
+              </label>
+            </Text>
+          </Box>
+        </Flex>
+      )}
     </Stack>
   )
 

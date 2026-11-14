@@ -1,9 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import { Container, Flex, Heading, Stack, Tab, TabList, TabPanel, Text } from '@sanity/ui'
+import { Card, Container, Flex, Heading, Stack, Tab, TabList, TabPanel, Text } from '@sanity/ui'
 import { useToast } from '@sanity/ui/toast'
 import { ComponentType, ReactElement } from 'react'
 import { memo, useCallback, useEffect, useState } from 'react'
+import { IntentLink } from 'sanity/router'
 
 import {
   ProductKindBundleIcon,
@@ -27,10 +28,12 @@ import {
   KindTabProps,
   TaxCategory,
   WineRow,
+  WineSubmitOptions,
 } from './ProductCreator.types'
 import { BundleTab } from './tabs/BundleTab'
 import { PhysicalDigitalTab } from './tabs/PhysicalDigitalTab'
 import { WineTab } from './tabs/WineTab'
+import { useBackgroundBottleImport } from '../useBottleImageImport'
 
 // ─── Tab config ───────────────────────────────────────────────────────────────
 
@@ -126,11 +129,31 @@ export function ProductCreator(): ReactElement {
   const { submitting, commitTransaction } = useProductTransaction({
     titles,
   })
+  const importBottleImagesInBackground = useBackgroundBottleImport()
+
+  // The last created product, linked under the header — the toast's button times out
+  // (WCAG 2.2.1), this one stays until the next submit.
+  const [lastCreated, setLastCreated] = useState<{ id: string; title: string } | null>(null)
+
+  /** Commit, then remember the product for the persistent link. */
+  const commitProduct = useCallback(
+    async (tx: Parameters<typeof commitTransaction>[0], count: number, productId: string) => {
+      const title = titles.find((t) => t.locale === defaultLocale)?.value ?? ''
+      setLastCreated(null)
+      const ok = await commitTransaction(tx, count, resetShared, {
+        documentId: productId,
+        documentType: 'product',
+      })
+      if (ok) setLastCreated({ id: productId, title })
+      return ok
+    },
+    [titles, defaultLocale, commitTransaction, resetShared],
+  )
 
   // ─── Wine submit ─────────────────────────────────────────────────────────────
 
   const handleWineSubmit = useCallback(
-    async (rows: WineRow[]) => {
+    async (rows: WineRow[], options: WineSubmitOptions) => {
       const tx = client.transaction()
       const productId = addProductToTx({
         tx,
@@ -140,10 +163,13 @@ export function ProductCreator(): ReactElement {
         taxId: globalTaxCategoryId,
         weight: globalWeight,
       })
-      for (const row of rows) {
-        addWineVariantToTx(tx, productId, row)
-      }
-      await commitTransaction(tx, rows.length, resetShared)
+      const targets = rows.flatMap((row) => {
+        const variantId = addWineVariantToTx(tx, productId, row)
+        return variantId && row.wine ? [{ variantId, wineId: row.wine.id }] : []
+      })
+      const ok = await commitProduct(tx, rows.length, productId)
+      // Not awaited: the form resets as before; the import reports in its own toasts.
+      if (ok && options.importBottleImages) importBottleImagesInBackground(targets)
     },
     [
       client,
@@ -151,8 +177,8 @@ export function ProductCreator(): ReactElement {
       globalPrice,
       globalTaxCategoryId,
       globalWeight,
-      commitTransaction,
-      resetShared,
+      commitProduct,
+      importBottleImagesInBackground,
     ],
   )
 
@@ -170,18 +196,9 @@ export function ProductCreator(): ReactElement {
       for (const combo of combinations) {
         addPhysicalDigitalVariantToTx(tx, productId, activeKind as 'physical' | 'digital', combo)
       }
-      await commitTransaction(tx, combinations.length, resetShared)
+      await commitProduct(tx, combinations.length, productId)
     },
-    [
-      client,
-      activeKind,
-      titles,
-      globalPrice,
-      globalTaxCategoryId,
-      globalWeight,
-      commitTransaction,
-      resetShared,
-    ],
+    [client, activeKind, titles, globalPrice, globalTaxCategoryId, globalWeight, commitProduct],
   )
 
   const handleBundleSubmit = useCallback(
@@ -198,17 +215,9 @@ export function ProductCreator(): ReactElement {
       for (const row of rows) {
         addBundleVariantToTx(tx, productId, row)
       }
-      await commitTransaction(tx, rows.length, resetShared)
+      await commitProduct(tx, rows.length, productId)
     },
-    [
-      client,
-      titles,
-      globalPrice,
-      globalTaxCategoryId,
-      globalWeight,
-      resetShared,
-      commitTransaction,
-    ],
+    [client, titles, globalPrice, globalWeight, commitProduct],
   )
 
   const showTabs = enabledKinds.length > 1
@@ -238,6 +247,23 @@ export function ProductCreator(): ReactElement {
               {componentT.default('productCreatorTool.subtitle')}
             </Text>
           </Stack>
+
+          {lastCreated && (
+            <Card padding={3} radius={2} tone="positive" border>
+              <Flex align="center" justify="space-between" gap={3} wrap="wrap">
+                <Text size={1}>
+                  {componentT.default('productCreatorTool.lastCreated', undefined, {
+                    title: lastCreated.title,
+                  })}
+                </Text>
+                <Text size={1} weight="semibold">
+                  <IntentLink intent="edit" params={{ id: lastCreated.id, type: 'product' }}>
+                    {componentT.default('productCreatorTool.messages.productCreated.open')}
+                  </IntentLink>
+                </Text>
+              </Flex>
+            </Card>
+          )}
 
           {/* Tabs — only shown when multiple kinds are enabled */}
           {showTabs && (

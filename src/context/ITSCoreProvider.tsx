@@ -86,7 +86,7 @@ export const ITSCoreProvider = ({ children, ctx }: { children: ReactNode; ctx: I
 
   const vinofactClient = useMemo(() => {
     const vinofact = ctx.config.integrations.vinofact
-    if (!vinofact?.endpoint || !vinofactToken) return undefined
+    if (!vinofact || !vinofactToken) return undefined
     return createVinofactClient(ctx.locale, vinofact.endpoint, vinofactToken, vinofact.profileSlug)
   }, [ctx.config.integrations.vinofact, ctx.locale, vinofactToken])
 

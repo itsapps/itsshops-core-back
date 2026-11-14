@@ -77,11 +77,12 @@ export const mapConfig = (config: ItsshopsConfig): CoreBackConfig => {
     endpoint: process.env.SANITY_STUDIO_NETLIFY_FUNCTIONS_ENDPOINT ?? '',
   }
 
+  // Env only; an empty endpoint means VinoFact's default origin (`vinofactEndpoint`).
   const vinofact = features.shop.vinofact.enabled
-    ? (config.integrations?.vinofact ?? {
+    ? {
         endpoint: process.env.SANITY_STUDIO_VINOFACT_API_URL ?? '',
         profileSlug: process.env.SANITY_STUDIO_VINOFACT_PROFILE_SLUG ?? '',
-      })
+      }
     : undefined
 
   return {

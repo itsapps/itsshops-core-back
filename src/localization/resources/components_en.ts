@@ -25,6 +25,7 @@ export default {
     messages: {
       productCreated: {
         title: 'Product created',
+        open: 'Open product',
         description_one: '{{title}} with one variant.',
         description_other: '{{title}} with {{count}} variants.',
       },
@@ -36,6 +37,7 @@ export default {
         warning: '⚠️ {{count}} variants — are you sure?',
       },
     },
+    lastCreated: 'Last created: {{title}}',
     submit_zero: 'Create product',
     submit_one: 'Create product',
     submit_other: 'Create product with {{count}} variants',
@@ -60,6 +62,32 @@ export default {
     },
     winesLoadedError: {
       title: 'Could not load Vinofact wines.',
+    },
+    importFailed: {
+      title: 'Could not import the bottle images',
+    },
+    bottleImage: {
+      import: 'Import bottle image from VinoFact',
+      reimport: 'Import bottle image from VinoFact again',
+      confirm: {
+        title: 'Import the bottle image again?',
+        text: "VinoFact's bottle image replaces the current image; crop and hotspot are reset. Existing alt texts are kept — to take VinoFact's alt text, clear the alt text field first.",
+        confirm: 'Replace',
+        cancel: 'Cancel',
+      },
+      imported: 'Bottle image imported from VinoFact',
+      noImage: 'No bottle image in VinoFact',
+      noImageDescription: 'VinoFact has no bottle image for this wine.',
+      failed: 'Could not import the bottle image',
+    },
+    bottleImages: {
+      action: 'Import bottle images from VinoFact',
+      running: 'Importing bottle images…',
+      notPublished: 'Available once the product is published.',
+      allHaveImage: 'All variants already have an image',
+      summaryTitle: 'Bottle images from VinoFact',
+      summary: '{{imported}} imported, {{noImage}} without image in VinoFact, {{failed}} failed',
+      checkbox: 'Import bottle images from VinoFact',
     },
   },
 
