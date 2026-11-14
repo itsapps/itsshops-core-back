@@ -4,7 +4,7 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
-## Unreleased (minor)
+## 6.2.0
 
 - **VinoFact bottle images → Sanity** (plan core-front `.claude/plans/vinofact-bottle-image-import.md`):
   copy a wine's VinoFact bottle shot into the variant's own `image` — a button under the variant's
