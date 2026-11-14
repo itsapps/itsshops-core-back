@@ -16,6 +16,9 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
 - **VinoFact dated API `v2026-11-14`:** the Studio calls `<origin>/api/graphql/v2026-11-14/`
   (`VINOFACT_API_VERSION` in `src/external/vinofact.ts`). `SANITY_STUDIO_VINOFACT_API_URL` is
   optional — only its origin is used, default `https://www.vinofact.com`.
+- **Fixed:** variant previews (lists, reference pickers) and bundle-item previews show the
+  variant's image, else the product's — they always showed the kind icon (the image was read as
+  an i18n array; the bundle item selected a non-existent `image.image`).
 - The unused config field `integrations.vinofact` is removed — endpoint and profile slug come from
   env only (no customer set it).
 

@@ -39,8 +39,8 @@ export const bundleItem: ITSSchemaDefinition = {
         variantTitle: 'product.title',
         productTitle: 'product.product.title',
         quantity: 'quantity',
-        image: 'product.image.image',
-        productImage: 'product.product.image.image',
+        image: 'product.image',
+        productImage: 'product.product.image',
         kind: 'product.kind',
         wineVolume: 'product.wine.volume',
         wineVintage: 'product.wine.vintage',
@@ -74,7 +74,8 @@ export const bundleItem: ITSSchemaDefinition = {
             wineVintage,
             optionTitles: [optionTitle0, optionTitle1, optionTitle2],
           }),
-          media: ctx.localizer.value(image) || ctx.localizer.value(productImage) || BundleItemIcon,
+          // `localeAltImage` objects (not i18n arrays): use one when it has an asset.
+          media: [image, productImage].find((img) => img?.asset) ?? BundleItemIcon,
         }
       },
     },

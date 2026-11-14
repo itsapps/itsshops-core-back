@@ -273,9 +273,9 @@ export const productVariant: ITSDocumentDefinition = {
           return {
             title,
             subtitle,
+            // `image` is a `localeAltImage` object (not an i18n array): use it when it has an asset.
             media:
-              ctx.localizer.value(image) ||
-              ctx.localizer.value(productImage) ||
+              [image, productImage].find((img) => img?.asset) ??
               (kind ? productKindIcons[kind as ProductKind] : ProductVariantIcon),
           }
         },
