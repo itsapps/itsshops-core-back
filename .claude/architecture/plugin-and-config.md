@@ -98,7 +98,8 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
   client (`src/external/vinofact.ts`) calls VinoFact's **dated** GraphQL API
   `<origin>/api/graphql/v<VINOFACT_API_VERSION>/` (`vinofactEndpoint`, built per request); bump
   `VINOFACT_API_VERSION` together with core-front's (same date) and re-copy `VINOFACT_LOCALES`
-  from VinoFact's `LocalizedString` then. The token comes from the secrets document. All of it is in the public bundle — public values only (rule in `CLAUDE.md`
+  from VinoFact's `LocalizedString` then (why: core-front ADR
+  `vinofact-dated-api-version-in-code.md`). The token comes from the secrets document. All of it is in the public bundle — public values only (rule in `CLAUDE.md`
   → "Config").
 
 ### Secrets (`@sanity/studio-secrets`)

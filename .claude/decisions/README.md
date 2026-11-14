@@ -24,3 +24,5 @@ that future-you would otherwise re-litigate.
   client commit, not the form (async form commits leave the desk preview stale).
 - [studio-secrets-in-dataset.md](studio-secrets-in-dataset.md) — Studio credentials in the dataset
   (`@sanity/studio-secrets`, admin-only Integrations dialog); no Netlify PAT, Deploy via build hook.
+- [vinofact-bottle-images-copied-into-sanity.md](vinofact-bottle-images-copied-into-sanity.md) —
+  bottle shots copied once into the variant's image (plain CORS fetch), existing alts kept.

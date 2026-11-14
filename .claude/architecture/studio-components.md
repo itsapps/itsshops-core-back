@@ -69,8 +69,9 @@ add variants inline), `WineSelector` / `WinePreview`.
 ### VinoFact bottle image import (`shop.vinofact`)
 
 Copies a wine's VinoFact bottle image into the variant's own `image` — one-off, afterwards an
-ordinary Sanity image (nothing loads from i.vinofact.com at page view). Plan + decisions: core-front
-`.claude/plans/vinofact-bottle-image-import.md`. Logic in `src/lib/shop/vinofactImage.ts` (no
+ordinary Sanity image (nothing loads from i.vinofact.com at page view). Plan: core-front
+`.claude/plans/vinofact-bottle-image-import.md`; why: ADR
+`decisions/vinofact-bottle-images-copied-into-sanity.md`. Logic in `src/lib/shop/vinofactImage.ts` (no
 React; tests `tests/vinofactImage.test.ts`):
 - `getBottleImages(ids, fieldLocales)` on the VinoFact client (dated API, below) →
   `bottleImageUrl` fills the URL template with the intrinsic size (3000×3000 when unknown) →
