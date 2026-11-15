@@ -118,7 +118,10 @@ it into the internal `CoreBackConfig`. Field list lives in `src/types/` (`config
 
 **Rule: never put a credential in `SANITY_STUDIO_*` env or in Studio config.** The Studio is a
 public SPA: Vite compiles those values into JS that anyone can download from the Studio URL without
-logging in (the Sanity login protects data, not code). Only public values belong there (project id,
+logging in (the Sanity login protects data, not code). **Every** `SANITY_STUDIO_*` variable is
+compiled in, also one no code reads any more — and `sanity build` reads `.env.production` as well
+as `.env` (seen 2026-11-15: removed credentials still in a customer's bundle via `.env.production`).
+So a leftover in either file or in the Studio's Netlify env is public. Only public values belong there (project id,
 dataset, endpoint URLs, site id). Credentials the Studio must send live in the dataset document
 `secrets.itsshops` (`@sanity/studio-secrets`, keys in `src/types/secrets.ts`), entered by an
 administrator in the toolbar's Integrations dialog; a Netlify PAT is not used at all (Deploy = build

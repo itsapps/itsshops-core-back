@@ -6,7 +6,7 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
 
 ## 6.2.0
 
-- **VinoFact bottle images → Sanity** (plan core-front `.claude/plans/vinofact-bottle-image-import.md`):
+- **VinoFact bottle images → Sanity** (ADR `decisions/vinofact-bottle-images-copied-into-sanity.md`):
   copy a wine's VinoFact bottle shot into the variant's own `image` — a button under the variant's
   image ("Flaschenbild aus VinoFact übernehmen"), a product action for all variants without an
   image, and a Product Manager checkbox for new variants. Existing alt texts are kept, VinoFact's
@@ -103,7 +103,8 @@ links + submenus of links).
   for deeper levels). Existing ones are stored as `menuItem` and must be relabelled by nesting
   level, drafts included — otherwise the Studio flags them as an unknown type. The frontend is
   not affected (it reads fields, not `_type`). Only jurtschitsch has submenus; its one-off
-  script: jurtschitsch backend `scripts/migrate-menu-item-levels.mjs`.
+  script: jurtschitsch backend `scripts/migrate-menu-item-levels.mjs` (deleted after use,
+  2026-11-15 — in that repo's git history).
 - `maxDepth` now means what it says: with `maxDepth: 2` (jurtschitsch) the Studio offers exactly
   top-level links + submenus of links; a submenu inside a submenu is no longer possible.
   Projects without submenus: nothing to do.

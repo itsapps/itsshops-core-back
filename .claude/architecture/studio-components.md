@@ -69,8 +69,7 @@ add variants inline), `WineSelector` / `WinePreview`.
 ### VinoFact bottle image import (`shop.vinofact`)
 
 Copies a wine's VinoFact bottle image into the variant's own `image` — one-off, afterwards an
-ordinary Sanity image (nothing loads from i.vinofact.com at page view). Plan: core-front
-`.claude/plans/vinofact-bottle-image-import.md`; why: ADR
+ordinary Sanity image (nothing loads from i.vinofact.com at page view). Why: ADR
 `decisions/vinofact-bottle-images-copied-into-sanity.md`. Logic in `src/lib/shop/vinofactImage.ts` (no
 React; tests `tests/vinofactImage.test.ts`):
 - `getBottleImages(ids, fieldLocales)` on the VinoFact client (dated API, below) →
@@ -235,7 +234,10 @@ React; tests `tests/vinofactImage.test.ts`):
     `200` → "Build requested" toast; disabled ~10 s after); status = Netlify's public badge
     `api/v1/badges/<siteId>/deploy-status` as an `<img>` refreshed every 10 s (cache-busting
     query) — its state isn't readable, so there's no building lock and no cancel ("Netlify" link
-    for details). No hook → Deploy disabled + hint. Upgrade path if editors miss the status: a
+    for details). No hook → Deploy disabled + hint. A broken badge image (Chrome:
+    `net::ERR_BLOCKED_BY_ORB`) = Netlify answered 404 JSON → `SANITY_STUDIO_NETLIFY_SITE_ID` is not
+    an existing site; it must be the **frontend** project of that environment (Project
+    configuration → General → Project ID). Upgrade path if editors miss the status: a
     core-front `/api/studio/deploy` proxy with the PAT in server env (core-front plan
     `studio-auth-and-security-hardening.md` → B).
 

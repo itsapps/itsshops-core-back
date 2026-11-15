@@ -1,7 +1,7 @@
 # VinoFact bottle images are copied into Sanity once, keeping existing alt texts
 
 Status: accepted
-Date: 2026-11-14 (unreleased at the time; core-front plan `.claude/plans/vinofact-bottle-image-import.md`)
+Date: 2026-11-14 (released in core-back 6.2.0 with core-front 5.2.0)
 
 ## Context
 
