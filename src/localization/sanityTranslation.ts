@@ -26,6 +26,10 @@ export function getStructureOverrideBundles(languages: Language[]): LocaleResour
                 'release.chip.tooltip.edited-date': 'Bearbeitet {{date}}',
                 'release.chip.published': 'Veröffentlicht',
                 'release.chip.tooltip.published-date': 'Veröffentlicht {{date}}',
+                // Newer than @sanity/locale-de-de 1.1.37: collapsed arrays (> 4 items)
+                'inputs.array.action.show-all-items': 'Alle {{count}} Einträge anzeigen',
+                'inputs.array.action.show-all-items_one': '1 Eintrag anzeigen',
+                'inputs.array.action.show-all-items_other': 'Alle {{count}} Einträge anzeigen',
               }
             : {},
       }),
