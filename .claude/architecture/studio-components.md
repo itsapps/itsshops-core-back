@@ -243,5 +243,5 @@ React; tests `tests/vinofactImage.test.ts`):
 
 ## Where each is wired (`src/index.ts`)
 
-`layout` ← `ITSStudioWrapper` · `toolMenu` ← `CustomToolbar` · `tools` ← `createTools` ·
+`layout` ← `ITSStudioWrapper` · `toolMenu` ← `CustomToolbar` · `tools` ← reducer (renames `media`) + `createTools` ·
 `document.actions` ← `actionResolver` · structure view components ← `createDefaultDocumentNode`.

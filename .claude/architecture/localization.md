@@ -153,6 +153,9 @@ field languages.
 - `getTranslationPackage(locale)` loads `@sanity/locale-de-de` for `de` (English is built-in).
 - `getStructureOverrideBundles(languages)` defines `studio`-namespace overrides (e.g. German
   release-chip strings). Both wired in `src/index.ts` (`plugins` + `i18n.bundles`).
+- English text in the German Studio chrome usually means Sanity added the string after the last
+  `@sanity/locale-de-de` release (e.g. `inputs.array.action.show-all-items*`, missing in 1.1.37).
+  Find the key in `node_modules/sanity/lib` and add it (all plural forms) to the German bundle here.
 
 ## Consumer overrides (`ItsshopsConfig.i18n`)
 `mapConfig` passes these into `createTranslator`:

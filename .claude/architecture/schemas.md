@@ -171,6 +171,10 @@ services the shop embeds itself, e.g. a map, and optional `dpoContact`). Their g
 templates (`itsshops-core-front` → `templates/overridable/modules/` and `core/modules/`). The
 `productList` module pairs with the frontend's URL-based filter system.
 
+Every module defines a `preview` (title with a translated fallback, a count/summary subtitle,
+the module icon — `categoryList` is the pattern). Without one, a page's `modules[]` array shows
+Sanity's raw field dump ("products: [{empty}, …], disabled: false").
+
 ## i18n fields
 
 Localized fields use `sanity-plugin-internationalized-array`. `createi18nFieldTypes`

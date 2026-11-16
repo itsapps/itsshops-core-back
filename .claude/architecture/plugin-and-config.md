@@ -5,10 +5,12 @@
 1. **`itsshopsPlugin`** — `definePlugin<ITSContext>`. Given an `ITSContext`, returns the Sanity
    plugin object. Composes:
    - `internationalizedArray` (languages + `localizedFieldTypes`, `buttonAddAll: false`)
-   - `structureTool(createStructureTool(context))` (`src/config/structure.ts`)
+   - `structureTool(createStructureTool(context))` (`src/config/structure.ts`) — title from
+     `structure.title` (de "Inhalte")
    - `visionTool()` — **dev only** (`context.config.isDev`)
    - `media()`
-   - `presentationTool(createPresentations(...))` (`src/presentation/`)
+   - `presentationTool(createPresentations(...))` (`src/presentation/`) — `title` from
+     `presentation.title` (de "Vorschau")
      — `previewUrl.initial` = `<netlify.endpoint>/api/preview/<locale>` (core-front renders the
      home page), `previewMode: { enable: '/api/preview-enable', shareAccess: false }` (core-front
      validates Sanity's preview secret; no share-access links). Flow: core-front
@@ -16,7 +18,10 @@
    - translation package + i18n bundles (`src/localization/sanityTranslation.ts`)
    - `assist({ translate: { field: { documentTypes: <enabled docs>, languages } } })`
    - `schema.types = buildSchemas(context)`, `schema.templates = templateResolver`
-   - `tools = createTools(context)`
+   - `tools = (prev) => …` — renames the `media` tool's title (`media.title`, de "Medien"; the
+     plugin has no title option, and Sanity applies child plugins before the parent, so `prev`
+     already holds it), then appends `createTools(context)`. Tool *names* stay → URLs
+     (`/structure`, `/presentation`, `/media`) unchanged.
    - studio layout `ITSStudioWrapper(context)` + `CustomToolbar`
    - `document.actions = actionResolver`
    - **disabled:** comments, releases, scheduledDrafts
