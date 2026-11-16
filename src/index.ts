@@ -78,7 +78,15 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
       types: buildSchemas(context),
       templates: (prev) => templateResolver(prev, context),
     },
-    tools: createTools(context),
+    // sanity-plugin-media has no title option — rename its tool here (name, i.e. the URL, stays)
+    tools: (prev) => [
+      ...prev.map((tool) =>
+        tool.name === 'media'
+          ? { ...tool, title: context.structureT.default('media.title') }
+          : tool,
+      ),
+      ...createTools(context),
+    ],
     studio: {
       components: {
         layout: ITSStudioWrapper(context),

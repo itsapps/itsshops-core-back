@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
-  structure: { title: 'Structure' },
+  structure: { title: 'Content' },
+  presentation: { title: 'Preview' },
+  media: { title: 'Media' },
   content: { title: 'Content' },
 
   website: { title: 'Website' },

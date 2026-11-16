@@ -61,6 +61,7 @@ const mainDocuments = defineDocuments([
 
 export const createPresentations = (ctx: ITSContext): PresentationPluginOptions => {
   return {
+    title: ctx.t.default('presentation.title'),
     resolve: { locations: getLocations(ctx), mainDocuments },
     previewUrl: {
       initial: `${ctx.config.integrations.netlify.endpoint}/api/preview/${ctx.locale}`,
