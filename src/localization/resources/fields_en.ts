@@ -1864,6 +1864,11 @@ export default {
       title: { title: 'Title' },
       products: { title: 'Product variants' },
     },
+    preview: {
+      products_zero: 'No variants',
+      products_one: '{{count}} variant',
+      products_other: '{{count}} variants',
+    },
   },
   withdrawalPolicyModule: {
     title: 'Withdrawal policy (generated)',
