@@ -52,6 +52,11 @@ Schema/document title & description also auto-resolve from the `schema` namespac
 
 - **Auto title/description** from the field translators (`fields.<name>.title` /
   `.description`) unless `title`/`description` is passed — see [localization.md](localization.md).
+  The namespace is the **top-level schema type**: fields of an inline object (e.g. an array member
+  `{ type: 'object', name: 'column', fields: [f(…)] }`) resolve under `<parentType>.fields.<name>`,
+  never `column.fields.<name>`. Give a member with its own labels its own `ITSSchemaDefinition`
+  and reference it (`of: [{ type: 'column' }]`); the stored `_type` stays the same.
+  Fields that core builders add to many types (`disabled`, `theme`, link fields) carry global labels.
 - **i18n type mapping** — `type: 'i18nString'` → `internationalizedArrayString` via
   `ctx.i18nFieldTypes`; `i18nString`/`i18nText` also get the AI translate action.
 - **Feature-aware references** — for `reference` and `array`-of-reference, `to` targets are filtered
