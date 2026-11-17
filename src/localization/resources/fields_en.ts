@@ -78,6 +78,15 @@ export default {
     disabled: {
       title: 'Inactive',
     },
+    theme: {
+      title: 'Background',
+      description: "The module's colour band.",
+      options: {
+        light: 'Light (page background)',
+        dark: 'Dark',
+        accent: 'Accent',
+      },
+    },
     internalLinkTitle: {
       title: 'Title',
     },

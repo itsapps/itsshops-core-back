@@ -78,6 +78,15 @@ export default {
     disabled: {
       title: 'Inaktiv',
     },
+    theme: {
+      title: 'Hintergrund',
+      description: 'Farbfläche des Moduls.',
+      options: {
+        light: 'Hell (Seitenhintergrund)',
+        dark: 'Dunkel',
+        accent: 'Akzent',
+      },
+    },
     internalLinkTitle: {
       title: 'Titel',
     },

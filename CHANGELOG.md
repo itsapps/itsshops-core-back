@@ -4,6 +4,13 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## Unreleased
+
+- **Fixed:** the module `theme` field (`builders.module({ allowTheme: true })`) had no label —
+  the Studio showed `theme` / `light` / `dark` / `accent`. Now global labels in `fields_de/en`
+  ("Hintergrund": Hell / Dunkel / Akzent); a customer can still override them per module
+  (`<module>.fields.theme`).
+
 ## 6.2.0
 
 - **VinoFact bottle images → Sanity** (ADR `decisions/vinofact-bottle-images-copied-into-sanity.md`):
