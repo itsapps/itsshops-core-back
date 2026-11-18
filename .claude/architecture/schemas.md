@@ -97,7 +97,8 @@ for new-order mails + withdrawal notifications, empty → `senderEmail`); `compa
 `shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
 `shippingMethod.methodType` offers only `delivery`: `pickup` and `pickupFee` are commented out
 (pickup isn't supported end to end; the `fulfillment.pickupLocation` field and `OrderActions`
-pickup checks are leftovers). core-front `commerce-and-netlify.md` → "Pickup is not supported".
+pickup checks are leftovers). core-front `commerce-and-netlify.md` → "Pickup is not supported";
+plan to enable it: core-front `.claude/plans/store-pickup.md`.
 `productVariant.grantsFreeShipping` (boolean, `pricing` group, only with `shop.productFreeShipping`,
 hidden on digital variants): the whole order ships free (every delivery method). Order snapshot
 `fulfillment.freeShippingReason` (`product` / `threshold` / `coupon`, set by core-front only when
