@@ -236,6 +236,7 @@ export default {
         partiallyRefunded: 'Teilweise refundiert',
       },
     },
+    erpAccepted: 'In der Warenwirtschaft übernommen am {{date}}',
     statusHistory: {
       name: 'Statusverlauf',
       type: {
@@ -244,7 +245,11 @@ export default {
           payment: 'Zahlung',
           fulfillment: 'Versand',
           mail: 'E-Mail',
+          erp: 'Warenwirtschaft',
         },
+      },
+      erpStatus: {
+        accepted: 'Übernommen',
       },
       source: {
         admin: 'Studio',

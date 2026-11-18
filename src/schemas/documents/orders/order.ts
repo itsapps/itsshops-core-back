@@ -49,6 +49,13 @@ export const order: ITSDocumentDefinition = {
           readOnly: !ctx.config.isDev,
           options: ctx.format.dateFormat('datetime'),
         }),
+        // When the ERP accepted the order (wc-api `completedMeans: 'accepted'`, first
+        // `PUT completed`); written by core-front only, shown in the order view.
+        f('erpAcceptedAt', 'datetime', {
+          readOnly: !ctx.config.isDev,
+          hidden: !ctx.config.isDev,
+          options: ctx.format.dateFormat('datetime'),
+        }),
         f('paymentStatus', 'string', {
           options: {
             list: [{ value: 'succeeded' }, { value: 'refunded' }, { value: 'partiallyRefunded' }],

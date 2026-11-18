@@ -231,6 +231,7 @@ export default {
         partiallyRefunded: 'Partially refunded',
       },
     },
+    erpAccepted: 'Accepted by the ERP on {{date}}',
     statusHistory: {
       name: 'Status history',
       type: {
@@ -239,7 +240,11 @@ export default {
           payment: 'Payment',
           fulfillment: 'Shipping',
           mail: 'Email',
+          erp: 'ERP',
         },
+      },
+      erpStatus: {
+        accepted: 'Accepted',
       },
       source: {
         admin: 'Studio',

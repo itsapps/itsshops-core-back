@@ -10,6 +10,14 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
   the Studio showed `theme` / `light` / `dark` / `accent`. Now global labels in `fields_de/en`
   ("Hintergrund": Hell / Dunkel / Akzent); a customer can still override them per module
   (`<module>.fields.theme`).
+- **ERP accepted an order** (core-front wc-api `completedMeans: 'accepted'`, plan
+  core-front `.claude/plans/wc-api-erp-completed-accepted.md`): new read-only order field
+  `erpAcceptedAt` (hidden outside dev, written by core-front only) and history type `erp`
+  (status `accepted`, "Warenwirtschaft - Übernommen"). The order view shows "In der
+  Warenwirtschaft übernommen am …" while such an order is still "Neu" / "In Bearbeitung".
+
+### Upgrading
+- Nothing to change — the field stays empty unless the frontend's wc-api runs in `accepted` mode.
 
 ## 6.2.0
 

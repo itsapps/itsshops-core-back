@@ -120,6 +120,8 @@ type StatusHistoryEntry = {
   | { type: 'payment' | 'fulfillment'; status: OrderStatus | OrderPaymentStatus }
   // `withdrawalReceipt`: the withdrawal receipt (core-front), not a MailType the Studio sends
   | { type: 'mail'; status: MailType | 'withdrawalReceipt' }
+  // the ERP accepted the order (core-front wc-api, `completedMeans: 'accepted'`)
+  | { type: 'erp'; status: 'accepted' }
 )
 
 type OrderRefund = {
@@ -151,6 +153,8 @@ type PaymentMethod = {
 interface OrderDocument extends SanityDocument {
   orderNumber?: string
   orderDate?: string
+  /** When the ERP accepted the order (core-front wc-api, `completedMeans: 'accepted'`). */
+  erpAcceptedAt?: string
   payment?: PaymentMethod
   invoiceNumber?: string
   status: 'created' | 'processing' | 'shipped' | 'delivered' | 'canceled' | 'returned'
@@ -366,6 +370,17 @@ export const OrderView: UserViewComponent = (props) => {
                 {t('order.payment.title', 'Payment method')}: {paymentLabel(order.payment, t)}
               </Text>
             )}
+            {order.erpAcceptedAt &&
+              (order.status === 'created' || order.status === 'processing') && (
+                <Text muted>
+                  {t('order.erpAccepted', 'Accepted by the ERP on {{date}}', {
+                    date: format.date(order.erpAcceptedAt, {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    }),
+                  })}
+                </Text>
+              )}
           </Stack>
           <Flex gap={2} wrap="wrap">
             <Badge tone={STATUS_TONES[order.status] ?? 'default'}>{tStatus(order.status)}</Badge>
@@ -598,7 +613,9 @@ export const OrderView: UserViewComponent = (props) => {
                         <Text weight="medium">
                           {entry.type === 'mail'
                             ? `${tHistoryType('mail')} - ${t(`actions.order.mailTypes.${entry.status}`, entry.status)}`
-                            : `${tHistoryType(entry.type)} - ${schemaT.default(getStateTranslationKey(entry.status), entry.status)}`}
+                            : entry.type === 'erp'
+                              ? `${tHistoryType('erp')} - ${t(`order.statusHistory.erpStatus.${entry.status}`, entry.status)}`
+                              : `${tHistoryType(entry.type)} - ${schemaT.default(getStateTranslationKey(entry.status), entry.status)}`}
                         </Text>
                         <Text muted>
                           {format.date(entry.timestamp, {

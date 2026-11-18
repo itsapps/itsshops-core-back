@@ -925,6 +925,10 @@ export default {
           returned: 'Returned',
         },
       },
+      erpAcceptedAt: {
+        title: 'Accepted by ERP',
+        description: 'When the ERP accepted the order (wc-api, mode "accepted").',
+      },
       orderDate: {
         title: 'Order date',
         description:
@@ -1008,6 +1012,7 @@ export default {
           payment: 'Payment',
           fulfillment: 'Fulfillment',
           mail: 'Email',
+          erp: 'ERP',
         },
       },
       status: {

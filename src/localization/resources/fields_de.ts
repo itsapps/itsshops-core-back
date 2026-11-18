@@ -936,6 +936,11 @@ export default {
           returned: 'Zurückgeliefert',
         },
       },
+      erpAcceptedAt: {
+        title: 'Von Warenwirtschaft übernommen',
+        description:
+          'Wann die Warenwirtschaft die Bestellung übernommen hat (wc-api, Modus „accepted“).',
+      },
       orderDate: {
         title: 'Bestelldatum',
         description: 'Zeitpunkt der Bestellung (Zahlungsbeginn), steht in der Bestellbestätigung.',
@@ -1018,6 +1023,7 @@ export default {
           payment: 'Zahlung',
           fulfillment: 'Versand',
           mail: 'E-Mail',
+          erp: 'Warenwirtschaft',
         },
       },
       status: {

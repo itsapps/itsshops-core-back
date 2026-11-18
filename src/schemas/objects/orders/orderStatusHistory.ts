@@ -13,7 +13,12 @@ export const orderStatusHistory: ITSSchemaDefinition = {
     const fields = [
       f('type', 'string', {
         options: {
-          list: [{ value: 'payment' }, { value: 'fulfillment' }, { value: 'mail' }],
+          list: [
+            { value: 'payment' },
+            { value: 'fulfillment' },
+            { value: 'mail' },
+            { value: 'erp' },
+          ],
         },
         validation: (Rule) => Rule.required(),
       }),
@@ -59,7 +64,9 @@ export const orderStatusHistory: ITSSchemaDefinition = {
           const statusString =
             type === 'mail'
               ? ctx.componentT.default(`actions.order.mailTypes.${status}`, status)
-              : ctx.t.default(getStateTranslationKey(status), status)
+              : type === 'erp'
+                ? ctx.componentT.default(`order.statusHistory.erpStatus.${status}`, status)
+                : ctx.t.default(getStateTranslationKey(status), status)
           const sourceString = source
             ? ctx.componentT.default(`order.statusHistory.source.${source}`, source)
             : undefined

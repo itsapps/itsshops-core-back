@@ -458,6 +458,7 @@ export type Order = {
   invoiceNumber?: string
   status?: 'created' | 'processing' | 'shipped' | 'delivered' | 'canceled' | 'returned'
   orderDate?: string
+  erpAcceptedAt?: string
   paymentStatus?: 'succeeded' | 'refunded' | 'partiallyRefunded'
   statusHistory?: Array<
     {
@@ -965,7 +966,7 @@ export type OrderRefund = {
 
 export type OrderStatusHistory = {
   _type: 'orderStatusHistory'
-  type?: 'payment' | 'fulfillment' | 'mail'
+  type?: 'payment' | 'fulfillment' | 'mail' | 'erp'
   status?: string
   timestamp?: string
   source?: string
