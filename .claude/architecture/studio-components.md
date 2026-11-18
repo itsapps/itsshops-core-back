@@ -205,7 +205,9 @@ React; tests `tests/vinofactImage.test.ts`):
   are `liveEdit`, so `displayed` = `published`. The status history card translates `source`
   (`order.statusHistory.source.*`: Studio / Stripe / Warenwirtschaft / Automatisch; unknown values
   raw) and titles `mail` entries "E-Mail - <mail type>" (`actions.order.mailTypes.*`, incl. the history-only
-  `withdrawalReceipt`).
+  `withdrawalReceipt`) and `erp` entries "Warenwirtschaft - Übernommen"
+  (`order.statusHistory.erpStatus.*`). The header shows "In der Warenwirtschaft übernommen am …"
+  (`order.erpAccepted`) while `erpAcceptedAt` is set and the order is `created`/`processing`.
 - `WithdrawalGuideInput.tsx` — document-level input of `orderWithdrawal`: a `Card` above the form
   with the next step (`withdrawalNextStep`: assign / close / refund / partial / wait / done /
   rejected), the linked order read live (fetch + `listen`). Open **and unmatched** withdrawals also

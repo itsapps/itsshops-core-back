@@ -111,10 +111,13 @@ publish would revert what the payment functions wrote meanwhile. `order.refunds[
 (`orderRefund`: `refundId`, `amount` cents, `createdAt`, `status` (Stripe's), `failureReason`,
 `source` `studio` | `stripe`, `reason`; group `history`, hidden outside dev) is written by core-front
 only (`syncOrderRefunds`, rebuilt from Stripe) — core-front `commerce-and-netlify.md` → Refunds.
-`order.statusHistory[]` (`orderStatusHistory`: `type` payment / fulfillment / `mail`, `status` =
-state or mail type, `source` (`admin` / `stripe` / `wc-api` / `system`), `note`,
-`customerMessage`; hidden outside dev) is written by core-front and the order actions,
-append-only — `mail` entries only by core-front after a sent mail.
+`order.statusHistory[]` (`orderStatusHistory`: `type` payment / fulfillment / `mail` / `erp`,
+`status` = state, mail type, or `accepted` for `erp`, `source` (`admin` / `stripe` / `wc-api` /
+`system`), `note`, `customerMessage`; hidden outside dev) is written by core-front and the order
+actions, append-only — `mail` entries only by core-front after a sent mail, `erp` entries only by
+core-front's wc-api. `order.erpAcceptedAt` (datetime, read-only, hidden outside dev): when the ERP
+accepted the order — written only by the wc-api in `completedMeans: 'accepted'` mode (core-front
+`wc-api.md` → "ERP accepted"); the order stays `processing` until the shop ships it.
 
 **Withdrawal-instruction settings (`shopSettings`, group returns):** `withdrawalPeriodStart`
 (FAGG Anhang I note [1] variant, default `multipleGoods`), `withdrawalExceptions` (§ 18 list),
