@@ -95,10 +95,27 @@ time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
 for new-order mails + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
 `registerNumber` / `registerCourt` (rendered in every mail footer only when set);
 `shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
-`shippingMethod.methodType` offers only `delivery`: `pickup` and `pickupFee` are commented out
-(pickup isn't supported end to end; the `fulfillment.pickupLocation` field and `OrderActions`
-pickup checks are leftovers). core-front `commerce-and-netlify.md` → "Pickup is not supported";
-plan to enable it: core-front `.claude/plans/store-pickup.md`.
+**Store pickup** (core-front `commerce-and-netlify.md` → "Store pickup", plan
+`.claude/plans/store-pickup.md`): `shippingMethod.methodType` `pickup` — always in the list (no
+feature flag; a published pickup method turns pickup on in the checkout). Pickup fields, hidden
+unless pickup: `pickupFee` (price, initial 0), `pickupAddress` (`businessAddress`; line1/zip/city/
+country required via `requiredSubfields(…, { when })`, country must be an enabled `taxCountry` —
+it is the VAT country of pickup orders), `pickupInstructions` (`i18nText`), `pickupHoldDays`
+(integer ≥ 1, optional). `eligibleCountries` (required only for delivery), `rates`,
+`packagingGroups`, `freeShippingThreshold` hide for pickup (leftover values are ignored by every
+reader). `deliveryTime` = "ready for pickup in" for pickup. Order snapshot (read-only outside
+dev): `fulfillment.pickupAddress` (inline object, city as plain string), `pickupInstructions`
+(text), `pickupHoldDays`; no `customer.shippingAddress` on pickup orders (the order preview falls
+back to the billing address). `addressStrict.country` lists **every** ISO country
+(`allCountryOptions`) — a pickup customer's billing address may be from anywhere.
+Pickup orders reuse the states: `shipped` = "Abholbereit", `delivered` = "Abgeholt"
+(`utils/orderTransitions.ts` `statusLabelKey` / `mailTypeLabelKey`, keys
+`order.status.pickupOptions.*` / `actions.order.pickupMailTypes.*`). A pickup `shipped` order is
+not handed over: transitions `delivered` | `canceled` (refunded: none), `refundCancelsFulfillment`
+true, `returnedOffered` false, withdrawal guide `refund`/`notCollected`. The order view shows a
+"Abholung" card (contact email, method, pickup address, instructions and — while `shipped` with
+`pickupHoldDays` — "Abholen bis …", `caution` tone + "abgelaufen" once past; `utils/pickup.ts`
+`pickupDeadline`, same rule as core-front's).
 `productVariant.grantsFreeShipping` (boolean, `pricing` group, only with `shop.productFreeShipping`,
 hidden on digital variants): the whole order ships free (every delivery method). Order snapshot
 `fulfillment.freeShippingReason` (`product` / `threshold` / `coupon`, set by core-front only when

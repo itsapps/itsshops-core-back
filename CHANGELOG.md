@@ -6,6 +6,18 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
 
 ## Unreleased
 
+- **Store pickup** (plan core-front `.claude/plans/store-pickup.md`): shipping method type
+  "Abholung" with `pickupFee`, `pickupAddress` (country = an enabled tax country),
+  `pickupInstructions`, `pickupHoldDays`; delivery-only fields hide for pickup. Order snapshot
+  `fulfillment.pickupAddress` / `pickupInstructions` / `pickupHoldDays` (replaces the unused
+  `pickupLocation`). Pickup orders: status labels "Abholbereit" / "Abgeholt" (dialog, badge,
+  history, "Send mail"), an "Abgeholt" order can be returned, an "Abholbereit" one cancelled; a
+  full refund cancels it; withdrawal guide "Noch nicht abgeholt". Order view: pickup card with
+  the deadline ("Abholen bis …", highlighted once past). Order list preview falls back to the
+  billing address (pickup orders have no shipping address).
+- `addressStrict.country` (order addresses) lists every ISO country.
+- `requiredSubfields(…, { when })`: the rule applies only where `when(context)` is true.
+
 - **Fixed:** the module `theme` field (`builders.module({ allowTheme: true })`) had no label —
   the Studio showed `theme` / `light` / `dark` / `accent`. Now global labels in `fields_de/en`
   ("Hintergrund": Hell / Dunkel / Akzent); a customer can still override them per module
@@ -18,6 +30,8 @@ Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "R
 
 ### Upgrading
 - Nothing to change — the field stays empty unless the frontend's wc-api runs in `accepted` mode.
+- Store pickup needs core-front with pickup support; "Abholung" appears in every checkout shop's
+  shipping method type list, nothing changes until a pickup method is created.
 
 ## 6.2.0
 
