@@ -1,4 +1,8 @@
-import { refundCancelsFulfillment, type OrderStatus } from './orderTransitions'
+import {
+  refundCancelsFulfillment,
+  type FulfillmentMethodType,
+  type OrderStatus,
+} from './orderTransitions'
 
 // Sums over an order's stored Stripe refunds (`order.refunds`, written by core-front).
 // Failed / canceled refunds don't count — Stripe doesn't count them in `amount_refunded`
@@ -61,12 +65,13 @@ export type HistoryEntry = {
 /**
  * The order patch after a Studio refund (status dialog or "Refund & close"):
  *  - `full` / `partial` → `paymentStatus` `refunded` / `partiallyRefunded` + a `payment` entry
- *  - full refund of an undispatched order → also `status: canceled` + a `fulfillment` entry
+ *  - full refund of an undispatched (pickup: uncollected) order → also `status: canceled` +
+ *    a `fulfillment` entry
  *  - `markReturned` → `status: returned` + a `fulfillment` entry (`refund: 'none'` = only this)
  * The internal `note` goes on every entry.
  */
 export const buildRefundPatch = (
-  order: { status: OrderStatus },
+  order: { status: OrderStatus; fulfillment?: { methodType?: FulfillmentMethodType } },
   {
     refund,
     markReturned = false,
@@ -98,7 +103,7 @@ export const buildRefundPatch = (
     set.paymentStatus = paymentStatus
     historyEntries.push(entry('payment', paymentStatus))
   }
-  if (refund === 'full' && refundCancelsFulfillment(order.status)) {
+  if (refund === 'full' && refundCancelsFulfillment(order.status, order.fulfillment?.methodType)) {
     set.status = 'canceled'
     historyEntries.push(entry('fulfillment', 'canceled'))
   } else if (markReturned) {

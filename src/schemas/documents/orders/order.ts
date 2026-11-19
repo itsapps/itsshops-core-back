@@ -107,9 +107,19 @@ export const order: ITSDocumentDefinition = {
           paymentStatus: 'paymentStatus',
           // created: '_createdAt',
           shipping: 'customer.shippingAddress',
+          // Pickup orders store no shipping address — show the billing address instead.
+          billing: 'customer.billingAddress',
           // locale: language.id
         },
-        prepare: ({ orderNumber, status, paymentStatus, shipping, total }) => {
+        prepare: ({
+          orderNumber,
+          status,
+          paymentStatus,
+          shipping: shippingAddress,
+          billing,
+          total,
+        }) => {
+          const shipping = shippingAddress ?? billing
           return status && paymentStatus && shipping && total
             ? {
                 // title: `${total/100}€ - ${status}`,

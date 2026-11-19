@@ -1,4 +1,4 @@
-import { Rule } from 'sanity'
+import { Rule, ValidationContext } from 'sanity'
 
 import { TranslatorFunction } from '../types'
 
@@ -159,7 +159,9 @@ const hasValue = (value: unknown): boolean => {
  * marks each missing one on its own input. Nested subfields use dot paths
  * (`'address.zip'`). `warning: true` makes it non-blocking. `message` overrides the
  * translation key (default `validation.requiredField` / `validation.recommendedField`).
- * Pass `ctx.t.default`.
+ * Pass `ctx.t.default`. `when` limits the rule to some documents (Sanity validates
+ * hidden fields too) — e.g. only pickup shipping methods:
+ * `{ when: (c) => (c.parent as { methodType?: string })?.methodType === 'pickup' }`.
  *
  * Usage: f('billingAddress', 'businessAddress', { validation: requiredSubfields(['line1', 'zip'], ctx.t.default) })
  */
@@ -167,10 +169,15 @@ export const requiredSubfields =
   (
     fields: string[],
     t: TranslatorFunction,
-    options: { warning?: boolean; message?: string } = {},
+    options: {
+      warning?: boolean
+      message?: string
+      when?: (context: ValidationContext) => boolean
+    } = {},
   ) =>
   (rule: Rule): Rule => {
-    const customRule = rule.custom((value: Record<string, unknown> | undefined) => {
+    const customRule = rule.custom((value: Record<string, unknown> | undefined, context) => {
+      if (options.when && !options.when(context)) return true
       const missing = fields
         .map((field) => field.split('.'))
         .filter((path) => !hasValue(path.reduce<any>((v, key) => v?.[key], value)))

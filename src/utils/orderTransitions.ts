@@ -10,6 +10,8 @@ export type OrderStatus =
 
 export type OrderPaymentStatus = 'succeeded' | 'refunded' | 'partiallyRefunded'
 
+export type FulfillmentMethodType = 'delivery' | 'pickup'
+
 export type StatusActionType = 'fulfillment' | 'payment'
 
 export type StatusAction =
@@ -45,17 +47,25 @@ const paymentTransitions: Record<OrderPaymentStatus, OrderPaymentStatus[]> = {
   refunded: [],
 }
 
+// A pickup order reuses the states with other labels: `shipped` = "ready for pickup"
+// (the goods are still at the shop), `delivered` = "collected". So for pickup only
+// `delivered` means "handed over"; an uncollected `shipped` order is cancelled, not returned.
+const isHandedOver = (status: OrderStatus, methodType?: FulfillmentMethodType): boolean =>
+  methodType === 'pickup' ? status === 'delivered' : status === 'shipped' || status === 'delivered'
+
 // A fully-refunded order is mostly locked, with one exception: goods that were
-// already dispatched (shipped/delivered) can still be marked `returned`, since
-// a refund of shipped goods is typically followed by the customer returning them.
-// Pre-dispatch refunds stay terminal (the order is effectively cancelled).
+// already handed over (shipped/delivered; for pickup: collected) can still be marked
+// `returned`, since a refund of shipped goods is typically followed by the customer
+// returning them. Pre-handover refunds stay terminal (the order is effectively cancelled).
 export const getAllowedFulfillmentTransitions = (
   currentStatus: OrderStatus,
   paymentStatus: OrderPaymentStatus,
+  methodType?: FulfillmentMethodType,
 ): OrderStatus[] => {
   if (paymentStatus === 'refunded') {
-    return currentStatus === 'shipped' || currentStatus === 'delivered' ? ['returned'] : []
+    return isHandedOver(currentStatus, methodType) ? ['returned'] : []
   }
+  if (methodType === 'pickup' && currentStatus === 'shipped') return ['delivered', 'canceled']
   return fulfillmentTransitions[currentStatus] ?? []
 }
 
@@ -65,11 +75,16 @@ export const getAllowedPaymentTransitions = (
   return paymentTransitions[currentStatus] ?? []
 }
 
-// A full refund of a still-undispatched order also cancels fulfillment, so the
-// order doesn't stay stuck reading as `created`/`processing`. Shared by the
-// refund action and the withdrawal "resolve" action.
-export const refundCancelsFulfillment = (currentStatus: OrderStatus): boolean =>
-  currentStatus === 'created' || currentStatus === 'processing'
+// A full refund of a still-undispatched order (for pickup: not yet collected) also
+// cancels fulfillment, so the order doesn't stay stuck reading as `created`/`processing`
+// (or "ready for pickup"). Shared by the refund action and the withdrawal "resolve" action.
+export const refundCancelsFulfillment = (
+  currentStatus: OrderStatus,
+  methodType?: FulfillmentMethodType,
+): boolean =>
+  currentStatus === 'created' ||
+  currentStatus === 'processing' ||
+  (methodType === 'pickup' && currentStatus === 'shipped')
 
 // The mail to send when a transition completes. Some transitions don't
 // trigger a customer notification (e.g. created, succeeded).
@@ -117,3 +132,18 @@ const stateTranslationKeys: Record<OrderStatus | OrderPaymentStatus, string> = {
 
 export const getStateTranslationKey = (state: OrderStatus | OrderPaymentStatus): string =>
   stateTranslationKeys[state] ?? state
+
+/**
+ * `componentT` key of a fulfillment state's label: pickup orders call `shipped`
+ * "Abholbereit" and `delivered` "Abgeholt".
+ */
+export const statusLabelKey = (state: string, methodType?: FulfillmentMethodType): string =>
+  methodType === 'pickup' && (state === 'shipped' || state === 'delivered')
+    ? `order.status.pickupOptions.${state}`
+    : `order.status.options.${state}`
+
+/** `componentT` key of a mail type's label (pickup: "Abholbereit-Mail" / "Abgeholt-Mail"). */
+export const mailTypeLabelKey = (mailType: string, methodType?: FulfillmentMethodType): string =>
+  methodType === 'pickup' && (mailType === 'orderShipping' || mailType === 'orderDelivered')
+    ? `actions.order.pickupMailTypes.${mailType}`
+    : `actions.order.mailTypes.${mailType}`

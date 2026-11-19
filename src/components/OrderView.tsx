@@ -6,9 +6,12 @@ import { type UserViewComponent } from 'sanity/structure'
 
 import {
   getStateTranslationKey,
+  mailTypeLabelKey,
+  statusLabelKey,
   type OrderPaymentStatus,
   type OrderStatus,
 } from '../utils/orderTransitions'
+import { pickupDeadline, pickupOverdue } from '../utils/pickup'
 import { refundedTotal, remainingAmount } from '../utils/orderRefunds'
 import { isOpenWithdrawal, withdrawalDeadline } from '../utils/withdrawals'
 import { useITSContext } from '../context/ITSCoreProvider'
@@ -105,7 +108,10 @@ type Fulfillment = {
   shippingCost: number
   freeShippingReason?: 'product' | 'threshold' | 'coupon'
   trackingCode?: string
-  pickupLocation?: string
+  /** Pickup snapshot (city in the customer's locale). */
+  pickupAddress?: { line1?: string; line2?: string; zip?: string; city?: string; country?: string }
+  pickupInstructions?: string
+  pickupHoldDays?: number
   taxSnapshot?: VatBreakdownItem
   packagingLines?: PackagingLine[]
 }
@@ -165,7 +171,8 @@ interface OrderDocument extends SanityDocument {
     locale: string
     contactEmail: string
     billingAddress?: Address
-    shippingAddress: Address
+    /** Not stored for pickup orders. */
+    shippingAddress?: Address
   }
   totals: OrderTotals
   fulfillment: Fulfillment
@@ -315,13 +322,27 @@ function formatAddressLines(address: Address): string[] {
 export const OrderView: UserViewComponent = (props) => {
   const { format, componentT, schemaT } = useITSContext()
   const t = componentT.default
-  const tStatus = (status: string) => componentT.default(`order.status.options.${status}`, status)
+  const tStatus = (status: string) => componentT.default(statusLabelKey(status, methodType), status)
   const tPaymentStatus = (status: string) =>
     componentT.default(`order.paymentStatus.options.${status}`, status)
   const tHistoryType = (type: string) =>
     componentT.default(`order.statusHistory.type.options.${type}`, type)
+  const historyStatusLabel = (entry: StatusHistoryEntry): string => {
+    switch (entry.type) {
+      case 'mail':
+        return t(mailTypeLabelKey(entry.status, methodType), entry.status)
+      case 'erp':
+        return t(`order.statusHistory.erpStatus.${entry.status}`, entry.status)
+      case 'fulfillment':
+        return t(statusLabelKey(entry.status, methodType), entry.status)
+      default:
+        return schemaT.default(getStateTranslationKey(entry.status), entry.status)
+    }
+  }
 
   const order = (props.document.displayed ?? props.document.published) as OrderDocument | undefined
+  // Pickup orders label `shipped` / `delivered` as "ready for pickup" / "collected".
+  const methodType = order?.fulfillment?.methodType
   const currency = order?.totals?.currency ?? 'EUR'
   const withdrawals = useOrderWithdrawals(order?._id)
 
@@ -341,6 +362,12 @@ export const OrderView: UserViewComponent = (props) => {
 
   const { customer, totals, fulfillment } = order
   const shippingAddress = customer?.shippingAddress
+  const isPickup = fulfillment?.methodType === 'pickup'
+  // The deadline only matters while the order waits for pickup ("Abholbereit").
+  const pickupDue =
+    isPickup && order.status === 'shipped'
+      ? pickupDeadline(order.statusHistory, fulfillment?.pickupHoldDays)
+      : null
   const billingAddress = customer?.billingAddress
 
   return (
@@ -434,7 +461,10 @@ export const OrderView: UserViewComponent = (props) => {
         <Card padding={3} radius={2} shadow={1} tone="primary">
           <Stack gap={3}>
             <TotalRow label={t('order.subtotal')} value={money(totals?.subtotal)} />
-            <TotalRow label={t('order.shipping')} value={money(totals?.shipping)} />
+            <TotalRow
+              label={t(isPickup ? 'order.pickup' : 'order.shipping')}
+              value={money(totals?.shipping)}
+            />
             {totals?.shipping === 0 && fulfillment?.freeShippingReason && (
               <TotalRow
                 label={t(`order.freeShippingReason.${fulfillment.freeShippingReason}`)}
@@ -540,7 +570,27 @@ export const OrderView: UserViewComponent = (props) => {
 
         {/* ── Customer + addresses ────────────────────────────────────── */}
         <Flex gap={3} direction="column">
-          {shippingAddress && (
+          {isPickup && (
+            <AddressCard
+              title={t('order.pickup', 'Pickup')}
+              tone={pickupDue && pickupOverdue(pickupDue) ? 'caution' : 'transparent'}
+              lines={[
+                customer.contactEmail,
+                fulfillment?.methodTitle,
+                ...(fulfillment?.pickupAddress
+                  ? formatAddressLines(fulfillment.pickupAddress as Address)
+                  : []),
+                ...(fulfillment?.pickupInstructions?.split('\n') ?? []),
+                pickupDue &&
+                  t(
+                    pickupOverdue(pickupDue) ? 'order.pickupOverdue' : 'order.pickupDeadline',
+                    'Collect by {{date}}',
+                    { date: format.date(pickupDue, { dateStyle: 'medium' }) },
+                  ),
+              ].filter((l): l is string => Boolean(l && l.trim()))}
+            />
+          )}
+          {!isPickup && shippingAddress && (
             <AddressCard
               title={t('order.shipping')}
               lines={[
@@ -550,7 +600,6 @@ export const OrderView: UserViewComponent = (props) => {
                 fulfillment?.trackingCode
                   ? `${t('order.trackingNumber')} ${fulfillment.trackingCode}`
                   : null,
-                fulfillment?.pickupLocation,
               ].filter((l): l is string => Boolean(l))}
             />
           )}
@@ -611,11 +660,7 @@ export const OrderView: UserViewComponent = (props) => {
                     <Stack gap={2}>
                       <Flex justify="space-between" gap={2} wrap="wrap">
                         <Text weight="medium">
-                          {entry.type === 'mail'
-                            ? `${tHistoryType('mail')} - ${t(`actions.order.mailTypes.${entry.status}`, entry.status)}`
-                            : entry.type === 'erp'
-                              ? `${tHistoryType('erp')} - ${t(`order.statusHistory.erpStatus.${entry.status}`, entry.status)}`
-                              : `${tHistoryType(entry.type)} - ${schemaT.default(getStateTranslationKey(entry.status), entry.status)}`}
+                          {`${tHistoryType(entry.type)} - ${historyStatusLabel(entry)}`}
                         </Text>
                         <Text muted>
                           {format.date(entry.timestamp, {
@@ -677,16 +722,25 @@ function TotalRow({
   )
 }
 
-function AddressCard({ title, lines }: { title: string; lines: string[] }) {
+function AddressCard({
+  title,
+  lines,
+  tone = 'transparent',
+}: {
+  title: string
+  lines: string[]
+  tone?: 'transparent' | 'caution'
+}) {
   return (
-    <Card padding={3} radius={2} shadow={1} tone="transparent">
+    <Card padding={3} radius={2} shadow={1} tone={tone}>
       <Stack gap={3}>
         <Heading as="h4" size={1}>
           {title}
         </Heading>
         <Stack gap={2}>
-          {lines.map((line) => (
-            <Text key={line}>{line}</Text>
+          {lines.map((line, i) => (
+            // Index keys: two equal lines (e.g. in the pickup instructions) must not clash.
+            <Text key={i}>{line}</Text>
           ))}
         </Stack>
       </Stack>

@@ -16,7 +16,11 @@ import type { SanityClient } from 'sanity'
 
 import type { ITSFrontendClient } from '../../types/frontend'
 import { buildRefundPatch, refundedTotal, type RefundLike } from '../../utils/orderRefunds'
-import type { OrderPaymentStatus, OrderStatus } from '../../utils/orderTransitions'
+import type {
+  FulfillmentMethodType,
+  OrderPaymentStatus,
+  OrderStatus,
+} from '../../utils/orderTransitions'
 
 export type RefundSnapshot = { paymentStatus: OrderPaymentStatus; refundedCents: number }
 
@@ -47,7 +51,7 @@ export async function refundOrder({
 }: {
   sanityClient: Pick<SanityClient, 'fetch' | 'patch'>
   frontendClient: Pick<ITSFrontendClient, 'refundPayment'>
-  order: { _id: string; status: OrderStatus }
+  order: { _id: string; status: OrderStatus; fulfillment?: { methodType?: FulfillmentMethodType } }
   expected: RefundSnapshot
   /** `none`: no refund, only `markReturned`. */
   refund: 'full' | 'partial' | 'none'

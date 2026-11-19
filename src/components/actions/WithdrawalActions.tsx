@@ -1050,6 +1050,8 @@ type ResolveOrder = {
   paymentStatus: OrderPaymentStatus
   grandTotal?: number
   refunds?: { amount: number; status?: string; createdAt?: string }[]
+  // Nested like the order document: `buildRefundPatch` reads `fulfillment.methodType`.
+  fulfillment?: { methodType?: 'delivery' | 'pickup' }
 }
 
 /**
@@ -1141,7 +1143,7 @@ function ResolveWithdrawalContent({
     let active = true
     sanityClient
       .fetch<ResolveOrder | null>(
-        `*[_id == $id][0]{ _id, orderNumber, paymentIntentId, status, paymentStatus, "grandTotal": totals.grandTotal, "refunds": refunds[]{ amount, status, createdAt } }`,
+        `*[_id == $id][0]{ _id, orderNumber, paymentIntentId, status, paymentStatus, "grandTotal": totals.grandTotal, "refunds": refunds[]{ amount, status, createdAt }, "fulfillment": fulfillment{ methodType } }`,
         { id: orderId },
       )
       .then((o) => {
@@ -1180,7 +1182,11 @@ function ResolveWithdrawalContent({
   const showReturned =
     !!order &&
     !!choice &&
-    returnedOffered(order.status, paymentStatusAfter(choice, order.paymentStatus))
+    returnedOffered(
+      order.status,
+      paymentStatusAfter(choice, order.paymentStatus),
+      order.fulfillment?.methodType,
+    )
   const canConfirm = !!order && !!choice && (choice !== 'partial' || partialValid) && !loading
 
   const handleConfirm = useCallback(async () => {

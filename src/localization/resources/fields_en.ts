@@ -322,6 +322,7 @@ export default {
     duplicateVolume: 'Each volume may only appear once.',
     duplicatePlaces: 'Each box size may only appear once.',
     volumeInOneGroup: 'Each bottle size may only be in one box type.',
+    pickupCountryNotTaxCountry: 'The country must be an enabled tax country.',
     slugFormat:
       'Use lowercase letters, numbers and "-" only ("/" for nested paths). Spaces and capitals are removed automatically in the URL.',
   },
@@ -512,7 +513,8 @@ export default {
     fields: {
       deliveryTime: {
         title: 'Delivery time',
-        description: 'Optional, e.g. "2–4 working days". Shown in the order confirmation.',
+        description:
+          'Optional, e.g. "2–4 working days". Shown in the order confirmation. For pickup: how long until the order is ready to collect.',
       },
       rates: {
         title: 'Rate table (weight)',
@@ -533,11 +535,25 @@ export default {
         title: 'Pickup fee',
         description: 'Set to 0 to make pickup free of charge.',
       },
+      pickupAddress: {
+        title: 'Pickup address',
+        description: 'Where the order is collected. Its country sets the VAT of pickup orders.',
+      },
+      pickupInstructions: {
+        title: 'Pickup instructions',
+        description:
+          'E.g. opening hours, "Please bring ID – age check at handover". Shown in the checkout and in the mails.',
+      },
+      pickupHoldDays: {
+        title: 'Hold period (days)',
+        description: 'How long an order ready for pickup is held. Empty = no period.',
+      },
       eligibleCountries: {
         title: 'Countries',
       },
     },
     preview: {
+      pickup: 'Pickup',
       countries_zero: 'No countries selected',
       countries_one: '{{count}} country',
       countries_other: '{{count}} countries',
@@ -1227,9 +1243,14 @@ export default {
       trackingCode: {
         title: 'Tracking code',
       },
-      pickupLocation: {
-        title: 'Pickup location',
-        description: 'The address where the customer will collect the goods',
+      pickupAddress: {
+        title: 'Pickup address',
+      },
+      pickupInstructions: {
+        title: 'Pickup instructions',
+      },
+      pickupHoldDays: {
+        title: 'Hold period (days)',
       },
     },
   },

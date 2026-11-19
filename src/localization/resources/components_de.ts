@@ -189,6 +189,9 @@ export default {
       },
     },
     shipping: 'Versand',
+    pickup: 'Abholung',
+    pickupDeadline: 'Abholen bis {{date}}',
+    pickupOverdue: 'Abholfrist abgelaufen am {{date}}',
     billingAddress: 'Rechnungsadresse',
     items: 'Produkte',
     freeProducts: 'Gratis Produkte',
@@ -226,6 +229,11 @@ export default {
         delivered: 'Angekommen',
         canceled: 'Storniert',
         returned: 'Zurückgeliefert',
+      },
+      // Pickup orders: `shipped` = ready for pickup, `delivered` = collected.
+      pickupOptions: {
+        shipped: 'Abholbereit',
+        delivered: 'Abgeholt',
       },
     },
     paymentStatus: {
@@ -312,6 +320,10 @@ export default {
         orderRefundedPartially: 'Teilweise refundiert',
         // history only (withdrawal receipt, core-front) — not offered in "Send mail"
         withdrawalReceipt: 'Widerruf erhalten',
+      },
+      pickupMailTypes: {
+        orderShipping: 'Abholbereit',
+        orderDelivered: 'Abgeholt',
       },
       updateStatus: {
         title: 'Status aktualisieren',
@@ -426,6 +438,8 @@ export default {
             'Die Bestellung ist bereits erstattet → „Erstatten & abschließen“ schließt den Widerruf ab.',
           refundNotShipped:
             'Noch nicht versendet → „Erstatten & abschließen“ (storniert auch die Bestellung).',
+          refundNotCollected:
+            'Noch nicht abgeholt → „Erstatten & abschließen“ (storniert auch die Bestellung).',
           refundNothingToWait: 'Es gibt nichts mehr abzuwarten → „Erstatten & abschließen“.',
           partial:
             '{{amount}} bereits erstattet (z. B. über „Status aktualisieren“ der Bestellung oder im Stripe-Dashboard) → „Erstatten & abschließen“: den Rest erstatten oder nur abschließen.',

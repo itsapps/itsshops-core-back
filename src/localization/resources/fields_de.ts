@@ -325,6 +325,7 @@ export default {
     duplicateVolume: 'Jedes Volumen darf nur einmal vorkommen.',
     duplicatePlaces: 'Jede Kartongröße darf nur einmal vorkommen.',
     volumeInOneGroup: 'Jede Flaschengröße darf nur in einer Kartonart vorkommen.',
+    pickupCountryNotTaxCountry: 'Das Land muss ein aktiviertes Steuerland sein.',
     slugFormat:
       'Nur Kleinbuchstaben, Zahlen und "-" ("/" für verschachtelte Pfade). Leerzeichen und Großbuchstaben werden in der URL automatisch entfernt.',
   },
@@ -519,7 +520,8 @@ export default {
     fields: {
       deliveryTime: {
         title: 'Lieferzeit',
-        description: 'Optional, z. B. „2–4 Werktage“. Steht in der Bestellbestätigung.',
+        description:
+          'Optional, z. B. „2–4 Werktage“. Steht in der Bestellbestätigung. Bei Abholung: wie lange es dauert, bis die Bestellung abholbereit ist.',
       },
       rates: {
         title: 'Preistabelle (Gewicht)',
@@ -540,11 +542,26 @@ export default {
         title: 'Kosten für die Abholung',
         description: 'Auf 0 setzen, um die Abholung kostenlos zu machen.',
       },
+      pickupAddress: {
+        title: 'Abholadresse',
+        description:
+          'Wo die Bestellung abgeholt wird. Das Land bestimmt die Umsatzsteuer von Abholbestellungen.',
+      },
+      pickupInstructions: {
+        title: 'Hinweise zur Abholung',
+        description:
+          'Z. B. Öffnungszeiten, „Bitte Ausweis mitbringen – Altersprüfung bei Übergabe“. Steht in der Kasse und in den Mails.',
+      },
+      pickupHoldDays: {
+        title: 'Abholfrist (Tage)',
+        description: 'Wie lange eine abholbereite Bestellung aufbewahrt wird. Leer = keine Frist.',
+      },
       eligibleCountries: {
         title: 'Länder',
       },
     },
     preview: {
+      pickup: 'Abholung',
       countries_zero: 'Keine Länder ausgewählt',
       countries_one: '{{count}} Land',
       countries_other: '{{count}} Länder',
@@ -1240,9 +1257,14 @@ export default {
       trackingCode: {
         title: 'Sendungsnummer',
       },
-      pickupLocation: {
-        title: 'Abholort',
-        description: 'Adresse, an der die Ware abgeholt werden kann',
+      pickupAddress: {
+        title: 'Abholadresse',
+      },
+      pickupInstructions: {
+        title: 'Hinweise zur Abholung',
+      },
+      pickupHoldDays: {
+        title: 'Abholfrist (Tage)',
       },
     },
   },

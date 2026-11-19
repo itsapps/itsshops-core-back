@@ -184,6 +184,9 @@ export default {
       },
     },
     shipping: 'Shipping',
+    pickup: 'Pickup',
+    pickupDeadline: 'Collect by {{date}}',
+    pickupOverdue: 'Pickup period expired on {{date}}',
     billingAddress: 'Billing address',
     items: 'Items',
     freeProducts: 'Free products',
@@ -221,6 +224,11 @@ export default {
         delivered: 'Delivered',
         canceled: 'Canceled',
         returned: 'Returned',
+      },
+      // Pickup orders: `shipped` = ready for pickup, `delivered` = collected.
+      pickupOptions: {
+        shipped: 'Ready for pickup',
+        delivered: 'Collected',
       },
     },
     paymentStatus: {
@@ -306,6 +314,10 @@ export default {
         orderRefundedPartially: 'Partially refunded',
         // history only (withdrawal receipt, core-front) — not offered in "Send mail"
         withdrawalReceipt: 'Withdrawal received',
+      },
+      pickupMailTypes: {
+        orderShipping: 'Ready for pickup',
+        orderDelivered: 'Collected',
       },
       updateStatus: {
         title: 'Update status',
@@ -416,6 +428,7 @@ export default {
             '(e.g. spam): delete it — by {{date}} at the latest, because a stranger’s data may be kept for 30 days at most.',
           close: 'The order is already refunded → “Refund & close” closes the withdrawal.',
           refundNotShipped: 'Not shipped yet → “Refund & close” (also cancels the order).',
+          refundNotCollected: 'Not collected yet → “Refund & close” (also cancels the order).',
           refundNothingToWait: 'Nothing more to wait for → “Refund & close”.',
           partial:
             '{{amount}} already refunded (e.g. via the order’s “Update status” or the Stripe dashboard) → “Refund & close”: refund the rest or close only.',
@@ -462,12 +475,12 @@ export default {
       functionsSecret: {
         title: 'Server functions secret',
         description:
-          'Must match SERVER_FUNCTIONS_SECRET of this environment\'s frontend (Netlify env). Used for refunds and customer mails.',
+          "Must match SERVER_FUNCTIONS_SECRET of this environment's frontend (Netlify env). Used for refunds and customer mails.",
       },
       netlifyBuildHook: {
         title: 'Netlify build hook',
         description:
-          'Build hook URL of this environment\'s frontend (Netlify → Project configuration → Build hooks). Used by the Deploy button.',
+          "Build hook URL of this environment's frontend (Netlify → Project configuration → Build hooks). Used by the Deploy button.",
       },
       vinofactToken: {
         title: 'Vinofact API token',

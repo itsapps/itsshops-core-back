@@ -18,7 +18,9 @@ export const addressStrict: ITSSchemaDefinition = {
         f('city', 'string', { validation: (Rule) => Rule.required() }),
         f('country', 'string', {
           options: {
-            list: ctx.constants.countryOptions,
+            // Every ISO country: a pickup order's billing address may come from anywhere
+            // (shipping addresses are limited to tax countries by the checkout anyway).
+            list: ctx.constants.allCountryOptions,
           },
           validation: (Rule) => Rule.required(),
         }),

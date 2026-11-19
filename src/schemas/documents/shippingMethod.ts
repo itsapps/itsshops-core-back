@@ -1,5 +1,9 @@
 import { PackageIcon } from '../../assets/icons'
 import { ITSDocumentDefinition } from '../../types'
+import { requiredSubfields } from '../../utils/validation'
+
+type MethodParent = { methodType?: string } | undefined
+const isPickup = (parent: unknown) => (parent as MethodParent)?.methodType === 'pickup'
 
 export const shippingMethod: ITSDocumentDefinition = {
   name: 'shippingMethod',
@@ -8,28 +12,65 @@ export const shippingMethod: ITSDocumentDefinition = {
   feature: 'shop',
   build: (ctx) => {
     const { f, t } = ctx
+    const hiddenForPickup = ({ parent }: { parent?: unknown }) => isPickup(parent)
+    const hiddenUnlessPickup = ({ parent }: { parent?: unknown }) => !isPickup(parent)
     return {
       fields: [
         // f('isDefault', 'boolean', { initialValue: false }),
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
         // Optional, e.g. "2–4 Werktage" — snapshotted onto the order, shown in the confirmation mail.
+        // For pickup: how long until the order is ready to collect.
         f('deliveryTime', 'i18nString'),
         f('methodType', 'string', {
           options: {
             list: [
               { value: 'delivery' },
-              // { value: 'pickup' }
+              // A pickup location (click & collect); no countries, rates or packaging.
+              { value: 'pickup' },
             ],
           },
           initialValue: 'delivery',
           validation: (Rule) => Rule.required(),
         }),
-        // ctx.builders.priceField({
-        //   name: 'pickupFee',
-        //   initialValue: 0,
-        //   hidden: ({ parent }) => parent?.methodType !== 'pickup',
-        // }),
+        ctx.builders.priceField({
+          name: 'pickupFee',
+          initialValue: 0,
+          hidden: hiddenUnlessPickup,
+        }),
+        // Where the customer collects the order. Its country is the VAT country of a pickup
+        // order (place of supply), so it must be an enabled tax country.
+        f('pickupAddress', 'businessAddress', {
+          hidden: hiddenUnlessPickup,
+          validation: (rule) => [
+            requiredSubfields(['line1', 'zip', 'city', 'country'], t.default, {
+              when: (c) => isPickup(c.parent),
+            })(rule),
+            rule.custom(async (value: { country?: string } | undefined, context) => {
+              if (!isPickup(context.parent) || !value?.country) return true
+              const client = context.getClient({ apiVersion: ctx.config.apiVersion })
+              const count = await client.fetch<number>(
+                'count(*[_type == "taxCountry" && enabled == true && countryCode == $code])',
+                { code: value.country },
+              )
+              return count > 0
+                ? true
+                : {
+                    message: t.default(
+                      'validation.pickupCountryNotTaxCountry',
+                      'The country must be an enabled tax country',
+                    ),
+                    path: ['country'],
+                  }
+            }),
+          ],
+        }),
+        f('pickupInstructions', 'i18nText', { hidden: hiddenUnlessPickup }),
+        f('pickupHoldDays', 'number', {
+          hidden: hiddenUnlessPickup,
+          validation: (rule) => rule.integer().min(1),
+        }),
         f('eligibleCountries', 'array', {
+          hidden: hiddenForPickup,
           of: [
             {
               type: 'reference',
@@ -39,15 +80,20 @@ export const shippingMethod: ITSDocumentDefinition = {
               validation: (Rule) => Rule.required(),
             },
           ],
-          validation: (Rule) => Rule.required().min(1).unique(),
+          validation: (Rule) =>
+            Rule.unique().custom((value: unknown[] | undefined, context) =>
+              isPickup(context.parent) || (value?.length ?? 0) > 0
+                ? true
+                : context.i18n.t('validation:generic.required'),
+            ),
         }),
         f('rates', 'array', {
           of: [{ type: 'shippingRate' }],
-          // hidden: ({ parent }) => parent?.methodType === 'pickup',
+          hidden: hiddenForPickup,
         }),
         f('packagingGroups', 'array', {
           of: [{ type: 'packagingGroup' }],
-          // hidden: ({ parent }) => parent?.methodType === 'pickup',
+          hidden: hiddenForPickup,
           validation: (Rule) =>
             Rule.custom((groups: { bottles?: { volume?: number }[] }[] | undefined) => {
               // A bottle size belongs to one box type only — the checkout must not have to choose.
@@ -74,67 +120,27 @@ export const shippingMethod: ITSDocumentDefinition = {
         ctx.builders.priceField({
           name: 'freeShippingThreshold',
           validation: (Rule) => Rule.positive(),
-          // hidden: ({ parent }) => parent && parent.methodType !== 'delivery',
+          hidden: hiddenForPickup,
         }),
       ],
       preview: {
         select: {
           title: 'title',
           countries: 'eligibleCountries',
+          methodType: 'methodType',
         },
-        prepare({ title, countries }) {
+        prepare({ title, countries, methodType }) {
           return {
             title: ctx.localizer.value(title),
-            subtitle: ctx.schemaT.default('shippingMethod.preview.countries', 'Countries', {
-              count: countries?.length || 0,
-            }),
+            subtitle:
+              methodType === 'pickup'
+                ? ctx.schemaT.default('shippingMethod.preview.pickup', 'Pickup')
+                : ctx.schemaT.default('shippingMethod.preview.countries', 'Countries', {
+                    count: countries?.length || 0,
+                  }),
           }
         },
       },
     }
   },
 }
-
-// Fetching the list of available countries
-// const query = `array::unique(*[_type == "shippingMethod"].countries[]) | order(@ asc)`;
-// const availableCountries = await client.fetch(query);
-
-// // In your component
-// <select name="country">
-//   <option value="">Select your country</option>
-//   {availableCountries.map((code) => (
-//     <option key={code} value={code}>
-//       {/* Using a helper like 'intl-list' or a local dictionary
-//           to turn "AT" into "Austria"
-//       */}
-//       {getCountryName(code)}
-//     </option>
-//   ))}
-// </select>
-
-// To determine if a shipment to Austria (AT) is possible, your code needs to "interrogate" your shippingMethod documents. It isn't enough to just check if the country exists; you also have to check if the total weight of the bottles fits within the carrier's limits.
-// Here is the logic flow to validate if checkout is possible:
-// 1. The Validation Logic
-// You should run a check against your Sanity data using three criteria:
-// Country Match: Does any shippingMethod include AT in its countries array?
-// Weight Capacity: Does that method have a rateTable entry that covers the total weight of the cart?
-// Active Status: (Optional) is the method currently enabled?
-
-// The GROQ Query
-// This query asks Sanity: "Give me all shipping methods that serve Austria and can carry X kilograms."
-// *[_type == "shippingMethod"
-//   && $country in countries
-//   && count(rateTable[maxWeight >= $totalWeight]) > 0
-// ] {
-//   _id,
-//   title,
-//   "price": rateTable[maxWeight >= $totalWeight] | order(maxWeight asc)[0].price,
-//   freeShippingThreshold
-// }
-
-// 4. Pro-Tip: The "Fallback" Pickup Method
-// Many wineries in Austria allow "Self-Pickup" (Abholung). You should create one shippingMethod specifically for this:
-// Title: "Pick up at Winery"
-// Countries: ['AT']
-// Rate Table: [{ maxWeight: 9999, price: 0 }]
-// This ensures that even if an order is too heavy for a courier, the "AT" checkout is still possible via pickup, preventing a lost sale.

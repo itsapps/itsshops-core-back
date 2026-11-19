@@ -20,7 +20,7 @@ import type { DocumentActionDescription, DocumentActionProps } from 'sanity'
 
 import { useITSContext } from '../../context/ITSCoreProvider'
 import { CustomerMessageField } from './OrderActions'
-import type { MailType } from '../../utils/orderTransitions'
+import { mailTypeLabelKey, type MailType } from '../../utils/orderTransitions'
 import { refundMailBlocked, refundMailOffered, refundedTotal } from '../../utils/orderRefunds'
 
 const MAIL_TYPES: MailType[] = [
@@ -40,6 +40,7 @@ type OrderMailActionDoc = {
   paymentStatus?: string
   totals?: { grandTotal?: number }
   refunds?: { amount: number; status?: string }[]
+  fulfillment?: { methodType?: 'delivery' | 'pickup' }
 }
 
 const isRefundMail = (type: MailType): type is 'orderRefunded' | 'orderRefundedPartially' =>
@@ -168,7 +169,7 @@ function OrderMailContent({
         >
           {mailTypes.map((type) => (
             <option key={type} value={type}>
-              {t(`actions.order.mailTypes.${type}`, type)}
+              {t(mailTypeLabelKey(type, order.fulfillment?.methodType), type)}
             </option>
           ))}
         </Select>

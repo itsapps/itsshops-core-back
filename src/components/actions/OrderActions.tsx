@@ -43,6 +43,7 @@ import { refundOrder, refundSnapshot } from '../../lib/shop/orderRefund'
 import { refundErrorText, useOpenWithdrawal } from './WithdrawalActions'
 import {
   getAllowedFulfillmentTransitions,
+  statusLabelKey,
   getAllowedPaymentTransitions,
   mailTypeForStatus,
   notifyCustomerByDefault,
@@ -73,10 +74,11 @@ function buildActions(
   const fulfillmentActions: StatusAction[] = getAllowedFulfillmentTransitions(
     order.status,
     order.paymentStatus,
+    order.fulfillment?.methodType,
   ).map((newState) => ({
     type: 'fulfillment',
     newState,
-    label: t(`order.status.options.${newState}`, newState),
+    label: t(statusLabelKey(newState, order.fulfillment?.methodType), newState),
   }))
 
   const paymentActions: StatusAction[] = getAllowedPaymentTransitions(order.paymentStatus).map(

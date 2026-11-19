@@ -18,7 +18,7 @@ import { withdrawalNextStep, type WithdrawalOrderLike } from '../utils/withdrawa
 
 type GuideOrder = WithdrawalOrderLike & { _id: string }
 
-const ORDER_QUERY = `*[_id == $id][0]{ _id, status, paymentStatus, "grandTotal": totals.grandTotal, "refunds": refunds[]{ amount, status, createdAt } }`
+const ORDER_QUERY = `*[_id == $id][0]{ _id, status, paymentStatus, "methodType": fulfillment.methodType, "grandTotal": totals.grandTotal, "refunds": refunds[]{ amount, status, createdAt } }`
 
 /** The linked order, live. `undefined` while loading, `null` when there is none. */
 function useLinkedOrder(orderId: string | undefined): GuideOrder | null | undefined {
@@ -130,13 +130,19 @@ export function WithdrawalGuideInput(props: ObjectInputProps) {
         )
         break
       case 'refund':
-        stepText =
-          next.why === 'notShipped'
-            ? t(
-                `${k}.refundNotShipped`,
-                'Not shipped yet → “Refund & close” (also cancels the order).',
-              )
-            : t(`${k}.refundNothingToWait`, 'Nothing more to wait for → “Refund & close”.')
+        if (next.why === 'notShipped') {
+          stepText = t(
+            `${k}.refundNotShipped`,
+            'Not shipped yet → “Refund & close” (also cancels the order).',
+          )
+        } else if (next.why === 'notCollected') {
+          stepText = t(
+            `${k}.refundNotCollected`,
+            'Not collected yet → “Refund & close” (also cancels the order).',
+          )
+        } else {
+          stepText = t(`${k}.refundNothingToWait`, 'Nothing more to wait for → “Refund & close”.')
+        }
         break
       case 'partial':
         stepText = t(

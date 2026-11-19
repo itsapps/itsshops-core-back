@@ -4,6 +4,7 @@
 
 import {
   getAllowedFulfillmentTransitions,
+  type FulfillmentMethodType,
   type OrderPaymentStatus,
   type OrderStatus,
 } from './orderTransitions'
@@ -69,6 +70,8 @@ export type WithdrawalLike = {
 export type WithdrawalOrderLike = {
   status?: string
   paymentStatus?: string
+  /** `pickup`: `shipped` means "ready for pickup" (goods still at the shop). */
+  methodType?: FulfillmentMethodType
   grandTotal?: number
   refunds?: (RefundLike & { createdAt?: string })[]
 }
@@ -79,7 +82,7 @@ export type WithdrawalStep =
 export type WithdrawalNextStep = {
   step: WithdrawalStep
   /** `refund` only: why there is nothing to wait for. */
-  why?: 'notShipped' | 'nothingToWait'
+  why?: 'notShipped' | 'notCollected' | 'nothingToWait'
   /** Open and unmatched withdrawals: the refund deadline. */
   deadline?: WithdrawalDeadline
   /** `assign`: delete-by date for non-customers (declaredAt + 30 days). */
@@ -135,6 +138,9 @@ export const withdrawalNextStep = (
   if (order.status === 'created' || order.status === 'processing') {
     return withDeadline({ step: 'refund', why: 'notShipped' })
   }
+  if (order.methodType === 'pickup' && order.status === 'shipped') {
+    return withDeadline({ step: 'refund', why: 'notCollected' })
+  }
   if (order.paymentStatus === 'partiallyRefunded') {
     return withDeadline({ step: 'partial', refundedCents: refundedTotal(order.refunds) })
   }
@@ -178,7 +184,9 @@ export const paymentStatusAfter = (
 export const returnedOffered = (
   orderStatus: OrderStatus,
   paymentStatus: OrderPaymentStatus,
-): boolean => getAllowedFulfillmentTransitions(orderStatus, paymentStatus).includes('returned')
+  methodType?: FulfillmentMethodType,
+): boolean =>
+  getAllowedFulfillmentTransitions(orderStatus, paymentStatus, methodType).includes('returned')
 
 /** Which withdrawal document actions apply. */
 export const withdrawalActionsFor = (
