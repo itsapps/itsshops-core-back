@@ -69,6 +69,9 @@ export const shippingMethod: ITSDocumentDefinition = {
           hidden: hiddenUnlessPickup,
           validation: (rule) => rule.integer().min(1),
         }),
+        // On: the shop prepares the order first — the confirmation and the thanks page announce
+        // the "ready for pickup" mail. Off: the goods can be collected right away.
+        f('pickupAnnounceReady', 'boolean', { hidden: hiddenUnlessPickup, initialValue: false }),
         f('eligibleCountries', 'array', {
           hidden: hiddenForPickup,
           of: [

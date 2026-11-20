@@ -555,6 +555,11 @@ export default {
         title: 'Abholfrist (Tage)',
         description: 'Wie lange eine abholbereite Bestellung aufbewahrt wird. Leer = keine Frist.',
       },
+      pickupAnnounceReady: {
+        title: 'Abholbereit-Mail ankündigen',
+        description:
+          'Wenn die Bestellung erst vorbereitet wird: Bestätigung und Danke-Seite sagen „Wir melden uns, sobald sie zur Abholung bereit ist“. Aus = die Ware ist sofort abholbar.',
+      },
       eligibleCountries: {
         title: 'Länder',
       },
@@ -1280,6 +1285,9 @@ export default {
       },
       pickupHoldDays: {
         title: 'Abholfrist (Tage)',
+      },
+      pickupAnnounceReady: {
+        title: 'Abholbereit-Mail angekündigt',
       },
     },
   },

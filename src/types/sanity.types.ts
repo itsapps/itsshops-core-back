@@ -442,6 +442,7 @@ export type Fulfillment = {
   pickupAddress?: PickupAddress
   pickupInstructions?: string
   pickupHoldDays?: number
+  pickupAnnounceReady?: boolean
   methodTitle?: string
   deliveryTime?: string
   methodType?: 'delivery' | 'pickup'
@@ -1538,6 +1539,7 @@ export type ShippingMethod = {
   pickupAddress?: BusinessAddress
   pickupInstructions?: InternationalizedArrayText
   pickupHoldDays?: number
+  pickupAnnounceReady?: boolean
   eligibleCountries?: Array<
     {
       _key: string

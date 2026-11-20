@@ -35,6 +35,7 @@ export const fulfillment: ITSSchemaDefinition = {
       }),
       f('pickupInstructions', 'text', { readOnly: lockSnapshot, hidden: hiddenUnlessPickup }),
       f('pickupHoldDays', 'number', { readOnly: lockSnapshot, hidden: hiddenUnlessPickup }),
+      f('pickupAnnounceReady', 'boolean', { readOnly: lockSnapshot, hidden: hiddenUnlessPickup }),
 
       f('methodTitle', 'string', { hidden: lockSnapshot }),
       // Snapshot of the method's delivery time at order time (shown in the confirmation).

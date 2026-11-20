@@ -547,6 +547,11 @@ export default {
         title: 'Hold period (days)',
         description: 'How long an order ready for pickup is held. Empty = no period.',
       },
+      pickupAnnounceReady: {
+        title: 'Announce the "ready for pickup" mail',
+        description:
+          'When the order is prepared first: the confirmation and the thank-you page say "we\'ll let you know as soon as it is ready for pickup". Off = the goods can be collected right away.',
+      },
       eligibleCountries: {
         title: 'Countries',
       },
@@ -1266,6 +1271,9 @@ export default {
       },
       pickupHoldDays: {
         title: 'Hold period (days)',
+      },
+      pickupAnnounceReady: {
+        title: '"Ready for pickup" mail announced',
       },
     },
   },

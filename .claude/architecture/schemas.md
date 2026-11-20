@@ -101,11 +101,12 @@ feature flag; a published pickup method turns pickup on in the checkout). Pickup
 unless pickup: `pickupFee` (price, initial 0), `pickupAddress` (`businessAddress`; line1/zip/city/
 country required via `requiredSubfields(…, { when })`, country must be an enabled `taxCountry` —
 it is the VAT country of pickup orders), `pickupInstructions` (`i18nText`), `pickupHoldDays`
-(integer ≥ 1, optional). `eligibleCountries` (required only for delivery), `rates`,
+(integer ≥ 1, optional), `pickupAnnounceReady` (boolean, initial off: the mails/thanks page
+announce the "ready for pickup" mail — core-front `commerce-and-netlify.md` → Store pickup). `eligibleCountries` (required only for delivery), `rates`,
 `packagingGroups`, `freeShippingThreshold` hide for pickup (leftover values are ignored by every
 reader). `deliveryTime` = "ready for pickup in" for pickup. Order snapshot (read-only outside
 dev): `fulfillment.pickupAddress` (inline object, city as plain string), `pickupInstructions`
-(text), `pickupHoldDays`; no `customer.shippingAddress` on pickup orders (the order preview falls
+(text), `pickupHoldDays`, `pickupAnnounceReady`; no `customer.shippingAddress` on pickup orders (the order preview falls
 back to the billing address). `addressStrict.country` lists **every** ISO country
 (`allCountryOptions`) — a pickup customer's billing address may be from anywhere.
 Pickup orders reuse the states: `shipped` = "Abholbereit", `delivered` = "Abgeholt"
