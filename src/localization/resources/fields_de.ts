@@ -1624,12 +1624,18 @@ export default {
       },
       description: {
         title: 'Interne Notiz',
+        description:
+          'Nur intern, wird nirgends angezeigt (z. B. wofür der Rabatt ist, wer ihn bekommen hat).',
       },
       enabled: {
         title: 'Aktiv',
+        description:
+          'Aus = gilt nicht mehr, ein eingegebener Code wird abgelehnt. Wie jede Änderung hier erst nach „Veröffentlichen“ wirksam.',
       },
       trigger: {
         title: 'Auslöser',
+        description:
+          'Code: gilt nur, wenn der Kunde den Code im Checkout eingibt. Automatisch: gilt ohne Code für jede Bestellung, die die Bedingungen erfüllt.',
         options: {
           code: 'Code (Kunde gibt ihn ein)',
           automatic: 'Automatisch',
@@ -1641,6 +1647,8 @@ export default {
       },
       target: {
         title: 'Gilt für',
+        description:
+          'Artikel: Rabatt auf jede passende Position. Bestellung: ein Rabatt auf die Summe der passenden Positionen. Versand: erlässt die Versandkosten.',
         options: {
           items: 'Artikel',
           order: 'Bestellung',
@@ -1649,6 +1657,7 @@ export default {
       },
       valueType: {
         title: 'Art',
+        description: 'Bei „Versand“ immer „Gratis“, sonst Prozent oder fixer Betrag.',
         options: {
           percent: 'Prozent',
           fixed: 'Fixer Betrag',
@@ -1681,6 +1690,8 @@ export default {
       },
       minSubtotalBasis: {
         title: 'Mindestbestellwert gemessen an',
+        description:
+          'Ganzer Warenkorb: alle Positionen zählen. Passende Produkte: nur die unter „Produkte“ ausgewählten.',
         options: {
           wholeCart: 'ganzem Warenkorb',
           matching: 'passenden Produkten',
@@ -1692,9 +1703,11 @@ export default {
       },
       validFrom: {
         title: 'Gültig ab',
+        description: 'Leer = ab sofort.',
       },
       validTo: {
         title: 'Gültig bis',
+        description: 'Leer = ohne Ablauf.',
       },
       maxRedemptions: {
         title: 'Maximale Einlösungen',
@@ -1720,6 +1733,7 @@ export default {
       },
       redemptionCount: {
         title: 'Bisherige Einlösungen',
+        description: 'Zählt bezahlte Bestellungen mit diesem Rabatt; wird automatisch erhöht.',
       },
     },
     validation: {
@@ -1729,8 +1743,10 @@ export default {
       valueRequired: 'Wert ist erforderlich',
       valuePositive: 'Wert muss größer als 0 sein',
       percentMax: 'Prozent darf 100 nicht überschreiten',
-      percentFull: '100 % macht die Bestellung gratis – unter 0,50 € kann der Checkout nicht kassieren',
-      automaticEveryOrder: 'Gilt für jede Bestellung – keine Produktauswahl und kein Mindestwert gesetzt',
+      percentFull:
+        '100 % macht die Bestellung gratis – unter 0,50 € kann der Checkout nicht kassieren',
+      automaticEveryOrder:
+        'Gilt für jede Bestellung – keine Produktauswahl und kein Mindestwert gesetzt',
       fixedCents: 'Fixer Betrag in ganzen Cent',
       shippingOnlyFree: 'Versandrabatte können nur „Gratis“ sein',
       freeOnlyShipping: '„Gratis“ gibt es nur für Versandrabatte',
@@ -1773,6 +1789,7 @@ export default {
     fields: {
       kinds: {
         title: 'Produktart',
+        description: 'Alle Produkte dieser Art (z. B. alle Pakete).',
         options: {
           wine: 'Wein',
           physical: 'Physisches Produkt',
@@ -1793,6 +1810,7 @@ export default {
       },
       variants: {
         title: 'Varianten',
+        description: 'Nur einzelne Varianten, z. B. ein Jahrgang oder eine Flaschengröße.',
       },
       hasCompareAtPrice: {
         title: 'Hat Streichpreis',

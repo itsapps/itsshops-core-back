@@ -1605,12 +1605,17 @@ export default {
       },
       description: {
         title: 'Internal note',
+        description: 'Internal only, never shown (e.g. what the discount is for, who got it).',
       },
       enabled: {
         title: 'Active',
+        description:
+          'Off = no longer applies, an entered code is rejected. Like every change here, takes effect only after "Publish".',
       },
       trigger: {
         title: 'Trigger',
+        description:
+          'Code: applies only when the customer enters the code at checkout. Automatic: applies without a code to every order that meets the conditions.',
         options: {
           code: 'Code (customer enters it)',
           automatic: 'Automatic',
@@ -1622,6 +1627,8 @@ export default {
       },
       target: {
         title: 'Applies to',
+        description:
+          'Items: a discount on each matching line. Order: one discount on the sum of the matching lines. Shipping: waives the shipping costs.',
         options: {
           items: 'Items',
           order: 'Order',
@@ -1630,6 +1637,7 @@ export default {
       },
       valueType: {
         title: 'Type',
+        description: 'Always "Free" for "Shipping", otherwise percent or a fixed amount.',
         options: {
           percent: 'Percent',
           fixed: 'Fixed amount',
@@ -1661,6 +1669,8 @@ export default {
       },
       minSubtotalBasis: {
         title: 'Minimum subtotal measured on',
+        description:
+          'Whole cart: every line counts. Matching products: only those selected under "Products".',
         options: {
           wholeCart: 'the whole cart',
           matching: 'matching products',
@@ -1672,9 +1682,11 @@ export default {
       },
       validFrom: {
         title: 'Valid from',
+        description: 'Empty = from now on.',
       },
       validTo: {
         title: 'Valid until',
+        description: 'Empty = no end date.',
       },
       maxRedemptions: {
         title: 'Max redemptions',
@@ -1700,6 +1712,7 @@ export default {
       },
       redemptionCount: {
         title: 'Redemptions so far',
+        description: 'Counts paid orders with this discount; increased automatically.',
       },
     },
     validation: {
@@ -1752,6 +1765,7 @@ export default {
     fields: {
       kinds: {
         title: 'Product kind',
+        description: 'Every product of this kind (e.g. all bundles).',
         options: {
           wine: 'Wine',
           physical: 'Physical product',
@@ -1772,6 +1786,7 @@ export default {
       },
       variants: {
         title: 'Variants',
+        description: 'Single variants only, e.g. one vintage or one bottle size.',
       },
       hasCompareAtPrice: {
         title: 'Has compare-at price',
