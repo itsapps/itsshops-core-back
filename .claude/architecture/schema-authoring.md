@@ -62,6 +62,10 @@ Schema/document title & description also auto-resolve from the `schema` namespac
 - **Feature-aware references** — for `reference` and `array`-of-reference, `to` targets are filtered
   to feature-enabled schema types (disabled types are dropped; if the only target is disabled the
   field/array item is removed), and `disableNew` is set when a target doc has `allowCreate === false`.
+- **Reference array members need a `title`** (`title: ctx.t.default('<type>.title')`): without one
+  the Studio labels the member — in the add menu and the item list — with its own untranslated
+  "Reference to <type>". Not filled in automatically; every core array of references sets it
+  (core-back 7.0.0), and `builders.variantReference()` / `variantReferences()` carry it.
 - **Option auto-translation** — a `string` field **or an array of strings** (checkbox list) with an
   `options.list` gets each option's missing `title` filled from `fields.<name>.options.<value>`
   (resolved under the document's namespace first). Without titles Sanity treats `{ value }` entries
@@ -95,7 +99,7 @@ instead of re-deriving the same field clusters:
 | `module({ fields, groups?, allowAnchor?, allowTheme? })` | wraps content fields and appends a `settings` group (`disabled`, optional `anchorId`, `theme`) — the standard page-module shape |
 | `internalLinkFields` / `externalLinkFields` | reference/url link field clusters; internal is feature-aware with conditional-required validation, optional `displayType`, and opt-in `includeSystemPages` (fixed routes like the withdrawal form, as an alternative to the reference) |
 | `actionGroup({ max?, … })` | an array of internal-link "actions" with a localized preview |
-| `variantReferences` / `variantReference` | references to `productVariant` (filtered to non-archived, `disableNew`) |
+| `variantReferences` / `variantReference` | references to `productVariant` (filtered to non-archived, `disableNew`, translated member title) |
 | `priceField` | a positive `number` field rendered with the `PriceInput` component |
 | `countryCodeField` / `countryCodesField` | country select(s) from `ctx.constants.countryOptions`; single variant adds an async cross-document uniqueness check |
 | `filterField` | feature-aware product/wine/option filter array for the `productList` module |
