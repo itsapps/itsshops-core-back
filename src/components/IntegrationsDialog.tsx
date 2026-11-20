@@ -146,6 +146,8 @@ export function IntegrationsDialog(): ReactElement | null {
   return (
     <>
       <Button
+        // Bleed (no fill): rarely needed, so it shouldn't compete with the Deploy button next to it.
+        mode="bleed"
         icon={IntegrationsIcon}
         title={t('integrations.title')}
         aria-label={t('integrations.title')}
