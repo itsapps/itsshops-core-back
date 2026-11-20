@@ -55,7 +55,7 @@ export default {
     orderCustomer: 'Kundendaten',
     orderTotals: 'Kosten',
     orderVouchers: 'Gutscheine',
-    orderCoupons: 'Rabattcodes',
+    orderDiscounts: 'Rabatte',
     orderFreeProducts: 'Goodies',
     infos: 'Informationen',
   },
@@ -269,8 +269,11 @@ export default {
     vouchers: {
       title: 'Gutscheine',
     },
+    appliedDiscounts: {
+      title: 'Angewendete Rabatte',
+    },
     appliedCoupons: {
-      title: 'Eingelöste Rabattcodes',
+      title: 'Eingelöste Rabattcodes (altes Format)',
     },
     freeProducts: {
       title: 'Geschenke',
@@ -363,10 +366,6 @@ export default {
   productVariant: {
     title: 'Produktvariante',
     fields: {
-      grantsFreeShipping: {
-        title: 'Versandkostenfrei',
-        description: 'Macht die ganze Bestellung versandkostenfrei (alle Versandarten).',
-      },
       description: {
         title: 'Beschreibung',
         description:
@@ -653,6 +652,11 @@ export default {
         title: 'Standard Steuerklasse',
         description: 'Falls ein Produkt keine Steuerklasse hat, wird diese verwendet.',
       },
+      discountExclusions: {
+        title: 'Nie rabattieren',
+        description:
+          'Diese Produkte bekommen keinen Artikel- oder Bestellrabatt (außer ein Rabatt setzt „Shop-Ausschlüsse ignorieren“). Gilt nicht für Versandrabatte.',
+      },
       freeShippingCalculation: {
         options: {
           beforeDiscount: 'Vor Rabatt',
@@ -754,6 +758,7 @@ export default {
     groups: {
       displays: 'Anzeigen',
       shipping: 'Versand',
+      discounts: 'Rabatte',
       returns: 'Retouren',
       stock: 'Lagerbestand',
       tax: 'Steuern',
@@ -932,7 +937,7 @@ export default {
       orderTotals: 'Kosten',
       fulfillment: 'Versand',
       orderVouchers: 'Gutscheine',
-      orderCoupons: 'Rabattcodes',
+      orderDiscounts: 'Rabatte',
       orderFreeProducts: 'Geschenke',
     },
     fields: {
@@ -1041,6 +1046,7 @@ export default {
           fulfillment: 'Versand',
           mail: 'E-Mail',
           erp: 'Warenwirtschaft',
+          system: 'System',
         },
       },
       status: {
@@ -1144,6 +1150,10 @@ export default {
         title: 'Steuerbetrag',
         description: 'Gesamte Steuer dieser Position in Cent (Menge × Einzelsteuer)',
       },
+      discount: {
+        title: 'Rabatt',
+        description: 'Brutto-Rabatt auf die ganze Position (alle Stück), in Cent',
+      },
       packed: {
         title: 'Verpackt',
       },
@@ -1204,6 +1214,10 @@ export default {
         title: 'MwSt.-Betrag',
         description: 'MwSt. im Preisanteil × Paketmenge, in Cent',
       },
+      discount: {
+        title: 'Rabatt',
+        description: 'Anteil am Rabatt der Position (ganze Paketmenge), in Cent',
+      },
     },
   },
   orderItemOption: {
@@ -1242,9 +1256,10 @@ export default {
       freeShippingReason: {
         title: 'Grund für Gratis-Versand',
         options: {
-          product: 'Produkt',
           threshold: 'Bestellwert',
-          coupon: 'Gutschein',
+          discount: 'Rabatt',
+          product: 'Produkt (altes Format)',
+          coupon: 'Gutschein (altes Format)',
         },
       },
       taxSnapshot: {
@@ -1594,15 +1609,18 @@ export default {
   customerGroup: {
     title: 'Kundengruppe',
   },
-  coupon: {
-    title: 'Rabattcode',
+  discount: {
+    title: 'Rabatt',
+    groups: {
+      general: 'Allgemein',
+      discountValue: 'Rabatt',
+      conditions: 'Bedingungen',
+      combinations: 'Kombinierbar',
+    },
     fields: {
-      code: {
-        title: 'Code',
-        description: 'Code, den der Kunde im Checkout eingibt.',
-      },
       title: {
-        title: 'Interner Titel',
+        title: 'Titel',
+        description: 'Im Checkout, in den Mails und in der Bestellung angezeigt.',
       },
       description: {
         title: 'Interne Notiz',
@@ -1610,17 +1628,67 @@ export default {
       enabled: {
         title: 'Aktiv',
       },
-      discountType: {
-        title: 'Ermässigungstyp',
+      trigger: {
+        title: 'Auslöser',
+        options: {
+          code: 'Code (Kunde gibt ihn ein)',
+          automatic: 'Automatisch',
+        },
+      },
+      code: {
+        title: 'Code',
+        description: 'Code, den der Kunde im Checkout eingibt. Pro Bestellung höchstens ein Code.',
+      },
+      target: {
+        title: 'Gilt für',
+        options: {
+          items: 'Artikel',
+          order: 'Bestellung',
+          shipping: 'Versand',
+        },
+      },
+      valueType: {
+        title: 'Art',
         options: {
           percent: 'Prozent',
           fixed: 'Fixer Betrag',
-          freeShipping: 'Gratisversand',
+          free: 'Gratis (nur Versand)',
         },
       },
       value: {
         title: 'Wert',
-        description: 'Prozent: 1–100. Fixer Betrag: in Cent (1000 = 10€).',
+        description:
+          'Prozent: 1–100. Fixer Betrag: in Cent (1000 = 10 €) — bei „Artikel“ pro Stück, bei „Bestellung“ einmal.',
+      },
+      appliesTo: {
+        title: 'Produkte',
+        description:
+          'Artikel/Bestellung: welche Positionen rabattiert werden. Versand: der Warenkorb muss eine passende Position enthalten. Leer = alle.',
+      },
+      ignoreShopExclusions: {
+        title: 'Shop-Ausschlüsse ignorieren',
+        description:
+          'Rabattiert auch, was in den Shop-Einstellungen unter „Nie rabattieren“ steht.',
+      },
+      appliesToPickup: {
+        title: 'Auch bei Abholung',
+        description:
+          'Erlässt auch die Abholgebühr. Leer = bei Codes ja, bei automatischen Rabatten nein.',
+      },
+      minSubtotal: {
+        title: 'Mindestbestellwert',
+        description: 'Brutto-Mindestbetrag, ab dem der Rabatt gilt.',
+      },
+      minSubtotalBasis: {
+        title: 'Mindestbestellwert gemessen an',
+        options: {
+          wholeCart: 'ganzem Warenkorb',
+          matching: 'passenden Produkten',
+        },
+      },
+      minQuantity: {
+        title: 'Mindestmenge',
+        description: 'Stück der passenden Produkte (ein Paket zählt als 1).',
       },
       validFrom: {
         title: 'Gültig ab',
@@ -1628,24 +1696,47 @@ export default {
       validTo: {
         title: 'Gültig bis',
       },
-      minSubtotal: {
-        title: 'Mindestbestellwert',
-        description: 'Brutto-Mindestbetrag, ab dem der Code gilt.',
-      },
       maxRedemptions: {
         title: 'Maximale Einlösungen',
         description: 'Globale Obergrenze. Leer = unbegrenzt.',
+      },
+      maxPerEmail: {
+        title: 'Maximal pro E-Mail-Adresse',
+        description: 'Nur für Codes. Leer = unbegrenzt.',
+      },
+      combinesWith: {
+        title: 'Kombinierbar mit',
+        description:
+          'Zwei Rabatte gelten zusammen nur, wenn jeder den Bereich des anderen erlaubt. Versand wird höchstens einmal erlassen.',
+      },
+      items: {
+        title: 'Artikelrabatten',
+      },
+      order: {
+        title: 'Bestellrabatten',
+      },
+      shipping: {
+        title: 'Versandrabatten',
       },
       redemptionCount: {
         title: 'Bisherige Einlösungen',
       },
     },
     validation: {
+      codeRequired: 'Code ist erforderlich',
+      codeFormat: 'Nur Buchstaben, Ziffern, - und _',
+      codeInUse: 'Code wird bereits verwendet',
       valueRequired: 'Wert ist erforderlich',
       valuePositive: 'Wert muss größer als 0 sein',
       percentMax: 'Prozent darf 100 nicht überschreiten',
+      fixedCents: 'Fixer Betrag in ganzen Cent',
+      shippingOnlyFree: 'Versandrabatte können nur „Gratis“ sein',
+      freeOnlyShipping: '„Gratis“ gibt es nur für Versandrabatte',
       validToAfterFrom: '"Gültig bis" muss nach "Gültig ab" liegen',
-      codeInUse: 'Code wird bereits verwendet',
+      maxPerEmailCodeOnly: 'Nur für Codes möglich',
+      categoryCriterionOff: 'Kriterium Kategorie ist deaktiviert und wird trotzdem ausgewertet',
+      manufacturerCriterionOff:
+        'Kriterium Hersteller ist deaktiviert und wird trotzdem ausgewertet',
     },
     preview: {
       badge: {
@@ -1656,6 +1747,111 @@ export default {
         exhausted: '🔴 Verbraucht',
       },
       freeShipping: 'Gratisversand',
+    },
+  },
+  productSelector: {
+    title: 'Produktauswahl',
+    fields: {
+      include: {
+        title: 'Passend',
+        description: 'Eines davon genügt. Leer = alle Produkte.',
+      },
+      exclude: {
+        title: 'Ausgenommen',
+        description: 'Was hier passt, ist nie dabei.',
+      },
+    },
+    preview: {
+      all: 'Alle Produkte',
+      without: 'ohne',
+    },
+  },
+  productSelectorCriteria: {
+    title: 'Kriterien',
+    fields: {
+      kinds: {
+        title: 'Produktart',
+        options: {
+          wine: 'Wein',
+          physical: 'Physisches Produkt',
+          digital: 'Digitales Produkt',
+          bundle: 'Paket',
+        },
+      },
+      categories: {
+        title: 'Kategorien',
+        description: 'Mit Unterkategorien. Ein Paket zählt nur mit seinen eigenen Kategorien.',
+      },
+      manufacturers: {
+        title: 'Hersteller',
+      },
+      products: {
+        title: 'Produkte',
+        description: 'Alle Varianten des Produkts.',
+      },
+      variants: {
+        title: 'Varianten',
+      },
+      hasCompareAtPrice: {
+        title: 'Hat Streichpreis',
+        description: 'Varianten, deren Vergleichspreis höher als der Preis ist.',
+      },
+    },
+    preview: {
+      kinds: 'Typ',
+      categories_one: '{{count}} Kategorie',
+      categories_other: '{{count}} Kategorien',
+      manufacturers_one: '{{count}} Hersteller',
+      manufacturers_other: '{{count}} Hersteller',
+      products_one: '{{count}} Produkt',
+      products_other: '{{count}} Produkte',
+      variants_one: '{{count}} Variante',
+      variants_other: '{{count}} Varianten',
+      hasCompareAtPrice: 'mit Streichpreis',
+    },
+  },
+  appliedDiscount: {
+    title: 'Angewendeter Rabatt',
+    fields: {
+      discountRef: {
+        title: 'Rabatt',
+      },
+      code: {
+        title: 'Code',
+      },
+      title: {
+        title: 'Titel',
+      },
+      trigger: {
+        title: 'Auslöser',
+        options: {
+          code: 'Code',
+          automatic: 'Automatisch',
+        },
+      },
+      target: {
+        title: 'Gilt für',
+        options: {
+          items: 'Artikel',
+          order: 'Bestellung',
+          shipping: 'Versand',
+        },
+      },
+      valueType: {
+        title: 'Art',
+        options: {
+          percent: 'Prozent',
+          fixed: 'Fixer Betrag',
+          free: 'Gratis',
+        },
+      },
+      value: {
+        title: 'Wert',
+      },
+      amount: {
+        title: 'Ersparnis',
+        description: 'Abgezogener Betrag in Cent (Versand: die erlassenen Versandkosten)',
+      },
     },
   },
   appliedCoupon: {

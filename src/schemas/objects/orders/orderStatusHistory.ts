@@ -18,6 +18,8 @@ export const orderStatusHistory: ITSSchemaDefinition = {
             { value: 'fulfillment' },
             { value: 'mail' },
             { value: 'erp' },
+            // one-off data changes, e.g. the discounts migration (core-front CLI)
+            { value: 'system' },
           ],
         },
         validation: (Rule) => Rule.required(),
@@ -64,8 +66,8 @@ export const orderStatusHistory: ITSSchemaDefinition = {
           const statusString =
             type === 'mail'
               ? ctx.componentT.default(`actions.order.mailTypes.${status}`, status)
-              : type === 'erp'
-                ? ctx.componentT.default(`order.statusHistory.erpStatus.${status}`, status)
+              : type === 'erp' || type === 'system'
+                ? ctx.componentT.default(`order.statusHistory.${type}Status.${status}`, status)
                 : ctx.t.default(getStateTranslationKey(status), status)
           const sourceString = source
             ? ctx.componentT.default(`order.statusHistory.source.${source}`, source)

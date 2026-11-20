@@ -11,8 +11,10 @@ import { internalLink } from './objects/internalLink'
 import { localeAltImage } from './objects/localeAltImage'
 import { localeImage } from './objects/localeImage'
 import { menuItemTypes } from './objects/menuItem'
+import { productSelector, productSelectorCriteria } from './objects/productSelector'
 import { productSpecification } from './objects/productSpecification'
 import { appliedCoupon } from './objects/orders/appliedCoupon'
+import { appliedDiscount } from './objects/orders/appliedDiscount'
 import { fulfillment } from './objects/orders/fulfillment'
 import { fulfillmentPackagingLine } from './objects/orders/fulfillmentPackagingLine'
 import { orderCustomer } from './objects/orders/orderCustomer'
@@ -69,8 +71,11 @@ export const getCoreObjects = (
     localeAltImage,
     localeImage,
     ...menuItemTypes(menuLevels),
+    productSelector,
+    productSelectorCriteria,
     productSpecification,
     appliedCoupon,
+    appliedDiscount,
     orderCustomer,
     orderItem,
     orderItemBundle,

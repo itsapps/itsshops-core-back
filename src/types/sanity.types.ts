@@ -101,6 +101,7 @@ export type ShopSettings = {
   invoiceNumberPrefix?: string
   defaultCountry?: TaxCountryReference
   freeShippingCalculation?: 'beforeDiscount' | 'afterDiscount'
+  discountExclusions?: ProductSelector
   returnAddress?: BusinessAddress
   returnShippingBorneBy?: 'customer' | 'merchant'
   returnPolicyNote?: InternationalizedArrayText
@@ -194,6 +195,12 @@ export type BusinessAddress = {
     | 'UA'
     | 'VA'
     | 'XK'
+}
+
+export type ProductSelector = {
+  _type: 'productSelector'
+  include?: ProductSelectorCriteria
+  exclude?: ProductSelectorCriteria
 }
 
 export type TaxCountry = {
@@ -386,6 +393,11 @@ export type OrderMeta = {
       _key: string
     } & OrderItem
   >
+  appliedDiscounts?: Array<
+    {
+      _key: string
+    } & AppliedDiscount
+  >
   appliedCoupons?: Array<
     {
       _key: string
@@ -434,7 +446,7 @@ export type Fulfillment = {
   deliveryTime?: string
   methodType?: 'delivery' | 'pickup'
   shippingCost?: number
-  freeShippingReason?: 'product' | 'threshold' | 'coupon'
+  freeShippingReason?: 'threshold' | 'discount' | 'product' | 'coupon'
   taxSnapshot?: VatBreakdownItem
   packagingLines?: Array<
     {
@@ -458,6 +470,11 @@ export type Order = {
     {
       _key: string
     } & OrderItem
+  >
+  appliedDiscounts?: Array<
+    {
+      _key: string
+    } & AppliedDiscount
   >
   appliedCoupons?: Array<
     {
@@ -976,7 +993,7 @@ export type OrderRefund = {
 
 export type OrderStatusHistory = {
   _type: 'orderStatusHistory'
-  type?: 'payment' | 'fulfillment' | 'mail' | 'erp'
+  type?: 'payment' | 'fulfillment' | 'mail' | 'erp' | 'system'
   status?: string
   timestamp?: string
   source?: string
@@ -1007,6 +1024,7 @@ export type OrderItemBundleItem = {
   price?: number
   vatRate?: number
   vatAmount?: number
+  discount?: number
 }
 
 export type OrderItemBundle = {
@@ -1033,6 +1051,7 @@ export type OrderItem = {
   price?: number
   vatRate?: number
   vatAmount?: number
+  discount?: number
   packed?: boolean
   wine?: OrderItemWine
   options?: Array<
@@ -1307,45 +1326,91 @@ export type AddressStrict = {
   phone?: string
 }
 
-export type CouponReference = {
+export type DiscountReference = {
   _ref: string
   _type: 'reference'
   _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'coupon'
+  [internalGroqTypeReferenceTo]?: 'discount'
+}
+
+export type AppliedDiscount = {
+  _type: 'appliedDiscount'
+  discountRef?: DiscountReference
+  code?: string
+  title?: string
+  trigger?: 'code' | 'automatic'
+  target?: 'items' | 'order' | 'shipping'
+  valueType?: 'percent' | 'fixed' | 'free'
+  value?: number
+  amount?: number
 }
 
 export type AppliedCoupon = {
   _type: 'appliedCoupon'
-  couponRef?: CouponReference
+  couponRef?: DiscountReference
   code?: string
   discountType?: 'percent' | 'fixed' | 'freeShipping'
   value?: number
   discountAmount?: number
 }
 
-export type Coupon = {
+export type Discount = {
   _id: string
-  _type: 'coupon'
+  _type: 'discount'
   _createdAt: string
   _updatedAt: string
   _rev: string
-  code?: string
   title?: InternationalizedArrayString
   description?: InternationalizedArrayText
   enabled?: boolean
-  discountType?: 'percent' | 'fixed' | 'freeShipping'
+  trigger?: 'code' | 'automatic'
+  code?: string
+  redemptionCount?: number
+  target?: 'items' | 'order' | 'shipping'
+  valueType?: 'percent' | 'fixed' | 'free'
   value?: number
+  appliesTo?: ProductSelector
+  ignoreShopExclusions?: boolean
+  appliesToPickup?: boolean
+  minSubtotal?: number
+  minSubtotalBasis?: 'wholeCart' | 'matching'
+  minQuantity?: number
   validFrom?: string
   validTo?: string
-  minSubtotal?: number
   maxRedemptions?: number
-  redemptionCount?: number
+  maxPerEmail?: number
+  combinesWith?: {
+    items?: boolean
+    order?: boolean
+    shipping?: boolean
+  }
 }
 
 export type ProductSpecification = {
   _type: 'productSpecification'
   label?: InternationalizedArrayString
   value?: InternationalizedArrayString
+}
+
+export type CategoryReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'category'
+}
+
+export type ManufacturerReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'manufacturer'
+}
+
+export type ProductReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'product'
 }
 
 export type ProductVariantReference = {
@@ -1355,18 +1420,37 @@ export type ProductVariantReference = {
   [internalGroqTypeReferenceTo]?: 'productVariant'
 }
 
+export type ProductSelectorCriteria = {
+  _type: 'productSelectorCriteria'
+  kinds?: Array<string>
+  categories?: Array<
+    {
+      _key: string
+    } & CategoryReference
+  >
+  manufacturers?: Array<
+    {
+      _key: string
+    } & ManufacturerReference
+  >
+  products?: Array<
+    {
+      _key: string
+    } & ProductReference
+  >
+  variants?: Array<
+    {
+      _key: string
+    } & ProductVariantReference
+  >
+  hasCompareAtPrice?: boolean
+}
+
 export type PostReference = {
   _ref: string
   _type: 'reference'
   _weak?: boolean
   [internalGroqTypeReferenceTo]?: 'post'
-}
-
-export type CategoryReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'category'
 }
 
 export type BlogReference = {
@@ -1558,13 +1642,6 @@ export type Page = {
   seo?: Seo
 }
 
-export type ProductReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'product'
-}
-
 export type ProductList = {
   _type: 'productList'
   title?: InternationalizedArrayString
@@ -1640,13 +1717,6 @@ export type VariantOptionReference = {
   [internalGroqTypeReferenceTo]?: 'variantOption'
 }
 
-export type ManufacturerReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'manufacturer'
-}
-
 export type ProductVariant = {
   _id: string
   _type: 'productVariant'
@@ -1689,7 +1759,6 @@ export type ProductVariant = {
   taxCategory?: TaxCategoryReference
   price?: number
   compareAtPrice?: number
-  grantsFreeShipping?: boolean
   image?: LocaleAltImage
   seo?: Seo
   stock?: number
@@ -2068,6 +2137,7 @@ export type AllSanitySchemaTypes =
   | ShopSettings
   | InternationalizedArrayText
   | BusinessAddress
+  | ProductSelector
   | TaxCountry
   | BankAccount
   | SanityImageAssetReference
@@ -2113,13 +2183,17 @@ export type AllSanitySchemaTypes =
   | OrderItemBundle
   | OrderItem
   | AddressStrict
-  | CouponReference
+  | DiscountReference
+  | AppliedDiscount
   | AppliedCoupon
-  | Coupon
+  | Discount
   | ProductSpecification
-  | ProductVariantReference
-  | PostReference
   | CategoryReference
+  | ManufacturerReference
+  | ProductReference
+  | ProductVariantReference
+  | ProductSelectorCriteria
+  | PostReference
   | BlogReference
   | MenuItem
   | InternationalizedArrayUrl
@@ -2137,14 +2211,12 @@ export type AllSanitySchemaTypes =
   | Post
   | InternationalizedArraySlug
   | Page
-  | ProductReference
   | ProductList
   | ProductVariantList
   | CategoryList
   | Carousel
   | BundleItem
   | VariantOptionReference
-  | ManufacturerReference
   | ProductVariant
   | Product
   | TaxCategory

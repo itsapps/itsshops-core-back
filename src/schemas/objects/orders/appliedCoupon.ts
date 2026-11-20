@@ -1,17 +1,23 @@
 import { CouponIcon } from '../../../assets/icons'
 import { ITSSchemaDefinition } from '../../../types'
 
+/**
+ * Legacy (core-back < 7.0.0): replaced by `appliedDiscount`. Kept readable until the discounts
+ * migration ran on every dataset (core-front `itsshops sanity migrate-discounts`), then removed.
+ * The ref points at `discount` (the migrated doc is `discount-<old coupon _id>`; weak, so a
+ * dangling old id is fine).
+ */
 export const appliedCoupon: ITSSchemaDefinition = {
   name: 'appliedCoupon',
   type: 'object',
   icon: CouponIcon,
-  feature: 'shop.coupons',
+  feature: 'shop.discounts',
   build: (ctx) => {
     const { f } = ctx
     return {
       fields: [
         f('couponRef', 'reference', {
-          to: [{ type: 'coupon' }],
+          to: [{ type: 'discount' }],
           weak: true,
         }),
         f('code', 'string', {

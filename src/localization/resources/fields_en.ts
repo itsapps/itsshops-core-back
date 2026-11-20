@@ -55,7 +55,7 @@ export default {
     orderCustomer: 'Customer',
     orderTotals: 'Totals',
     orderVouchers: 'Vouchers',
-    orderCoupons: 'Coupons',
+    orderDiscounts: 'Discounts',
     orderFreeProducts: 'Gifts',
     infos: 'Information',
   },
@@ -267,8 +267,11 @@ export default {
     vouchers: {
       title: 'Vouchers',
     },
+    appliedDiscounts: {
+      title: 'Applied discounts',
+    },
     appliedCoupons: {
-      title: 'Redeemed coupons',
+      title: 'Redeemed coupons (old format)',
     },
     freeProducts: {
       title: 'Gifts',
@@ -359,10 +362,6 @@ export default {
   productVariant: {
     title: 'Product variant',
     fields: {
-      grantsFreeShipping: {
-        title: 'Free shipping',
-        description: 'Makes the whole order ship free (all delivery methods).',
-      },
       description: {
         title: 'Description',
         description:
@@ -644,6 +643,11 @@ export default {
         title: 'Default tax category',
         description: 'If a product has no tax category, this one is used.',
       },
+      discountExclusions: {
+        title: 'Never discount',
+        description:
+          'These products get no item or order discount (unless a discount sets "Ignore shop exclusions"). Does not apply to shipping discounts.',
+      },
       freeShippingCalculation: {
         options: {
           beforeDiscount: 'Before discount',
@@ -742,6 +746,7 @@ export default {
     groups: {
       displays: 'Displays',
       shipping: 'Shipping',
+      discounts: 'Discounts',
       returns: 'Returns',
       stock: 'Stock',
       tax: 'Tax',
@@ -920,7 +925,7 @@ export default {
       orderTotals: 'Totals',
       fulfillment: 'Fulfillment',
       orderVouchers: 'Vouchers',
-      orderCoupons: 'Coupons',
+      orderDiscounts: 'Discounts',
       orderFreeProducts: 'Gifts',
     },
     fields: {
@@ -1029,6 +1034,7 @@ export default {
           fulfillment: 'Fulfillment',
           mail: 'Email',
           erp: 'ERP',
+          system: 'System',
         },
       },
       status: {
@@ -1130,6 +1136,10 @@ export default {
         title: 'VAT amount',
         description: 'Total VAT for this line in cents (quantity × unit vat)',
       },
+      discount: {
+        title: 'Discount',
+        description: 'Gross discount on the whole line (all units), in cents',
+      },
       packed: {
         title: 'Packed',
       },
@@ -1190,6 +1200,10 @@ export default {
         title: 'VAT amount',
         description: 'VAT in the price share × bundle quantity, in cents',
       },
+      discount: {
+        title: 'Discount',
+        description: "Share of the line's discount (whole bundle quantity), in cents",
+      },
     },
   },
   orderItemOption: {
@@ -1228,9 +1242,10 @@ export default {
       freeShippingReason: {
         title: 'Reason for free shipping',
         options: {
-          product: 'Product',
           threshold: 'Order value',
-          coupon: 'Coupon',
+          discount: 'Discount',
+          product: 'Product (old format)',
+          coupon: 'Coupon (old format)',
         },
       },
       taxSnapshot: {
@@ -1575,15 +1590,18 @@ export default {
   customerGroup: {
     title: 'Customer group',
   },
-  coupon: {
-    title: 'Coupon',
+  discount: {
+    title: 'Discount',
+    groups: {
+      general: 'General',
+      discountValue: 'Discount',
+      conditions: 'Conditions',
+      combinations: 'Combines with',
+    },
     fields: {
-      code: {
-        title: 'Code',
-        description: 'Code customers enter at checkout.',
-      },
       title: {
-        title: 'Internal title',
+        title: 'Title',
+        description: 'Shown in checkout, mails and the order.',
       },
       description: {
         title: 'Internal note',
@@ -1591,17 +1609,66 @@ export default {
       enabled: {
         title: 'Active',
       },
-      discountType: {
-        title: 'Discount type',
+      trigger: {
+        title: 'Trigger',
+        options: {
+          code: 'Code (customer enters it)',
+          automatic: 'Automatic',
+        },
+      },
+      code: {
+        title: 'Code',
+        description: 'Code customers enter at checkout. At most one code per order.',
+      },
+      target: {
+        title: 'Applies to',
+        options: {
+          items: 'Items',
+          order: 'Order',
+          shipping: 'Shipping',
+        },
+      },
+      valueType: {
+        title: 'Type',
         options: {
           percent: 'Percent',
           fixed: 'Fixed amount',
-          freeShipping: 'Free shipping',
+          free: 'Free (shipping only)',
         },
       },
       value: {
         title: 'Value',
-        description: 'Percent: 1–100. Fixed: amount in cents (1000 = €10).',
+        description:
+          'Percent: 1–100. Fixed: amount in cents (1000 = €10) — per unit for "Items", once for "Order".',
+      },
+      appliesTo: {
+        title: 'Products',
+        description:
+          'Items/order: which lines are discounted. Shipping: the cart must contain a matching line. Empty = all.',
+      },
+      ignoreShopExclusions: {
+        title: 'Ignore shop exclusions',
+        description: 'Also discounts what the shop settings list under "Never discount".',
+      },
+      appliesToPickup: {
+        title: 'Also for pickup',
+        description:
+          'Also waives the pickup fee. Empty = yes for codes, no for automatic discounts.',
+      },
+      minSubtotal: {
+        title: 'Minimum subtotal',
+        description: 'Gross subtotal threshold to apply this discount.',
+      },
+      minSubtotalBasis: {
+        title: 'Minimum subtotal measured on',
+        options: {
+          wholeCart: 'the whole cart',
+          matching: 'matching products',
+        },
+      },
+      minQuantity: {
+        title: 'Minimum quantity',
+        description: 'Units of the matching products (a bundle counts as 1).',
       },
       validFrom: {
         title: 'Valid from',
@@ -1609,24 +1676,46 @@ export default {
       validTo: {
         title: 'Valid until',
       },
-      minSubtotal: {
-        title: 'Minimum subtotal',
-        description: 'Gross subtotal threshold to apply this coupon.',
-      },
       maxRedemptions: {
         title: 'Max redemptions',
         description: 'Global cap. Leave empty for unlimited.',
+      },
+      maxPerEmail: {
+        title: 'Max per email address',
+        description: 'Codes only. Leave empty for unlimited.',
+      },
+      combinesWith: {
+        title: 'Combines with',
+        description:
+          "Two discounts apply together only if each allows the other's target. Shipping is waived at most once.",
+      },
+      items: {
+        title: 'Item discounts',
+      },
+      order: {
+        title: 'Order discounts',
+      },
+      shipping: {
+        title: 'Shipping discounts',
       },
       redemptionCount: {
         title: 'Redemptions so far',
       },
     },
     validation: {
+      codeRequired: 'Code is required',
+      codeFormat: 'Letters, digits, - and _ only',
+      codeInUse: 'Code is already in use',
       valueRequired: 'Value is required',
       valuePositive: 'Value must be greater than 0',
       percentMax: 'Percent cannot exceed 100',
+      fixedCents: 'Fixed amounts are whole cents',
+      shippingOnlyFree: 'Shipping discounts can only be "free"',
+      freeOnlyShipping: '"Free" is only for shipping discounts',
       validToAfterFrom: '"Valid until" must be after "valid from"',
-      codeInUse: 'Code is already in use',
+      maxPerEmailCodeOnly: 'Only possible for codes',
+      categoryCriterionOff: 'Category criterion is disabled but still evaluated',
+      manufacturerCriterionOff: 'Manufacturer criterion is disabled but still evaluated',
     },
     preview: {
       badge: {
@@ -1637,6 +1726,111 @@ export default {
         exhausted: '🔴 Exhausted',
       },
       freeShipping: 'Free shipping',
+    },
+  },
+  productSelector: {
+    title: 'Product selection',
+    fields: {
+      include: {
+        title: 'Matching',
+        description: 'Any one is enough. Empty = all products.',
+      },
+      exclude: {
+        title: 'Excluded',
+        description: 'What matches here is never included.',
+      },
+    },
+    preview: {
+      all: 'All products',
+      without: 'without',
+    },
+  },
+  productSelectorCriteria: {
+    title: 'Criteria',
+    fields: {
+      kinds: {
+        title: 'Product kind',
+        options: {
+          wine: 'Wine',
+          physical: 'Physical product',
+          digital: 'Digital product',
+          bundle: 'Bundle',
+        },
+      },
+      categories: {
+        title: 'Categories',
+        description: 'Including subcategories. A bundle counts by its own categories only.',
+      },
+      manufacturers: {
+        title: 'Manufacturers',
+      },
+      products: {
+        title: 'Products',
+        description: 'All variants of the product.',
+      },
+      variants: {
+        title: 'Variants',
+      },
+      hasCompareAtPrice: {
+        title: 'Has compare-at price',
+        description: 'Variants whose compare-at price is higher than the price.',
+      },
+    },
+    preview: {
+      kinds: 'Kind',
+      categories_one: '{{count}} category',
+      categories_other: '{{count}} categories',
+      manufacturers_one: '{{count}} manufacturer',
+      manufacturers_other: '{{count}} manufacturers',
+      products_one: '{{count}} product',
+      products_other: '{{count}} products',
+      variants_one: '{{count}} variant',
+      variants_other: '{{count}} variants',
+      hasCompareAtPrice: 'with compare-at price',
+    },
+  },
+  appliedDiscount: {
+    title: 'Applied discount',
+    fields: {
+      discountRef: {
+        title: 'Discount',
+      },
+      code: {
+        title: 'Code',
+      },
+      title: {
+        title: 'Title',
+      },
+      trigger: {
+        title: 'Trigger',
+        options: {
+          code: 'Code',
+          automatic: 'Automatic',
+        },
+      },
+      target: {
+        title: 'Applies to',
+        options: {
+          items: 'Items',
+          order: 'Order',
+          shipping: 'Shipping',
+        },
+      },
+      valueType: {
+        title: 'Type',
+        options: {
+          percent: 'Percent',
+          fixed: 'Fixed amount',
+          free: 'Free',
+        },
+      },
+      value: {
+        title: 'Value',
+      },
+      amount: {
+        title: 'Saved',
+        description: 'Amount deducted in cents (shipping: the waived shipping cost)',
+      },
     },
   },
   appliedCoupon: {

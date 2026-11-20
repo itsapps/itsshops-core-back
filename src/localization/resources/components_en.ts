@@ -194,9 +194,12 @@ export default {
     voucher: {
       notFound: 'Voucher no longer exists',
     },
-    coupons: 'Coupons',
-    coupon: {
+    discounts: {
+      title: 'Discounts',
+      code: 'Code',
+      automatic: 'Automatic',
       freeShipping: 'Free shipping',
+      afterDiscount: 'after discount {{amount}}',
     },
     discount: 'Discount',
     contactEmail: 'Contact email',
@@ -211,8 +214,10 @@ export default {
     vatRate: '{{vatRate}}% VAT',
     shippingVat: 'incl. {{vatRate}}% VAT',
     freeShippingReason: {
-      product: 'Free shipping (product)',
       threshold: 'Free shipping (order value)',
+      discount: 'Free shipping (discount)',
+      // Orders before the discounts migration (core-back < 7.0.0).
+      product: 'Free shipping (product)',
       coupon: 'Free shipping (coupon)',
     },
     status: {
@@ -249,10 +254,14 @@ export default {
           fulfillment: 'Shipping',
           mail: 'Email',
           erp: 'ERP',
+          system: 'System',
         },
       },
       erpStatus: {
         accepted: 'Accepted',
+      },
+      systemStatus: {
+        discountsMigrated: 'Format migrated',
       },
       source: {
         admin: 'Studio',

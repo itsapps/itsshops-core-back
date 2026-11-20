@@ -199,9 +199,12 @@ export default {
     voucher: {
       notFound: 'Gutschein existiert nicht mehr',
     },
-    coupons: 'Rabattcodes',
-    coupon: {
+    discounts: {
+      title: 'Rabatte',
+      code: 'Code',
+      automatic: 'Automatisch',
       freeShipping: 'Gratisversand',
+      afterDiscount: 'nach Rabatt {{amount}}',
     },
     discount: 'Ermäßigung',
     contactEmail: 'Kontakt E-Mail',
@@ -216,8 +219,10 @@ export default {
     vatRate: '{{vatRate}}% MwSt',
     shippingVat: 'davon {{vatRate}}% MwSt',
     freeShippingReason: {
-      product: 'Versandkostenfrei durch Produkt',
       threshold: 'Versandkostenfrei ab Bestellwert',
+      discount: 'Versandkostenfrei durch Rabatt',
+      // Orders before the discounts migration (core-back < 7.0.0).
+      product: 'Versandkostenfrei durch Produkt',
       coupon: 'Versandkostenfrei durch Gutschein',
     },
     status: {
@@ -254,10 +259,14 @@ export default {
           fulfillment: 'Versand',
           mail: 'E-Mail',
           erp: 'Warenwirtschaft',
+          system: 'System',
         },
       },
       erpStatus: {
         accepted: 'Übernommen',
+      },
+      systemStatus: {
+        discountsMigrated: 'Format migriert',
       },
       source: {
         admin: 'Studio',

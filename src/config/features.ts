@@ -36,18 +36,22 @@ export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistr
       (config.schemaSettings.productKinds.includes('physical') ||
         config.schemaSettings.productKinds.includes('digital')),
     'shop.vouchers': shopEnabled && !!config.features.shop?.vouchers,
-    // Coupons and product free shipping only work in checkout.
+    // Discount codes and automatic discounts only work in checkout.
     'shop.coupons':
       shopEnabled && config.features.shop?.checkout !== false && !!config.features.shop?.coupons,
-    'shop.productFreeShipping':
+    'shop.automaticDiscounts':
       shopEnabled &&
       config.features.shop?.checkout !== false &&
-      !!config.features.shop?.productFreeShipping,
+      !!config.features.shop?.automaticDiscounts,
+    'shop.discounts': false, // derived below
     'shop.invoices': shopEnabled && config.features.shop?.invoices !== false,
     blog: !!config.features.blog,
     users: !!config.features.users,
     newsletter: !!config.features.newsletter,
   }
+
+  // Derived: the `discount` document and its objects exist when either trigger is offered.
+  featureMap['shop.discounts'] = featureMap['shop.coupons'] || featureMap['shop.automaticDiscounts']
 
   const isFeatureEnabled = (feature: ITSFeatureKey): boolean => featureMap[feature] ?? false
 

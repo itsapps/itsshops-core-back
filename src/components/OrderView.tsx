@@ -55,6 +55,8 @@ type OrderItem = {
   price: number
   vatRate: number
   vatAmount: number
+  /** Gross cents the discounts took off the whole line (unset = 0). */
+  discount?: number
   weight?: number
   packed?: boolean
   options?: OrderItemOption[]
@@ -72,6 +74,8 @@ type OrderItemBundleItem = {
   price: number
   vatRate: number
   vatAmount: number
+  /** This item's part of the line's discount, whole line quantity (unset = 0). */
+  discount?: number
 }
 
 type VatBreakdownItem = {
@@ -106,7 +110,8 @@ type Fulfillment = {
   methodTitle?: string
   methodType: 'delivery' | 'pickup'
   shippingCost: number
-  freeShippingReason?: 'product' | 'threshold' | 'coupon'
+  /** `product` / `coupon`: orders before the discounts migration (core-back < 7.0.0). */
+  freeShippingReason?: 'threshold' | 'discount' | 'product' | 'coupon'
   trackingCode?: string
   /** Pickup snapshot (city in the customer's locale). */
   pickupAddress?: { line1?: string; line2?: string; zip?: string; city?: string; country?: string }
@@ -128,6 +133,8 @@ type StatusHistoryEntry = {
   | { type: 'mail'; status: MailType | 'withdrawalReceipt' }
   // the ERP accepted the order (core-front wc-api, `completedMeans: 'accepted'`)
   | { type: 'erp'; status: 'accepted' }
+  // one-off data changes (core-front CLI), e.g. `discountsMigrated`
+  | { type: 'system'; status: string }
 )
 
 type OrderRefund = {
@@ -141,13 +148,39 @@ type OrderRefund = {
   reason?: string
 }
 
-type AppliedCoupon = {
+type AppliedDiscount = {
+  _key: string
+  discountRef?: { _ref: string }
+  code?: string
+  /** Snapshot in the order's locale. */
+  title?: string
+  trigger: 'code' | 'automatic'
+  target: 'items' | 'order' | 'shipping'
+  valueType?: 'percent' | 'fixed' | 'free'
+  value?: number
+  /** Cents saved (shipping: the waived cost). Unset on migrated product free-shipping entries. */
+  amount?: number
+}
+
+/** Pre-7.0.0 shape — only on orders the discounts migration hasn't reached yet. */
+type LegacyAppliedCoupon = {
   _key: string
   code: string
   discountType: 'percent' | 'fixed' | 'freeShipping'
   value?: number
   discountAmount: number
 }
+
+const fromLegacyCoupon = (c: LegacyAppliedCoupon): AppliedDiscount => ({
+  _key: c._key,
+  code: c.code,
+  title: c.code,
+  trigger: 'code',
+  target: c.discountType === 'freeShipping' ? 'shipping' : 'order',
+  valueType: c.discountType === 'freeShipping' ? 'free' : c.discountType,
+  value: c.value,
+  amount: c.discountAmount,
+})
 
 type PaymentMethod = {
   type?: string
@@ -178,7 +211,8 @@ interface OrderDocument extends SanityDocument {
   fulfillment: Fulfillment
   statusHistory?: StatusHistoryEntry[]
   refunds?: OrderRefund[]
-  appliedCoupons?: AppliedCoupon[]
+  appliedDiscounts?: AppliedDiscount[]
+  appliedCoupons?: LegacyAppliedCoupon[]
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -333,6 +367,8 @@ export const OrderView: UserViewComponent = (props) => {
         return t(mailTypeLabelKey(entry.status, methodType), entry.status)
       case 'erp':
         return t(`order.statusHistory.erpStatus.${entry.status}`, entry.status)
+      case 'system':
+        return t(`order.statusHistory.systemStatus.${entry.status}`, entry.status)
       case 'fulfillment':
         return t(statusLabelKey(entry.status, methodType), entry.status)
       default:
@@ -363,6 +399,10 @@ export const OrderView: UserViewComponent = (props) => {
   const { customer, totals, fulfillment } = order
   const shippingAddress = customer?.shippingAddress
   const isPickup = fulfillment?.methodType === 'pickup'
+  const appliedDiscounts: AppliedDiscount[] = order.appliedDiscounts?.length
+    ? order.appliedDiscounts
+    : (order.appliedCoupons ?? []).map(fromLegacyCoupon)
+  const shippingDiscount = appliedDiscounts.find((d) => d.target === 'shipping')
   // The deadline only matters while the order waits for pickup ("Abholbereit").
   const pickupDue =
     isPickup && order.status === 'shipped'
@@ -467,7 +507,10 @@ export const OrderView: UserViewComponent = (props) => {
             />
             {totals?.shipping === 0 && fulfillment?.freeShippingReason && (
               <TotalRow
-                label={t(`order.freeShippingReason.${fulfillment.freeShippingReason}`)}
+                label={
+                  (fulfillment.freeShippingReason === 'discount' && shippingDiscount?.title) ||
+                  t(`order.freeShippingReason.${fulfillment.freeShippingReason}`)
+                }
                 value=""
                 muted
               />
@@ -536,30 +579,38 @@ export const OrderView: UserViewComponent = (props) => {
           </Card>
         )}
 
-        {/* ── Applied coupons ─────────────────────────────────────────── */}
-        {order.appliedCoupons && order.appliedCoupons.length > 0 && (
+        {/* ── Applied discounts ───────────────────────────────────────── */}
+        {appliedDiscounts.length > 0 && (
           <Card padding={3} radius={2} shadow={1} tone="transparent">
             <Stack gap={3}>
               <Heading as="h4" size={1}>
-                {t('order.coupons', 'Coupons')}
+                {t('order.discounts.title', 'Discounts')}
               </Heading>
               <Stack gap={2}>
-                {order.appliedCoupons.map((coupon) => {
+                {appliedDiscounts.map((d) => {
                   let valueLabel = ''
-                  if (coupon.discountType === 'percent') valueLabel = `${coupon.value ?? 0}%`
-                  else if (coupon.discountType === 'fixed' && typeof coupon.value === 'number')
-                    valueLabel = money(coupon.value)
-                  else if (coupon.discountType === 'freeShipping')
-                    valueLabel = t('order.coupon.freeShipping', 'Free shipping')
+                  if (d.target === 'shipping' || d.valueType === 'free')
+                    valueLabel = t('order.discounts.freeShipping', 'Free shipping')
+                  else if (d.valueType === 'percent') valueLabel = `${d.value ?? 0} %`
+                  else if (d.valueType === 'fixed' && typeof d.value === 'number')
+                    valueLabel = money(d.value)
+                  const kind =
+                    d.trigger === 'automatic'
+                      ? t('order.discounts.automatic', 'Automatic')
+                      : t('order.discounts.code', 'Code')
                   return (
-                    <Flex key={coupon._key} justify="space-between" gap={3} wrap="wrap">
+                    <Flex key={d._key} justify="space-between" gap={3} wrap="wrap">
                       <Stack gap={1}>
-                        <Text weight="medium" style={{ fontFamily: 'monospace' }}>
-                          {coupon.code}
+                        <Text weight="medium">{d.title || d.code || '—'}</Text>
+                        <Text muted>
+                          {[kind, d.code && d.code !== d.title ? d.code : '', valueLabel]
+                            .filter(Boolean)
+                            .join(' · ')}
                         </Text>
-                        {valueLabel && <Text muted>{valueLabel}</Text>}
                       </Stack>
-                      <Text weight="medium">− {money(coupon.discountAmount)}</Text>
+                      {typeof d.amount === 'number' && (
+                        <Text weight="medium">− {money(d.amount)}</Text>
+                      )}
                     </Flex>
                   )
                 })}
@@ -758,6 +809,7 @@ function OrderItemRow({
   t: TranslatorFunction
 }) {
   const lineTotal = item.price * item.quantity
+  const lineDiscount = item.discount ?? 0
   // A bundle with a contents snapshot lists its items (with their rates) instead of the
   // subtitle ("2× A, 1× B"), and shows its parts' rates instead of the display rate.
   const contents = item.bundle?.items ?? []
@@ -804,6 +856,13 @@ function OrderItemRow({
           <Text muted>
             {money(item.price)} × {item.quantity}
           </Text>
+          {lineDiscount > 0 && (
+            <Text muted>
+              {t('order.discounts.afterDiscount', 'after discount {{amount}}', {
+                amount: money(lineTotal - lineDiscount),
+              })}
+            </Text>
+          )}
         </Stack>
       </Flex>
     </Card>

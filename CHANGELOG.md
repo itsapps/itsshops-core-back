@@ -4,6 +4,51 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Release flow: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Release flow".
 
+## 7.0.0 (unreleased)
+
+Discounts model: one `discount` document for codes and automatic discounts, product selector,
+shop-wide exclusions, line-level order snapshot (plan core-front `.claude/plans/discounts-model.md`).
+Needs core-front 6.0.0 (it reads `discount`, not `coupon`).
+
+- **`discount` document** replaces `coupon` (desk list "Rabatte"): `trigger` `code` (needs
+  `shop.coupons`) | `automatic` (new flag `shop.automaticDiscounts`; the field hides when only one
+  is offered), `target` `items` | `order` | `shipping`, `valueType` `percent` | `fixed` | `free`
+  (`free` = shipping only), `appliesTo` (product selector; for shipping: "the cart contains"),
+  `ignoreShopExclusions`, `appliesToPickup` (shipping; unset = code yes, automatic no),
+  `minSubtotal` + `minSubtotalBasis` (`wholeCart` | `matching`), `minQuantity`, `validFrom/To`,
+  `maxRedemptions`, `maxPerEmail` (codes only), `combinesWith` { items, order, shipping },
+  read-only `redemptionCount`. Warning when a criterion's feature (category, manufacturer) is off.
+- **`productSelector`** (+ `productSelectorCriteria`): `include` / `exclude` with product kinds,
+  categories (`shop.category`), manufacturers (`shop.manufacturer`), products, variants and "has
+  compare-at price". All references weak.
+- **`shopSettings.discountExclusions`** ("Nie rabattieren", new group "Rabatte", with checkout +
+  coupons or automatic discounts). `freeShippingCalculation` also shows with automatic discounts.
+- **Order snapshot:** `appliedDiscounts[]` (`appliedDiscount`: weak `discountRef`, `code`, `title`,
+  `trigger`, `target`, `valueType`, `value`, `amount`; group "Rabatte"), `orderItem.discount` and
+  `orderItemBundleItem.discount` (gross cents for the whole line, read-only),
+  `fulfillment.freeShippingReason` `threshold` | `discount`. The old `appliedCoupons` (now
+  read-only, hidden when empty; `couponRef` points at `discount`) and the reason values `product`
+  / `coupon` stay readable until the migration ran everywhere (removed in a later minor).
+- **Order view:** discounts card from `appliedDiscounts` (title, code/automatic, value, amount),
+  "nach Rabatt €X" under a discounted line, the free-shipping reason row shows the shipping
+  discount's title.
+- **Removed:** `shop.productFreeShipping` and `productVariant.grantsFreeShipping` — product free
+  shipping is now an automatic shipping discount (the migration creates it).
+- Order history type `system` (status `discountsMigrated`, "System - Format migriert"): written
+  by the migration on each migrated order.
+- Derived feature key `shop.discounts` (= coupons || automatic discounts) gates the `discount`
+  document and its objects; not a config field.
+
+### Upgrading
+- Remove `productFreeShipping` from `features.shop` in `sanity.config.ts` (it no longer
+  type-checks); add `automaticDiscounts: true` where automatic discounts are wanted (Tinhof: yes,
+  the migrated bundle free-shipping rule needs it to be editable).
+- Run the data migration on the dataset **before** the new frontend goes live (core-front
+  `itsshops sanity migrate-discounts`, dry run first, backup before): coupons → `discount-<id>`,
+  `grantsFreeShipping` → one automatic shipping discount, orders → `appliedDiscounts` + line
+  discounts. Until it ran, old `coupon` documents are invisible in the Studio.
+- Pair with core-front 6.0.0.
+
 ## 6.3.0
 
 Store pickup (shipping method type "Abholung", pickup order statuses), ERP-accepted orders

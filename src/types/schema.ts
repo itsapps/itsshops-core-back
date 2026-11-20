@@ -40,7 +40,9 @@ export type ITSFeatureKey =
   | 'shop.productKind.options'
   | 'shop.vouchers'
   | 'shop.coupons'
-  | 'shop.productFreeShipping'
+  | 'shop.automaticDiscounts'
+  /** Derived: `shop.coupons || shop.automaticDiscounts` (not a config field). */
+  | 'shop.discounts'
   | 'shop.invoices'
   | 'blog'
   | 'users'

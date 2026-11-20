@@ -10,7 +10,7 @@ builders, auto-translation, validation shortcuts) see
 ## Documents (`src/schemas/documents/`)
 
 `product`, `productVariant`, `category`, `manufacturer`, `page`, `post`, `blog`, `menu`, `settings`,
-`shopSettings`, `customer`, `customerGroup`, `newsletterSubscriber`, `coupon`, `voucher`,
+`shopSettings`, `customer`, `customerGroup`, `newsletterSubscriber`, `discount`, `voucher`,
 `shippingMethod`, `taxCategory`, `taxCountry`, `variantOption`, `variantOptionGroup`, and
 `orders/` (order documents).
 
@@ -87,8 +87,8 @@ time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
   returns / tax groups and the terms / withdrawal policy / shipping info pages, leaving `shopPage` +
   filters (+ stock). Values already stored there show as unknown fields.
 - `freeShippingCalculation` (group shipping, "Gratis-Versand Berechnung") is shown when
-  `shop.coupons` **or** `shop.vouchers` is on (was vouchers-only before 5.1.0, so coupon shops had
-  it unset); `initialValue: 'beforeDiscount'`. How core-front applies it: core-front
+  `shop.coupons`, `shop.automaticDiscounts` **or** `shop.vouchers` is on (was vouchers-only before
+  5.1.0, so coupon shops had it unset); `initialValue: 'beforeDiscount'`. How core-front applies it: core-front
   `commerce-and-netlify.md` → "Free shipping".
 
 **Mail-related fields (core-front reads them):** `settings.shopNotificationEmail` (optional; inbox
@@ -116,11 +116,24 @@ true, `returnedOffered` false, withdrawal guide `refund`/`notCollected`. The ord
 "Abholung" card (contact email, method, pickup address, instructions and — while `shipped` with
 `pickupHoldDays` — "Abholen bis …", `caution` tone + "abgelaufen" once past; `utils/pickup.ts`
 `pickupDeadline`, same rule as core-front's).
-`productVariant.grantsFreeShipping` (boolean, `pricing` group, only with `shop.productFreeShipping`,
-hidden on digital variants): the whole order ships free (every delivery method). Order snapshot
-`fulfillment.freeShippingReason` (`product` / `threshold` / `coupon`, set by core-front only when
-a delivery method cost 0; not flag-gated, hidden outside dev). Mechanism: core-front
-`commerce-and-netlify.md` → "Product free shipping".
+**Discounts** (7.0.0; feature `shop.discounts`; semantics + pipeline: core-front
+`commerce-and-netlify.md` → Discounts, ADR core-front `decisions/discounts-model.md`):
+`discount` (`documents/discount.ts`, not `liveEdit` — checkout reads published only) — `trigger`
+`code` | `automatic` (each offered by its flag; the field hides when only one is), `target` `items` |
+`order` | `shipping`, `valueType` `percent` | `fixed` | `free` (shipping only), `appliesTo`
+(`productSelector`), `ignoreShopExclusions`, `appliesToPickup`, `minSubtotal` + `minSubtotalBasis`,
+`minQuantity`, validity dates, `maxRedemptions`, `maxPerEmail` (codes only), `combinesWith`,
+read-only `redemptionCount` (core-front's payment webhook increments it). `productSelector`
+(`objects/productSelector.ts`): `include` / `exclude` criteria (kinds, categories, manufacturers,
+products, variants, has compare-at price; weak refs; category/manufacturer criteria warn when their
+feature is off). `shopSettings.discountExclusions` (group "Rabatte"): never discounted by items/order
+discounts. Order snapshot (core-front writes it, read-only): `appliedDiscounts[]`
+(`appliedDiscount`), `orderItem.discount` / `orderItemBundleItem.discount` (gross cents, whole line),
+`fulfillment.freeShippingReason` `threshold` | `discount` (only when a delivery method cost 0; hidden
+outside dev). Legacy, until every dataset ran core-front's `itsshops sanity migrate-discounts`:
+read-only `appliedCoupons` and reason values `product` / `coupon`; the migration writes a status
+history entry of type `system` (`discountsMigrated`). `coupon` and
+`productVariant.grantsFreeShipping` are removed.
 Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`
 (`orderPaymentMethod`: type, brand, last4, wallet — order only, not orderMeta).
 **`order` is `liveEdit`** (5.3.0): edits save straight to the published order — no draft whose

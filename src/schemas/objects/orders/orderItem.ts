@@ -85,6 +85,14 @@ export const orderItem: ITSSchemaDefinition = {
         readOnly: !ctx.config.isDev,
       }),
 
+      // Gross cents the discounts took off the whole line (all units); unset = 0. The stored
+      // allocation (core-front discount pipeline), never recomputed. `price`/`vatAmount` stay
+      // undiscounted.
+      f('discount', 'number', {
+        validation: (rule) => rule.min(0).integer(),
+        readOnly: !ctx.config.isDev,
+      }),
+
       f('packed', 'boolean', {
         initialValue: false,
       }),

@@ -12,7 +12,7 @@ export const buildShared = (ctx: FieldContext) => {
     'orderTotals',
     'orderItems',
     'orderVouchers',
-    'orderCoupons',
+    'orderDiscounts',
     'orderFreeProducts',
   ].map((name, index) => ({
     name,
@@ -61,11 +61,18 @@ export const buildShared = (ctx: FieldContext) => {
       //   validation: (rule) => rule.required(),
       // }),
     ],
-    orderCoupons: [
+    orderDiscounts: [
+      f('appliedDiscounts', 'array', {
+        of: [{ type: 'appliedDiscount' }],
+        options: { sortable: false },
+        readOnly: !ctx.config.isDev,
+      }),
+      // Legacy (before core-back 7.0.0): readable until the discounts migration ran everywhere.
       f('appliedCoupons', 'array', {
         of: [{ type: 'appliedCoupon' }],
         options: { sortable: false },
-        readOnly: !ctx.config.isDev,
+        readOnly: true,
+        hidden: ({ value }) => !Array.isArray(value) || value.length === 0,
       }),
     ],
     orderFreeProducts: [

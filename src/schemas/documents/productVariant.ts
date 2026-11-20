@@ -26,7 +26,6 @@ export const productVariant: ITSDocumentDefinition = {
     const { f, t } = ctx
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
     const bundlesOn = ctx.featureRegistry.isFeatureEnabled('shop.productKind.bundle')
-    const freeShippingOn = ctx.featureRegistry.isFeatureEnabled('shop.productFreeShipping')
     const vinofactOn = ctx.featureRegistry.isFeatureEnabled('shop.vinofact')
     const kindFields = getKindFields(ctx)
 
@@ -125,15 +124,6 @@ export const productVariant: ITSDocumentDefinition = {
             name: 'compareAtPrice',
             validation: (Rule) => Rule.positive(),
           }),
-          // One such line in the cart makes every delivery method free for the whole order.
-          ...(freeShippingOn
-            ? [
-                f('grantsFreeShipping', 'boolean', {
-                  initialValue: false,
-                  hidden: ({ document }) => document?.kind === 'digital',
-                }),
-              ]
-            : []),
         ],
       },
       {

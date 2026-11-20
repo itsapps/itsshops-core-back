@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import { FieldDefinition } from 'sanity'
 import {
+  CouponIcon,
   NoteIcon,
   OrderIcon,
   PackageIcon,
@@ -24,6 +25,7 @@ export const shopSettings: ITSDocumentDefinition = {
     const groupIcons: Record<string, ComponentType> = {
       displays: WebsiteIcon,
       shipping: TruckIcon,
+      discounts: CouponIcon,
       stock: PackageIcon,
       tax: VatBreakdownIcon,
       orders: OrderIcon,
@@ -35,13 +37,20 @@ export const shopSettings: ITSDocumentDefinition = {
     // Free-shipping threshold before/after discount matters as soon as anything discounts the cart.
     const discountsEnabled =
       ctx.featureRegistry.isFeatureEnabled('shop.coupons') ||
+      ctx.featureRegistry.isFeatureEnabled('shop.automaticDiscounts') ||
       ctx.featureRegistry.isFeatureEnabled('shop.vouchers')
     // Without checkout nothing is sold online: no shipping, tax, invoice, billing or withdrawal
     // settings, and no legal pages linked from the checkout.
     const checkoutEnabled = ctx.featureRegistry.isFeatureEnabled('shop.checkout')
+    // Shop-wide exclusions go through the discount pipeline — vouchers don't, so not
+    // `discountsEnabled`.
+    const discountGroupEnabled =
+      checkoutEnabled && ctx.featureRegistry.isFeatureEnabled('shop.discounts')
 
     const groupNames = [
-      ...(checkoutEnabled ? ['billing', 'orders', 'shipping', 'returns', 'tax'] : []),
+      ...(checkoutEnabled ? ['billing', 'orders', 'shipping'] : []),
+      ...(discountGroupEnabled ? ['discounts'] : []),
+      ...(checkoutEnabled ? ['returns', 'tax'] : []),
       ...(stockEnabled ? ['stock'] : []),
       'displays',
     ]
@@ -94,6 +103,13 @@ export const shopSettings: ITSDocumentDefinition = {
             ]
           : []),
       ],
+      ...(discountGroupEnabled
+        ? {
+            // Never discounted by an items/order discount (unless it sets
+            // `ignoreShopExclusions`); never applies to shipping discounts.
+            discounts: [f('discountExclusions', 'productSelector')],
+          }
+        : {}),
       ...(stockEnabled
         ? { stock: [f('stockThreshold', 'number', { validation: (Rule) => Rule.positive() })] }
         : {}),

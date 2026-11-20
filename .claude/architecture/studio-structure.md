@@ -13,7 +13,7 @@ reimplement the structure.
   `orderWithdrawal`: "Offen" = unmatched/received/processing by `declaredAt` asc, "Erledigt" =
   refunded/rejected newest first; both `canHandleIntent` for `orderWithdrawal` so the order view's
   links resolve), orderMeta, products (custom pane), productVariant, variantOptions (custom),
-  categories (custom), manufacturer, voucher, coupon
+  categories (custom), manufacturer, voucher, discount
 - divider
 - `customers` (feature `shop`) → customer, customerGroup
 - `newsletterGroup` (feature `newsletter`) → newsletterSubscriber

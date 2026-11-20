@@ -32,6 +32,9 @@ export const orderItemBundleItem: ITSSchemaDefinition = {
           validation: (rule) => rule.required().min(0).integer(),
           readOnly,
         }),
+        // This item's part of the line's `discount`, for the whole line quantity (children sum
+        // to the line's); unset = 0.
+        f('discount', 'number', { validation: (rule) => rule.min(0).integer(), readOnly }),
       ],
       preview: {
         select: {
