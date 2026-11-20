@@ -194,6 +194,8 @@ React; tests `tests/vinofactImage.test.ts`):
 
 - `PriceInput.tsx` — currency input; the **only** component re-exported publicly
   (`src/components/index.ts`). Used by the `priceField` builder.
+- `DiscountValueInput.tsx` — discount `value`: `PriceInput` when the sibling `valueType` is
+  `fixed` (entered in euros, stored as cents), the default number input for `percent`.
 - `OrderView.tsx` — the order document's overview view (order date, payment method, totals,
   fulfillment, discounts, withdrawals, refunds). Shipping 0 with a `fulfillment.freeShippingReason`
   adds a muted row under "Versand" ("Versandkostenfrei ab Bestellwert" / the shipping discount's

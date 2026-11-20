@@ -1667,7 +1667,7 @@ export default {
       value: {
         title: 'Wert',
         description:
-          'Prozent: 1–100. Fixer Betrag: in Cent (1000 = 10 €) — bei „Artikel“ pro Stück, bei „Bestellung“ einmal.',
+          'Prozent: 1–100. Fixer Betrag: in Euro — bei „Artikel“ pro Stück, bei „Bestellung“ einmal.',
       },
       appliesTo: {
         title: 'Produkte',

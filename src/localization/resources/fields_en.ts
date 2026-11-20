@@ -1647,7 +1647,7 @@ export default {
       value: {
         title: 'Value',
         description:
-          'Percent: 1–100. Fixed: amount in cents (1000 = €10) — per unit for "Items", once for "Order".',
+          'Percent: 1–100. Fixed: amount in euros — per unit for "Items", once for "Order".',
       },
       appliesTo: {
         title: 'Products',

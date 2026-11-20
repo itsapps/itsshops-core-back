@@ -1,4 +1,5 @@
 import { CouponIcon } from '../../assets/icons'
+import { DiscountValueInput } from '../../components/DiscountValueInput'
 import { ITSDocumentDefinition } from '../../types'
 import { ProductSelectorValue } from '../objects/productSelector'
 
@@ -68,7 +69,10 @@ export const discount: ITSDocumentDefinition = {
                   )
                 return narrowed || include?.hasCompareAtPrice || doc.minSubtotal || doc.minQuantity
                   ? true
-                  : vt('automaticEveryOrder', 'Applies to every order — no product selection or minimum set')
+                  : vt(
+                      'automaticEveryOrder',
+                      'Applies to every order — no product selection or minimum set',
+                    )
               }).warning(),
             ],
           }),
@@ -124,6 +128,7 @@ export const discount: ITSDocumentDefinition = {
           f('value', 'number', {
             hidden: ({ parent }) =>
               isShipping(parent) || (parent as DiscountParent)?.valueType === 'free',
+            components: { input: DiscountValueInput },
             validation: (Rule) => [
               Rule.custom((value, context) => {
                 const parent = context.parent as DiscountParent | undefined
@@ -140,7 +145,10 @@ export const discount: ITSDocumentDefinition = {
               Rule.custom((value, context) => {
                 const parent = context.parent as DiscountParent | undefined
                 return parent?.valueType === 'percent' && value === 100
-                  ? vt('percentFull', '100 % makes the order free — checkout cannot take payments below €0.50')
+                  ? vt(
+                      'percentFull',
+                      '100 % makes the order free — checkout cannot take payments below €0.50',
+                    )
                   : true
               }).warning(),
             ],

@@ -120,7 +120,8 @@ true, `returnedOffered` false, withdrawal guide `refund`/`notCollected`. The ord
 `commerce-and-netlify.md` → Discounts, ADR core-front `decisions/discounts-model.md`):
 `discount` (`documents/discount.ts`, not `liveEdit` — checkout reads published only) — `trigger`
 `code` | `automatic` (each offered by its flag; the field hides when only one is), `target` `items` |
-`order` | `shipping`, `valueType` `percent` | `fixed` | `free` (shipping only), `appliesTo`
+`order` | `shipping`, `valueType` `percent` | `fixed` | `free` (shipping only), `value` (percent,
+or cents for `fixed` — entered in euros via `DiscountValueInput`), `appliesTo`
 (`productSelector`), `ignoreShopExclusions`, `appliesToPickup`, `minSubtotal` + `minSubtotalBasis`,
 `minQuantity`, validity dates, `maxRedemptions`, `maxPerEmail` (codes only), `combinesWith`,
 read-only `redemptionCount` (core-front's payment webhook increments it). Codes unique
