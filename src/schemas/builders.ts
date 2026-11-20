@@ -162,6 +162,7 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
     variantReference: () => ({
       name: 'variantLink',
       type: 'reference' as const,
+      title: ctx.t.default('productVariant.title'),
       icon: ProductVariantIcon,
       to: [{ type: 'productVariant' }],
       options: { disableNew: true, filter: 'status != "archived"' },

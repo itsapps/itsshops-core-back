@@ -123,7 +123,9 @@ true, `returnedOffered` false, withdrawal guide `refund`/`notCollected`. The ord
 `order` | `shipping`, `valueType` `percent` | `fixed` | `free` (shipping only), `appliesTo`
 (`productSelector`), `ignoreShopExclusions`, `appliesToPickup`, `minSubtotal` + `minSubtotalBasis`,
 `minQuantity`, validity dates, `maxRedemptions`, `maxPerEmail` (codes only), `combinesWith`,
-read-only `redemptionCount` (core-front's payment webhook increments it). `productSelector`
+read-only `redemptionCount` (core-front's payment webhook increments it). Codes unique
+case-insensitively; warnings (not errors) for 100 % and for an automatic discount without any
+condition. `productSelector`
 (`objects/productSelector.ts`): `include` / `exclude` criteria (kinds, categories, manufacturers,
 products, variants, has compare-at price; weak refs; category/manufacturer criteria warn when their
 feature is off). `shopSettings.discountExclusions` (group "Rabatte"): never discounted by items/order

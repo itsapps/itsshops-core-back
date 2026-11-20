@@ -84,7 +84,7 @@ export const productVariant: ITSDocumentDefinition = {
             ? [
                 f('manufacturers', 'array', {
                   validation: (rule) => rule.unique(),
-                  of: [{ type: 'reference', to: [{ type: 'manufacturer' }] }],
+                  of: [{ type: 'reference', title: ctx.t.default('manufacturer.title'), to: [{ type: 'manufacturer' }] }],
                 }),
               ]
             : []),
@@ -335,7 +335,7 @@ function getWineFields(ctx: FieldContext): FieldDefinition[] {
 function getOptionsFields(ctx: FieldContext): FieldDefinition[] {
   return [
     ctx.f('options', 'array', {
-      of: [{ type: 'reference', to: [{ type: 'variantOption' }] }],
+      of: [{ type: 'reference', title: ctx.t.default('variantOption.title'), to: [{ type: 'variantOption' }] }],
       hidden: ({ parent }: { parent: ProductVariant }) =>
         !parent?.kind || !['physical', 'digital'].includes(parent.kind),
     }),

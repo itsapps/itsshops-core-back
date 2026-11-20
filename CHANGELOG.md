@@ -17,7 +17,10 @@ Needs core-front 6.0.0 (it reads `discount`, not `coupon`).
   `ignoreShopExclusions`, `appliesToPickup` (shipping; unset = code yes, automatic no),
   `minSubtotal` + `minSubtotalBasis` (`wholeCart` | `matching`), `minQuantity`, `validFrom/To`,
   `maxRedemptions`, `maxPerEmail` (codes only), `combinesWith` { items, order, shipping },
-  read-only `redemptionCount`. Warning when a criterion's feature (category, manufacturer) is off.
+  read-only `redemptionCount`. Codes are unique case-insensitively (checkout matches them that
+  way). Warnings (don't block publishing): a criterion's feature (category, manufacturer) is off;
+  100 % (checkout can't take payments below €0.50); an automatic discount without product
+  selection, minimum subtotal or minimum quantity (applies to every order once published).
 - **`productSelector`** (+ `productSelectorCriteria`): `include` / `exclude` with product kinds,
   categories (`shop.category`), manufacturers (`shop.manufacturer`), products, variants and "has
   compare-at price". All references weak.
@@ -36,6 +39,10 @@ Needs core-front 6.0.0 (it reads `discount`, not `coupon`).
   shipping is now an automatic shipping discount (the migration creates it).
 - Order history type `system` (status `discountsMigrated`, "System - Format migriert"): written
   by the migration on each migrated order.
+- Reference lists show the translated type name ("Hersteller", "Kundengruppe", "Option") instead
+  of the Studio's untranslated "Reference to …" — product/variant manufacturers, customer groups,
+  variant options, the discount's product selector and the `builders.variantReference()` helper
+  (a customer's own `title` on it can go).
 - Derived feature key `shop.discounts` (= coupons || automatic discounts) gates the `discount`
   document and its objects; not a config field.
 

@@ -27,6 +27,8 @@ const criteriaFields = (ctx: FieldContext): FieldDefinition[] => {
   const isOn = ctx.featureRegistry.isFeatureEnabled
   const weakRef = (type: string, filter?: string) => ({
     type: 'reference' as const,
+    // Without a member title the Studio shows its untranslated "Reference to <type>".
+    title: ctx.t.default(`${type}.title`),
     to: [{ type }],
     weak: true,
     options: { disableNew: true, ...(filter && { filter }) },

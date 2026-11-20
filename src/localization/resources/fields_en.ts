@@ -1709,6 +1709,8 @@ export default {
       valueRequired: 'Value is required',
       valuePositive: 'Value must be greater than 0',
       percentMax: 'Percent cannot exceed 100',
+      percentFull: '100 % makes the order free — checkout cannot take payments below €0.50',
+      automaticEveryOrder: 'Applies to every order — no product selection or minimum set',
       fixedCents: 'Fixed amounts are whole cents',
       shippingOnlyFree: 'Shipping discounts can only be "free"',
       freeOnlyShipping: '"Free" is only for shipping discounts',

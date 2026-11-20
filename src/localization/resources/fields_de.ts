@@ -1729,6 +1729,8 @@ export default {
       valueRequired: 'Wert ist erforderlich',
       valuePositive: 'Wert muss größer als 0 sein',
       percentMax: 'Prozent darf 100 nicht überschreiten',
+      percentFull: '100 % macht die Bestellung gratis – unter 0,50 € kann der Checkout nicht kassieren',
+      automaticEveryOrder: 'Gilt für jede Bestellung – keine Produktauswahl und kein Mindestwert gesetzt',
       fixedCents: 'Fixer Betrag in ganzen Cent',
       shippingOnlyFree: 'Versandrabatte können nur „Gratis“ sein',
       freeOnlyShipping: '„Gratis“ gibt es nur für Versandrabatte',

@@ -62,6 +62,7 @@ export const product: ITSDocumentDefinition = {
                   of: [
                     {
                       type: 'reference',
+                      title: ctx.t.default('manufacturer.title'),
                       to: [{ type: 'manufacturer' }],
                     },
                   ],

@@ -34,6 +34,7 @@ export const customer: ITSDocumentDefinition = {
           of: [
             {
               type: 'reference',
+              title: ctx.t.default('customerGroup.title'),
               to: [{ type: 'customerGroup' }],
             },
           ],

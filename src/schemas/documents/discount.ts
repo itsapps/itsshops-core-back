@@ -6,6 +6,12 @@ type Trigger = 'code' | 'automatic'
 type Target = 'items' | 'order' | 'shipping'
 type ValueType = 'percent' | 'fixed' | 'free'
 
+interface DiscountDoc {
+  appliesTo?: ProductSelectorValue
+  minSubtotal?: number
+  minQuantity?: number
+}
+
 interface DiscountParent {
   trigger?: Trigger
   target?: Target
@@ -47,7 +53,24 @@ export const discount: ITSDocumentDefinition = {
             options: { list: triggers.map((value) => ({ value })), layout: 'radio' },
             initialValue: triggers[0],
             hidden: triggers.length < 2,
-            validation: (Rule) => Rule.required(),
+            validation: (Rule) => [
+              Rule.required(),
+              // Checkout reads published discounts at once: an automatic one without any
+              // condition gives every customer the discount from the moment it's published.
+              Rule.custom((value, context) => {
+                const doc = context.document as DiscountDoc | undefined
+                if (value !== 'automatic' || !doc) return true
+                const include = doc.appliesTo?.include
+                const narrowed =
+                  !!include &&
+                  (['kinds', 'categories', 'manufacturers', 'products', 'variants'] as const).some(
+                    (key) => (include[key]?.length ?? 0) > 0,
+                  )
+                return narrowed || include?.hasCompareAtPrice || doc.minSubtotal || doc.minQuantity
+                  ? true
+                  : vt('automaticEveryOrder', 'Applies to every order — no product selection or minimum set')
+              }).warning(),
+            ],
           }),
           f('code', 'string', {
             hidden: ({ parent }) => !isCode(parent),
@@ -61,7 +84,8 @@ export const discount: ITSDocumentDefinition = {
                 const id = context.document?._id?.replace(/^drafts\./, '') ?? ''
                 const client = context.getClient({ apiVersion: ctx.config.apiVersion })
                 const matches = await client.fetch<number>(
-                  `count(*[_type == "discount" && code == $code && !(_id in [$draft, $published])])`,
+                  // Case-insensitive, as checkout matches codes (core-front `CHECKOUT_QUERY`).
+                  `count(*[_type == "discount" && lower(code) == lower($code) && !(_id in [$draft, $published])])`,
                   { code: value, draft: `drafts.${id}`, published: id },
                 )
                 return matches === 0 ? true : vt('codeInUse', 'Code is already in use')
@@ -100,7 +124,7 @@ export const discount: ITSDocumentDefinition = {
           f('value', 'number', {
             hidden: ({ parent }) =>
               isShipping(parent) || (parent as DiscountParent)?.valueType === 'free',
-            validation: (Rule) =>
+            validation: (Rule) => [
               Rule.custom((value, context) => {
                 const parent = context.parent as DiscountParent | undefined
                 if (isShipping(parent) || parent?.valueType === 'free') return true
@@ -112,6 +136,14 @@ export const discount: ITSDocumentDefinition = {
                   return vt('fixedCents', 'Fixed amounts are whole cents')
                 return true
               }),
+              // Stripe can't charge below €0.50: an order that ends up free can't be paid.
+              Rule.custom((value, context) => {
+                const parent = context.parent as DiscountParent | undefined
+                return parent?.valueType === 'percent' && value === 100
+                  ? vt('percentFull', '100 % makes the order free — checkout cannot take payments below €0.50')
+                  : true
+              }).warning(),
+            ],
           }),
           f('appliesTo', 'productSelector', {
             validation: (Rule) =>
@@ -268,7 +300,8 @@ export const discount: ITSDocumentDefinition = {
 
           return {
             title: title || (d.code ?? '—'),
-            subtitle: [triggerLabel, [valueLabel, targetLabel].filter(Boolean).join(' '), badge]
+            // Status first: a long title/code would truncate it at the end of the line.
+            subtitle: [badge, triggerLabel, [valueLabel, targetLabel].filter(Boolean).join(' ')]
               .filter(Boolean)
               .join(' · '),
             media: CouponIcon,
