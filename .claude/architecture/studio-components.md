@@ -201,7 +201,9 @@ React; tests `tests/vinofactImage.test.ts`):
   adds a muted row under "Versand" ("Versandkostenfrei ab Bestellwert" / the shipping discount's
   title, else "durch Rabatt"; legacy "durch Produkt / Gutschein" for unmigrated orders,
   `order.freeShippingReason.*`). The "Rabatte" card lists `appliedDiscounts` (title, code or
-  "Automatisch", value, amount; unmigrated orders fall back to `appliedCoupons`), and a discounted
+  "Automatisch", value, amount — a shipping discount stored with amount 0 (method already free:
+  pickup, threshold) shows "Versand war bereits kostenlos" instead of "− 0,00 €"; unmigrated
+  orders fall back to `appliedCoupons`), and a discounted
   line shows "nach Rabatt €X" (`order.discounts.*`). A bundle line with `bundle.items` lists its items with their
   VAT rates (instead of its subtitle) and shows the parts' rates ("13 / 20% MwSt"). The
   "Rückerstattungen" card (after the totals, `h4` like its neighbours) lists `order.refunds` — date

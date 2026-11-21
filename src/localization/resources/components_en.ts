@@ -199,6 +199,7 @@ export default {
       code: 'Code',
       automatic: 'Automatic',
       freeShipping: 'Free shipping',
+      alreadyFree: 'Shipping was already free',
       afterDiscount: 'after discount {{amount}}',
     },
     discount: 'Discount',

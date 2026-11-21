@@ -204,6 +204,7 @@ export default {
       code: 'Code',
       automatic: 'Automatisch',
       freeShipping: 'Gratisversand',
+      alreadyFree: 'Versand war bereits kostenlos',
       afterDiscount: 'nach Rabatt {{amount}}',
     },
     discount: 'Ermäßigung',

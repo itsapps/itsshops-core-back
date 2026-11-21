@@ -608,8 +608,16 @@ export const OrderView: UserViewComponent = (props) => {
                             .join(' · ')}
                         </Text>
                       </Stack>
-                      {typeof d.amount === 'number' && (
-                        <Text weight="medium">− {money(d.amount)}</Text>
+                      {/* A shipping discount on an already free method (pickup, threshold) is
+                          stored with amount 0 — say so instead of "− 0,00 €". */}
+                      {d.target === 'shipping' && d.amount === 0 ? (
+                        <Text muted>
+                          {t('order.discounts.alreadyFree', 'Shipping was already free')}
+                        </Text>
+                      ) : (
+                        typeof d.amount === 'number' && (
+                          <Text weight="medium">− {money(d.amount)}</Text>
+                        )
                       )}
                     </Flex>
                   )
