@@ -1,0 +1,106 @@
+import { defineType, SchemaTypeDefinition } from 'sanity'
+
+import { FieldContext, ITSContext, ITSSchemaDefinition } from '../types'
+import { createFactory, shapeSchema } from '../utils'
+import { createBuilders } from './builders'
+
+export function buildSchemas(ctx: ITSContext): SchemaTypeDefinition[] {
+  const objectBuilders = ctx.featureRegistry.getEnabledObjects()
+  const documentBuilders = ctx.featureRegistry.getEnabledDocs()
+
+  const schemas = [...objectBuilders, ...documentBuilders].map((b) => createDefinition(ctx, b))
+  if (schemas.length === 0) {
+    throw new Error('No schemas found')
+  }
+  return schemas
+}
+
+function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): SchemaTypeDefinition {
+  const name = definition.name
+  // labels, extension and groups follow the base name (shared by generated types)
+  const key = definition.baseName ?? name
+  const extension = ctx.config.schemaExtensions?.[key]
+
+  const factory = createFactory(key, ctx)
+  const builders = createBuilders(factory, ctx)
+  const fieldCtx: FieldContext = { ...ctx, f: factory.fields, factory, builders }
+
+  const icon = extension?.icon ?? definition.icon
+  const title = definition.title ?? ctx.schemaT.default(`${key}.title`)
+  const description = definition.description ?? ctx.schemaT.strict(`${key}.description`)
+
+  const base = {
+    name,
+    title,
+    ...(description && { description }),
+    ...(icon && { icon }),
+  }
+  if (definition.type === 'document' || definition.type === 'object') {
+    const built = definition.build(fieldCtx)
+    const { fields, groups, fieldsets } = shapeSchema({
+      docName: key,
+      ctx: fieldCtx,
+      coreGroups: built.groups,
+      coreFieldsets: built.fieldsets,
+      coreFields: built.fields,
+      extension,
+    })
+
+    const maybePreview = extension?.preview ? extension.preview(ctx) : built.preview
+    const preview =
+      maybePreview ||
+      (definition.type === 'document'
+        ? {
+            prepare: () => ({
+              title,
+            }),
+          }
+        : undefined)
+
+    // Sanity 6's defineType overloads can't resolve a union `type` ('document' | 'object');
+    // this factory legitimately builds both, so widen the argument.
+    const d = defineType({
+      ...built,
+      ...base,
+      type: definition.type,
+      fields,
+      ...(groups && { groups }),
+      ...(fieldsets && { fieldsets }),
+      preview,
+    } as Parameters<typeof defineType>[0])
+    return d
+  } else if (definition.type === 'array') {
+    const built = definition.build(fieldCtx)
+    return defineType({
+      ...built,
+      ...base,
+      type: definition.type,
+    })
+  } else if (definition.type === 'image' || definition.type === 'file') {
+    // Asset types: same shape (optional extra fields + preview), only `options` differ.
+    const built = definition.build(fieldCtx)
+
+    const { fields, fieldsets } = shapeSchema({
+      docName: name,
+      ctx: fieldCtx,
+      coreGroups: [],
+      coreFieldsets: built.fieldsets,
+      coreFields: built.fields || [],
+      extension,
+    })
+
+    const preview = extension?.preview ? extension.preview(ctx) : built.preview
+
+    // Union `type` ('image' | 'file') can't resolve defineType's overloads — widen (as above).
+    return defineType({
+      ...built,
+      ...base,
+      type: definition.type,
+      ...(fields && { fields }),
+      ...(fieldsets && { fieldsets }),
+      preview,
+    } as Parameters<typeof defineType>[0])
+  }
+
+  throw new Error(`Unknown schema type for schema named "${name}"`)
+}

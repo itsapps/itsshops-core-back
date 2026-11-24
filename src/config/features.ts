@@ -1,0 +1,81 @@
+import { getCoreDocuments } from '../schemas/documents'
+import { getCoreObjects } from '../schemas/objects'
+import { menuLevels } from '../schemas/objects/menuItem'
+import { CoreBackConfig, ITSFeatureKey, ITSFeatureRegistry, ITSSchemaDefinition } from '../types'
+
+export const createFeatureRegistry = (config: CoreBackConfig): ITSFeatureRegistry => {
+  const docs = getCoreDocuments(config.documents)
+  // const allDocs: ITSDocumentDefinition[] = docs.filter(doc => doc.type === 'document');
+  const objects = getCoreObjects(config.objects, menuLevels(config.schemaSettings.menus))
+  const schemas = [...docs, ...objects]
+  // const allObjs: ITSObjectDefinition[] = objects.filter(obj => obj.type === 'object');
+
+  const shopEnabled = !!config.features.shop?.enabled
+  const categoryConfig = config.features.shop?.category
+  const categoryEnabled = shopEnabled && !!categoryConfig
+  const subcategoriesEnabled =
+    categoryEnabled &&
+    typeof categoryConfig === 'object' &&
+    !!(categoryConfig as Record<string, unknown>).subcategories
+  const featureMap: Record<ITSFeatureKey, boolean> = {
+    shop: shopEnabled,
+    'shop.checkout': shopEnabled && config.features.shop?.checkout !== false,
+    'shop.manufacturer': shopEnabled && !!config.features.shop?.manufacturer,
+    'shop.stock': shopEnabled && !!config.features.shop?.stock,
+    'shop.category': categoryEnabled,
+    'shop.category.subcategories': subcategoriesEnabled,
+    'shop.vinofact': shopEnabled && !!config.features.shop?.vinofact?.enabled,
+    'shop.productKind.wine': shopEnabled && config.schemaSettings.productKinds.includes('wine'),
+    'shop.productKind.physical':
+      shopEnabled && config.schemaSettings.productKinds.includes('physical'),
+    'shop.productKind.digital':
+      shopEnabled && config.schemaSettings.productKinds.includes('digital'),
+    'shop.productKind.bundle': shopEnabled && config.schemaSettings.productKinds.includes('bundle'),
+    'shop.productKind.options':
+      shopEnabled &&
+      (config.schemaSettings.productKinds.includes('physical') ||
+        config.schemaSettings.productKinds.includes('digital')),
+    'shop.vouchers': shopEnabled && !!config.features.shop?.vouchers,
+    // Discount codes and automatic discounts only work in checkout.
+    'shop.coupons':
+      shopEnabled && config.features.shop?.checkout !== false && !!config.features.shop?.coupons,
+    'shop.automaticDiscounts':
+      shopEnabled &&
+      config.features.shop?.checkout !== false &&
+      !!config.features.shop?.automaticDiscounts,
+    'shop.discounts': false, // derived below
+    'shop.invoices': shopEnabled && config.features.shop?.invoices !== false,
+    blog: !!config.features.blog,
+    users: !!config.features.users,
+    newsletter: !!config.features.newsletter,
+  }
+
+  // Derived: the `discount` document and its objects exist when either trigger is offered.
+  featureMap['shop.discounts'] = featureMap['shop.coupons'] || featureMap['shop.automaticDiscounts']
+
+  const isFeatureEnabled = (feature: ITSFeatureKey): boolean => featureMap[feature] ?? false
+
+  const featureFilter = (definition: ITSSchemaDefinition) => {
+    if (!definition.feature) return true
+    return isFeatureEnabled(definition.feature)
+  }
+
+  const enabledDocs = docs.filter(featureFilter)
+  const enabledDocNames = enabledDocs.map((d) => d.name)
+
+  const enabledObjects = objects.filter(featureFilter)
+  const enabledObjectNames = enabledObjects.map((o) => o.name)
+
+  const enabledSchemaNames = [...enabledDocNames, ...enabledObjectNames]
+
+  return {
+    isFeatureEnabled,
+    allSchemas: schemas,
+    getSchema: (name: string) => schemas.find((d) => d.name === name),
+    isSchemaEnabled: (name: string) => enabledSchemaNames.includes(name),
+    getDoc: (name: string) => docs.find((d) => d.name === name),
+    isDocEnabled: (name: string) => enabledDocNames.includes(name),
+    getEnabledDocs: () => enabledDocs,
+    getEnabledObjects: () => enabledObjects,
+  }
+}

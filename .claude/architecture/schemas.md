@@ -1,0 +1,235 @@
+# Schemas
+
+Assembled by `buildSchemas(context)` (`src/schemas/index.ts`) from three groups, filtered by the
+feature registry (a definition's optional `.feature` tag gates it). This file is the **catalog** of
+what schemas exist; for **how to write/extend** them (the `build(ctx)` API, field factory `f`,
+builders, auto-translation, validation shortcuts) see
+[schema-authoring.md](schema-authoring.md), and for field label/value translation see
+[localization.md](localization.md).
+
+## Documents (`src/schemas/documents/`)
+
+`product`, `productVariant`, `category`, `manufacturer`, `page`, `post`, `blog`, `menu`, `settings`,
+`shopSettings`, `customer`, `customerGroup`, `newsletterSubscriber`, `discount`, `voucher`,
+`shippingMethod`, `taxCategory`, `taxCountry`, `variantOption`, `variantOptionGroup`, and
+`orders/` (order documents).
+
+## Objects (`src/schemas/objects/`)
+
+`address`, `addressStrict`, `businessAddress`, `company`, `bankAccount`, `seo`, `internalLink`,
+`menuItem` (+ `menuItem1`, … one per menu level — "Menu levels" below), `baseImage`, `cropImage`, `localeImage`, `localeAltImage`, `bundleItem`,
+`productSpecification`, `shippingRate`, `taxRule`, `generatedZip`, wine objects (`wine`),
+packaging groups (`packagingGroup`,
+`packagingGroupPackage`, `packagingGroupBottle`), and `orders/`.
+
+**Wine packaging:** `shippingMethod.packagingGroups[]` — each group is a box type with
+`packages[]{ places, price }` and `bottles[]{ volume, perPlace }` (`perPlace` bottles share one
+place). No text fields: labels are derived from the sizes. Validation: unique size and box size per
+group, each size in at most one group per method. The checkout math and info-page rendering live in
+core-front (`commerce-and-netlify.md` → Wine packaging). The old per-volume `packagingConfigs`
+(+ `winePackage`/`winePackagingConfig`) was removed in 5.2.0.
+Order snapshot `fulfillmentPackagingLine`: `volumes[]` (group sizes), `packSize` (places),
+`quantity`, `price`; old orders have `volume` instead (shown only when set; `OrderView` handles
+both).
+
+**Price & bundles (validation):** an `active` `productVariant` needs a price — its own or its
+product's (async `rule.custom` on `price`, error; other statuses/drafts free). Emptying a
+`product.price` warns when active variants have none of their own. A bundle variant
+(`bundleItems`): error on a duplicate item (any status), and while the bundle is `active` on a
+missing, non-active or unpriced item (one query, `validateBundleItems` in `productVariant.ts`); a
+variant whose `status` leaves `active` warns with the active bundles containing it (only with
+`shop.productKind.bundle`). The `bundleItem` picker and the Product Manager's BundleTab offer only
+active, priced non-bundle variants. **A bundle has no tax category** (`taxCategory` hidden on
+bundle variants/products; the Product Manager writes none): core-front splits the bundle price
+over its items by their single prices and taxes each share at the item's rate
+(`commerce-and-netlify.md` → Bundle VAT). The Product Manager writes published variants without
+schema validation, so its tabs enforce "global or row price" themselves (also when adding variants:
+`AddVariantsAction` passes the product's price as `globalPrice`).
+
+**Variant labels (`src/utils/variantLabel.ts`):** `variantDetails` (wine "0,75 l • 2023",
+physical/digital the option titles) is shared by the `productVariant` preview subtitle, the
+`bundleItem` preview (title "2× Product — Title", subtitle = details) and the BundleTab dropdown
+(`variantLabel` "Product — Title — details", sorted with `compareLabels`). A variant with its own
+title puts the product name in front of its preview subtitle, so pickers/search tell same-named
+variants of different products apart. **Search limit:** Studio search (also reference pickers, e.g.
+portable-text internal links) matches only fields on the variant document — it doesn't follow
+`product` — so an untitled variant isn't found by its product's name, only by its own fields (e.g.
+the vintage). Fixing it would need a denormalised search field kept in sync on product publish
+(left out, owner 2026-11-12).
+Order snapshot `orderItemBundle.items[]` (`orderItemBundleItem`): `variantId, productId, title,
+subtitle, sku, quantity` (per bundle), `price` (gross share of **one** bundle for all its units),
+`vatRate`, `vatAmount`; plain strings, read-only outside dev; older orders have only `itemCount`.
+`OrderView` lists the items with their rates instead of the bundle's subtitle.
+
+**Product specifications:** `product` and `productVariant` both have an optional `specifications`
+array of `productSpecification` (`label` + `value`, both `i18nString`; Studio label
+"Produktdetails" / "Product details"), for any product kind — e.g. "Material: 100% Baumwolle". A
+variant's non-empty list replaces the product's (no merge); resolved + rendered by core-front
+(`data-layer.md` → "Variant resolution").
+
+**Product description:** `product` and `productVariant` both have an optional `description`
+(`i18nText`, plain text; blank lines = paragraphs), any kind. The variant's replaces the product's;
+for wines it takes precedence over the VinoFact description.
+
+**Settings validation (feature-conditional):** `settings` / `shopSettings` fields the frontend
+depends on are required only when the feature that uses them is on (the rule is chosen at build
+time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
+- `shop` / `users` / `newsletter` (= core-front sends mail): `senderName`, `senderEmail`,
+  `siteTitle` (default locale) — core-front's mail notifiers throw without them — and `privacyPage`.
+- `shop.checkout`: `defaultTaxCategory` (otherwise uncategorized products get 0 % VAT), `termsPage` +
+  `withdrawalPolicyPage` (checkout hides its confirmations when unset), `billingAddress` street/zip/
+  city/country (invoice seller address), `returnShippingBorneBy`, `withdrawalPeriodStart`, `lastInvoiceNumber`. Warning
+  only: `defaultCountry` (checkout falls back to `'AT'`).
+- `shop` (also without checkout — the privacy policy reads it): warnings on `settings.company`
+  name, address (street/zip/city/country), email, vatId; `shopNotificationEmail` shown.
+- **Without `shop.checkout`** (`features.shop.checkout: false`, a shop that sells nothing online)
+  the `shop.checkout` fields aren't optional but **absent**: `shopSettings` drops the billing / orders / shipping /
+  returns / tax groups and the terms / withdrawal policy / shipping info pages, leaving `shopPage` +
+  filters (+ stock). Values already stored there show as unknown fields.
+- `freeShippingCalculation` (group shipping, "Gratis-Versand Berechnung") is shown when
+  `shop.coupons`, `shop.automaticDiscounts` **or** `shop.vouchers` is on (was vouchers-only before
+  5.1.0, so coupon shops had it unset); `initialValue: 'beforeDiscount'`. How core-front applies it: core-front
+  `commerce-and-netlify.md` → "Free shipping".
+
+**Mail-related fields (core-front reads them):** `settings.shopNotificationEmail` (optional; inbox
+for new-order mails + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
+`registerNumber` / `registerCourt` (rendered in every mail footer only when set);
+`shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
+**Store pickup** (core-front `commerce-and-netlify.md` → "Store pickup", plan
+handbook `plans/store-pickup.md`): `shippingMethod.methodType` `pickup` — always in the list (no
+feature flag; a published pickup method turns pickup on in the checkout). Pickup fields, hidden
+unless pickup: `pickupFee` (price, initial 0), `pickupAddress` (`businessAddress`; line1/zip/city/
+country required via `requiredSubfields(…, { when })`, country must be an enabled `taxCountry` —
+it is the VAT country of pickup orders), `pickupInstructions` (`i18nText`), `pickupHoldDays`
+(integer ≥ 1, optional), `pickupAnnounceReady` (boolean, initial off: the mails/thanks page
+announce the "ready for pickup" mail — core-front `commerce-and-netlify.md` → Store pickup). `eligibleCountries` (required only for delivery), `rates`,
+`packagingGroups`, `freeShippingThreshold` hide for pickup (leftover values are ignored by every
+reader). `deliveryTime` = "ready for pickup in" for pickup. Order snapshot (read-only outside
+dev): `fulfillment.pickupAddress` (inline object, city as plain string), `pickupInstructions`
+(text), `pickupHoldDays`, `pickupAnnounceReady`; no `customer.shippingAddress` on pickup orders (the order preview falls
+back to the billing address). `addressStrict.country` lists **every** ISO country
+(`allCountryOptions`) — a pickup customer's billing address may be from anywhere.
+Pickup orders reuse the states: `shipped` = "Abholbereit", `delivered` = "Abgeholt"
+(`utils/orderTransitions.ts` `statusLabelKey` / `mailTypeLabelKey`, keys
+`order.status.pickupOptions.*` / `actions.order.pickupMailTypes.*`). A pickup `shipped` order is
+not handed over: transitions `delivered` | `canceled` (refunded: none), `refundCancelsFulfillment`
+true, `returnedOffered` false, withdrawal guide `refund`/`notCollected`. The order view shows a
+"Abholung" card (contact email, method, pickup address, instructions and — while `shipped` with
+`pickupHoldDays` — "Abholen bis …", `caution` tone + "abgelaufen" once past; `utils/pickup.ts`
+`pickupDeadline`, same rule as core-front's).
+**Discounts** (7.0.0; feature `shop.discounts`; semantics + pipeline: core-front
+`commerce-and-netlify.md` → Discounts, ADR core-front `decisions/discounts-model.md`):
+`discount` (`documents/discount.ts`, not `liveEdit` — checkout reads published only) — `trigger`
+`code` | `automatic` (each offered by its flag; the field hides when only one is), `target` `items` |
+`order` | `shipping`, `valueType` `percent` | `fixed` | `free` (shipping only), `value` (percent,
+or cents for `fixed` — entered in euros via `DiscountValueInput`), `appliesTo`
+(`productSelector`), `ignoreShopExclusions`, `appliesToPickup`, `minSubtotal` + `minSubtotalBasis`,
+`minQuantity`, validity dates, `maxRedemptions`, `maxPerEmail` (codes only), `combinesWith`,
+read-only `redemptionCount` (core-front's payment webhook increments it). Codes unique
+case-insensitively; warnings (not errors) for 100 % and for an automatic discount without any
+condition. `productSelector`
+(`objects/productSelector.ts`): `include` / `exclude` criteria (kinds, categories, manufacturers,
+products, variants, has compare-at price; weak refs; category/manufacturer criteria warn when their
+feature is off). `shopSettings.discountExclusions` (group "Rabatte"): never discounted by items/order
+discounts. Order snapshot (core-front writes it, read-only): `appliedDiscounts[]`
+(`appliedDiscount`), `orderItem.discount` / `orderItemBundleItem.discount` (gross cents, whole line),
+`fulfillment.freeShippingReason` `threshold` | `discount` (only when a delivery method cost 0; hidden
+outside dev). Legacy, until every dataset ran core-front's `itsshops sanity migrate-discounts`:
+read-only `appliedCoupons` and reason values `product` / `coupon`; the migration writes a status
+history entry of type `system` (`discountsMigrated`). `coupon` and
+`productVariant.grantsFreeShipping` are removed.
+Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`
+(`orderPaymentMethod`: type, brand, last4, wallet — order only, not orderMeta).
+**`order` is `liveEdit`** (5.3.0): edits save straight to the published order — no draft whose
+publish would revert what the payment functions wrote meanwhile. `order.refunds[]`
+(`orderRefund`: `refundId`, `amount` cents, `createdAt`, `status` (Stripe's), `failureReason`,
+`source` `studio` | `stripe`, `reason`; group `history`, hidden outside dev) is written by core-front
+only (`syncOrderRefunds`, rebuilt from Stripe) — core-front `commerce-and-netlify.md` → Refunds.
+`order.statusHistory[]` (`orderStatusHistory`: `type` payment / fulfillment / `mail` / `erp`,
+`status` = state, mail type, or `accepted` for `erp`, `source` (`admin` / `stripe` / `wc-api` /
+`system`), `note`, `customerMessage`; hidden outside dev) is written by core-front and the order
+actions, append-only — `mail` entries only by core-front after a sent mail, `erp` entries only by
+core-front's wc-api. `order.erpAcceptedAt` (datetime, read-only, hidden outside dev): when the ERP
+accepted the order — written only by the wc-api in `completedMeans: 'accepted'` mode (core-front
+`wc-api.md` → "ERP accepted"); the order stays `processing` until the shop ships it.
+
+**Withdrawal-instruction settings (`shopSettings`, group returns):** `withdrawalPeriodStart`
+(FAGG Anhang I note [1] variant, default `multipleGoods`), `withdrawalExceptions` (§ 18 list),
+`returnPolicyNote` (now also shown next to the instructions), `shippingInfoPage` reference (displays).
+
+**`orderWithdrawal`:** a web declaration that matches no order is stored with status **`unmatched`**
+and no `orderRef`, holding the submitted `name` / `email` / `orderNumber` / `locale` (read-only).
+Withdrawals are **`liveEdit`** (no draft, no "Publish"; ADR `orders-live-edit.md` → "Withdrawals").
+`orderRef` is read-only (non-dev): it is set by the web endpoint, "Widerruf erfassen" on the order,
+or the **"Bestellung zuordnen"** action, which also sets `status: received` and **`assignedAt`**
+(datetime, hidden outside dev; marks a Studio assignment — only those can be undone with "Zuordnung
+aufheben"). `status` has a custom input (`components/WithdrawalStatusInput.tsx`): a select with
+`received` / `processing` / `rejected` only — `unmatched` and `refunded` render read-only (`refunded`
+comes only from "Erstatten & abschließen"); "Abgelehnt" asks for an internal reason first and appends
+"Abgelehnt am 〈date〉: 〈reason〉" to `note`; reopening a rejected one is refused while the order has
+another open withdrawal. A document-level input (`components/WithdrawalGuideInput.tsx`) renders the
+guide box above the form (next step, refund deadline, "So geht's"; `studio-components.md`). Open
+statuses: `OPEN_STATUSES` in `utils/withdrawals.ts`. Editor rule (field descriptions): assign or
+delete within 30 days. Matched records are never deleted. Flow + rationale: core-front `commerce-and-netlify.md` → "Withdrawal".
+
+When a frontend feature starts depending on a settings field, add the matching conditional rule
+here. Validation only fires when an editor publishes — existing documents must be checked per shop
+before go-live.
+
+**Menu levels:** `menus.maxDepth` = number of menu levels, **top level included** (1 = flat, the
+default; 2 = top-level links + submenus of links). Core builds one item type per level from the
+`menuItem` definition (`src/schemas/objects/menuItem.ts` → `menuItemTypes`): `menuItem` (top
+level), `menuItem1`, `menuItem2`, … Only levels below the last offer `submenu` and a `children`
+field (typed as the next level), so the last level is link-only — Sanity choice lists are static,
+hence per-level types instead of a depth rule. All level types share `menuItem`'s labels, `schemaExtensions.menuItem` and preview via
+the definition's `baseName`. Existing submenu children stored as `menuItem` must be
+relabelled `menuItem1` (CHANGELOG; a one-off script in the customer backend, not shipped by core). core-front's `menu.maxDepth` counts the same
+way.
+
+`menuItem` `linkType`: `internal` | `external` | `submenu` (on every level but the last; none with `maxDepth: 1`) |
+`system`. `system` links a **fixed frontend route** (not a document) chosen in `systemPage`. The
+options come from the feature-filtered list in `src/schemas/systemPages.ts`, currently only
+`orderWithdraw` (requires `shop.checkout`). Rich-text link annotations can offer the same list via
+`internalLinkFields({ includeSystemPages: true })` (field `internalLinkSystemPage`). `system` is only offered when at least one is enabled; title is
+optional — except for `orderWithdraw`, whose label is fixed by law ("Vertrag widerrufen", FAGG
+§13a; the frontend ignores an editor title). The frontend resolves URL + default title and guarantees the withdrawal link: see core-front
+`.claude/architecture/data-layer.md` → "Menus & system links".
+
+## Modules (`src/schemas/modules/`)
+
+Page/content building blocks: `carousel`, `categoryList`, `productList`, `productVariantList`,
+`youtube`, plus three **legal modules**: `withdrawalPolicyModule` (feature `shop`, field-less;
+generated withdrawal instructions + model form), `shippingInfoModule` (feature `shop`; "Versand &
+Zahlung": one field, `paymentInfo` — editor-written payment-methods text, `i18nText`, must match
+Stripe — plus the generated shipping methods + warranty notice) and `privacyPolicyModule` (no feature
+gate — every site needs one; generated privacy policy; fields only for what core can't know:
+`extraSections[]` of `privacyPolicySection` {`heading` i18nString, `text` i18nText} for external
+services the shop embeds itself, e.g. a map, and optional `dpoContact`). Their generated content comes from settings, rendered by core-front (`commerce-and-netlify.md`
+→ "Legal texts"); customers add them to their page `modules` array. These are the array members of a document's `modules[]` and map to frontend module
+templates (`itsshops-core-front` → `templates/overridable/modules/` and `core/modules/`). The
+`productList` module pairs with the frontend's URL-based filter system.
+
+Every module defines a `preview` (title with a translated fallback, a count/summary subtitle,
+the module icon — `categoryList` is the pattern). Without one, a page's `modules[]` array shows
+Sanity's raw field dump ("products: [{empty}, …], disabled: false").
+
+## i18n fields
+
+Localized fields use `sanity-plugin-internationalized-array`. `createi18nFieldTypes`
+(`src/config/fieldTypes.ts`) builds the localized field types from `localizedFieldTypes`; the plugin
+registers them with the configured `fieldLanguages`. The frontend resolves these arrays down to plain
+per-locale strings (`itsshops-core-front` localizers).
+
+## Templates & actions
+
+- `templateResolver(prev, context)` (`src/config/templates.ts`) — initial-value templates for new
+  documents.
+- `actionResolver(prev, ctx, context)` (`src/config/actions.ts`) — document actions. Full breakdown
+  (per-type actions, singleton rules, the consumer `documentActions` hook) in
+  [studio-components.md](studio-components.md).
+
+## Customer extension
+
+Customers add schemas via `ItsshopsConfig.documents[]` / `objects[]` and refine core schemas via
+`schemaExtensions`. Prefer tagging new schemas with a `.feature` and letting the registry gate them
+over hard-coding conditionals. Mechanics in [schema-authoring.md](schema-authoring.md).

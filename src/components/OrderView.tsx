@@ -1,0 +1,878 @@
+import { Badge, Box, Card, Flex, Heading, Stack, Text } from '@sanity/ui'
+import { useCallback, useEffect, useState } from 'react'
+import { type SanityDocument } from 'sanity'
+import { IntentLink } from 'sanity/router'
+import { type UserViewComponent } from 'sanity/structure'
+
+import {
+  getStateTranslationKey,
+  mailTypeLabelKey,
+  statusLabelKey,
+  type OrderPaymentStatus,
+  type OrderStatus,
+} from '../utils/orderTransitions'
+import { pickupDeadline, pickupOverdue } from '../utils/pickup'
+import { refundedTotal, remainingAmount } from '../utils/orderRefunds'
+import { isOpenWithdrawal, withdrawalDeadline } from '../utils/withdrawals'
+import { useITSContext } from '../context/ITSCoreProvider'
+import { TranslatorFunction } from '../types/localization'
+import { type MailType } from '../types/mail'
+
+// ── Document shape ──────────────────────────────────────────────────────────
+// Mirrors the actual core-back schemas (see schemas/documents/orders/order.ts
+// and schemas/objects/orders/*). Kept inline to avoid coupling the view to a
+// type that lives in another package.
+
+type Address = {
+  name?: string
+  prename?: string
+  lastname?: string
+  phone?: string
+  line1: string
+  line2?: string
+  zip: string
+  city: string
+  country: string
+  state?: string
+}
+
+type OrderItemOption = {
+  _key?: string
+  groupTitle: string
+  optionTitle: string
+}
+
+type OrderItem = {
+  _key: string
+  kind: 'wine' | 'physical' | 'digital' | 'bundle'
+  variantId: string
+  productId: string
+  parentId?: string
+  title: string
+  subtitle?: string
+  sku?: string
+  quantity: number
+  price: number
+  vatRate: number
+  vatAmount: number
+  /** Gross cents the discounts took off the whole line (unset = 0). */
+  discount?: number
+  weight?: number
+  packed?: boolean
+  options?: OrderItemOption[]
+  wine?: { vintage?: string; volume?: number }
+  bundle?: { itemCount: number; items?: OrderItemBundleItem[] }
+}
+
+/** Bundle contents snapshot: `quantity` per bundle, `price` = share of one bundle. */
+type OrderItemBundleItem = {
+  _key: string
+  title: string
+  subtitle?: string
+  sku?: string
+  quantity: number
+  price: number
+  vatRate: number
+  vatAmount: number
+  /** This item's part of the line's discount, whole line quantity (unset = 0). */
+  discount?: number
+}
+
+type VatBreakdownItem = {
+  _key: string
+  rate: number
+  net: number
+  vat: number
+}
+
+type OrderTotals = {
+  grandTotal: number
+  subtotal: number
+  shipping: number
+  discount: number
+  totalVat: number
+  vatBreakdown?: VatBreakdownItem[]
+  currency: string
+}
+
+type PackagingLine = {
+  _key: string
+  /** Bottle sizes of the packaging group (core-back ≥ 4.0.0). */
+  volumes?: number[]
+  /** Single bottle size — orders before core-back 4.0.0. */
+  volume?: number
+  packSize: number
+  quantity: number
+  price: number
+}
+
+type Fulfillment = {
+  methodTitle?: string
+  methodType: 'delivery' | 'pickup'
+  shippingCost: number
+  /** `product` / `coupon`: orders before the discounts migration (core-back < 7.0.0). */
+  freeShippingReason?: 'threshold' | 'discount' | 'product' | 'coupon'
+  trackingCode?: string
+  /** Pickup snapshot (city in the customer's locale). */
+  pickupAddress?: { line1?: string; line2?: string; zip?: string; city?: string; country?: string }
+  pickupInstructions?: string
+  pickupHoldDays?: number
+  taxSnapshot?: VatBreakdownItem
+  packagingLines?: PackagingLine[]
+}
+
+type StatusHistoryEntry = {
+  _key: string
+  timestamp: string
+  source?: string
+  note?: string
+  customerMessage?: string
+} & (
+  | { type: 'payment' | 'fulfillment'; status: OrderStatus | OrderPaymentStatus }
+  // `withdrawalReceipt`: the withdrawal receipt (core-front), not a MailType the Studio sends
+  | { type: 'mail'; status: MailType | 'withdrawalReceipt' }
+  // the ERP accepted the order (core-front wc-api, `completedMeans: 'accepted'`)
+  | { type: 'erp'; status: 'accepted' }
+  // one-off data changes (core-front CLI), e.g. `discountsMigrated`
+  | { type: 'system'; status: string }
+)
+
+type OrderRefund = {
+  _key: string
+  refundId: string
+  amount: number
+  createdAt?: string
+  status?: string
+  failureReason?: string
+  source?: 'studio' | 'stripe'
+  reason?: string
+}
+
+type AppliedDiscount = {
+  _key: string
+  discountRef?: { _ref: string }
+  code?: string
+  /** Snapshot in the order's locale. */
+  title?: string
+  trigger: 'code' | 'automatic'
+  target: 'items' | 'order' | 'shipping'
+  valueType?: 'percent' | 'fixed' | 'free'
+  value?: number
+  /** Cents saved (shipping: the waived cost). Unset on migrated product free-shipping entries. */
+  amount?: number
+}
+
+/** Pre-7.0.0 shape — only on orders the discounts migration hasn't reached yet. */
+type LegacyAppliedCoupon = {
+  _key: string
+  code: string
+  discountType: 'percent' | 'fixed' | 'freeShipping'
+  value?: number
+  discountAmount: number
+}
+
+const fromLegacyCoupon = (c: LegacyAppliedCoupon): AppliedDiscount => ({
+  _key: c._key,
+  code: c.code,
+  title: c.code,
+  trigger: 'code',
+  target: c.discountType === 'freeShipping' ? 'shipping' : 'order',
+  valueType: c.discountType === 'freeShipping' ? 'free' : c.discountType,
+  value: c.value,
+  amount: c.discountAmount,
+})
+
+type PaymentMethod = {
+  type?: string
+  brand?: string
+  last4?: string
+  wallet?: string
+}
+
+interface OrderDocument extends SanityDocument {
+  orderNumber?: string
+  orderDate?: string
+  /** When the ERP accepted the order (core-front wc-api, `completedMeans: 'accepted'`). */
+  erpAcceptedAt?: string
+  payment?: PaymentMethod
+  invoiceNumber?: string
+  status: 'created' | 'processing' | 'shipped' | 'delivered' | 'canceled' | 'returned'
+  paymentStatus: 'succeeded' | 'refunded' | 'partiallyRefunded'
+  paymentIntentId: string
+  orderItems: OrderItem[]
+  customer: {
+    locale: string
+    contactEmail: string
+    billingAddress?: Address
+    /** Not stored for pickup orders. */
+    shippingAddress?: Address
+  }
+  totals: OrderTotals
+  fulfillment: Fulfillment
+  statusHistory?: StatusHistoryEntry[]
+  refunds?: OrderRefund[]
+  appliedDiscounts?: AppliedDiscount[]
+  appliedCoupons?: LegacyAppliedCoupon[]
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+const CARD_BRANDS: Record<string, string> = {
+  visa: 'Visa',
+  mastercard: 'Mastercard',
+  amex: 'American Express',
+  discover: 'Discover',
+  diners: 'Diners Club',
+  jcb: 'JCB',
+  unionpay: 'UnionPay',
+}
+
+/** "Visa •••• 4242", "Apple Pay (Visa •••• 4242)", "SEPA-Lastschrift •••• 3000", "EPS". */
+function paymentLabel(p: PaymentMethod, t: (key: string, fallback?: string) => string): string {
+  const masked = p.last4 ? ` •••• ${p.last4}` : ''
+  const typeName = (type: string) => t(`order.payment.types.${type}`, type)
+  if (p.type === 'card' && p.brand) {
+    const card = `${CARD_BRANDS[p.brand] ?? p.brand}${masked}`
+    return p.wallet ? `${t(`order.payment.wallets.${p.wallet}`, p.wallet)} (${card})` : card
+  }
+  return p.type ? `${typeName(p.type)}${masked}` : ''
+}
+
+const STATUS_TONES: Record<string, 'positive' | 'caution' | 'critical' | 'primary' | 'default'> = {
+  created: 'primary',
+  processing: 'caution',
+  shipped: 'caution',
+  delivered: 'positive',
+  canceled: 'critical',
+  returned: 'critical',
+  succeeded: 'positive',
+  refunded: 'critical',
+  partiallyRefunded: 'caution',
+}
+
+const WITHDRAWAL_TONES: Record<
+  string,
+  'positive' | 'caution' | 'critical' | 'primary' | 'default'
+> = {
+  received: 'primary',
+  processing: 'caution',
+  refunded: 'positive',
+  rejected: 'critical',
+}
+
+type WithdrawalDoc = {
+  _id: string
+  declaredAt: string
+  status: string
+  reason?: string
+}
+
+/**
+ * Collapse draft/published pairs to one entry per document, preferring the draft
+ * so in-progress edits show live. Without this, editing a withdrawal makes both
+ * its published and `drafts.` version appear as duplicates.
+ */
+function dedupeDrafts(docs: WithdrawalDoc[]): WithdrawalDoc[] {
+  const byBaseId = new Map<string, WithdrawalDoc>()
+  for (const d of docs) {
+    const baseId = d._id.replace(/^drafts\./, '')
+    const existing = byBaseId.get(baseId)
+    if (!existing || d._id.startsWith('drafts.')) byBaseId.set(baseId, d)
+  }
+  return [...byBaseId.values()].sort((a, b) => b.declaredAt.localeCompare(a.declaredAt))
+}
+
+/** Live list of withdrawal declarations referencing the given order. */
+function useOrderWithdrawals(orderId: string | undefined): WithdrawalDoc[] {
+  const { sanityClient } = useITSContext()
+  const [withdrawals, setWithdrawals] = useState<WithdrawalDoc[]>([])
+  const cleanId = orderId?.replace(/^drafts\./, '')
+
+  useEffect(() => {
+    if (!cleanId) return undefined
+
+    const query = `*[_type == "orderWithdrawal" && orderRef._ref == $id] | order(declaredAt desc){
+      _id, declaredAt, status, reason
+    }`
+    const params = { id: cleanId }
+    let active = true
+    const load = () => {
+      sanityClient.fetch<WithdrawalDoc[]>(query, params).then((docs) => {
+        if (active) setWithdrawals(dedupeDrafts(docs))
+      })
+    }
+    load()
+    const sub = sanityClient.listen(query, params, { visibility: 'query' }).subscribe(() => load())
+    return () => {
+      active = false
+      sub.unsubscribe()
+    }
+  }, [cleanId, sanityClient])
+
+  return withdrawals
+}
+
+/** "Refund by 〈date〉" (+ "Overdue since 〈date〉") for an open withdrawal — state in text, not colour. */
+function WithdrawalDeadlineText({ declaredAt }: { declaredAt: string }) {
+  const { componentT, format } = useITSContext()
+  const t = componentT.default
+  const { dueDate, overdueSince } = withdrawalDeadline(declaredAt)
+  const date = (d: Date) => format.date(d, { dateStyle: 'medium' })
+  return (
+    <Text size={1} weight={overdueSince ? 'semibold' : 'regular'}>
+      {overdueSince
+        ? t('order.withdrawals.overdueSince', 'Overdue since {{date}}', {
+            date: date(overdueSince),
+          })
+        : t('order.withdrawals.refundBy', 'Refund by {{date}}', { date: date(dueDate) })}
+    </Text>
+  )
+}
+
+/** Bottle sizes of a packaging line, largest first: "0.75 l / 0.375 l" (ml below 1 l, as before). */
+function formatVolumes(volumes: number[]): string {
+  return [...volumes]
+    .sort((a, b) => b - a)
+    .map((v) => (v >= 1000 ? `${v / 1000} l` : `${v} ml`))
+    .join(' / ')
+}
+
+function formatAddressLines(address: Address): string[] {
+  const fullName = [address.prename, address.lastname].filter(Boolean).join(' ') || address.name
+  const cityLine = [address.country, address.zip, address.city].filter(Boolean).join(' ')
+  const countryLine = [address.state].filter(Boolean).join(' · ')
+  return [
+    fullName ?? '',
+    address.line1,
+    address.line2,
+    cityLine,
+    countryLine,
+    address.phone,
+  ].filter((s): s is string => Boolean(s && s.trim()))
+}
+
+// ── View ────────────────────────────────────────────────────────────────────
+
+export const OrderView: UserViewComponent = (props) => {
+  const { format, componentT, schemaT } = useITSContext()
+  const t = componentT.default
+  const tStatus = (status: string) => componentT.default(statusLabelKey(status, methodType), status)
+  const tPaymentStatus = (status: string) =>
+    componentT.default(`order.paymentStatus.options.${status}`, status)
+  const tHistoryType = (type: string) =>
+    componentT.default(`order.statusHistory.type.options.${type}`, type)
+  const historyStatusLabel = (entry: StatusHistoryEntry): string => {
+    switch (entry.type) {
+      case 'mail':
+        return t(mailTypeLabelKey(entry.status, methodType), entry.status)
+      case 'erp':
+        return t(`order.statusHistory.erpStatus.${entry.status}`, entry.status)
+      case 'system':
+        return t(`order.statusHistory.systemStatus.${entry.status}`, entry.status)
+      case 'fulfillment':
+        return t(statusLabelKey(entry.status, methodType), entry.status)
+      default:
+        return schemaT.default(getStateTranslationKey(entry.status), entry.status)
+    }
+  }
+
+  const order = (props.document.displayed ?? props.document.published) as OrderDocument | undefined
+  // Pickup orders label `shipped` / `delivered` as "ready for pickup" / "collected".
+  const methodType = order?.fulfillment?.methodType
+  const currency = order?.totals?.currency ?? 'EUR'
+  const withdrawals = useOrderWithdrawals(order?._id)
+
+  const money = useCallback(
+    (cents: number | undefined): string =>
+      typeof cents === 'number' ? format.currency(cents / 100, currency) : '—',
+    [format, currency],
+  )
+
+  if (!order) {
+    return (
+      <Box padding={4}>
+        <Text>{t('order.loading')}</Text>
+      </Box>
+    )
+  }
+
+  const { customer, totals, fulfillment } = order
+  const shippingAddress = customer?.shippingAddress
+  const isPickup = fulfillment?.methodType === 'pickup'
+  const appliedDiscounts: AppliedDiscount[] = order.appliedDiscounts?.length
+    ? order.appliedDiscounts
+    : (order.appliedCoupons ?? []).map(fromLegacyCoupon)
+  const shippingDiscount = appliedDiscounts.find((d) => d.target === 'shipping')
+  // The deadline only matters while the order waits for pickup ("Abholbereit").
+  const pickupDue =
+    isPickup && order.status === 'shipped'
+      ? pickupDeadline(order.statusHistory, fulfillment?.pickupHoldDays)
+      : null
+  const billingAddress = customer?.billingAddress
+
+  return (
+    <Box padding={[3, 4]}>
+      <Stack gap={4}>
+        {/* ── Header: order/invoice number, statuses ──────────────────── */}
+        <Flex align="flex-start" justify="space-between" wrap="wrap" gap={3}>
+          <Stack gap={2}>
+            <Heading as="h2" size={2}>
+              {order.orderNumber
+                ? `${t('order.orderNumber')} ${order.orderNumber}`
+                : t('order.loading')}
+            </Heading>
+            {order.invoiceNumber && (
+              <Text muted>
+                {t('order.invoiceNumber')} {order.invoiceNumber}
+              </Text>
+            )}
+            <Text muted>
+              {format.date(order.orderDate ?? order._createdAt, {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            </Text>
+            {order.payment?.type && (
+              <Text muted>
+                {t('order.payment.title', 'Payment method')}: {paymentLabel(order.payment, t)}
+              </Text>
+            )}
+            {order.erpAcceptedAt &&
+              (order.status === 'created' || order.status === 'processing') && (
+                <Text muted>
+                  {t('order.erpAccepted', 'Accepted by the ERP on {{date}}', {
+                    date: format.date(order.erpAcceptedAt, {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    }),
+                  })}
+                </Text>
+              )}
+          </Stack>
+          <Flex gap={2} wrap="wrap">
+            <Badge tone={STATUS_TONES[order.status] ?? 'default'}>{tStatus(order.status)}</Badge>
+            <Badge tone={STATUS_TONES[order.paymentStatus] ?? 'default'}>
+              {tPaymentStatus(order.paymentStatus)}
+            </Badge>
+          </Flex>
+        </Flex>
+
+        {/* ── Withdrawals (Widerruf) ──────────────────────────────────── */}
+        {withdrawals.length > 0 && (
+          <Card padding={3} radius={2} shadow={1} tone="caution">
+            <Stack gap={3}>
+              <Heading as="h4" size={1}>
+                {t('order.withdrawals.title', 'Withdrawals')}
+              </Heading>
+              <Stack gap={2}>
+                {withdrawals.map((w) => (
+                  <IntentLink
+                    key={w._id}
+                    intent="edit"
+                    params={{ id: w._id.replace(/^drafts\./, ''), type: 'orderWithdrawal' }}
+                    style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                  >
+                    <Card padding={3} radius={2} shadow={1} tone="default">
+                      <Flex justify="space-between" gap={3} wrap="wrap" align="flex-start">
+                        <Stack gap={1}>
+                          <Text muted>
+                            {format.date(w.declaredAt, { dateStyle: 'medium', timeStyle: 'short' })}
+                          </Text>
+                          {w.reason && <Text>{w.reason}</Text>}
+                        </Stack>
+                        <Flex direction="column" align="flex-end" gap={2}>
+                          <Badge tone={WITHDRAWAL_TONES[w.status] ?? 'default'}>
+                            {t(`order.withdrawals.status.${w.status}`, w.status)}
+                          </Badge>
+                          {isOpenWithdrawal(w.status) && (
+                            <WithdrawalDeadlineText declaredAt={w.declaredAt} />
+                          )}
+                        </Flex>
+                      </Flex>
+                    </Card>
+                  </IntentLink>
+                ))}
+              </Stack>
+            </Stack>
+          </Card>
+        )}
+
+        {/* ── Totals ──────────────────────────────────────────────────── */}
+        <Card padding={3} radius={2} shadow={1} tone="primary">
+          <Stack gap={3}>
+            <TotalRow label={t('order.subtotal')} value={money(totals?.subtotal)} />
+            <TotalRow
+              label={t(isPickup ? 'order.pickup' : 'order.shipping')}
+              value={money(totals?.shipping)}
+            />
+            {totals?.shipping === 0 && fulfillment?.freeShippingReason && (
+              <TotalRow
+                label={
+                  (fulfillment.freeShippingReason === 'discount' && shippingDiscount?.title) ||
+                  t(`order.freeShippingReason.${fulfillment.freeShippingReason}`)
+                }
+                value=""
+                muted
+              />
+            )}
+            {fulfillment?.taxSnapshot && fulfillment.shippingCost > 0 && (
+              <TotalRow
+                label={t('order.shippingVat', `incl. ${fulfillment.taxSnapshot.rate}% VAT`, {
+                  vatRate: fulfillment.taxSnapshot.rate,
+                })}
+                value={money(fulfillment.taxSnapshot.vat)}
+                muted
+              />
+            )}
+            {totals?.discount > 0 && (
+              <TotalRow label={t('order.discount')} value={`− ${money(totals.discount)}`} />
+            )}
+            {totals?.vatBreakdown?.map((vb) => (
+              <TotalRow
+                key={vb._key}
+                label={t('order.vatRate', `${vb.rate}% Vat`, { vatRate: vb.rate })}
+                value={money(vb.vat)}
+                muted
+              />
+            ))}
+            <TotalRow label={t('order.total')} value={money(totals?.grandTotal)} bold />
+          </Stack>
+        </Card>
+
+        {/* ── Refunds (written by core-front from Stripe, oldest first) ──── */}
+        {order.refunds && order.refunds.length > 0 && (
+          <Card padding={3} radius={2} shadow={1} tone="transparent">
+            <Stack gap={3}>
+              <Heading as="h4" size={1}>
+                {t('order.refunds.title', 'Refunds')}
+              </Heading>
+              <Stack as="ul" gap={2} style={{ margin: 0, paddingLeft: '1.25em' }}>
+                {order.refunds.map((refund) => {
+                  const parts = [
+                    refund.createdAt
+                      ? format.date(refund.createdAt, { dateStyle: 'medium', timeStyle: 'short' })
+                      : undefined,
+                    money(refund.amount),
+                    refund.source
+                      ? t(`order.refunds.source.${refund.source}`, refund.source)
+                      : undefined,
+                  ]
+                  if (refund.status && refund.status !== 'succeeded') {
+                    const statusLabel = t(`order.refunds.status.${refund.status}`, refund.status)
+                    parts.push(
+                      refund.status === 'failed' && refund.failureReason
+                        ? `${statusLabel} (${refund.failureReason})`
+                        : statusLabel,
+                    )
+                  }
+                  return (
+                    <Text as="li" key={refund._key} size={1}>
+                      {parts.filter(Boolean).join(' · ')}
+                    </Text>
+                  )
+                })}
+              </Stack>
+              <Text size={1} weight="medium">
+                {`${t('order.refunds.refunded', 'Refunded')} ${money(refundedTotal(order.refunds))} · ${t('order.refunds.remaining', 'Remaining')} ${money(remainingAmount(totals?.grandTotal ?? 0, order.refunds))}`}
+              </Text>
+            </Stack>
+          </Card>
+        )}
+
+        {/* ── Applied discounts ───────────────────────────────────────── */}
+        {appliedDiscounts.length > 0 && (
+          <Card padding={3} radius={2} shadow={1} tone="transparent">
+            <Stack gap={3}>
+              <Heading as="h4" size={1}>
+                {t('order.discounts.title', 'Discounts')}
+              </Heading>
+              <Stack gap={2}>
+                {appliedDiscounts.map((d) => {
+                  let valueLabel = ''
+                  if (d.target === 'shipping' || d.valueType === 'free')
+                    valueLabel = t('order.discounts.freeShipping', 'Free shipping')
+                  else if (d.valueType === 'percent') valueLabel = `${d.value ?? 0} %`
+                  else if (d.valueType === 'fixed' && typeof d.value === 'number')
+                    valueLabel = money(d.value)
+                  const kind =
+                    d.trigger === 'automatic'
+                      ? t('order.discounts.automatic', 'Automatic')
+                      : t('order.discounts.code', 'Code')
+                  return (
+                    <Flex key={d._key} justify="space-between" gap={3} wrap="wrap">
+                      <Stack gap={1}>
+                        <Text weight="medium">{d.title || d.code || '—'}</Text>
+                        <Text muted>
+                          {[kind, d.code && d.code !== d.title ? d.code : '', valueLabel]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </Text>
+                      </Stack>
+                      {/* A shipping discount on an already free method (pickup, threshold) is
+                          stored with amount 0 — say so instead of "− 0,00 €". */}
+                      {d.target === 'shipping' && d.amount === 0 ? (
+                        <Text muted>
+                          {t('order.discounts.alreadyFree', 'Shipping was already free')}
+                        </Text>
+                      ) : (
+                        typeof d.amount === 'number' && (
+                          <Text weight="medium">− {money(d.amount)}</Text>
+                        )
+                      )}
+                    </Flex>
+                  )
+                })}
+              </Stack>
+            </Stack>
+          </Card>
+        )}
+
+        {/* ── Customer + addresses ────────────────────────────────────── */}
+        <Flex gap={3} direction="column">
+          {isPickup && (
+            <AddressCard
+              title={t('order.pickup', 'Pickup')}
+              tone={pickupDue && pickupOverdue(pickupDue) ? 'caution' : 'transparent'}
+              lines={[
+                customer.contactEmail,
+                fulfillment?.methodTitle,
+                ...(fulfillment?.pickupAddress
+                  ? formatAddressLines(fulfillment.pickupAddress as Address)
+                  : []),
+                ...(fulfillment?.pickupInstructions?.split('\n') ?? []),
+                pickupDue &&
+                  t(
+                    pickupOverdue(pickupDue) ? 'order.pickupOverdue' : 'order.pickupDeadline',
+                    'Collect by {{date}}',
+                    { date: format.date(pickupDue, { dateStyle: 'medium' }) },
+                  ),
+              ].filter((l): l is string => Boolean(l && l.trim()))}
+            />
+          )}
+          {!isPickup && shippingAddress && (
+            <AddressCard
+              title={t('order.shipping')}
+              lines={[
+                customer.contactEmail,
+                ...formatAddressLines(shippingAddress),
+                fulfillment?.methodTitle,
+                fulfillment?.trackingCode
+                  ? `${t('order.trackingNumber')} ${fulfillment.trackingCode}`
+                  : null,
+              ].filter((l): l is string => Boolean(l))}
+            />
+          )}
+          {billingAddress && (
+            <AddressCard
+              title={t('order.billingAddress')}
+              lines={formatAddressLines(billingAddress)}
+            />
+          )}
+        </Flex>
+
+        {/* ── Packaging lines ─────────────────────────────────────────── */}
+        {fulfillment?.packagingLines && fulfillment.packagingLines.length > 0 && (
+          <Card padding={3} radius={2} shadow={1} tone="transparent">
+            <Stack gap={3}>
+              <Heading as="h4" size={1}>
+                {t('order.packaging')}
+              </Heading>
+              <Stack gap={2}>
+                {fulfillment.packagingLines.map((line) => (
+                  <Flex key={line._key} justify="space-between" gap={3}>
+                    <Text>
+                      {`${line.quantity}× ${t('order.pack', `${line.packSize}-pack`, { packSize: line.packSize })} · ${formatVolumes(line.volumes ?? (line.volume ? [line.volume] : []))}`}
+                    </Text>
+                    {fulfillment.shippingCost > 0 && (
+                      <Text weight="medium">{money(line.price * line.quantity)}</Text>
+                    )}
+                  </Flex>
+                ))}
+              </Stack>
+            </Stack>
+          </Card>
+        )}
+
+        {/* ── Items ───────────────────────────────────────────────────── */}
+        <Stack gap={2}>
+          <Heading as="h3" size={1}>
+            {t('order.items')}
+          </Heading>
+          <Stack gap={2}>
+            {(order.orderItems ?? []).map((item) => (
+              <OrderItemRow key={item._key} item={item} money={money} t={t} />
+            ))}
+          </Stack>
+        </Stack>
+
+        {/* ── Status history ──────────────────────────────────────────── */}
+        {order.statusHistory && order.statusHistory.length > 0 && (
+          <Stack gap={2}>
+            <Heading as="h3" size={1}>
+              {t('order.statusHistory.name')}
+            </Heading>
+            <Stack gap={2}>
+              {[...order.statusHistory]
+                .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+                .map((entry) => (
+                  <Card key={entry._key} padding={3} radius={2} shadow={1} tone="transparent">
+                    <Stack gap={2}>
+                      <Flex justify="space-between" gap={2} wrap="wrap">
+                        <Text weight="medium">
+                          {`${tHistoryType(entry.type)} - ${historyStatusLabel(entry)}`}
+                        </Text>
+                        <Text muted>
+                          {format.date(entry.timestamp, {
+                            dateStyle: 'medium',
+                            timeStyle: 'short',
+                          })}
+                        </Text>
+                      </Flex>
+                      {entry.source && (
+                        <Text muted>
+                          {t(`order.statusHistory.source.${entry.source}`, entry.source)}
+                        </Text>
+                      )}
+                      {entry.customerMessage && (
+                        <Text
+                          muted
+                        >{`${t('order.statusHistory.customerMessage')}: ${entry.customerMessage}`}</Text>
+                      )}
+                      {entry.note && (
+                        <Text muted>{`${t('order.statusHistory.note')}: ${entry.note}`}</Text>
+                      )}
+                    </Stack>
+                  </Card>
+                ))}
+            </Stack>
+          </Stack>
+        )}
+
+        {/* <Text muted size={0} style={{ fontFamily: 'monospace' }}>
+          paymentIntent: {order.paymentIntentId}
+        </Text> */}
+      </Stack>
+    </Box>
+  )
+}
+
+// ── Subcomponents ──────────────────────────────────────────────────────────
+
+function TotalRow({
+  label,
+  value,
+  bold,
+  muted,
+}: {
+  label: string
+  value: string
+  bold?: boolean
+  muted?: boolean
+}) {
+  return (
+    <Flex justify="space-between" gap={3}>
+      <Text muted={muted} weight={bold ? 'semibold' : undefined}>
+        {label}
+      </Text>
+      <Text muted={muted} weight={bold ? 'semibold' : 'medium'}>
+        {value}
+      </Text>
+    </Flex>
+  )
+}
+
+function AddressCard({
+  title,
+  lines,
+  tone = 'transparent',
+}: {
+  title: string
+  lines: string[]
+  tone?: 'transparent' | 'caution'
+}) {
+  return (
+    <Card padding={3} radius={2} shadow={1} tone={tone}>
+      <Stack gap={3}>
+        <Heading as="h4" size={1}>
+          {title}
+        </Heading>
+        <Stack gap={2}>
+          {lines.map((line, i) => (
+            // Index keys: two equal lines (e.g. in the pickup instructions) must not clash.
+            <Text key={i}>{line}</Text>
+          ))}
+        </Stack>
+      </Stack>
+    </Card>
+  )
+}
+
+function OrderItemRow({
+  item,
+  money,
+  t,
+}: {
+  item: OrderItem
+  money: (cents: number | undefined) => string
+  t: TranslatorFunction
+}) {
+  const lineTotal = item.price * item.quantity
+  const lineDiscount = item.discount ?? 0
+  // A bundle with a contents snapshot lists its items (with their rates) instead of the
+  // subtitle ("2× A, 1× B"), and shows its parts' rates instead of the display rate.
+  const contents = item.bundle?.items ?? []
+  const rates = contents.length
+    ? [...new Set(contents.map((bi) => bi.vatRate))].sort((a, b) => a - b).join(' / ')
+    : String(item.vatRate)
+  const vatLabel = t('order.vatRate', `${rates}% Vat`, { vatRate: rates })
+
+  return (
+    <Card padding={3} radius={2} shadow={1} tone="transparent">
+      <Flex gap={3} align="flex-start" justify="space-between">
+        <Stack gap={2} flex={1}>
+          <Flex gap={2} align="center" wrap="wrap">
+            <Text weight="semibold">
+              {item.quantity}× {item.title}
+            </Text>
+          </Flex>
+          {item.subtitle && contents.length === 0 && <Text muted>{item.subtitle}</Text>}
+          {contents.length > 0 && (
+            <Stack as="ul" gap={2} style={{ margin: 0, paddingLeft: '1.25em' }}>
+              {contents.map((bi) => (
+                <Text as="li" key={bi._key} muted size={1}>
+                  {`${bi.quantity} × ${bi.title}${bi.subtitle ? ` – ${bi.subtitle}` : ''} · ${t('order.vatRate', `${bi.vatRate}% Vat`, { vatRate: bi.vatRate })}`}
+                </Text>
+              ))}
+            </Stack>
+          )}
+          <Flex gap={3} wrap="wrap">
+            {item.sku && (
+              <Text muted style={{ fontFamily: 'monospace' }}>
+                SKU {item.sku}
+              </Text>
+            )}
+            {/* {typeof item.weight === 'number' && (
+              <Text size={0} muted>
+                {item.weight} g
+              </Text>
+            )} */}
+            <Text muted>{`${vatLabel} (${money(item.vatAmount)})`}</Text>
+          </Flex>
+        </Stack>
+        <Stack gap={2} style={{ textAlign: 'right' }}>
+          <Text weight="semibold">{money(lineTotal)}</Text>
+          <Text muted>
+            {money(item.price)} × {item.quantity}
+          </Text>
+          {lineDiscount > 0 && (
+            <Text muted>
+              {t('order.discounts.afterDiscount', 'after discount {{amount}}', {
+                amount: money(lineTotal - lineDiscount),
+              })}
+            </Text>
+          )}
+        </Stack>
+      </Flex>
+    </Card>
+  )
+}

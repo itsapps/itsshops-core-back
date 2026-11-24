@@ -1,0 +1,2216 @@
+/* eslint-disable @typescript-eslint/naming-convention, camelcase */
+export default {
+  constants: {
+    bottleVolume: {
+      '100': 'Tenth Litre',
+      '187': 'Quarter Litre-Split',
+      '200': 'Piccolo',
+      '250': 'Quarter Litre',
+      '375': 'Half Bottle',
+      '500': 'Half Litre',
+      '750': 'Standard Bottle',
+      '1000': 'Litre',
+      '1500': 'Magnum',
+      '2000': 'Double Litre',
+      '2250': 'Marie-Jeanne',
+      '3000': 'Double Magnum',
+      '4500': 'Rehoboam',
+      '5000': 'Jeroboam',
+      '6000': 'Imperial / Methuselah',
+      '9000': 'Salmanazar',
+      '12000': 'Balthazar',
+      '15000': 'Nebuchadnezzar',
+    },
+  },
+  global: {
+    linkTypes: {
+      internal: 'Internal Link',
+      external: 'External Link',
+      submenu: 'Submenu',
+      system: 'System page',
+    },
+  },
+  groups: {
+    product: 'Product',
+    description: 'Description',
+    stock: 'Stock',
+    pricing: 'Pricing',
+    media: 'Media',
+    seo: 'SEO',
+    filters: 'Product Filters',
+    variants: 'Variants',
+    wine: 'Wine',
+    variant: 'Variant',
+    bundle: 'Bundles',
+    general: 'General',
+    address: 'Address',
+    vinofact: 'Vinofact',
+    content: 'Content',
+    images: 'Images',
+    settings: 'Settings',
+    vat: 'VAT',
+    order: 'Order',
+    orderPayment: 'Payment',
+    orderItems: 'Items',
+    orderCustomer: 'Customer',
+    orderTotals: 'Totals',
+    orderVouchers: 'Vouchers',
+    orderDiscounts: 'Discounts',
+    orderFreeProducts: 'Gifts',
+    infos: 'Information',
+  },
+  fieldsets: {},
+  fields: {
+    specifications: {
+      title: 'Product details',
+      description:
+        'Properties such as material or cut, listed on the product page (e.g. “Material: 100% cotton”).',
+    },
+    kind: {
+      title: 'Product Kind',
+      options: {
+        wine: 'Wine',
+        physical: 'Physical',
+        digital: 'Digital',
+        bundle: 'Bundle',
+      },
+    },
+    disabled: {
+      title: 'Inactive',
+    },
+    theme: {
+      title: 'Background',
+      description: "The module's colour band.",
+      options: {
+        light: 'Light (page background)',
+        dark: 'Dark',
+        accent: 'Accent',
+      },
+    },
+    internalLinkTitle: {
+      title: 'Title',
+    },
+    internalLinkReference: {
+      title: 'Reference',
+    },
+    externalLinkTitle: {
+      title: 'Title',
+    },
+    externalLinkUrl: {
+      title: 'Link',
+      description:
+        'For emails use "mailto:hello@example.com", for phone numbers use "tel:+4365012345678"',
+    },
+    externalLinkBlank: {
+      title: 'Open in new window',
+    },
+    url: {
+      title: 'URL',
+    },
+    internalLinkSystemPage: {
+      title: 'System page',
+      description: 'Alternative to the reference: a fixed shop page, e.g. the withdrawal form.',
+      options: {
+        orderWithdraw: 'Withdrawal',
+      },
+    },
+    internalLinkDisplayType: {
+      title: 'Display type',
+      options: {
+        link: 'Link',
+        button: 'Button',
+        ghost: 'Ghost',
+      },
+    },
+    locale: {
+      title: 'Language',
+    },
+    contactEmail: {
+      title: 'Contact email',
+    },
+    email: {
+      title: 'Email',
+    },
+    supabaseId: {
+      title: 'External user ID (Supabase)',
+    },
+    prename: {
+      title: 'First name',
+    },
+    lastname: {
+      title: 'Last name',
+    },
+    phone: {
+      title: 'Phone',
+    },
+    line1: {
+      title: 'Address line 1',
+    },
+    line2: {
+      title: 'Address line 2',
+    },
+    city: {
+      title: 'City',
+    },
+    zip: {
+      title: 'Postal code',
+    },
+    country: {
+      title: 'Country',
+    },
+    state: {
+      title: 'State',
+    },
+    countries: {
+      title: 'Countries',
+    },
+    address: {
+      title: 'Address',
+    },
+    enabled: {
+      title: 'Enabled',
+    },
+    countryCode: {
+      title: 'Country',
+    },
+    freeShippingThreshold: {
+      title: 'Free shipping',
+      description: 'Orders with a value above this gross amount qualify for free shipping.',
+    },
+    freeShippingCalculation: {
+      title: 'Free shipping calculation',
+      description: 'Should free shipping be calculated before or after the discount?',
+    },
+    title: {
+      title: 'Title',
+    },
+    description: {
+      title: 'Description',
+    },
+    image: {
+      title: 'Image',
+    },
+    alt: {
+      title: 'Alternative text',
+    },
+    slug: {
+      title: 'URL name',
+      description: 'Lowercase, no spaces. Use "/" for nested paths, e.g. infos/company',
+      validation: 'Allowed characters: "a-z" "A-Z" "0-9" "-" "_"',
+    },
+    modules: {
+      title: 'Content',
+    },
+    sku: {
+      title: 'SKU',
+    },
+    weight: {
+      title: 'Weight (g)',
+    },
+    taxCategory: {
+      title: 'Tax category',
+    },
+    manufacturers: {
+      title: 'Manufacturers',
+    },
+    categories: {
+      title: 'Categories',
+    },
+    tags: {
+      title: 'Tags',
+    },
+    seo: {
+      title: 'SEO',
+    },
+    stock: {
+      title: 'Stock',
+    },
+    stockThreshold: {
+      title: 'Lower stock notification threshold',
+      description:
+        'Receive a notification when the stock level of the product drops below this threshold.',
+    },
+    compareAtPrice: {
+      title: 'Compare-at price',
+    },
+    price: {
+      title: 'Price',
+    },
+    images: {
+      title: 'Images',
+    },
+    vinofactWineId: {
+      title: 'Wine',
+      description: 'Links this product to a Vinofact wine',
+    },
+    content: {
+      title: 'Content',
+    },
+    paymentIntentId: {
+      title: 'Stripe Payment Intent ID',
+    },
+    totals: {
+      title: 'Totals',
+    },
+    customer: {
+      title: 'Customer',
+    },
+    orderItems: {
+      title: 'Items',
+    },
+    billingAddress: {
+      title: 'Billing address',
+    },
+    shippingAddress: {
+      title: 'Shipping address',
+    },
+    vouchers: {
+      title: 'Vouchers',
+    },
+    appliedDiscounts: {
+      title: 'Applied discounts',
+    },
+    appliedCoupons: {
+      title: 'Redeemed coupons (old format)',
+    },
+    freeProducts: {
+      title: 'Gifts',
+    },
+  },
+  block: {
+    styles: {
+      normal: 'Normal',
+      h1: 'Heading 1',
+      h2: 'Heading 2',
+      h3: 'Heading 3',
+      h4: 'Heading 4',
+      h5: 'Heading 5',
+      h6: 'Heading 6',
+    },
+    marks: {
+      decorators: {
+        strong: 'Bold',
+        em: 'Italic',
+        underline: 'Underline',
+        'strike-through': 'Strikethrough',
+        code: 'Code',
+        internalLink: 'Internal link',
+        externalLink: 'External link',
+        highlight: 'Highlight',
+      },
+      annotations: {
+        underline: 'Underline',
+        strikethrough: 'Strikethrough',
+        code: 'Code',
+        link: 'Link',
+        highlight: 'Highlight',
+        internalLink: 'Internal link',
+        externalLink: 'External link',
+      },
+    },
+  },
+  orderings: {
+    asc: 'Ascending',
+    desc: 'Descending',
+  },
+  validation: {
+    assetRequired: 'Image is required',
+    maxLength: 'Value must not contain more than {{max}} characters',
+    minLength: 'Value must contain at least {{min}} characters',
+    oneFieldMustExist: 'At least one is required',
+    requiredField: 'Required',
+    recommendedField: 'Recommended',
+    companyDetailsRecommended: 'Recommended – used on invoices and in the legal details of emails',
+    countryCodeNoDuplicates: 'A configuration for {{countryCode}} already exists.',
+    duplicateVolume: 'Each volume may only appear once.',
+    duplicatePlaces: 'Each box size may only appear once.',
+    volumeInOneGroup: 'Each bottle size may only be in one box type.',
+    pickupCountryNotTaxCountry: 'The country must be an enabled tax country.',
+    slugFormat:
+      'Use lowercase letters, numbers and "-" only ("/" for nested paths). Spaces and capitals are removed automatically in the URL.',
+  },
+
+  productFieldsets: {
+    states: 'States',
+  },
+  product: {
+    title: 'Product',
+    fields: {
+      description: {
+        title: 'Description',
+        description:
+          'Shown on the product page. Blank lines separate paragraphs. For wines it replaces the Vinofact description.',
+      },
+      variants: {
+        title: 'Product variants',
+        description: 'All variants generated from product options',
+      },
+      weight: {
+        title: 'Weight',
+        description: 'Weight in grams. Used when a variant has no weight set.',
+      },
+    },
+    preview: {
+      variants_one: '{{count}} variant',
+      variants_other: '{{count}} variants',
+    },
+    validation: {
+      variantsWithoutPrice_one: '{{count}} active variant has no price of its own.',
+      variantsWithoutPrice_other: '{{count}} active variants have no price of their own.',
+    },
+  },
+  productVariant: {
+    title: 'Product variant',
+    fields: {
+      description: {
+        title: 'Description',
+        description:
+          "Replaces the product's description for this variant. Leave empty to use the product's.",
+      },
+      specifications: {
+        title: 'Product details',
+        description:
+          "Replaces the product's details for this variant. Leave empty to use the product's.",
+      },
+      coverImage: {
+        title: 'Cover image',
+        description:
+          'Choose the cover image for this variant. Has no effect if the variant uses its own images.',
+      },
+      options: {
+        title: 'Options',
+      },
+      product: {
+        title: 'Product',
+      },
+      bundleItems: {
+        title: 'Bundle products',
+      },
+      volume: {
+        title: 'Volume',
+      },
+      vintage: {
+        title: 'Vintage',
+      },
+      wine: {
+        title: 'Wine',
+      },
+      weight: {
+        title: 'Weight',
+        description: 'Weight in grams. If set, used instead of the product weight.',
+      },
+      status: {
+        title: 'Status',
+        options: {
+          active: '🟢 Active',
+          comingSoon: '🟡 Coming soon/Teaser',
+          soldOut: '🔴 Sold out (Visible)',
+          archived: '⚪ Archived',
+        },
+      },
+    },
+    preview: {
+      variants: 'Variants',
+      bundleItems_zero: 'No products',
+      bundleItems_one: '{{count}} product',
+      bundleItems_other: '{{count}} products',
+    },
+    validation: {
+      priceRequired: "An active variant needs a price — its own or the product's.",
+      usedInActiveBundles_one:
+        'Part of an active bundle: {{names}}. It shows as sold out in the shop until it is changed.',
+      usedInActiveBundles_other:
+        'Part of {{count}} active bundles: {{names}}. They show as sold out in the shop until they are changed.',
+      duplicateItem: 'Listed more than once: {{names}} — raise its quantity instead.',
+      inactiveItem:
+        "This bundle is active, but these items aren't: {{names}}. Set the bundle to sold out or swap the items.",
+      unpricedItem: "These items have no price (needed to split the bundle's VAT): {{names}}",
+    },
+  },
+  wine: {
+    title: 'Wine',
+    fields: {
+      vinofactWineId: {
+        title: 'Vinofact wine',
+        description: 'Links this product to a Vinofact wine',
+      },
+      volume: {
+        title: 'Volume',
+      },
+      vintage: {
+        title: 'Vintage',
+      },
+    },
+  },
+  productSpecification: {
+    title: 'Product detail',
+    fields: {
+      label: {
+        title: 'Label',
+      },
+      value: {
+        title: 'Value',
+      },
+    },
+  },
+  bundleItem: {
+    title: 'Product',
+    fields: {
+      quantity: {
+        title: 'Quantity',
+      },
+      product: {
+        title: 'Product',
+      },
+    },
+    preview: {
+      quantity_zero: 'No products',
+      quantity_one: '{{count}} product',
+      items_other: '{{count}} products',
+    },
+  },
+  category: {
+    title: 'Category',
+    fields: {
+      sortOrder: {
+        title: 'Sort order',
+        description: 'The lower the number, the earlier the category appears.',
+      },
+      parent: {
+        title: 'Parent category',
+      },
+      filters: { title: 'Filters' },
+    },
+  },
+  manufacturer: {
+    title: 'Manufacturer',
+    fields: {
+      name: {
+        title: 'Name',
+      },
+      link: {
+        title: 'Link',
+      },
+    },
+  },
+  textBlock: {
+    title: 'Text block',
+    fields: {
+      content: {
+        title: 'Content',
+      },
+      content2: {
+        title: 'Content 2',
+        block: {
+          styles: {},
+        },
+      },
+    },
+  },
+  shippingMethod: {
+    title: 'Shipping method',
+    fields: {
+      deliveryTime: {
+        title: 'Delivery time',
+        description:
+          'Optional, e.g. "2–4 working days". Shown in the order confirmation. For pickup: how long until the order is ready to collect.',
+      },
+      rates: {
+        title: 'Rate table (weight)',
+      },
+      methodType: {
+        title: 'Type',
+        options: {
+          delivery: 'Delivery',
+          pickup: 'Pickup',
+        },
+      },
+      packagingGroups: {
+        title: 'Wine packaging',
+        description:
+          'Box types: which bottle sizes go in them and what the boxes cost. The cheapest combination is calculated at checkout. Bottle sizes without a group go into the group of the next larger bottle (1 per place).',
+      },
+      pickupFee: {
+        title: 'Pickup fee',
+        description: 'Set to 0 to make pickup free of charge.',
+      },
+      pickupAddress: {
+        title: 'Pickup address',
+        description: 'Where the order is collected. Its country sets the VAT of pickup orders.',
+      },
+      pickupInstructions: {
+        title: 'Pickup instructions',
+        description:
+          'E.g. opening hours, "Please bring ID – age check at handover". Shown in the checkout and in the mails.',
+      },
+      pickupHoldDays: {
+        title: 'Hold period (days)',
+        description: 'How long an order ready for pickup is held. Empty = no period.',
+      },
+      pickupAnnounceReady: {
+        title: 'Announce the "ready for pickup" mail',
+        description:
+          'When the order is prepared first: the confirmation and the thank-you page say "we\'ll let you know as soon as it is ready for pickup". Off = the goods can be collected right away.',
+      },
+      eligibleCountries: {
+        title: 'Countries',
+      },
+    },
+    preview: {
+      pickup: 'Pickup',
+      countries_zero: 'No countries selected',
+      countries_one: '{{count}} country',
+      countries_other: '{{count}} countries',
+    },
+  },
+  packagingGroup: {
+    title: 'Box type',
+    fields: {
+      bottles: {
+        title: 'Bottles',
+        description: 'Bottle sizes that go into these boxes.',
+      },
+      packages: {
+        title: 'Boxes',
+        description: 'Box sizes by places, with price.',
+      },
+    },
+  },
+  packagingGroupPackage: {
+    title: 'Box',
+    fields: {
+      places: {
+        title: 'Places',
+        description: 'How many bottles fit (bottles with "Bottles per place" > 1 share a place).',
+      },
+      price: { title: 'Price', description: 'Gross price' },
+    },
+    preview: {
+      places_one: 'Box for {{count}} bottle',
+      places_other: 'Box for {{count}} bottles',
+    },
+  },
+  packagingGroupBottle: {
+    title: 'Bottle size',
+    fields: {
+      volume: { title: 'Bottle size' },
+      perPlace: {
+        title: 'Bottles per place',
+        description:
+          'How many bottles of this size take one place, e.g. 2 for 0.375 l in 0.75 l boxes.',
+      },
+    },
+    preview: {
+      perPlace_one: '1 bottle per place',
+      perPlace_other: '{{count}} bottles per place',
+    },
+  },
+  shippingRate: {
+    title: 'Cost',
+    fields: {
+      price: {
+        description: 'Gross price',
+      },
+      maxWeight: {
+        title: 'Maximum weight',
+        description: 'Up to weight (kg)',
+      },
+    },
+  },
+  taxCountry: {
+    title: 'Country',
+    fields: {
+      rules: {
+        title: 'Tax rates',
+      },
+      freeShippingCalculation: {
+        options: {
+          beforeDiscount: 'Before discount',
+          afterDiscount: 'After discount',
+        },
+      },
+    },
+    preview: {
+      rules_zero: 'No tax rates selected',
+      rules_one: '{{count}} tax rate',
+      rules_other: '{{count}} tax rates',
+    },
+  },
+  shopSettings: {
+    title: 'General shop settings',
+    fields: {
+      filters: { title: 'Global filters' },
+      defaultCountry: {
+        title: 'Default country',
+        description: 'Which country should be used by default at checkout?',
+      },
+      defaultTaxCategory: {
+        title: 'Default tax category',
+        description: 'If a product has no tax category, this one is used.',
+      },
+      discountExclusions: {
+        title: 'Never discount',
+        description:
+          'These products get no item or order discount (unless a discount sets "Ignore shop exclusions"). Does not apply to shipping discounts.',
+      },
+      freeShippingCalculation: {
+        options: {
+          beforeDiscount: 'Before discount',
+          afterDiscount: 'After discount',
+        },
+      },
+      stockThreshold: {
+        title: 'Global lower stock notification threshold',
+        description: "Receive a notification when a product's stock drops below this threshold.",
+      },
+      billingAddress: {
+        title: 'Billing address',
+        description: 'If different from the company address',
+      },
+      bankAccount: {
+        title: 'Bank details',
+        description: 'Used on invoices',
+      },
+      orderNumberPrefix: {
+        title: 'Order number prefix',
+        description: 'Used as a prefix for the order number, e.g. "ORD-00000001"',
+      },
+      invoiceNumberPrefix: {
+        title: 'Invoice number prefix',
+        description: 'Used as a prefix for the invoice number, e.g. "INV-00000001"',
+      },
+      lastInvoiceNumber: {
+        title: 'Last invoice number',
+        description:
+          'Caution! This value is incremented automatically and should not be changed manually.',
+      },
+      shopPage: {
+        title: 'Shop page',
+        description: 'This page is used as the main page of the shop.',
+      },
+      termsPage: {
+        title: 'Terms of service',
+        description: 'This page contains the terms of service.',
+      },
+      withdrawalPolicyPage: {
+        title: 'Withdrawal policy',
+        description:
+          'Page with the "Withdrawal policy" module – instructions and model form are generated from the settings.',
+      },
+      shippingInfoPage: {
+        title: 'Shipping & payment',
+        description:
+          'Page with the "Shipping & payment" module. Linked at the start of the checkout and above the order button.',
+      },
+      returnAddress: {
+        title: 'Return address',
+        description:
+          'Where customers send withdrawn goods. Falls back to the billing address when empty.',
+      },
+      returnShippingBorneBy: {
+        title: 'Return postage paid by',
+        description:
+          'Who bears the cost of returning the goods. "Customer" is only enforceable if disclosed in the withdrawal policy.',
+        options: {
+          customer: 'Customer',
+          merchant: 'Merchant',
+        },
+      },
+      returnPolicyNote: {
+        title: 'Return note',
+        description:
+          'Optional extra note (e.g. "Please return in packaging suitable for shipping") – shown next to the withdrawal instructions (page and order confirmation) and in the withdrawal confirmation.',
+      },
+      withdrawalPeriodStart: {
+        title: 'Start of the withdrawal period',
+        description: 'Selects the statutory wording in the withdrawal instructions.',
+        options: {
+          goods: 'Receipt of the goods (always one delivery)',
+          multipleGoods: 'Receipt of the last item (an order may arrive in several parcels)',
+          partialDeliveries: 'Receipt of the last lot (one item delivered in several lots)',
+          subscription: 'Receipt of the first item (regular delivery, subscription)',
+        },
+      },
+      withdrawalExceptions: {
+        title: 'Exceptions from the right of withdrawal',
+        description:
+          'Only tick what really applies to goods in this shop – every selection is listed on the withdrawal page and in every order confirmation as "no right of withdrawal" (§ 18 FAGG). For normal wine sales usually none applies. If in doubt, check with the WKO or legal advice.',
+        options: {
+          customMade: 'Personalised / made to order – e.g. engraved bottles, custom labels',
+          perishable: 'Liable to deteriorate rapidly – e.g. fresh food (not wine)',
+          sealedHygiene:
+            'Sealed, not returnable for hygiene reasons – only once unsealed, e.g. cosmetics',
+          mixed: 'Inseparably mixed with other items after delivery – rarely relevant',
+          alcoholMarketPrice:
+            'En primeur / subscription – wine at a price fixed today, delivered 30+ days later, price depends on the market',
+          sealedMedia: 'Sealed audio/video recordings or software – only once unsealed',
+          newspapers: 'Newspapers, periodicals – except subscriptions',
+        },
+      },
+    },
+    groups: {
+      displays: 'Displays',
+      shipping: 'Shipping',
+      discounts: 'Discounts',
+      returns: 'Returns',
+      stock: 'Stock',
+      tax: 'Tax',
+      orders: 'Orders',
+      billing: 'Billing',
+    },
+    preview: {},
+  },
+  bankAccount: {
+    title: 'Bank',
+    fields: {
+      name: {
+        title: 'Bank name',
+      },
+      iban: {
+        title: 'IBAN',
+      },
+      bic: {
+        title: 'BIC',
+      },
+    },
+  },
+  generatedZip: {
+    title: 'ZIP archive',
+    noZip: 'No zip generated yet',
+    fields: {
+      file: { title: 'File' },
+      generatedAt: { title: 'Generated at' },
+    },
+  },
+  company: {
+    title: 'Organization',
+    fields: {
+      name: {
+        title: 'Company name',
+      },
+      owner: {
+        title: 'Company owner',
+      },
+      address: {
+        title: 'Address',
+      },
+      email: {
+        title: 'Email',
+      },
+      phone: {
+        title: 'Phone',
+      },
+      vatId: {
+        title: 'VAT ID',
+      },
+      registerNumber: {
+        title: 'Company register number',
+        description: 'Only if registered in the company register. Shown in emails.',
+      },
+      registerCourt: {
+        title: 'Register court',
+        description: 'Only if registered in the company register.',
+      },
+    },
+  },
+  taxRule: {
+    title: 'Rule',
+    fields: {
+      rate: {
+        title: 'Tax rate in %',
+      },
+    },
+    preview: {
+      rate: ' Tax rate',
+    },
+  },
+  taxCategory: {
+    title: 'Tax category',
+    fields: {
+      title: {
+        description: 'Name of the category (e.g. "Standard, Alcohol, ...")',
+      },
+      code: {
+        title: 'Code',
+        description: 'The code is used to identify the tax category.',
+      },
+    },
+    preview: {},
+  },
+  address: {
+    title: 'Address',
+    fields: {},
+  },
+  addressStrict: {
+    title: 'Address',
+    fields: {
+      name: {
+        title: 'Full name',
+      },
+    },
+  },
+  businessAddress: {
+    title: 'Address',
+    fields: {},
+  },
+  orderTotals: {
+    title: 'Totals',
+    fieldsets: {
+      vat: 'VAT',
+    },
+    fields: {
+      grandTotal: {
+        title: 'Grand total (gross)',
+        description: 'The final amount the customer paid',
+      },
+      subtotal: {
+        title: 'Subtotal',
+        description: 'Sum of all order items (gross)',
+      },
+      shipping: {
+        title: 'Shipping cost',
+      },
+      discount: {
+        title: 'Discount',
+      },
+      totalVat: {
+        title: 'Total VAT',
+        description: 'Sum of all VAT from items and shipping',
+      },
+      vatBreakdown: {
+        title: 'VAT breakdown',
+        description: 'VAT grouped by rate (e.g. 10% vs 20%)',
+      },
+      currency: {
+        title: 'Currency',
+      },
+    },
+  },
+  orderWithdrawal: {
+    title: 'Withdrawal',
+    fields: {
+      orderRef: {
+        title: 'Order',
+        description:
+          'Unmatched: assign it with "Assign order" or, if it belongs to no order, delete it – data protection: keep it 30 days at most.',
+      },
+      declaredAt: { title: 'Declared at' },
+      status: {
+        title: 'Status',
+        description:
+          'Unmatched: assign it with "Assign order" or, if it belongs to no order, delete it – data protection: keep it 30 days at most. "Refunded" is set by "Refund & close" only.',
+        options: {
+          unmatched: 'Unmatched',
+          received: 'Received',
+          processing: 'Processing',
+          refunded: 'Refunded',
+          rejected: 'Rejected',
+        },
+      },
+      assignedAt: { title: 'Assigned at' },
+      name: { title: 'Name (submitted)' },
+      email: { title: 'Email (submitted)' },
+      orderNumber: { title: 'Order number (submitted)' },
+      locale: { title: 'Language' },
+      reason: { title: 'Reason / affected items' },
+      note: { title: 'Internal note' },
+    },
+    preview: {
+      title: 'Withdrawal #{{orderNumber}}',
+    },
+  },
+  order: {
+    title: 'Order',
+    groups: {
+      order: 'Order',
+      history: 'Status history',
+      orderPayment: 'Payment',
+      orderItems: 'Items',
+      orderCustomer: 'Customer',
+      orderTotals: 'Totals',
+      fulfillment: 'Fulfillment',
+      orderVouchers: 'Vouchers',
+      orderDiscounts: 'Discounts',
+      orderFreeProducts: 'Gifts',
+    },
+    fields: {
+      orderNumber: {
+        title: 'Order number',
+      },
+      invoiceNumber: {
+        title: 'Invoice number',
+      },
+      status: {
+        title: 'Status',
+        options: {
+          created: 'Created',
+          processing: 'Processing',
+          shipped: 'Shipped',
+          delivered: 'Delivered',
+          canceled: 'Canceled',
+          returned: 'Returned',
+        },
+      },
+      erpAcceptedAt: {
+        title: 'Accepted by ERP',
+        description: 'When the ERP accepted the order (wc-api, mode "accepted").',
+      },
+      orderDate: {
+        title: 'Order date',
+        description:
+          'When the order was placed (payment started); shown in the order confirmation.',
+      },
+      payment: {
+        title: 'Payment method',
+      },
+      paymentStatus: {
+        title: 'Payment status',
+        options: {
+          succeeded: 'Paid',
+          refunded: 'Refunded',
+          partiallyRefunded: 'Partially refunded',
+        },
+      },
+      statusHistory: {
+        title: 'Status history',
+      },
+      refunds: {
+        title: 'Refunds',
+      },
+      paymentIntentId: {
+        title: 'Stripe Payment Intent ID',
+      },
+      orderItems: {
+        title: 'Items',
+      },
+      customer: {
+        title: 'Customer',
+      },
+      totals: {
+        title: 'Totals',
+      },
+      fulfillment: {
+        title: 'Fulfillment',
+      },
+    },
+  },
+  orderPaymentMethod: {
+    title: 'Payment method',
+    fields: {
+      type: { title: 'Type' },
+      brand: { title: 'Card brand' },
+      last4: { title: 'Last 4 digits' },
+      wallet: { title: 'Wallet' },
+    },
+  },
+  orderRefund: {
+    title: 'Refund',
+    fields: {
+      refundId: {
+        title: 'Stripe refund ID',
+      },
+      amount: {
+        title: 'Amount (cents)',
+      },
+      createdAt: {
+        title: 'Created at',
+      },
+      status: {
+        title: 'Status',
+      },
+      failureReason: {
+        title: 'Failure reason',
+      },
+      source: {
+        title: 'Source',
+      },
+      reason: {
+        title: 'Reason',
+      },
+    },
+  },
+  orderStatusHistory: {
+    title: 'Status history',
+    fields: {
+      type: {
+        title: 'Type',
+        options: {
+          payment: 'Payment',
+          fulfillment: 'Fulfillment',
+          mail: 'Email',
+          erp: 'ERP',
+          system: 'System',
+        },
+      },
+      status: {
+        title: 'Status',
+      },
+      timestamp: {
+        title: 'Date',
+      },
+      source: {
+        title: 'Source',
+      },
+      note: {
+        title: 'Internal note',
+        description: 'Never sent to the customer.',
+      },
+      customerMessage: {
+        title: 'Message to customer',
+        description: 'Sent with the status email.',
+      },
+    },
+  },
+  orderCustomer: {
+    title: 'Customer',
+    groups: {
+      general: 'General',
+      billing: 'Billing address',
+      shipping: 'Shipping address',
+    },
+    fields: {
+      locale: {
+        title: 'Language',
+      },
+      contactEmail: {
+        title: 'Contact email',
+      },
+      supabaseId: {
+        title: 'Supabase user ID',
+      },
+      billingAddress: {
+        title: 'Billing address',
+      },
+      shippingAddress: {
+        title: 'Shipping address',
+      },
+    },
+  },
+  orderItem: {
+    title: 'Order item',
+    fields: {
+      kind: {
+        title: 'Kind',
+      },
+      variantId: {
+        title: 'Variant ID',
+      },
+      productId: {
+        title: 'Product ID',
+      },
+      parentId: {
+        title: 'Parent item key',
+        description: "Set on bundle child items — points to the parent bundle's orderItem._key",
+      },
+      title: {
+        title: 'Product title',
+        description: 'Snapshotted product title at the time of order',
+      },
+      variantTitle: {
+        title: 'Variant title',
+        description: 'Snapshotted variant title at the time of order',
+      },
+      displayTitle: {
+        title: 'Display title',
+        description:
+          'Frozen display string the customer saw at order time — canonical for invoices, emails, customer order history, WC API. Never recompose.',
+      },
+      displaySubtitle: {
+        title: 'Display subtitle',
+        description: 'Frozen subtitle the customer saw at order time (optional).',
+      },
+      weight: {
+        title: 'Weight',
+        description: 'Weight in grams at the time of order',
+      },
+      sku: {
+        title: 'SKU',
+      },
+      quantity: {
+        title: 'Quantity',
+      },
+      price: {
+        title: 'Unit price',
+        description: 'Unit price in cents',
+      },
+      vatRate: {
+        title: 'VAT rate',
+        description: 'VAT rate as a percentage, e.g. 20 for 20%',
+      },
+      vatAmount: {
+        title: 'VAT amount',
+        description: 'Total VAT for this line in cents (quantity × unit vat)',
+      },
+      discount: {
+        title: 'Discount',
+        description: 'Gross discount on the whole line (all units), in cents',
+      },
+      packed: {
+        title: 'Packed',
+      },
+      wine: {
+        title: 'Wine details',
+      },
+      options: {
+        title: 'Options',
+        description: 'Snapshotted option group/value pairs',
+      },
+      bundle: {
+        title: 'Bundle',
+      },
+    },
+  },
+  orderItemWine: {
+    title: 'Wine',
+    fields: {
+      vintage: {
+        title: 'Vintage',
+      },
+      volume: {
+        title: 'Volume',
+        description: 'Volume in ml',
+      },
+    },
+  },
+  orderItemBundle: {
+    title: 'Bundle',
+    fields: {
+      itemCount: {
+        title: 'Item count',
+        description: 'Total quantity of all child items combined',
+      },
+      items: {
+        title: 'Contents',
+        description:
+          "The bundle's items with their price share and VAT rate (at the time of the order)",
+      },
+    },
+  },
+  orderItemBundleItem: {
+    title: 'Bundle item',
+    fields: {
+      variantId: { title: 'Variant ID' },
+      productId: { title: 'Product ID' },
+      title: { title: 'Title' },
+      subtitle: { title: 'Subtitle' },
+      sku: { title: 'SKU' },
+      quantity: { title: 'Quantity', description: 'Quantity per bundle' },
+      price: {
+        title: 'Price share',
+        description:
+          'Gross share of one bundle for all units together, in cents (split by single prices)',
+      },
+      vatRate: { title: 'VAT rate' },
+      vatAmount: {
+        title: 'VAT amount',
+        description: 'VAT in the price share × bundle quantity, in cents',
+      },
+      discount: {
+        title: 'Discount',
+        description: "Share of the line's discount (whole bundle quantity), in cents",
+      },
+    },
+  },
+  orderItemOption: {
+    title: 'Option',
+    fields: {
+      groupTitle: {
+        title: 'Group',
+      },
+      optionTitle: {
+        title: 'Option',
+      },
+    },
+  },
+  fulfillment: {
+    title: 'Fulfillment',
+    fields: {
+      methodTitle: {
+        title: 'Shipping method',
+        description: 'Snapshotted title (e.g. "DHL Express" or "Self-pickup")',
+      },
+      deliveryTime: {
+        title: 'Delivery time',
+        description: "Snapshot of the method's delivery time at order time",
+      },
+      methodType: {
+        title: 'Type',
+        options: {
+          delivery: 'Delivery',
+          pickup: 'Pickup',
+        },
+      },
+      shippingCost: {
+        title: 'Shipping cost',
+        description: 'The fee charged to the customer',
+      },
+      freeShippingReason: {
+        title: 'Reason for free shipping',
+        options: {
+          threshold: 'Order value',
+          discount: 'Discount',
+          product: 'Product (old format)',
+          coupon: 'Coupon (old format)',
+        },
+      },
+      taxSnapshot: {
+        title: 'Shipping tax',
+      },
+      method: {
+        title: 'Shipping method reference',
+        description: 'Link to the original config (may change over time)',
+      },
+      trackingCode: {
+        title: 'Tracking code',
+      },
+      pickupAddress: {
+        title: 'Pickup address',
+      },
+      pickupInstructions: {
+        title: 'Pickup instructions',
+      },
+      pickupHoldDays: {
+        title: 'Hold period (days)',
+      },
+      pickupAnnounceReady: {
+        title: '"Ready for pickup" mail announced',
+      },
+    },
+  },
+  vatBreakdownItem: {
+    title: 'VAT breakdown',
+    fields: {
+      rate: {
+        title: 'Rate %',
+      },
+      net: {
+        title: 'Net amount',
+      },
+      vat: {
+        title: 'VAT amount',
+      },
+    },
+  },
+  tag: {
+    title: 'Tag',
+  },
+  customer: {
+    title: 'Customer',
+    fields: {
+      customerNumber: {
+        title: 'Customer number',
+      },
+      customerGroups: {
+        title: 'Customer groups',
+      },
+      status: {
+        title: 'Registration status',
+        options: {
+          registered: 'Registered',
+          invited: 'Invited',
+          active: 'Active',
+        },
+      },
+      locale: {
+        title: 'Language',
+      },
+    },
+  },
+  newsletterSubscriber: {
+    title: 'Newsletter subscriber',
+    fields: {
+      email: { title: 'Email' },
+      locale: { title: 'Language' },
+      status: {
+        title: 'Status',
+        options: {
+          pending: 'Pending (awaiting confirmation)',
+          confirmed: 'Confirmed',
+          unsubscribed: 'Unsubscribed',
+        },
+      },
+      source: {
+        title: 'Source',
+        options: {
+          standalone: 'Newsletter form',
+          registration: 'Account registration',
+        },
+      },
+      token: { title: 'Token' },
+      supabaseId: { title: 'Supabase ID' },
+      confirmedAt: { title: 'Confirmed at' },
+    },
+  },
+  variantOptionGroup: {
+    title: 'Option group',
+    fields: {
+      displayMode: {
+        title: 'Display',
+        description: 'How the options are shown in the shop.',
+        options: {
+          dropdown: 'Dropdown',
+          list: 'List',
+        },
+      },
+      sortOrder: {
+        title: 'Sort order',
+        description: 'The lower the number, the earlier the option appears.',
+      },
+    },
+  },
+  variantOption: {
+    title: 'Option',
+    fields: {
+      sortOrder: {
+        title: 'Sort order',
+        description: 'The lower the number, the earlier the option appears.',
+      },
+      group: {
+        title: 'Option group',
+      },
+    },
+  },
+  page: {
+    title: 'Page',
+    groups: {
+      page: 'General',
+    },
+  },
+  post: {
+    title: 'Post',
+    groups: {
+      post: 'General',
+    },
+  },
+  blog: {
+    title: 'Blog',
+    groups: {
+      blog: 'General',
+    },
+    fields: {
+      postsPerPage: {
+        title: 'Posts per page',
+      },
+    },
+  },
+  link: {
+    title: 'Link',
+    fields: {
+      href: {
+        title: 'URL',
+        description:
+          'For emails use "mailto:hello@example.com", for phone numbers use "tel:+4365012345678"',
+      },
+      displayType: {
+        title: 'Display type',
+        options: {
+          text: 'Text',
+          button: 'Button',
+        },
+      },
+    },
+  },
+  internalLink: {
+    title: 'Internal link',
+    fields: {
+      reference: {
+        title: 'Reference',
+      },
+      displayType: {
+        title: 'Display type',
+        options: {
+          link: 'Link',
+          button: 'Button',
+        },
+      },
+    },
+  },
+  action: {
+    title: 'Action',
+    fields: {
+      title: {
+        title: 'Text',
+      },
+      internalLink: {
+        title: 'Link',
+      },
+    },
+  },
+  multiColumns: {
+    title: 'Columns',
+    preview: {
+      columns: 'Column(s)',
+    },
+    fields: {
+      headline: {
+        title: 'Headline',
+      },
+      backgroundImage: {
+        title: 'Background image',
+      },
+      columns: {
+        title: 'Columns',
+      },
+    },
+  },
+  localeComplexPortable: {
+    title: 'Content',
+    preview: {
+      noContent: 'No content',
+      image: 'Image',
+    },
+    fields: {
+      headline: {
+        title: 'Headline',
+      },
+      backgroundImage: {
+        title: 'Background image',
+      },
+      columns: {
+        title: 'Columns',
+      },
+      translations: {
+        title: 'Translations',
+      },
+    },
+  },
+  menu: {
+    title: 'Menu',
+    fields: {
+      items: {
+        title: 'Entries',
+      },
+    },
+  },
+  menuItem: {
+    title: 'Menu entry',
+    fields: {
+      linkType: {
+        title: 'Type',
+        options: {
+          internal: 'Internal link',
+          external: 'External link',
+          submenu: 'Submenu',
+          system: 'System page',
+        },
+      },
+      systemPage: {
+        title: 'System page',
+        description:
+          'A fixed shop page, e.g. the withdrawal form. Without a title, the page name is used. The withdrawal link is always labelled "Withdraw from contract here" (required by law, FAGG §13a) – a custom title is ignored there.',
+        options: {
+          orderWithdraw: 'Withdraw from contract',
+        },
+      },
+      children: {
+        title: 'Entries',
+      },
+    },
+    preview: {
+      noUrl: 'No URL',
+      noReference: 'No reference',
+      submenuItems_zero: 'No entries',
+      submenuItems_one: '{{count}} entry',
+      submenuItems_other: '{{count}} entries',
+    },
+  },
+  navPage: {
+    title: 'Page',
+    fields: {
+      page: {
+        title: 'Page',
+      },
+    },
+  },
+  navLink: {
+    title: 'Link',
+    fields: {
+      url: {
+        title: 'Url',
+      },
+    },
+  },
+  settings: {
+    title: 'General settings',
+    groups: {
+      site: 'Website',
+      displays: 'Displays',
+      notifications: 'Notifications',
+      analytics: 'Analytics',
+      company: 'Company',
+    },
+    fields: {
+      senderName: {
+        title: 'Sender name',
+        description:
+          'Used as the sender for emails to customers (e.g. newsletter, account confirmation, orders).',
+      },
+      senderEmail: {
+        title: 'Sender email',
+        description:
+          'Used as the sender address for emails to customers (e.g. newsletter, account confirmation, orders).',
+      },
+      shopNotificationEmail: {
+        title: 'Shop notifications',
+        description:
+          "Receives the shop's copy of order confirmations and withdrawals; empty = sender email.",
+      },
+      siteTitle: {
+        title: 'Site title',
+        description:
+          'The name of your site, usually your brand or company name. Used in the browser tab, social media previews, and the web app manifest.',
+      },
+      siteShortDescription: {
+        title: 'Short description',
+        description:
+          'Used as the meta description in search results when no page-specific SEO description is set.',
+      },
+      defaultShareImage: {
+        title: 'Default share image',
+        description:
+          'Used in social media previews (og:image) when neither a page-specific SEO image nor a page image is available. Recommended size: 1200×630px.',
+      },
+      homePage: {
+        title: 'Home page',
+        description: 'This page is shown as the home page',
+      },
+      privacyPage: {
+        title: 'Privacy policy',
+        description: 'This page contains the privacy policy',
+      },
+      mainMenus: {
+        title: 'Main menus',
+        description: 'These menus are shown in the main navigation',
+      },
+      footerMenus: {
+        title: 'Footer menus',
+        description: 'These menus are shown in the footer',
+      },
+      gtmId: {
+        title: 'Google Tag Manager (GTM)',
+        description: 'To enable GTM, enter your container ID',
+      },
+      company: {
+        title: 'Company',
+      },
+    },
+  },
+  customerGroup: {
+    title: 'Customer group',
+  },
+  discount: {
+    title: 'Discount',
+    groups: {
+      general: 'General',
+      discountValue: 'Discount',
+      conditions: 'Conditions',
+      combinations: 'Combines with',
+    },
+    fields: {
+      title: {
+        title: 'Title',
+        description: 'Shown in checkout, mails and the order.',
+      },
+      description: {
+        title: 'Internal note',
+        description: 'Internal only, never shown (e.g. what the discount is for, who got it).',
+      },
+      enabled: {
+        title: 'Active',
+        description:
+          'Off = no longer applies, an entered code is rejected. Like every change here, takes effect only after "Publish".',
+      },
+      trigger: {
+        title: 'Trigger',
+        description:
+          'Code: applies only when the customer enters the code at checkout. Automatic: applies without a code to every order that meets the conditions.',
+        options: {
+          code: 'Code (customer enters it)',
+          automatic: 'Automatic',
+        },
+      },
+      code: {
+        title: 'Code',
+        description: 'Code customers enter at checkout. At most one code per order.',
+      },
+      target: {
+        title: 'Applies to',
+        description:
+          'Items: a discount on each matching line. Order: one discount on the sum of the matching lines. Shipping: waives the shipping costs.',
+        options: {
+          items: 'Items',
+          order: 'Order',
+          shipping: 'Shipping',
+        },
+      },
+      valueType: {
+        title: 'Type',
+        description: 'Always "Free" for "Shipping", otherwise percent or a fixed amount.',
+        options: {
+          percent: 'Percent',
+          fixed: 'Fixed amount',
+          free: 'Free (shipping only)',
+        },
+      },
+      value: {
+        title: 'Value',
+        description:
+          'Percent: 1–100. Fixed: amount in euros — per unit for "Items", once for "Order".',
+      },
+      appliesTo: {
+        title: 'Products',
+        description:
+          'Items/order: which lines are discounted. Shipping: the cart must contain a matching line. Empty = all.',
+      },
+      ignoreShopExclusions: {
+        title: 'Ignore shop exclusions',
+        description: 'Also discounts what the shop settings list under "Never discount".',
+      },
+      appliesToPickup: {
+        title: 'Also for pickup',
+        description:
+          'Also waives the pickup fee. Empty = yes for codes, no for automatic discounts.',
+      },
+      minSubtotal: {
+        title: 'Minimum subtotal',
+        description: 'Gross subtotal threshold to apply this discount.',
+      },
+      minSubtotalBasis: {
+        title: 'Minimum subtotal measured on',
+        description:
+          'Whole cart: every line counts. Matching products: only those selected under "Products".',
+        options: {
+          wholeCart: 'the whole cart',
+          matching: 'matching products',
+        },
+      },
+      minQuantity: {
+        title: 'Minimum quantity',
+        description: 'Units of the matching products (a bundle counts as 1).',
+      },
+      validFrom: {
+        title: 'Valid from',
+        description: 'Empty = from now on.',
+      },
+      validTo: {
+        title: 'Valid until',
+        description: 'Empty = no end date.',
+      },
+      maxRedemptions: {
+        title: 'Max redemptions',
+        description: 'Global cap. Leave empty for unlimited.',
+      },
+      maxPerEmail: {
+        title: 'Max per email address',
+        description: 'Codes only. Leave empty for unlimited.',
+      },
+      combinesWith: {
+        title: 'Combines with',
+        description:
+          "Two discounts apply together only if each allows the other's target. Shipping is waived at most once.",
+      },
+      items: {
+        title: 'Item discounts',
+      },
+      order: {
+        title: 'Order discounts',
+      },
+      shipping: {
+        title: 'Shipping discounts',
+      },
+      redemptionCount: {
+        title: 'Redemptions so far',
+        description: 'Counts paid orders with this discount; increased automatically.',
+      },
+    },
+    validation: {
+      codeRequired: 'Code is required',
+      codeFormat: 'Letters, digits, - and _ only',
+      codeInUse: 'Code is already in use',
+      valueRequired: 'Value is required',
+      valuePositive: 'Value must be greater than 0',
+      percentMax: 'Percent cannot exceed 100',
+      percentFull: '100 % makes the order free — checkout cannot take payments below €0.50',
+      automaticEveryOrder: 'Applies to every order — no product selection or minimum set',
+      fixedCents: 'Fixed amounts are whole cents',
+      shippingOnlyFree: 'Shipping discounts can only be "free"',
+      freeOnlyShipping: '"Free" is only for shipping discounts',
+      validToAfterFrom: '"Valid until" must be after "valid from"',
+      maxPerEmailCodeOnly: 'Only possible for codes',
+      categoryCriterionOff: 'Category criterion is disabled but still evaluated',
+      manufacturerCriterionOff: 'Manufacturer criterion is disabled but still evaluated',
+    },
+    preview: {
+      badge: {
+        active: '🟢 Active',
+        disabled: '⚪ Disabled',
+        expired: '🔴 Expired',
+        scheduled: '🟡 Scheduled',
+        exhausted: '🔴 Exhausted',
+      },
+      freeShipping: 'Free shipping',
+    },
+  },
+  productSelector: {
+    title: 'Product selection',
+    fields: {
+      include: {
+        title: 'Matching',
+        description: 'Any one is enough. Empty = all products.',
+      },
+      exclude: {
+        title: 'Excluded',
+        description: 'What matches here is never included.',
+      },
+    },
+    preview: {
+      all: 'All products',
+      without: 'without',
+    },
+  },
+  productSelectorCriteria: {
+    title: 'Criteria',
+    fields: {
+      kinds: {
+        title: 'Product kind',
+        description: 'Every product of this kind (e.g. all bundles).',
+        options: {
+          wine: 'Wine',
+          physical: 'Physical product',
+          digital: 'Digital product',
+          bundle: 'Bundle',
+        },
+      },
+      categories: {
+        title: 'Categories',
+        description: 'Including subcategories. A bundle counts by its own categories only.',
+      },
+      manufacturers: {
+        title: 'Manufacturers',
+      },
+      products: {
+        title: 'Products',
+        description: 'All variants of the product.',
+      },
+      variants: {
+        title: 'Variants',
+        description: 'Single variants only, e.g. one vintage or one bottle size.',
+      },
+      hasCompareAtPrice: {
+        title: 'Has compare-at price',
+        description: 'Variants whose compare-at price is higher than the price.',
+      },
+    },
+    preview: {
+      kinds: 'Kind',
+      categories_one: '{{count}} category',
+      categories_other: '{{count}} categories',
+      manufacturers_one: '{{count}} manufacturer',
+      manufacturers_other: '{{count}} manufacturers',
+      products_one: '{{count}} product',
+      products_other: '{{count}} products',
+      variants_one: '{{count}} variant',
+      variants_other: '{{count}} variants',
+      hasCompareAtPrice: 'with compare-at price',
+    },
+  },
+  appliedDiscount: {
+    title: 'Applied discount',
+    fields: {
+      discountRef: {
+        title: 'Discount',
+      },
+      code: {
+        title: 'Code',
+      },
+      title: {
+        title: 'Title',
+      },
+      trigger: {
+        title: 'Trigger',
+        options: {
+          code: 'Code',
+          automatic: 'Automatic',
+        },
+      },
+      target: {
+        title: 'Applies to',
+        options: {
+          items: 'Items',
+          order: 'Order',
+          shipping: 'Shipping',
+        },
+      },
+      valueType: {
+        title: 'Type',
+        options: {
+          percent: 'Percent',
+          fixed: 'Fixed amount',
+          free: 'Free',
+        },
+      },
+      value: {
+        title: 'Value',
+      },
+      amount: {
+        title: 'Saved',
+        description: 'Amount deducted in cents (shipping: the waived shipping cost)',
+      },
+    },
+  },
+  appliedCoupon: {
+    title: 'Redeemed coupon',
+    fields: {
+      couponRef: {
+        title: 'Coupon',
+      },
+      code: {
+        title: 'Code',
+      },
+      discountType: {
+        title: 'Discount type',
+        options: {
+          percent: 'Percent',
+          fixed: 'Fixed amount',
+          freeShipping: 'Free shipping',
+        },
+      },
+      value: {
+        title: 'Value',
+      },
+      discountAmount: {
+        title: 'Deducted amount',
+        description: 'Amount actually deducted, in cents',
+      },
+    },
+  },
+  voucher: {
+    title: 'Voucher',
+    validation: {
+      mustHaveDiscountOrReward: 'Vouchers must include a discount or a reward.',
+    },
+    fields: {
+      active: {
+        title: 'Active',
+      },
+      code: {
+        title: 'Voucher code',
+        description:
+          'Code that must be entered by the user to redeem the voucher. If no code is used, the voucher is applied automatically.',
+      },
+      autoApply: {
+        title: 'Auto apply',
+        description: 'The voucher is applied automatically when all conditions are met.',
+      },
+      discountType: {
+        title: 'Discount type',
+        options: {
+          none: 'None',
+          fixed: 'Fixed amount',
+          percentage: 'Percentage',
+        },
+      },
+      discountFixed: {
+        title: 'Amount',
+        description: 'The voucher amount is subtracted from the cart.',
+      },
+      discountPercentage: {
+        title: 'Percentage',
+        description: 'The percentage is subtracted from the cart.',
+      },
+      stackable: {
+        title: 'Stackable',
+        description: 'Can be combined with other vouchers.',
+      },
+      validFrom: {
+        title: 'Valid from',
+      },
+      validUntil: {
+        title: 'Valid until',
+      },
+      customerGroups: {
+        title: 'Customer groups',
+        description: 'Restrict to specific customer groups.',
+      },
+      newCustomersOnly: {
+        title: 'Only for new customers',
+      },
+      registeredCustomersOnly: {
+        title: 'Only for registered customers',
+      },
+      conditions: {
+        title: 'Conditions',
+      },
+      rewards: {
+        title: 'Rewards',
+        product: {
+          title: 'Product',
+        },
+        quantity: {
+          title: 'Quantity',
+        },
+      },
+    },
+  },
+  voucherCondition: {
+    title: 'Voucher condition',
+    fields: {
+      type: {
+        title: 'Condition type',
+        options: {
+          product: 'Specific product',
+          category: 'Product category',
+          totalValue: 'Minimum cart value',
+          quantity: 'Minimum quantity',
+          userStatus: 'Customer status',
+        },
+      },
+      product: {
+        title: 'Product',
+      },
+      category: {
+        title: 'Category',
+      },
+      minValue: {
+        title: 'Minimum cart value',
+      },
+      minQuantity: {
+        title: 'Minimum quantity',
+      },
+      userStatus: {
+        title: 'Customer status',
+        options: {
+          registeredCustomer: 'Registered customer',
+          newCustomer: 'New customer',
+        },
+      },
+      messages: {
+        productRequired: 'A product must be selected',
+        categoryRequired: 'A category must be selected',
+        minValueRequired: 'The minimum value must be set',
+        quantityRequired: 'The minimum quantity must be set',
+        userStatusRequired: 'The customer status must be selected',
+      },
+    },
+  },
+  seo: {
+    title: 'SEO',
+    fields: {
+      metaTitle: {
+        title: 'Meta title',
+        description: 'Title for search engines and browsers',
+        validation: 'Titles longer than 50 are truncated by search engines and browsers',
+      },
+      metaDescription: {
+        title: 'Meta description',
+        description: 'Description for search engines',
+        validation: 'Descriptions longer than 150 are truncated by search engines',
+      },
+      shareTitle: {
+        title: 'Share title',
+        description: 'Title for social networks. If empty, the meta title is used',
+        validation: 'Titles longer than 50 are truncated by social networks',
+      },
+      shareDescription: {
+        title: 'Share description',
+        description: 'Description for social networks. If empty, the meta description is used',
+        validation: 'Descriptions longer than 150 are truncated by social networks',
+      },
+      shareImage: {
+        title: 'Share image',
+        description: 'Recommended size: 1200x630px (PNG or JPG)',
+      },
+    },
+  },
+
+  carousel: {
+    title: 'Carousel',
+    preview: {
+      slides_zero: 'No images',
+      slides_one: '{{count}} image',
+      slides_other: '{{count}} images',
+    },
+    fields: {
+      slides: {
+        title: 'Images',
+      },
+      autoplay: {
+        title: 'Autoplay',
+      },
+      autoplayDelay: {
+        title: 'Autoplay delay',
+        description: 'The next image is shown after the given seconds.',
+      },
+      loop: {
+        title: 'Loop',
+      },
+      fade: {
+        title: 'Fade',
+        description: 'Fade animations instead of motion when switching slides.',
+      },
+      preload: {
+        title: 'Preload',
+        description: 'Preload the first image - enable when the carousel is visible on page load.',
+      },
+    },
+  },
+  categoryList: {
+    title: 'Category List',
+    fields: {
+      title: { title: 'Title' },
+      categories: { title: 'Categories' },
+    },
+    preview: {
+      categories_zero: 'No categories',
+      categories_one: '{{count}} category',
+      categories_other: '{{count}} categories',
+    },
+  },
+  productList: {
+    title: 'Product List',
+    fields: {
+      title: { title: 'Title' },
+      filters: { title: 'Filters' },
+      products: { title: 'Products' },
+    },
+    wineFieldFilter: {
+      title: 'Wine filter',
+      fields: {
+        field: {
+          title: 'Field',
+          options: {
+            vintage: 'Vintage',
+            varietal: 'Varietal',
+            color: 'Color',
+            classification: 'Classification',
+            qualityGrade: 'Quality grade',
+            volume: 'Bottle size',
+          },
+        },
+      },
+    },
+    productFieldFilter: {
+      title: 'Product filter',
+      fields: {
+        field: {
+          title: 'Field',
+          options: {
+            price: 'Price',
+            category: 'Category',
+          },
+        },
+      },
+    },
+    preview: {
+      filter: 'Filter',
+      filters_zero: 'No filters',
+      filters_one: '{{count}} filter',
+      filters_other: '{{count}} filters',
+      product: 'Product',
+      products_zero: 'No products',
+      products_one: '{{count}} product',
+      products_other: '{{count}} products',
+    },
+  },
+  productVariantList: {
+    title: 'Product Variant List',
+    fields: {
+      title: { title: 'Title' },
+      products: { title: 'Product variants' },
+    },
+    preview: {
+      products_zero: 'No variants',
+      products_one: '{{count}} variant',
+      products_other: '{{count}} variants',
+    },
+  },
+  withdrawalPolicyModule: {
+    title: 'Withdrawal policy (generated)',
+  },
+  shippingInfoModule: {
+    title: 'Shipping & payment (generated)',
+    fields: {
+      paymentInfo: {
+        title: 'Payment methods',
+        description:
+          'Text about the payment methods (e.g. “You can pay by credit card, Apple Pay or Google Pay.”). Must match the payment methods enabled in Stripe. Blank lines separate paragraphs. Empty = no “Payment” section.',
+      },
+    },
+  },
+  privacyPolicyModule: {
+    title: 'Privacy policy (generated)',
+    fields: {
+      extraSections: {
+        title: 'Additional sections',
+        description:
+          'Only for data processing the shop cannot know about: every external service embedded on a page (e.g. a map, a video, a third-party form). Per service: provider with address, which data, purpose, legal basis and any transfer to third countries.',
+      },
+      dpoContact: {
+        title: 'Data protection officer',
+        description: 'Contact, only if one is appointed. Empty = not mentioned.',
+      },
+    },
+  },
+  privacyPolicySection: {
+    title: 'Section',
+    fields: {
+      heading: { title: 'Heading' },
+      text: { title: 'Text', description: 'Blank lines separate paragraphs.' },
+    },
+  },
+  youtube: {
+    title: 'YouTube',
+    fields: {
+      url: {
+        title: 'Url',
+        description: 'YouTube video URL or ID',
+      },
+      showControls: {
+        title: 'Show controls',
+      },
+      start: {
+        title: 'Start at',
+        description: 'Start the video at a specific time (in seconds)',
+      },
+      autoload: {
+        title: 'Autoload',
+        description: 'Load the video automatically when it becomes visible',
+      },
+      autopause: {
+        title: 'Autopause',
+        description: 'Pause the video automatically when it is no longer visible',
+      },
+    },
+  },
+
+  localeBlock: {
+    title: 'Localized block',
+    translations: {
+      title: 'Translations',
+    },
+  },
+  localeImage: {
+    title: 'Image (multilingual)',
+  },
+  localeAltImage: {
+    title: 'Image',
+  },
+  baseImage: {
+    title: 'Image',
+  },
+  localeString: {
+    title: 'Localized string',
+    translations: {
+      title: 'Translations',
+    },
+    validations: {
+      allExist: 'All localizations must exist.',
+    },
+  },
+  localeSlug: {
+    title: 'Localized URL name',
+    translations: {
+      title: 'Translations',
+    },
+  },
+}
