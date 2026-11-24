@@ -72,6 +72,22 @@ export const shippingMethod: ITSDocumentDefinition = {
         // On: the shop prepares the order first — the confirmation and the thanks page announce
         // the "ready for pickup" mail. Off: the goods can be collected right away.
         f('pickupAnnounceReady', 'boolean', { hidden: hiddenUnlessPickup, initialValue: false }),
+        // Carrier tracking page, `{code}` = the tracking number: links each number in the order mails.
+        // Read when the mail is sent (not snapshotted), so it also applies to existing orders.
+        f('trackingUrl', 'string', {
+          hidden: hiddenForPickup,
+          validation: (rule) =>
+            rule.custom((value: string | undefined) => {
+              const v = value?.trim()
+              if (!v) return true
+              return v.startsWith('https://') && v.includes('{code}')
+                ? true
+                : t.default(
+                    'validation.trackingUrlFormat',
+                    'Must start with https:// and contain {code}',
+                  )
+            }),
+        }),
         f('eligibleCountries', 'array', {
           hidden: hiddenForPickup,
           of: [

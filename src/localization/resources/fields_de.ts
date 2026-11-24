@@ -329,6 +329,7 @@ export default {
     duplicatePlaces: 'Jede Kartongröße darf nur einmal vorkommen.',
     volumeInOneGroup: 'Jede Flaschengröße darf nur in einer Kartonart vorkommen.',
     pickupCountryNotTaxCountry: 'Das Land muss ein aktiviertes Steuerland sein.',
+    trackingUrlFormat: 'Muss mit https:// beginnen und {code} enthalten.',
     slugFormat:
       'Nur Kleinbuchstaben, Zahlen und "-" ("/" für verschachtelte Pfade). Leerzeichen und Großbuchstaben werden in der URL automatisch entfernt.',
   },
@@ -559,6 +560,11 @@ export default {
         title: 'Abholbereit-Mail ankündigen',
         description:
           'Wenn die Bestellung erst vorbereitet wird: Bestätigung und Danke-Seite sagen „Wir melden uns, sobald sie zur Abholung bereit ist“. Aus = die Ware ist sofort abholbar.',
+      },
+      trackingUrl: {
+        title: 'Link zur Sendungsverfolgung',
+        description:
+          'Optional. Adresse der Sendungsverfolgung des Paketdienstes, {code} steht für die Sendungsnummer, z. B. https://tracking.dpd.de/status/de_DE/parcel/{code}. Die Bestell-Mails verlinken dann jede Sendungsnummer.',
       },
       eligibleCountries: {
         title: 'Länder',

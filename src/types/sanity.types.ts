@@ -1540,6 +1540,7 @@ export type ShippingMethod = {
   pickupInstructions?: InternationalizedArrayText
   pickupHoldDays?: number
   pickupAnnounceReady?: boolean
+  trackingUrl?: string
   eligibleCountries?: Array<
     {
       _key: string

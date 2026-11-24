@@ -94,7 +94,9 @@ time from `ctx.featureRegistry`), so webpage-only customers aren't blocked:
 **Mail-related fields (core-front reads them):** `settings.shopNotificationEmail` (optional; inbox
 for new-order mails + withdrawal notifications, empty → `senderEmail`); `company` incl. optional
 `registerNumber` / `registerCourt` (rendered in every mail footer only when set);
-`shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`).
+`shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`);
+`shippingMethod.trackingUrl` (optional, delivery only, `https://…{code}…` — validated; read by the
+mails at send time, not snapshotted, to link each `fulfillment.trackingCode` number).
 **Store pickup** (core-front `commerce-and-netlify.md` → "Store pickup", plan
 handbook `plans/store-pickup.md`): `shippingMethod.methodType` `pickup` — always in the list (no
 feature flag; a published pickup method turns pickup on in the checkout). Pickup fields, hidden

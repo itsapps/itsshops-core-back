@@ -326,6 +326,7 @@ export default {
     duplicatePlaces: 'Each box size may only appear once.',
     volumeInOneGroup: 'Each bottle size may only be in one box type.',
     pickupCountryNotTaxCountry: 'The country must be an enabled tax country.',
+    trackingUrlFormat: 'Must start with https:// and contain {code}.',
     slugFormat:
       'Use lowercase letters, numbers and "-" only ("/" for nested paths). Spaces and capitals are removed automatically in the URL.',
   },
@@ -551,6 +552,11 @@ export default {
         title: 'Announce the "ready for pickup" mail',
         description:
           'When the order is prepared first: the confirmation and the thank-you page say "we\'ll let you know as soon as it is ready for pickup". Off = the goods can be collected right away.',
+      },
+      trackingUrl: {
+        title: 'Tracking link',
+        description:
+          'Optional. Address of the carrier\'s tracking page, {code} stands for the tracking number, e.g. https://tracking.dpd.de/status/de_DE/parcel/{code}. The order mails then link each tracking number.',
       },
       eligibleCountries: {
         title: 'Countries',

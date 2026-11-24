@@ -4,6 +4,14 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Releasing a customer to production".
 
+## Unreleased
+
+- **`shippingMethod.trackingUrl`** (optional, hidden for pickup): the carrier's tracking page with
+  `{code}` for the tracking number, e.g. `https://tracking.dpd.de/status/de_DE/parcel/{code}`
+  (validated: `https://` + `{code}`). core-front links each tracking number in the order mails with
+  it — read at send time, so it also applies to existing orders. **Upgrading:** optional; enter it
+  per delivery method.
+
 ## 7.0.1
 
 **Fresh public repository.** The git history before 7.0.1 is archived; older tags can no longer be
