@@ -6,6 +6,19 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
+- **Product list in the Studio:** a product opens one list with the product on top and its
+  variants below (live, ordered by vintage/volume, option order, then creation; each with its own
+  draft dot) plus "New variant" — one click less to a variant. The product row's image shows the
+  variant count (bottom left) and a dot when a variant has a draft (bottom right); the full
+  summary ("3 variants · 1 draft · 1 sold out") is its tooltip and screen-reader text. Without a
+  product image it shows the first variant's image.
+- **`product.cmsTitle`** ("Internal name", optional, Studio only): title of the product's list
+  preview and searchable, the shop title moves to the subtitle — tells same-named products apart.
+  Not read by core-front. **Upgrading:** optional; fill it where products share a name.
+- **Product sort menu:** only "Title (A–Z)" and "Internal name (A–Z)" (plus Sanity's last
+  edited/created) instead of one entry per field.
+- **`rxjs` dependency** (`^7.8.2`, the version `sanity` already installs — deduped).
+
 - **Studio tasks disabled** (`tasks: { enabled: false }`, like comments): the Tasks button is
   gone, so the Studio no longer creates a `<dataset>-comments` add-on dataset. **Upgrading:** an
   existing, empty `<dataset>-comments` dataset can be deleted (`sanity dataset delete`); check

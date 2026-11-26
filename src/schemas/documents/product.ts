@@ -1,6 +1,5 @@
-// import { ProductPreview } from '../../components/previews/ProductPreview'
-
 import { ProductIcon, productKindIcons } from '../../assets/icons'
+import { createProductPreviewMedia } from '../../components/products/ProductPreview'
 // import { GenerateVariants } from '../../components/GenerateVariants'
 // import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
 import { ITSDocumentDefinition, ProductKind } from '../../types'
@@ -20,6 +19,8 @@ export const product: ITSDocumentDefinition = {
         name: 'infos',
         fields: [
           f('title', 'i18nString', { i18n: 'atLeastOne' }),
+          // Studio only (list preview, search) — tells same-named products apart. Not projected.
+          f('cmsTitle', 'string'),
           f('description', 'i18nText'),
           f('kind', 'string', {
             options: {
@@ -125,20 +126,45 @@ export const product: ITSDocumentDefinition = {
       },
     ])
 
+    const productMedia = createProductPreviewMedia(ctx)
+
     return {
       ...groupedData,
+      // Explicit orderings, so Sanity doesn't generate one per field (kind, weight, price, …).
+      // `title[0].value`: the first language entry (normally the default locale).
+      orderings: [
+        {
+          title: ctx.t.default('product.orderings.titleAsc', 'Title (A–Z)'),
+          name: 'titleAsc',
+          by: [{ field: 'title[0].value', direction: 'asc' }],
+        },
+        {
+          title: ctx.t.default('product.orderings.cmsTitleAsc', 'Internal name (A–Z)'),
+          name: 'cmsTitleAsc',
+          by: [
+            { field: 'cmsTitle', direction: 'asc' },
+            { field: 'title[0].value', direction: 'asc' },
+          ],
+        },
+      ],
       preview: {
         select: {
+          id: '_id',
+          cmsTitle: 'cmsTitle',
           title: 'title',
           image: 'image',
           kind: 'kind',
         },
-        prepare({ title, image, kind }) {
+        prepare({ id, cmsTitle, title, image, kind }) {
           const productKind: ProductKind = kind
-          const media = image || (kind ? productKindIcons[productKind] : ProductIcon)
+          const icon = kind ? productKindIcons[productKind] : ProductIcon
+          const productId = typeof id === 'string' ? id.replace(/^drafts\./, '') : undefined
           return {
-            title: ctx.localizer.value(title),
-            media,
+            // With an internal name, the shop title moves to the subtitle.
+            title: cmsTitle || ctx.localizer.value(title),
+            subtitle: cmsTitle ? ctx.localizer.value(title) : undefined,
+            // Live variant count + draft dot over the image (see ProductPreview.tsx).
+            media: productId ? productMedia(productId, image, icon) : image || icon,
           }
         },
       },

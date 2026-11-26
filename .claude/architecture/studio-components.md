@@ -192,6 +192,17 @@ React; tests `tests/vinofactImage.test.ts`):
   wrap actions over the final core set. `withGeneratedZips` (exported from the package root) is the
   shipped example (e.g. used on `page`).
 
+### Product list preview (`src/components/products/ProductPreview.tsx`)
+
+Structure document lists render `SanityDefaultPreview` directly — **`components.preview` is not
+used there** (only in form contexts: arrays, references) — and `prepare` must return strings for
+title/subtitle (a React element there is rejected at runtime). Only `media` may be a React element,
+so `product.preview.prepare` returns `createProductPreviewMedia(ctx)(productId, image, icon)`: one
+shared live query per product (`listenQuery` + `shareReplay`, drafts collapsed onto their variant)
+→ image (product's, else first variant's, else kind icon), count badge bottom left, draft dot
+bottom right, the summary text as `title` tooltip + `sr-only` span. Title = `cmsTitle` || title,
+subtitle = title when `cmsTitle` is set.
+
 ## Other custom components (`src/components/`)
 
 - `PriceInput.tsx` — currency input; the **only** component re-exported publicly

@@ -337,6 +337,11 @@ export default {
   product: {
     title: 'Product',
     fields: {
+      cmsTitle: {
+        title: 'Internal name',
+        description:
+          'Only visible in the CMS (product list, search), never in the shop. Tells same-named products apart, e.g. "Reserve (Riesling)".',
+      },
       description: {
         title: 'Description',
         description:
@@ -351,9 +356,24 @@ export default {
         description: 'Weight in grams. Used when a variant has no weight set.',
       },
     },
+    orderings: {
+      titleAsc: 'Title (A–Z)',
+      cmsTitleAsc: 'Internal name (A–Z)',
+    },
     preview: {
       variants_one: '{{count}} variant',
       variants_other: '{{count}} variants',
+      noVariants: 'No variants',
+      drafts_one: '{{count}} draft',
+      drafts_other: '{{count}} drafts',
+      status: {
+        comingSoon_one: '{{count}} coming soon',
+        comingSoon_other: '{{count}} coming soon',
+        soldOut_one: '{{count}} sold out',
+        soldOut_other: '{{count}} sold out',
+        archived_one: '{{count}} archived',
+        archived_other: '{{count}} archived',
+      },
     },
     validation: {
       variantsWithoutPrice_one: '{{count}} active variant has no price of its own.',

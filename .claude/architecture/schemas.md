@@ -32,6 +32,10 @@ Order snapshot `fulfillmentPackagingLine`: `volumes[]` (group sizes), `packSize`
 `quantity`, `price`; old orders have `volume` instead (shown only when set; `OrderView` handles
 both).
 
+**Product Studio-only fields:** `product.cmsTitle` (internal name: list preview title + search,
+never projected by core-front). `product` has explicit `orderings` (title / internal name via
+`title[0].value` — the sort path can't filter by `language`), so Sanity generates none per field.
+
 **Price & bundles (validation):** an `active` `productVariant` needs a price — its own or its
 product's (async `rule.custom` on `price`, error; other statuses/drafts free). Emptying a
 `product.price` warns when active variants have none of their own. A bundle variant

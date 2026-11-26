@@ -78,6 +78,12 @@ Per-type editor views:
 - everything else → the form + a "references" pane (`getReferenceView`, a `*[references($id)]`
   DocumentsPane). `getProductReferenceView` exists for product→variant listings.
 
+**Product child list (`src/structure/products.ts`):** clicking a product opens one `S.list()` built
+from a `documentStore.listenQuery` (product item, divider, one `documentListItem` per variant,
+divider, "New variant" → `AddVariantsPane`). Not a mixed `S.documentList`: Sanity validates every
+sort field against every type in it (`wine.*` doesn't exist on `product` → crash). Variant order:
+`VARIANT_ORDER` (`src/utils/variantOrder.ts`, shared with the product preview).
+
 `createStructureTool(ctx)` bundles `{ title, structure, defaultDocumentNode }` and is handed to
 `structureTool(...)` in `src/index.ts`. Custom per-menu panes live in `src/structure/`
 (`products.ts`, `categories.ts`, `variantOptions.ts`). Category lists (top-level and subcategory
