@@ -1,14 +1,16 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-nested-ternary */
-import { Badge, Card, Flex, Grid, Stack, Text } from '@sanity/ui'
+import { Badge, Box, Card, Flex, Grid, Stack, Text } from '@sanity/ui'
 import { useToast } from '@sanity/ui/toast'
 import { ReactElement } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
+import { CheckIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { cartesian } from '../../../../lib/shop/productVariant.tx'
 import { VariantOption, VariantOptionGroup } from '../../../../types'
 import { uid } from '../../../../utils/utils'
+import { AdvancedSection } from '../fields/AdvancedSection'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
 import { SectionLabel } from '../fields/SectionLabel'
@@ -23,8 +25,16 @@ import {
   OptionGroup,
   OptionToggleCardProps,
   PhysicalDigitalTabProps,
+  SubmitCheck,
 } from '../ProductCreator.types'
 import { ProductTab } from './ProductTab'
+
+/** "Rot / XL" — the option titles of a combination, in the order of the active groups. */
+function comboLabel(combo: CombinationRow, activeGroups: OptionGroup[]): string {
+  return combo.optionIds
+    .map((optId, i) => activeGroups[i]?.options.find((o) => o._id === optId)?.title ?? optId)
+    .join(' / ')
+}
 
 /** Build combination rows from selected options per group */
 function buildCombinations(
@@ -69,14 +79,24 @@ const OptionToggleCard = memo(function OptionToggleCard({
   return (
     <Card
       as="button"
+      type="button"
       padding={2}
       radius={2}
       border
       tone={checked ? 'positive' : 'default'}
       onClick={handleClick}
+      aria-pressed={checked}
       style={{ cursor: 'pointer' }}
     >
-      <Text size={1}>{option.title}</Text>
+      {/* The check icon shows the state without relying on colour (WCAG 1.4.1) */}
+      <Flex align="center" gap={2}>
+        {checked && (
+          <Text size={1}>
+            <CheckIcon aria-hidden />
+          </Text>
+        )}
+        <Text size={1}>{option.title}</Text>
+      </Flex>
     </Card>
   )
 })
@@ -128,26 +148,34 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
       tone={row.alreadyExists ? 'caution' : row.enabled ? 'default' : 'transparent'}
     >
       <Stack gap={3}>
-        <Grid gridTemplateColumns={[1, 1, showWeight ? 5 : 4]} gap={3}>
+        <Grid gridTemplateColumns={[1, 1, showWeight ? 3 : 2]} gap={3}>
           {/* Toggle + label */}
           <Flex align="center" gap={3} style={{ gridColumn: 'span 1' }}>
-            <input
-              type="checkbox"
-              checked={row.enabled}
-              onChange={handleCombinationToggle}
-              disabled={row.alreadyExists}
-              style={{ cursor: row.alreadyExists ? 'not-allowed' : 'pointer' }}
-            />
-            <Text
-              size={1}
-              weight="semibold"
+            <label
               style={{
-                textDecoration: row.enabled ? 'none' : 'line-through',
-                opacity: row.enabled ? 1 : 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75em',
+                cursor: row.alreadyExists ? 'not-allowed' : 'pointer',
               }}
             >
-              {label}
-            </Text>
+              <input
+                type="checkbox"
+                checked={row.enabled}
+                onChange={handleCombinationToggle}
+                disabled={row.alreadyExists}
+              />
+              <Text
+                size={1}
+                weight="semibold"
+                style={{
+                  textDecoration: row.enabled ? 'none' : 'line-through',
+                  opacity: row.enabled ? 1 : 0.5,
+                }}
+              >
+                {label}
+              </Text>
+            </label>
             {row.alreadyExists && (
               <Badge tone="caution">
                 {componentT.default('productCreatorTool.messages.variantExists')}
@@ -159,15 +187,23 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
             <>
               <PriceField value={row.price} onChange={handlePriceChange} required={false} />
               {showWeight && <WeightField value={row.weight} onChange={handleWeightChange} />}
+            </>
+          )}
+        </Grid>
+
+        {row.enabled && !row.alreadyExists && (
+          <Box>
+            {/* Tax override — empty inherits the product's, then the shop default */}
+            <AdvancedSection setCount={row.taxCategoryId ? 1 : 0}>
               <TaxCategoryField
                 value={row.taxCategoryId}
                 taxCategories={taxCategories}
                 loadingTax={loadingTax}
                 onTaxChange={handleTaxChange}
               />
-            </>
-          )}
-        </Grid>
+            </AdvancedSection>
+          </Box>
+        )}
 
         {row.enabled && !row.alreadyExists && (
           <I18nTitleInputs
@@ -233,12 +269,12 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
       .catch((err) => {
         toast.push({
           status: 'error',
-          title: 'Failed to load option groups',
+          title: componentT.default('productCreatorTool.errors.loadOptionGroups'),
           description: err.message,
         })
       })
       .finally(() => setLoadingGroups(false))
-  }, [sanityClient, localizer, toast])
+  }, [sanityClient, localizer, toast, componentT])
 
   // Recompute combinations whenever selections change — always reset overrides
   useEffect(() => {
@@ -275,25 +311,46 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
 
   const showWarning = enabledCombinations.length > 50
 
-  const canSubmit = useMemo(() => {
+  const submitCheck = useMemo((): SubmitCheck => {
+    const reasons: string[] = []
     if (!hideProductSection) {
       const defaultTitle = titles.find((ts) => ts.locale === defaultLocale)?.value
-      if (!defaultTitle?.trim()) return false
+      if (!defaultTitle?.trim())
+        reasons.push(componentT.default('productCreatorTool.reasons.title'))
+    }
+    if (enabledCombinations.length === 0) {
+      reasons.push(componentT.default('productCreatorTool.reasons.noVariant'))
     }
     // Active variants need a price — the global (product) one or the row's (also when adding
     // variants to an existing product: `globalPrice` is then the product's price).
-    if (!globalPrice && enabledCombinations.some((c) => !c.price)) return false
-    if (enabledCombinations.length === 0) return false
-    return true
-  }, [hideProductSection, titles, defaultLocale, globalPrice, enabledCombinations])
+    if (!globalPrice) {
+      const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
+      for (const combo of enabledCombinations.filter((c) => !c.price)) {
+        reasons.push(
+          componentT.default(`productCreatorTool.reasons.${key}`, undefined, {
+            label: comboLabel(combo, activeGroups),
+          }),
+        )
+      }
+    }
+    return { ok: reasons.length === 0, reasons }
+  }, [
+    hideProductSection,
+    titles,
+    defaultLocale,
+    globalPrice,
+    enabledCombinations,
+    activeGroups,
+    componentT,
+  ])
 
   const handleSubmit = useCallback(async () => {
-    if (!canSubmit) return
-    await onSubmit(enabledCombinations)
-    // Reset local state
+    if (!submitCheck.ok) return
+    const ok = await onSubmit(enabledCombinations)
+    if (!ok) return // keep the editor's selection after a failed commit
     setSelectedOptions({})
     setCombinations([])
-  }, [canSubmit, onSubmit, enabledCombinations])
+  }, [submitCheck.ok, onSubmit, enabledCombinations])
 
   const content = (
     <Stack gap={3}>
@@ -365,19 +422,12 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
 
           <Stack gap={2}>
             {combinations.map((combo, index) => {
-              const label = combo.optionIds
-                .map((optId, i) => {
-                  const group = activeGroups[i]
-                  return group?.options.find((o) => o._id === optId)?.title ?? optId
-                })
-                .join(' / ')
-
               return (
                 <OptionComboCard
                   key={combo.id}
                   row={combo}
                   index={index}
-                  label={label}
+                  label={comboLabel(combo, activeGroups)}
                   loadingTax={loadingTax}
                   taxCategories={taxCategories}
                   locales={props.global.locales}
@@ -400,7 +450,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
       global={props.global}
       submitting={submitting}
       rows={enabledCombinations.length}
-      canSubmit={canSubmit}
+      submitCheck={submitCheck}
       handleSubmit={handleSubmit}
       content={content}
       hideProductSection={props.hideProductSection}

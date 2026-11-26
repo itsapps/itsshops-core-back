@@ -4,7 +4,7 @@ import { Box, Button, Card, Flex, Label, Stack, Text, TextInput } from '@sanity/
 import { Autocomplete } from '@sanity/ui/autocomplete'
 import { useToast } from '@sanity/ui/toast'
 import { ChangeEvent, ReactElement } from 'react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useId, useMemo, useState } from 'react'
 
 import { AddIcon, CloseIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
@@ -21,6 +21,7 @@ import {
   BundleVariantRowItemProps,
   BundleVariantRowProps,
   I18nTitleEntry,
+  SubmitCheck,
 } from '../ProductCreator.types'
 import { ProductTab } from './ProductTab'
 
@@ -36,7 +37,8 @@ export const BundleVariantRowItem = memo(function BundleVariantRowItem({
   onRemove,
   onQuantityChange,
 }: BundleVariantRowItemProps) {
-  const { schemaT } = useITSContext()
+  const { schemaT, componentT } = useITSContext()
+  const quantityId = useId()
   const handleRemove = useCallback(
     () => onRemove(rowId, item.variantId),
     [onRemove, rowId, item.variantId],
@@ -55,9 +57,16 @@ export const BundleVariantRowItem = memo(function BundleVariantRowItem({
           <Text size={1}>{item.variantLabel}</Text>
         </Box>
         <Flex align="center" gap={2} style={{ flexShrink: 0 }}>
-          <Label size={0}>{schemaT.default('bundleItem.fields.quantity.title')}</Label>
+          <Label as="label" htmlFor={quantityId} size={0}>
+            {schemaT.default('bundleItem.fields.quantity.title')}
+          </Label>
           <Box style={{ width: 64 }}>
-            <TextInput type="number" value={item.quantity} onChange={handleQuantityChange} />
+            <TextInput
+              id={quantityId}
+              type="number"
+              value={item.quantity}
+              onChange={handleQuantityChange}
+            />
           </Box>
           <Button
             mode="bleed"
@@ -65,6 +74,9 @@ export const BundleVariantRowItem = memo(function BundleVariantRowItem({
             icon={CloseIcon}
             padding={1}
             onClick={handleRemove}
+            aria-label={componentT.default('productCreatorTool.a11y.removeItem', undefined, {
+              label: item.variantLabel,
+            })}
           />
         </Flex>
       </Flex>
@@ -95,6 +107,8 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
   const [query, setQuery] = useState('')
 
   const handleRemoveRow = useCallback(() => onRemoveRow(row.id), [onRemoveRow, row.id])
+  const pickerId = `bundle-picker-${row.id}`
+  const rowLabel = `${structureT.default('products.variant')} ${index + 1}`
 
   const handleAddItem = useCallback(
     (variantId: string) => {
@@ -148,7 +162,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
         {/* Row header */}
         <Flex align="center" justify="space-between">
           <Text size={1} muted>
-            {structureT.default('products.variant')} {index + 1}
+            {rowLabel}
           </Text>
           {canRemove && (
             <Button
@@ -157,6 +171,9 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
               icon={CloseIcon}
               onClick={handleRemoveRow}
               padding={2}
+              aria-label={componentT.default('productCreatorTool.a11y.removeRow', undefined, {
+                label: rowLabel,
+              })}
             />
           )}
         </Flex>
@@ -178,9 +195,11 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
 
         {/* Variant search */}
         <Stack gap={2}>
-          <Label size={1}>{schemaT.default('productVariant.title')}</Label>
+          <Label as="label" htmlFor={pickerId} size={1}>
+            {schemaT.default('productVariant.title')}
+          </Label>
           <Autocomplete
-            id={`bundle-picker-${row.id}`}
+            id={pickerId}
             loading={loadingVariants}
             openButton
             options={filteredOptions}
@@ -230,7 +249,7 @@ export function BundleTab(props: BundleTabProps): ReactElement {
     titlePlaceholder,
   } = props.global
   const { onSubmit, submitting, hideProductSection } = props
-  const { sanityClient, localizer, format, componentT } = useITSContext()
+  const { sanityClient, localizer, format, componentT, structureT } = useITSContext()
   const toast = useToast()
 
   const [variants, setVariants] = useState<BundleVariantResult[]>([])
@@ -254,10 +273,14 @@ export function BundleTab(props: BundleTabProps): ReactElement {
       )
       .then(setVariants)
       .catch((err) => {
-        toast.push({ status: 'error', title: 'Failed to load variants', description: err.message })
+        toast.push({
+          status: 'error',
+          title: componentT.default('productCreatorTool.errors.loadVariants'),
+          description: err.message,
+        })
       })
       .finally(() => setLoadingVariants(false))
-  }, [sanityClient, toast])
+  }, [sanityClient, toast, componentT])
 
   // Product — own title — vintage/volume or options (all of them, also with an own title)
   const getVariantLabel = useCallback(
@@ -337,24 +360,43 @@ export function BundleTab(props: BundleTabProps): ReactElement {
     setRows((prev) => prev.map((row) => (row.id === id ? { ...row, [key]: val } : row)))
   }, [])
 
-  const canSubmit = useMemo(() => {
+  const submitCheck = useMemo((): SubmitCheck => {
+    const reasons: string[] = []
     if (!hideProductSection) {
       const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
-      if (!defaultTitle?.trim()) return false
+      if (!defaultTitle?.trim())
+        reasons.push(componentT.default('productCreatorTool.reasons.title'))
     }
-    // Active variants need a price — the global (product) one or the row's (also when adding
-    // variants to an existing product: `globalPrice` is then the product's price).
-    if (!globalPrice && rows.some((r) => !r.price)) return false
-    if (rows.length === 0) return false
-    if (rows.some((r) => r.items.length === 0)) return false
-    return true
-  }, [hideProductSection, titles, defaultLocale, globalPrice, rows])
+    if (rows.length === 0) reasons.push(componentT.default('productCreatorTool.reasons.noVariant'))
+    const rowLabel = (i: number) => `${structureT.default('products.variant')} ${i + 1}`
+    rows.forEach((row, i) => {
+      if (row.items.length === 0) {
+        reasons.push(
+          componentT.default('productCreatorTool.reasons.bundleNoItems', undefined, {
+            label: rowLabel(i),
+          }),
+        )
+      }
+      // Active variants need a price — the global (product) one or the row's (also when adding
+      // variants to an existing product: `globalPrice` is then the product's price).
+      if (!globalPrice && !row.price) {
+        const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
+        reasons.push(
+          componentT.default(`productCreatorTool.reasons.${key}`, undefined, {
+            label: rowLabel(i),
+          }),
+        )
+      }
+    })
+    return { ok: reasons.length === 0, reasons }
+  }, [hideProductSection, titles, defaultLocale, globalPrice, rows, componentT, structureT])
 
   const handleSubmit = useCallback(async () => {
-    if (!canSubmit) return
-    await onSubmit(rows)
+    if (!submitCheck.ok) return
+    const ok = await onSubmit(rows)
+    if (!ok) return // keep the editor's rows after a failed commit
     setRows([emptyBundleRow()])
-  }, [canSubmit, onSubmit, rows])
+  }, [submitCheck.ok, onSubmit, rows])
 
   const content = (
     <Stack gap={6}>
@@ -400,7 +442,7 @@ export function BundleTab(props: BundleTabProps): ReactElement {
       global={props.global}
       submitting={submitting}
       rows={rows.length}
-      canSubmit={canSubmit}
+      submitCheck={submitCheck}
       handleSubmit={handleSubmit}
       content={content}
       hideProductSection={props.hideProductSection}

@@ -1,6 +1,6 @@
 import { Checkbox, Flex, Label, Stack, TextInput } from '@sanity/ui'
 import { ChangeEvent, ReactElement } from 'react'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useId, useState } from 'react'
 
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { I18nTitleInputsProps, LocaleTitleInputProps } from '../ProductCreator.types'
@@ -12,10 +12,11 @@ const LocaleTitleInput = memo(function LocaleTitleInput(props: LocaleTitleInputP
     (e: ChangeEvent<HTMLInputElement>) => onChange(locale, e.currentTarget.value),
     [locale, onChange],
   )
+  const id = useId()
 
   return (
-    <LabelField title={locale.toUpperCase()} required={required}>
-      <TextInput value={value} onChange={handleChange} placeholder={placeholder} />
+    <LabelField id={id} title={locale.toUpperCase()} required={required}>
+      <TextInput id={id} value={value} onChange={handleChange} placeholder={placeholder} />
     </LabelField>
   )
 })
@@ -24,6 +25,7 @@ export function I18nTitleInputs(props: I18nTitleInputsProps): ReactElement {
   const { locales, requiredLocales, required, titles, onChange, placeholder } = props
   const { schemaT } = useITSContext()
   const [expanded, setExpanded] = useState(required || titles.some((t) => t.value))
+  const toggleId = useId()
 
   const handleToggle = useCallback(() => {
     setExpanded((prev) => {
@@ -51,8 +53,15 @@ export function I18nTitleInputs(props: I18nTitleInputsProps): ReactElement {
   return (
     <Stack gap={2}>
       <Flex align="center" gap={3}>
-        {!required && <Checkbox checked={expanded} onChange={handleToggle} />}
-        <Label size={1}>{`${schemaT.default('fields.title.title')}${required ? ' *' : ''}`}</Label>
+        {!required && <Checkbox id={toggleId} checked={expanded} onChange={handleToggle} />}
+        {/* Without the toggle there is no single control to label (each locale input has its own) */}
+        {required ? (
+          <Label size={1}>{`${schemaT.default('fields.title.title')} *`}</Label>
+        ) : (
+          <Label as="label" htmlFor={toggleId} size={1}>
+            {schemaT.default('fields.title.title')}
+          </Label>
+        )}
       </Flex>
 
       {expanded && (

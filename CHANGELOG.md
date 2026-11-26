@@ -6,6 +6,16 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
+- **Product Manager — clearer and safer:** submit reasons are listed above the button instead
+  of a silently disabled button; the tax category moved under "Advanced" and is no longer
+  pre-filled with the shop default (empty = inherited, so a product follows a later change of
+  the shop default); a failed commit keeps the entered rows; adding variants never creates one
+  that already exists (also not from the desk-structure pane on a second run, and not
+  when a variant has unpublished edits); picking a wine no longer clears the product title in
+  other languages; all fields are properly labelled for screen readers.
+- **`features.shop.vinofact.importBottleImages`** (default `false`): the Product Manager's "copy
+  bottle images from VinoFact" checkbox now starts **unchecked**. **Upgrading:** shops that want
+  bottle images on by default set `features.shop.vinofact.importBottleImages: true`.
 - **Releases and Tasks really gone from the Studio:** the `releases`/`tasks`/`scheduledDrafts`
   switches moved from the plugin to each workspace — Sanity silently ignored them in the plugin,
   so the "Releases" tool and Tasks still showed.

@@ -77,6 +77,8 @@ export function ProductCreator(): ReactElement {
   const [globalTaxCategoryId, setGlobalTaxCategoryId] = useState('')
   const [globalWeight, setGlobalWeight] = useState<number | undefined>(undefined)
   const [taxCategories, setTaxCategories] = useState<TaxCategory[]>([])
+  // Only a hint: an empty product tax category inherits it (and follows a later change of it)
+  const [shopDefaultTaxCategoryId, setShopDefaultTaxCategoryId] = useState<string | undefined>()
   const [loadingTax, setLoadingTax] = useState(true)
 
   // Load tax categories once — shared across all tabs
@@ -102,15 +104,17 @@ export function ProductCreator(): ReactElement {
       .then((data) => {
         const { categories, defaultCategoryId } = data
         setTaxCategories(categories.map((t) => ({ ...t, title: t.title || '' })))
-        if (defaultCategoryId) {
-          setGlobalTaxCategoryId(defaultCategoryId)
-        }
+        setShopDefaultTaxCategoryId(defaultCategoryId ?? undefined)
       })
       .catch((err) => {
-        toast.push({ status: 'error', title: 'Failed to load data', description: err.message })
+        toast.push({
+          status: 'error',
+          title: componentT.default('productCreatorTool.errors.loadData'),
+          description: err.message,
+        })
       })
       .finally(() => setLoadingTax(false))
-  }, [client, defaultLocale, toast])
+  }, [client, defaultLocale, toast, componentT])
 
   const handleTitlesChange = useCallback((ts: I18nTitleEntry[]) => setTitles(ts), [])
   const handleGlobalPriceChange = useCallback((val: number | undefined) => setGlobalPrice(val), [])
@@ -167,9 +171,10 @@ export function ProductCreator(): ReactElement {
         const variantId = addWineVariantToTx(tx, productId, row)
         return variantId && row.wine ? [{ variantId, wineId: row.wine.id }] : []
       })
-      const ok = await commitProduct(tx, rows.length, productId)
+      const ok = await commitProduct(tx, targets.length, productId)
       // Not awaited: the form resets as before; the import reports in its own toasts.
       if (ok && options.importBottleImages) importBottleImagesInBackground(targets)
+      return ok
     },
     [
       client,
@@ -196,7 +201,7 @@ export function ProductCreator(): ReactElement {
       for (const combo of combinations) {
         addPhysicalDigitalVariantToTx(tx, productId, activeKind as 'physical' | 'digital', combo)
       }
-      await commitProduct(tx, combinations.length, productId)
+      return commitProduct(tx, combinations.length, productId)
     },
     [client, activeKind, titles, globalPrice, globalTaxCategoryId, globalWeight, commitProduct],
   )
@@ -215,7 +220,7 @@ export function ProductCreator(): ReactElement {
       for (const row of rows) {
         addBundleVariantToTx(tx, productId, row)
       }
-      await commitProduct(tx, rows.length, productId)
+      return commitProduct(tx, rows.length, productId)
     },
     [client, titles, globalPrice, globalWeight, commitProduct],
   )
@@ -226,6 +231,7 @@ export function ProductCreator(): ReactElement {
     globalPrice,
     globalTaxCategoryId,
     taxCategories,
+    shopDefaultTaxCategoryId,
     globalWeight,
     loadingTax,
     locales: fieldLocales,

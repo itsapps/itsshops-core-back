@@ -1,5 +1,5 @@
 import { TextInput } from '@sanity/ui'
-import { ChangeEvent, ReactElement, useCallback } from 'react'
+import { ChangeEvent, ReactElement, useCallback, useId } from 'react'
 
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { WeightFieldProps } from '../ProductCreator.types'
@@ -7,6 +7,7 @@ import { LabelField } from './Label'
 
 export function WeightField({ value, onChange, required = false }: WeightFieldProps): ReactElement {
   const { schemaT } = useITSContext()
+  const id = useId()
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -22,8 +23,13 @@ export function WeightField({ value, onChange, required = false }: WeightFieldPr
   )
 
   return (
-    <LabelField title={schemaT.default('fields.weight.title', 'Weight (g)')} required={required}>
+    <LabelField
+      id={id}
+      title={schemaT.default('fields.weight.title', 'Weight (g)')}
+      required={required}
+    >
       <TextInput
+        id={id}
         inputMode="numeric"
         value={value ?? ''}
         onChange={handleChange}

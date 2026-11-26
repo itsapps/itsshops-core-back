@@ -128,6 +128,7 @@ function allFeatures(): ITSFeatureConfig {
       category: { subcategories: true },
       vinofact: {
         enabled: true,
+        importBottleImages: false,
       },
       vouchers: true,
       coupons: true,
@@ -148,8 +149,9 @@ function normalizeFeatures(input?: FeatureConfig): ITSFeatureConfig {
       manufacturer: input?.shop?.manufacturer ?? false,
       stock: input?.shop?.stock ?? false,
       category: input?.shop?.category ?? false,
-      vinofact: input?.shop?.vinofact ?? {
-        enabled: false,
+      vinofact: {
+        enabled: input?.shop?.vinofact?.enabled ?? false,
+        importBottleImages: input?.shop?.vinofact?.importBottleImages ?? false,
       },
       vouchers: input?.shop?.vouchers ?? false,
       coupons: input?.shop?.coupons ?? false,

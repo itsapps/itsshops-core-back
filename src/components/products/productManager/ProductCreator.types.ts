@@ -86,6 +86,8 @@ export interface MainProductProps {
   globalWeight: number | undefined
   taxCategories: TaxCategory[]
   loadingTax: boolean
+  /** `shopSettings.defaultTaxCategory` — shown as a hint, never written onto the product. */
+  shopDefaultTaxCategoryId?: string
   locales: string[]
   defaultLocale: string
   onTitlesChange: (titles: I18nTitleEntry[]) => void
@@ -94,12 +96,18 @@ export interface MainProductProps {
   onGlobalWeightChange: (val: number | undefined) => void
 }
 
+/** Whether a tab can submit, and why not (translated, shown above the button). */
+export interface SubmitCheck {
+  ok: boolean
+  reasons: string[]
+}
+
 export interface ProductTabProps {
   content: ReactNode
   global: MainProductProps
   submitting: boolean
   rows: number
-  canSubmit: boolean
+  submitCheck: SubmitCheck
   handleSubmit: () => void
   hideProductSection?: boolean
 }
@@ -115,18 +123,19 @@ export interface WineSubmitOptions {
 }
 
 export interface WineTabProps extends ProductKindTabProps {
-  onSubmit: (rows: WineRow[], options: WineSubmitOptions) => Promise<void>
+  /** Resolves `true` when the commit succeeded (the tab resets only then). */
+  onSubmit: (rows: WineRow[], options: WineSubmitOptions) => Promise<boolean>
   existingWineKeys?: Set<string>
 }
 
 export interface PhysicalDigitalTabProps extends ProductKindTabProps {
   activeKind: ProductKind
-  onSubmit: (combinations: CombinationRow[]) => Promise<void>
+  onSubmit: (combinations: CombinationRow[]) => Promise<boolean>
   existingOptionSets?: Set<string>
 }
 
 export interface BundleTabProps extends ProductKindTabProps {
-  onSubmit: (rows: BundleVariantRow[]) => Promise<void>
+  onSubmit: (rows: BundleVariantRow[]) => Promise<boolean>
 }
 
 export interface BundleVariantRowItemProps {
@@ -166,6 +175,8 @@ export interface LocaleTitleInputProps {
 }
 
 export interface LabelFieldProps {
+  /** The labelled control's `id`. */
+  id: string
   title: string
   required?: boolean
   children: ReactNode
@@ -201,6 +212,8 @@ export interface TaxCategoryFieldProps {
   loadingTax: boolean
   onTaxChange: (val: string) => void
   required?: boolean
+  /** Read-only note below the select (e.g. the shop default). */
+  hint?: string
 }
 
 export interface GlobalDefaultsProps {
@@ -209,6 +222,7 @@ export interface GlobalDefaultsProps {
   globalTaxCategoryId: string
   taxCategories: TaxCategory[]
   loadingTax: boolean
+  shopDefaultTaxCategoryId?: string
   globalWeight: number | undefined
   onPriceChange: (val: number | undefined) => void
   onTaxChange: (val: string) => void

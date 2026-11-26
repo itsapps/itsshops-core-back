@@ -84,7 +84,10 @@ customer `ItsshopsConfig` into the internal `CoreBackConfig` that the whole plug
 **`ItsshopsConfig` (what a customer passes):**
 - `settings: { isDev, ignoreExtensions }`
 - `projectId` / `dataset` / `workspaceName` / `workspaceIcon`
-- `features` — `FeatureConfig` (see the flag list in `CLAUDE.md`)
+- `features` — `FeatureConfig` (see the flag list in `CLAUDE.md`); `shop.vinofact` is an object
+  `{ enabled, importBottleImages? }`, resolved field by field (`ResolvedVinofactConfig`, both
+  default `false`). `importBottleImages` only sets the Product Manager's bottle-image checkbox
+  default (public config, fine in `sanity.config.ts`)
 - `i18n` — `{ ui?, fields?, defaultLocale?, localizedFieldTypes?, fieldTranslationOverrides?, structureTranslationOverrides?, translationOverrides? }` (see [localization.md](localization.md))
 - `documents` / `objects` — extra schemas (`ITSDocumentDefinition[]` / `ITSObjectDefinition[]`)
 - `schemaExtensions` — per-schema field/group/preview/icon additions (see [schema-authoring.md](schema-authoring.md))

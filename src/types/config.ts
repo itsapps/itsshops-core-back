@@ -34,7 +34,13 @@ export type SchemaSettingsInput = RecursivePartial<CoreSchemaSettings>
 
 export interface VinofactConfig {
   enabled: boolean
+  /**
+   * The Product Manager's "copy bottle images from VinoFact" checkbox starts checked (default
+   * false). The checkbox stays a per-run override. Public config, not a secret.
+   */
+  importBottleImages?: boolean
 }
+export type ResolvedVinofactConfig = Required<VinofactConfig>
 
 /**
  * Public values only, from env (`SANITY_STUDIO_VINOFACT_API_URL` / `_PROFILE_SLUG`) — the API token
@@ -79,7 +85,7 @@ export interface ITSFeatureConfig {
     manufacturer: boolean
     stock: boolean
     category: boolean | { subcategories?: boolean }
-    vinofact: VinofactConfig
+    vinofact: ResolvedVinofactConfig
     vouchers: boolean
     coupons: boolean
     automaticDiscounts: boolean

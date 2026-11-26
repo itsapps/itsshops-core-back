@@ -33,7 +33,8 @@ the `components` namespace (`componentT`).
 
 A bulk product+variant creation tool (studio tool, not a field input). `ProductCreator.tsx` renders
 a tab per enabled `schemaSettings.productKinds` value — **wine / physical / digital / bundle**
-(`tabs/*.tsx`) — plus a shared "main product" section (title i18n inputs, global price/tax/weight).
+(`tabs/*.tsx`) — plus a shared "main product" section (title i18n inputs, global price/weight; tax under
+"Advanced").
 
 - Shapes (rows, combinations, bundle items, props) live in `ProductCreator.types.ts`.
 - On submit it builds a Sanity transaction via `src/lib/shop/productVariant.tx.ts`
@@ -48,17 +49,42 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
   an `IntentLink`, cleared on the next submit. `AddVariantsAction` passes no link (the product
   is open).
 - **Bottle images (`shop.vinofact`):** `WineTab` has a checkbox "Flaschenbilder aus VinoFact
-  übernehmen" (default on, only with a `vinofactClient`; also in `AddVariantsAction`'s dialog).
+  übernehmen" (default from `features.shop.vinofact.importBottleImages`, `false` unless set; only
+  with a `vinofactClient`; also in `AddVariantsAction`'s dialog).
   After a successful commit the submit runs `useBackgroundBottleImport` (not awaited — the form
   resets / the dialog closes as before) on the new, published variants; summary or error toast.
   `addWineVariantToTx` returns the created variant id for it.
 - Wine kind pulls options from the VinoFact client; physical/digital expands selected
   variant-option groups into combinations; bundle composes existing variants with quantities
   (picker: active, priced, non-bundle variants only).
-- **It writes published variants directly, so no schema validation runs** — the tabs' `canSubmit`
-  enforce what the schema would: "global (product) price or every row's price", also when adding
-  variants to an existing product (`AddVariantsAction` passes the product's price as
-  `globalPrice`). Bundles get **no tax category** (neither product nor variant rows; hint
+- **It writes published variants directly, so no schema validation runs** — each tab's
+  `submitCheck` (`{ ok, reasons }`) enforces what the schema would: default-locale title,
+  ≥ 1 new variant, "global (product) price or every row's price" (bundle: every row has items),
+  also when adding variants to an existing product (`AddVariantsAction` passes the product's
+  price as `globalPrice`). `ProductTab` lists the reasons (`productCreatorTool.reasons.*`, with
+  the row label) above the submit button and links them via `aria-describedby`; the button stays
+  focusable (`aria-disabled`, not `disabled`) and the tabs' `handleSubmit` returns early.
+- **Tax category is only written when chosen:** product and row tax selects sit in a collapsed
+  `fields/AdvancedSection` (disclosure button with `aria-expanded`/`aria-controls`, content kept
+  mounted with `hidden`, count of set values on the toggle). Empty inherits (variant → product →
+  `shopSettings.defaultTaxCategory` at checkout); the product select shows the shop default as a
+  hint (`shopDefaultTaxCategoryId`, never pre-filled).
+- **Submit:** tab `onSubmit` props resolve `true`/`false` (the commit result); tabs reset only
+  on `true`, so a failed commit keeps the editor's rows. The wine tab submits only rows that don't
+  match an existing variant (`existingWineKeys`).
+- **Title suggestion (wine):** the first picked wine fills the default-locale title once
+  (`stripYear`), only while it is empty; other locales are left as they are.
+- **Add variants (`AddVariantsDialog`)**: one component for the document action
+  (`variant="dialog"`, closes after submit) and the desk-structure pane `AddVariantsPane`
+  (`variant="pane"`, stays open). It loads product, existing variants, tax categories and the shop
+  default tax with `{ perspective: 'raw' }`: variants include drafts, and the published and the
+  draft version of an edited variant both count as existing (a draft that changed the volume
+  must not free the published key); the other parts filter out `drafts.**`/`versions.**`. The pane reloads after each successful submit (without the
+  spinner, which would unmount the tab) so the variants just added show as existing.
+- **a11y:** every field is a real `<label for>` (`LabelField` takes the control's `id`);
+  icon-only remove/clear buttons carry `productCreatorTool.a11y.*` labels; option toggles use
+  `aria-pressed` + a check icon (not colour alone); combination checkboxes are wrapped in a
+  `<label>`. Bundles get **no tax category** (neither product nor variant rows; hint
   `productCreatorTool.bundle.vatFromItems` under the price) — core-front taxes a bundle by its items.
 - Field sub-components in `fields/` (`I18nTitleField`, `PriceField`, `TaxCategoryField`,
   `WeightField`, `VariantRow`, …) are reused across tabs.

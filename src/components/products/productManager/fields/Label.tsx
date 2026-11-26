@@ -3,11 +3,12 @@ import { ReactElement } from 'react'
 
 import { LabelFieldProps } from '../ProductCreator.types'
 
+/** A real `<label for>` above its control: pass the same `id` to the input/select. */
 export function LabelField(props: LabelFieldProps): ReactElement {
-  const { title, required = false, children } = props
+  const { id, title, required = false, children } = props
   return (
     <Stack gap={2}>
-      <Label size={1}>{`${title}${required ? ' *' : ''}`}</Label>
+      <Label as="label" htmlFor={id} size={1}>{`${title}${required ? ' *' : ''}`}</Label>
       {children}
     </Stack>
   )

@@ -1,6 +1,7 @@
 import { AddIcon as Add } from '@sanity/icons/Add'
 import { BasketIcon as Basket } from '@sanity/icons/Basket'
 import { CheckmarkCircleIcon as CheckmarkCircle } from '@sanity/icons/CheckmarkCircle'
+import { ChevronDownIcon as ChevronDown } from '@sanity/icons/ChevronDown'
 import { ChevronRightIcon as ChevronRight } from '@sanity/icons/ChevronRight'
 import { CloseIcon as Close } from '@sanity/icons/Close'
 import { CogIcon as Cog } from '@sanity/icons/Cog'
@@ -78,6 +79,8 @@ export const CategoryListIcon = PiSquaresFour
 export const CategoryIcon = Schema
 export const CheckIcon = PiCheck
 export const ChevronRightIcon = ChevronRight
+/** An open disclosure (collapsed: `ChevronRightIcon`). */
+export const DisclosureOpenIcon = ChevronDown
 export const CircleIcon = PiCircle
 export const ClockIcon = PiClock
 export const CloseIcon = Close

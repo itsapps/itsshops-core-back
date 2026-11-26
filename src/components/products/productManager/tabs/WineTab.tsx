@@ -22,6 +22,8 @@ import { AddIcon, CloseIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { VinofactWine } from '../../../../types'
 import { uid } from '../../../../utils/utils'
+import { variantDetails } from '../../../../utils/variantLabel'
+import { AdvancedSection } from '../fields/AdvancedSection'
 import { WinePreview } from '../../WinePreview'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { PriceField } from '../fields/PriceField'
@@ -32,6 +34,7 @@ import {
   I18nTitleEntry,
   WineOption,
   WineRow,
+  SubmitCheck,
   WineRowCardProps,
   WineTabProps,
 } from '../ProductCreator.types'
@@ -45,6 +48,23 @@ function emptyWineRow(): WineRow {
 
 function stripYear(title: string): string {
   return title.replace(/\s*\d{4}\s*$/, '').trim()
+}
+
+type LabelDeps = Parameters<typeof variantDetails>[0]
+
+/** "Ried Steinberg — 1,5 l • 2023" — used in submit reasons. */
+function wineRowLabel(deps: LabelDeps, row: WineRow): string {
+  if (!row.wine) return ''
+  return [
+    stripYear(row.wine.title),
+    variantDetails(deps, {
+      kind: 'wine',
+      wineVolume: Number(row.volume),
+      wineVintage: row.wine.year,
+    }),
+  ]
+    .filter(Boolean)
+    .join(' — ')
 }
 
 const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
@@ -68,6 +88,9 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
   const { schemaT, structureT, studioT, componentT } = useITSContext()
   const handleRemove = useCallback(() => onRemove(row.id), [onRemove, row.id])
   const handleClearWine = useCallback(() => onUpdate(row.id, 'wine', null), [onUpdate, row.id])
+  const volumeId = useId()
+  const pickerId = `wine-picker-${row.id}`
+  const rowLabel = `${structureT.default('products.variant')} ${index + 1}`
 
   const handleSelectWine = useCallback(
     (id: string) => {
@@ -132,7 +155,7 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
         {/* Row header */}
         <Flex align="center" justify="space-between">
           <Text size={1} muted>
-            {structureT.default('products.variant')} {index + 1}
+            {rowLabel}
           </Text>
           {isExisting && (
             <Badge tone="caution">
@@ -146,25 +169,42 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
               icon={CloseIcon}
               onClick={handleRemove}
               padding={2}
+              aria-label={componentT.default('productCreatorTool.a11y.removeRow', undefined, {
+                label: rowLabel,
+              })}
             />
           )}
         </Flex>
 
         {/* Wine picker */}
         <Stack gap={2}>
-          <Label size={1}>{schemaT.default('wine.fields.vinofactWineId.title')} *</Label>
+          {row.wine ? (
+            <Label size={1}>{schemaT.default('wine.fields.vinofactWineId.title')} *</Label>
+          ) : (
+            <Label as="label" htmlFor={pickerId} size={1}>
+              {schemaT.default('wine.fields.vinofactWineId.title')} *
+            </Label>
+          )}
           {row.wine ? (
             <Card border radius={2} padding={2}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>
                   <WinePreview wine={row.wine} />
                 </Box>
-                <Button mode="bleed" icon={CloseIcon} padding={2} onClick={handleClearWine} />
+                <Button
+                  mode="bleed"
+                  icon={CloseIcon}
+                  padding={2}
+                  onClick={handleClearWine}
+                  aria-label={componentT.default('productCreatorTool.a11y.clearWine', undefined, {
+                    title: row.wine.title,
+                  })}
+                />
               </Flex>
             </Card>
           ) : (
             <Autocomplete
-              id={`wine-picker-${row.id}`}
+              id={pickerId}
               loading={loadingWines}
               openButton
               options={options}
@@ -188,11 +228,13 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
           placeholder={titlePlaceholder}
         />
 
-        <Grid gridTemplateColumns={[1, 1, 3]} gap={3}>
+        <Grid gridTemplateColumns={[1, 1, 2]} gap={3}>
           {/* Volume */}
           <Stack gap={2}>
-            <Label size={1}>{schemaT.default('productVariant.fields.volume.title')} *</Label>
-            <Select value={row.volume} onChange={handleVolumeChange}>
+            <Label as="label" htmlFor={volumeId} size={1}>
+              {schemaT.default('productVariant.fields.volume.title')} *
+            </Label>
+            <Select id={volumeId} value={row.volume} onChange={handleVolumeChange}>
               <option value="">—</option>
               {volumeOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -204,15 +246,17 @@ const WineRowCard = memo(function WineRowCard(props: WineRowCardProps) {
 
           {/* Price override */}
           <PriceField value={row.price} onChange={handlePriceChange} required={false} />
+        </Grid>
 
-          {/* Tax override */}
+        {/* Tax override — empty inherits the product's, then the shop default */}
+        <AdvancedSection setCount={row.taxCategoryId ? 1 : 0}>
           <TaxCategoryField
             value={row.taxCategoryId}
             taxCategories={taxCategories}
             loadingTax={loadingTax}
             onTaxChange={handleTaxChange}
           />
-        </Grid>
+        </AdvancedSection>
       </Stack>
     </VariantRow>
   )
@@ -226,12 +270,11 @@ export function WineTab(props: WineTabProps): ReactElement {
     globalTaxCategoryId,
     taxCategories,
     loadingTax,
-    locales,
     defaultLocale,
     onTitlesChange,
   } = props.global
   const { onSubmit, submitting, existingWineKeys, hideProductSection } = props
-  const { vinofactClient, constants, componentT } = useITSContext()
+  const { vinofactClient, constants, componentT, config, localizer, format } = useITSContext()
   const toast = useToast()
 
   const [wines, setWines] = useState<VinofactWine[]>([])
@@ -239,7 +282,10 @@ export function WineTab(props: WineTabProps): ReactElement {
   const [rows, setRows] = useState<WineRow[]>([emptyWineRow()])
   const [queries, setQueries] = useState<Record<string, string>>({})
   const titleAutoSet = useRef(false)
-  const [importBottleImages, setImportBottleImages] = useState(true)
+  // Default from config (`features.shop.vinofact.importBottleImages`); the checkbox overrides per run
+  const [importBottleImages, setImportBottleImages] = useState(
+    config.features.shop.vinofact.importBottleImages,
+  )
   const bottleImagesId = useId()
 
   const loadWines = useCallback(async () => {
@@ -284,17 +330,16 @@ export function WineTab(props: WineTabProps): ReactElement {
     if (!firstWine) return
     const suggested = stripYear(firstWine.title)
     const defaultEntry = titles.find((t) => t.locale === defaultLocale)
-    // Only auto-set if default locale title is still empty
+    // Only auto-set if default locale title is still empty; other locales stay as they are
     if (!defaultEntry?.value) {
       onTitlesChange(
-        locales.map((locale) => ({
-          locale,
-          value: locale === defaultLocale ? suggested : '',
-        })),
+        defaultEntry
+          ? titles.map((t) => (t.locale === defaultLocale ? { ...t, value: suggested } : t))
+          : [...titles, { locale: defaultLocale, value: suggested }],
       )
       titleAutoSet.current = true
     }
-  }, [rows, titles, defaultLocale, locales, onTitlesChange])
+  }, [rows, titles, defaultLocale, onTitlesChange])
 
   // Row operations
   const addRow = useCallback(() => setRows((r) => [...r, emptyWineRow()]), [])
@@ -344,26 +389,51 @@ export function WineTab(props: WineTabProps): ReactElement {
     [rows, existingWineKeys],
   )
 
-  const canSubmit = useMemo(() => {
+  const submitCheck = useMemo((): SubmitCheck => {
+    const reasons: string[] = []
     if (!hideProductSection) {
       const defaultTitle = titles.find((t) => t.locale === defaultLocale)?.value
-      if (!defaultTitle?.trim()) return false
+      if (!defaultTitle?.trim())
+        reasons.push(componentT.default('productCreatorTool.reasons.title'))
+    }
+    if (submittableRows.length === 0) {
+      reasons.push(componentT.default('productCreatorTool.reasons.noVariant'))
     }
     // Active variants need a price — the global (product) one or the row's (also when adding
     // variants to an existing product: `globalPrice` is then the product's price).
-    if (!globalPrice && submittableRows.some((r) => !r.price)) return false
-    if (submittableRows.length === 0) return false
-    return true
-  }, [hideProductSection, titles, defaultLocale, globalPrice, submittableRows])
+    if (!globalPrice) {
+      const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
+      for (const row of submittableRows.filter((r) => !r.price)) {
+        reasons.push(
+          componentT.default(`productCreatorTool.reasons.${key}`, undefined, {
+            label: wineRowLabel({ localizer, format }, row),
+          }),
+        )
+      }
+    }
+    return { ok: reasons.length === 0, reasons }
+  }, [
+    hideProductSection,
+    titles,
+    defaultLocale,
+    globalPrice,
+    submittableRows,
+    componentT,
+    localizer,
+    format,
+  ])
 
   const handleSubmit = useCallback(async () => {
-    if (!canSubmit) return
-    await onSubmit(rows, { importBottleImages: !!vinofactClient && importBottleImages })
-    // Reset wine-specific state on success
+    if (!submitCheck.ok) return
+    // Only new rows: a row matching an existing variant is never created twice
+    const ok = await onSubmit(submittableRows, {
+      importBottleImages: !!vinofactClient && importBottleImages,
+    })
+    if (!ok) return // keep the editor's rows after a failed commit
     setRows([emptyWineRow()])
     setQueries({})
     titleAutoSet.current = false
-  }, [canSubmit, onSubmit, rows, vinofactClient, importBottleImages])
+  }, [submitCheck.ok, onSubmit, submittableRows, vinofactClient, importBottleImages])
 
   const volumeOptions = constants.volumeOptions ?? []
   const lastSelectedWine = [...rows].reverse().find((r) => r.wine)?.wine
@@ -446,7 +516,7 @@ export function WineTab(props: WineTabProps): ReactElement {
       global={props.global}
       submitting={submitting}
       rows={rows.length}
-      canSubmit={canSubmit}
+      submitCheck={submitCheck}
       handleSubmit={handleSubmit}
       content={content}
       hideProductSection={props.hideProductSection}

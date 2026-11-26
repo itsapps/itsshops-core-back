@@ -40,16 +40,54 @@ type ExistingVariant = Pick<ProductVariant, '_id' | 'weight'> & {
   optionRefs: VariantOptionReference['_ref'][] | undefined
   // weight: number | undefined
 }
-type ProductWithKind = Pick<Product, '_id'> & { kind: ProductKind; price?: number }
-// interface ProductDoc {
-//   _id: string
-//   kind: ProductKind
-// }
+type ProductWithKind = Pick<Product, '_id'> & {
+  kind: ProductKind
+  price?: number
+  taxCategoryId?: string
+}
 
 interface AddVariantsDialogProps {
   productId: string
   onClose: () => void
+  /**
+   * `dialog` (document action, closes after submit) or `pane` (desk structure, stays open and
+   * reloads the existing variants after each submit).
+   */
+  variant: 'dialog' | 'pane'
 }
+
+type LoadResult = {
+  product: ProductWithKind | null
+  variants: ExistingVariant[]
+  categories: (Pick<CoreTaxCategory, '_id'> & { title: string | undefined; code: string })[]
+  shopDefaultTaxCategoryId: string | null
+}
+
+// Raw perspective: existing variants include drafts. Both versions of an edited variant count
+// (only their keys are used): a draft that changed the volume must not free the published one's
+// key. Everything else stays published-only.
+const PUBLISHED = '!(_id in path("drafts.**")) && !(_id in path("versions.**"))'
+const LOAD_QUERY = `{
+  "product": *[_type == "product" && _id == $productId && ${PUBLISHED}][0]{
+    _id, kind, price, "taxCategoryId": taxCategory._ref
+  },
+  "variants": *[_type == "productVariant" && product._ref == $productId && !(_id in path("versions.**"))]{
+    _id, kind,
+    "vinofactWineId": wine.vinofactWineId,
+    "volume": wine.volume,
+    "optionRefs": options[]._ref,
+    weight
+  },
+  "categories": *[_type == "taxCategory" && ${PUBLISHED}]{
+    _id,
+    "title": coalesce(
+      title[language == $locale][0].value,
+      title[0].value
+    ),
+    "code": code.current
+  },
+  "shopDefaultTaxCategoryId": *[_type == "shopSettings" && ${PUBLISHED}][0].defaultTaxCategory._ref
+}`
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -63,8 +101,12 @@ function buildOptionSetKey(optionIds: string[]): string {
 
 // ─── AddVariantsDialog ────────────────────────────────────────────────────────
 
-export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps): ReactElement {
-  const { config, sanityClient } = useITSContext()
+export function AddVariantsDialog({
+  productId,
+  onClose,
+  variant,
+}: AddVariantsDialogProps): ReactElement {
+  const { config, sanityClient, componentT } = useITSContext()
   const client = sanityClient
   const toast = useToast()
 
@@ -73,53 +115,56 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
   const [product, setProduct] = useState<ProductWithKind | null>(null)
   const [existingVariants, setExistingVariants] = useState<ExistingVariant[]>([])
   const [taxCategories, setTaxCategories] = useState<TaxCategory[]>([])
+  const [shopDefaultTaxCategoryId, setShopDefaultTaxCategoryId] = useState<string | undefined>()
   const [loadingTax, setLoadingTax] = useState(true)
   const [loading, setLoading] = useState(true)
 
-  // Fetch product + existing variants + tax categories in one go
+  /**
+   * Product + existing variants + tax categories in one go. `initial` (mount) shows the spinner;
+   * a reload after a submit doesn't (the spinner would unmount the tab and lose its state), and a
+   * failed reload keeps the old data.
+   */
+  const load = useCallback(
+    async (initial: boolean) => {
+      try {
+        const data = await client.fetch<LoadResult>(
+          LOAD_QUERY,
+          { locale: defaultLocale, productId },
+          { perspective: 'raw' },
+        )
+        setProduct(data.product)
+        setExistingVariants(data.variants)
+        setTaxCategories(data.categories.map((t) => ({ ...t, title: t.title || '' })))
+        setShopDefaultTaxCategoryId(data.shopDefaultTaxCategoryId ?? undefined)
+      } catch (err: any) {
+        toast.push({
+          status: 'error',
+          title: componentT.default('productCreatorTool.errors.loadProduct'),
+          description: err.message,
+        })
+      } finally {
+        if (initial) {
+          setLoading(false)
+          setLoadingTax(false)
+        }
+      }
+    },
+    [client, productId, defaultLocale, toast, componentT],
+  )
+
   useEffect(() => {
-    client
-      .fetch<{
-        product: ProductWithKind
-        variants: ExistingVariant[]
-        categories: (Pick<CoreTaxCategory, '_id'> & { title: string | undefined; code: string })[]
-      }>(
-        `{
-          "product": *[_type == "product" && _id == $productId][0]{
-            _id, kind, price,
-          },
-          "variants": *[_type == "productVariant" && product._ref == $productId]{
-            _id, kind,
-            "vinofactWineId": wine.vinofactWineId,
-            "volume": wine.volume,
-            "optionRefs": options[]._ref,
-            weight
-          },
-          "categories": *[_type == "taxCategory"]{
-            _id,
-            "title": coalesce(
-              title[language == $locale][0].value,
-              title[0].value
-            ),
-            "code": code.current
-          }
-        }`,
-        { locale: defaultLocale, productId },
-      )
-      .then((data) => {
-        const { product: p, categories, variants } = data
-        setProduct(p)
-        setExistingVariants(variants)
-        setTaxCategories(categories.map((t) => ({ ...t, title: t.title || '' })))
-      })
-      .catch((err) => {
-        toast.push({ status: 'error', title: 'Failed to load product', description: err.message })
-      })
-      .finally(() => {
-        setLoading(false)
-        setLoadingTax(false)
-      })
-  }, [client, productId, defaultLocale, toast])
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch on mount
+    load(true)
+  }, [load])
+
+  // The pane stays open: reload so the variants just added count as existing. The dialog closes.
+  const afterCommit = useCallback(
+    (ok: boolean) => {
+      if (ok && variant === 'pane') load(false)
+      return ok
+    },
+    [load, variant],
+  )
 
   // Build existing keys for dedup display
   const existingWineKeys = useMemo(() => {
@@ -144,41 +189,50 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
 
   const handleWineSubmit = useCallback(
     async (rows: WineRow[], options: WineSubmitOptions) => {
-      if (!product) return
+      if (!product) return false
 
       const tx = client.transaction()
       const targets = rows.flatMap((r) => {
         const variantId = addWineVariantToTx(tx, productId, r)
         return variantId && r.wine ? [{ variantId, wineId: r.wine.id }] : []
       })
-      const ok = await commitTransaction(tx, rows.length, onClose)
+      const ok = await commitTransaction(tx, targets.length, onClose)
       // Not awaited: the dialog closes as before, the import's toasts outlive it.
       if (ok && options.importBottleImages) importBottleImagesInBackground(targets)
+      return afterCommit(ok)
     },
-    [client, product, productId, onClose, commitTransaction, importBottleImagesInBackground],
+    [
+      client,
+      product,
+      productId,
+      onClose,
+      commitTransaction,
+      importBottleImagesInBackground,
+      afterCommit,
+    ],
   )
 
   const handlePhysicalDigitalSubmit = useCallback(
     async (combinations: CombinationRow[]) => {
-      if (!product) return
+      if (!product) return false
 
       const tx = client.transaction()
       combinations.forEach((c) =>
         addPhysicalDigitalVariantToTx(tx, productId, product.kind as 'physical' | 'digital', c),
       )
-      await commitTransaction(tx, combinations.length, onClose)
+      return afterCommit(await commitTransaction(tx, combinations.length, onClose))
     },
-    [client, product, productId, onClose, commitTransaction],
+    [client, product, productId, onClose, commitTransaction, afterCommit],
   )
 
   const handleBundleSubmit = useCallback(
     async (rows: BundleVariantRow[]) => {
-      if (!product) return
+      if (!product) return false
       const tx = client.transaction()
       rows.forEach((r) => addBundleVariantToTx(tx, productId, r))
-      await commitTransaction(tx, rows.length, onClose)
+      return afterCommit(await commitTransaction(tx, rows.length, onClose))
     },
-    [client, product, productId, onClose, commitTransaction],
+    [client, product, productId, onClose, commitTransaction, afterCommit],
   )
 
   // ─── Render ─────────────────────────────────────────────────────────────────
@@ -193,6 +247,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
       globalPrice: product?.price,
       globalTaxCategoryId: '',
       taxCategories,
+      shopDefaultTaxCategoryId,
       loadingTax,
       globalWeight: undefined,
       locales: fieldLocales,
@@ -203,7 +258,8 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
       onGlobalTaxChange: () => {},
       onGlobalWeightChange: () => {},
     }),
-    [product?.kind, taxCategories, loadingTax, fieldLocales, defaultLocale],
+    // `product`, not `product?.kind`: a reload's new price must reach the tabs
+    [product, taxCategories, shopDefaultTaxCategoryId, loadingTax, fieldLocales, defaultLocale],
   )
 
   const renderContent = () => {
@@ -218,7 +274,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
     if (!product) {
       return (
         <Card padding={4} tone="critical">
-          <Text size={1}>Product not found.</Text>
+          <Text size={1}>{componentT.default('productCreatorTool.errors.productNotFound')}</Text>
         </Card>
       )
     }
@@ -258,7 +314,7 @@ export function AddVariantsDialog({ productId, onClose }: AddVariantsDialogProps
       default:
         return (
           <Card padding={4} tone="caution">
-            <Text size={1}>Unknown product kind.</Text>
+            <Text size={1}>{componentT.default('productCreatorTool.errors.unknownKind')}</Text>
           </Card>
         )
     }
@@ -292,7 +348,7 @@ export const AddVariantsAction: DocumentActionComponent = (props: DocumentAction
           header: title,
           width: 'medium',
           onClose: handleClose,
-          content: <AddVariantsDialog productId={id} onClose={handleClose} />,
+          content: <AddVariantsDialog productId={id} onClose={handleClose} variant="dialog" />,
         }
       : false,
   }

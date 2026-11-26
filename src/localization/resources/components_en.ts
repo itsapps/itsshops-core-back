@@ -1,6 +1,33 @@
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
   productCreatorTool: {
+    advanced: 'Advanced',
+    tax: {
+      shopDefault: 'Empty = shop default: {{title}}',
+      noShopDefault: 'Empty = shop default (none is set in the shop settings)',
+    },
+    reasons: {
+      label: 'Not possible yet, because:',
+      title: 'Product name is missing',
+      noVariant: 'No variant selected',
+      priceMissing: 'Price missing for {{label}} (or set a product price)',
+      priceMissingExisting: 'Price missing for {{label}} (the product has no price)',
+      bundleNoItems: '{{label}} contains no products',
+    },
+    a11y: {
+      removeRow: 'Remove {{label}}',
+      clearWine: 'Deselect wine {{title}}',
+      removeItem: 'Remove {{label}}',
+    },
+    errors: {
+      loadData: 'Failed to load data',
+      loadOptionGroups: 'Failed to load option groups',
+      loadVariants: 'Failed to load variants',
+      loadProduct: 'Failed to load product',
+      productNotFound: 'Product not found.',
+      unknownKind: 'Unknown product kind.',
+      missingProductId: 'Missing product id.',
+    },
     bundle: {
       vatFromItems: 'VAT is taken from the items (the price is split by their single prices).',
     },

@@ -1,5 +1,5 @@
 import { TextInput } from '@sanity/ui'
-import { ChangeEvent, ReactElement, useCallback } from 'react'
+import { ChangeEvent, ReactElement, useCallback, useId } from 'react'
 
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { usePriceInputState } from '../../../../lib/hooks/usePriceInputState'
@@ -18,6 +18,7 @@ export function PriceField({
   required = false,
 }: PriceFieldProps): ReactElement {
   const { schemaT, componentT } = useITSContext()
+  const id = useId()
   const { displayValue, handleChange, handleFocus, handleBlur } = usePriceInputState(
     value,
     onChange,
@@ -29,8 +30,9 @@ export function PriceField({
   )
 
   return (
-    <LabelField title={schemaT.default('fields.price.title')} required={required}>
+    <LabelField id={id} title={schemaT.default('fields.price.title')} required={required}>
       <TextInput
+        id={id}
         inputMode="decimal"
         value={displayValue}
         onChange={handleInputChange}

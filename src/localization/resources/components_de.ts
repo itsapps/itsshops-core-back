@@ -1,6 +1,33 @@
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
   productCreatorTool: {
+    advanced: 'Erweitert',
+    tax: {
+      shopDefault: 'Leer = Shop-Standard: {{title}}',
+      noShopDefault: 'Leer = Shop-Standard (in den Shop-Einstellungen ist keiner gesetzt)',
+    },
+    reasons: {
+      label: 'Noch nicht möglich, weil:',
+      title: 'Produktname fehlt',
+      noVariant: 'Keine Variante gewählt',
+      priceMissing: 'Preis fehlt für {{label}} (oder Produktpreis setzen)',
+      priceMissingExisting: 'Preis fehlt für {{label}} (das Produkt hat keinen Preis)',
+      bundleNoItems: '{{label}} enthält keine Produkte',
+    },
+    a11y: {
+      removeRow: '{{label}} entfernen',
+      clearWine: 'Wein {{title}} abwählen',
+      removeItem: '{{label}} entfernen',
+    },
+    errors: {
+      loadData: 'Daten konnten nicht geladen werden',
+      loadOptionGroups: 'Optionengruppen konnten nicht geladen werden',
+      loadVariants: 'Varianten konnten nicht geladen werden',
+      loadProduct: 'Produkt konnte nicht geladen werden',
+      productNotFound: 'Produkt nicht gefunden.',
+      unknownKind: 'Unbekannte Produktart.',
+      missingProductId: 'Produkt-ID fehlt.',
+    },
     bundle: {
       vatFromItems:
         'Die MwSt. wird aus den enthaltenen Produkten übernommen (Preis aufgeteilt nach ihren Einzelpreisen).',
