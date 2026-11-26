@@ -10,6 +10,16 @@ export const variantOptionGroup: ITSDocumentDefinition = {
   build: (ctx) => {
     const { f } = ctx
     return {
+      orderings: [
+        {
+          title: ctx.t.default('orderings.sortOrder', 'Order'),
+          name: 'sortOrderAsc',
+          by: [
+            { field: 'sortOrder', direction: 'asc' },
+            { field: '_createdAt', direction: 'asc' },
+          ],
+        },
+      ],
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),
         // f('description', 'i18nString'),

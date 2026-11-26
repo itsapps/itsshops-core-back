@@ -67,6 +67,11 @@ function createDefinition(ctx: ITSContext, definition: ITSSchemaDefinition): Sch
       ...(groups && { groups }),
       ...(fieldsets && { fieldsets }),
       preview,
+      // Without `orderings` Sanity generates one sort entry per field, titled with the raw
+      // field name ("Display mode", "Kind"): documents get only their own (+ last edited/created).
+      ...(definition.type === 'document' && {
+        orderings: ('orderings' in built && built.orderings) || [],
+      }),
     } as Parameters<typeof defineType>[0])
     return d
   } else if (definition.type === 'array') {

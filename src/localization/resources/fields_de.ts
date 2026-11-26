@@ -312,6 +312,8 @@ export default {
     },
   },
   orderings: {
+    sortOrder: 'Reihenfolge',
+    titleAsc: 'Titel (A–Z)',
     asc: 'Aufsteigend',
     desc: 'Absteigend',
   },

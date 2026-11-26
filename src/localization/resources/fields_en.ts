@@ -310,6 +310,8 @@ export default {
     },
   },
   orderings: {
+    sortOrder: 'Order',
+    titleAsc: 'Title (A–Z)',
     asc: 'Ascending',
     desc: 'Descending',
   },

@@ -63,6 +63,21 @@ export const category: ITSDocumentDefinition = {
 
     return {
       ...groupedData,
+      orderings: [
+        {
+          title: ctx.t.default('orderings.sortOrder', 'Order'),
+          name: 'sortOrderAsc',
+          by: [
+            { field: 'sortOrder', direction: 'asc' },
+            { field: '_createdAt', direction: 'asc' },
+          ],
+        },
+        {
+          title: ctx.t.default('orderings.titleAsc', 'Title (A–Z)'),
+          name: 'titleAsc',
+          by: [{ field: 'title[0].value', direction: 'asc' }],
+        },
+      ],
       preview: {
         select: {
           title: 'title',

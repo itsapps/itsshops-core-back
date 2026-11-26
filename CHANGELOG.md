@@ -15,8 +15,10 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 - **`product.cmsTitle`** ("Internal name", optional, Studio only): title of the product's list
   preview and searchable, the shop title moves to the subtitle — tells same-named products apart.
   Not read by core-front. **Upgrading:** optional; fill it where products share a name.
-- **Product sort menu:** only "Title (A–Z)" and "Internal name (A–Z)" (plus Sanity's last
-  edited/created) instead of one entry per field.
+- **Sort menus:** core documents no longer get Sanity's generated one-entry-per-field sorts
+  (untranslated, e.g. "Display mode", "Kind", "Weight") — only their own plus last
+  edited/created. Products: "Title (A–Z)", "Internal name (A–Z)"; categories: "Order"
+  (`sortOrder`), "Title (A–Z)"; option groups and options: "Order".
 - **`rxjs` dependency** (`^7.8.2`, the version `sanity` already installs — deduped).
 
 - **Studio tasks disabled** (`tasks: { enabled: false }`, like comments): the Tasks button is

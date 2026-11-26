@@ -34,7 +34,14 @@ both).
 
 **Product Studio-only fields:** `product.cmsTitle` (internal name: list preview title + search,
 never projected by core-front). `product` has explicit `orderings` (title / internal name via
-`title[0].value` — the sort path can't filter by `language`), so Sanity generates none per field.
+`title[0].value` — the sort path can't filter by `language`).
+
+**Sort menus (`orderings`):** `createDefinition` (`src/schemas/index.ts`) gives every core document
+`orderings: built.orderings ?? []` — without it Sanity generates one sort entry per primitive field,
+titled with the raw field name. A type that should be sortable defines its own: `product` (title,
+internal name), `productVariant` (vintage, volume), `category` (`sortOrder`, title),
+`variantOptionGroup` / `variantOption` (`sortOrder`). Shared labels: `orderings.sortOrder`,
+`orderings.titleAsc`.
 
 **Price & bundles (validation):** an `active` `productVariant` needs a price — its own or its
 product's (async `rule.custom` on `price`, error; other statuses/drafts free). Emptying a
