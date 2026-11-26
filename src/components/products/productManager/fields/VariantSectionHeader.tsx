@@ -7,11 +7,11 @@ import { SectionLabel } from './SectionLabel'
 
 export function VariantSectionHeader(props: VariantSectionHeaderProps): ReactElement {
   const { componentT } = useITSContext()
-  const { count } = props
+  const { count, title } = props
   return (
     <Flex align="center" justify="space-between">
       <SectionLabel>
-        {componentT.default('productCreatorTool.sections.variants.title')}
+        {title ?? componentT.default('productCreatorTool.sections.variants.title')}
       </SectionLabel>
       <Text size={1} muted>
         {componentT.default('productCreatorTool.sections.variants.count', `${count} variants`, {

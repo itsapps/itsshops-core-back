@@ -11,7 +11,9 @@ import { cartesian } from '../../../../lib/shop/productVariant.tx'
 import { VariantOption, VariantOptionGroup } from '../../../../types'
 import { uid } from '../../../../utils/utils'
 import { AdvancedSection } from '../fields/AdvancedSection'
+import { DuplicateNotice, useTitleDuplicates } from '../duplicates'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
+import { inheritedPriceLabel, inheritedTaxLabel } from '../fields/inherited'
 import { PriceField } from '../fields/PriceField'
 import { SectionLabel } from '../fields/SectionLabel'
 import { TaxCategoryField } from '../fields/TaxCategoryField'
@@ -112,6 +114,8 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
     defaultLocale,
     titlePlaceholder,
     showWeight,
+    priceInherited,
+    taxInherited,
     onUpdate,
     onToggleCombination,
   } = props
@@ -185,7 +189,12 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
 
           {row.enabled && !row.alreadyExists && (
             <>
-              <PriceField value={row.price} onChange={handlePriceChange} required={false} />
+              <PriceField
+                value={row.price}
+                onChange={handlePriceChange}
+                required={false}
+                inheritedLabel={priceInherited}
+              />
               {showWeight && <WeightField value={row.weight} onChange={handleWeightChange} />}
             </>
           )}
@@ -200,6 +209,7 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
                 taxCategories={taxCategories}
                 loadingTax={loadingTax}
                 onTaxChange={handleTaxChange}
+                inheritedLabel={taxInherited}
               />
             </AdvancedSection>
           </Box>
@@ -223,8 +233,9 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
 
 export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement {
   const { titles, globalPrice, taxCategories, loadingTax, defaultLocale } = props.global
+  const { globalTaxCategoryId, shopDefaultTaxCategoryId } = props.global
   const { onSubmit, submitting, existingOptionSets, hideProductSection, activeKind } = props
-  const { sanityClient, localizer, componentT } = useITSContext()
+  const { sanityClient, localizer, componentT, format } = useITSContext()
   const toast = useToast()
 
   const [groups, setGroups] = useState<OptionGroup[]>([])
@@ -352,8 +363,22 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
     setCombinations([])
   }, [submitCheck.ok, onSubmit, enabledCombinations])
 
+  const duplicateLines = useTitleDuplicates(
+    activeKind,
+    titles.find((ts) => ts.locale === defaultLocale)?.value ?? '',
+    !hideProductSection,
+  )
+  const priceInherited = inheritedPriceLabel(componentT, format, globalPrice)
+  const taxInherited = inheritedTaxLabel(
+    componentT,
+    taxCategories,
+    globalTaxCategoryId,
+    shopDefaultTaxCategoryId,
+  )
+
   const content = (
     <Stack gap={3}>
+      <DuplicateNotice lines={duplicateLines} />
       <VariantSectionHeader count={combinations.length} />
       <Card border radius={2} padding={4}>
         <Stack gap={4}>
@@ -434,6 +459,8 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
                   defaultLocale={props.global.defaultLocale}
                   titlePlaceholder={props.global.titlePlaceholder}
                   showWeight={activeKind === 'physical'}
+                  priceInherited={priceInherited}
+                  taxInherited={taxInherited}
                   onUpdate={updateCombination}
                   onToggleCombination={toggleCombination}
                 />

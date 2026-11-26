@@ -1,4 +1,4 @@
-import { Checkbox, Flex, Label, Stack, TextInput } from '@sanity/ui'
+import { Box, Checkbox, Flex, Label, Stack, Text, TextInput } from '@sanity/ui'
 import { ChangeEvent, ReactElement } from 'react'
 import { memo, useCallback, useId, useState } from 'react'
 
@@ -7,22 +7,42 @@ import { I18nTitleInputsProps, LocaleTitleInputProps } from '../ProductCreator.t
 import { LabelField } from './Label'
 
 const LocaleTitleInput = memo(function LocaleTitleInput(props: LocaleTitleInputProps) {
-  const { locale, required = false, value, onChange, placeholder } = props
+  const { locale, required = false, value, onChange, placeholder, hint, action } = props
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => onChange(locale, e.currentTarget.value),
     [locale, onChange],
   )
   const id = useId()
+  const hintId = useId()
 
   return (
     <LabelField id={id} title={locale.toUpperCase()} required={required}>
-      <TextInput id={id} value={value} onChange={handleChange} placeholder={placeholder} />
+      <Stack gap={2}>
+        <Flex align="center" gap={2}>
+          <Box flex={1}>
+            <TextInput
+              id={id}
+              value={value}
+              onChange={handleChange}
+              placeholder={placeholder}
+              aria-describedby={hint ? hintId : undefined}
+            />
+          </Box>
+          {action}
+        </Flex>
+        {hint && (
+          <Text id={hintId} size={1} muted>
+            {hint}
+          </Text>
+        )}
+      </Stack>
     </LabelField>
   )
 })
 
 export function I18nTitleInputs(props: I18nTitleInputsProps): ReactElement {
-  const { locales, requiredLocales, required, titles, onChange, placeholder } = props
+  const { locales, defaultLocale, requiredLocales, required, titles, onChange, placeholder } = props
+  const { hint, action } = props
   const { schemaT } = useITSContext()
   const [expanded, setExpanded] = useState(required || titles.some((t) => t.value))
   const toggleId = useId()
@@ -74,6 +94,8 @@ export function I18nTitleInputs(props: I18nTitleInputsProps): ReactElement {
               value={titles.find((t) => t.locale === locale)?.value ?? ''}
               onChange={handleChange}
               placeholder={placeholder}
+              hint={locale === defaultLocale ? hint : undefined}
+              action={locale === defaultLocale ? action : undefined}
             />
           ))}
         </Stack>

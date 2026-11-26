@@ -7,7 +7,15 @@ import { TaxCategoryFieldProps } from '../ProductCreator.types'
 import { LabelField } from './Label'
 
 export function TaxCategoryField(props: TaxCategoryFieldProps): ReactElement {
-  const { value, taxCategories, loadingTax, onTaxChange, required = false, hint } = props
+  const {
+    value,
+    taxCategories,
+    loadingTax,
+    onTaxChange,
+    required = false,
+    hint,
+    inheritedLabel,
+  } = props
   const { schemaT } = useITSContext()
   const id = useId()
   const hintId = useId()
@@ -26,7 +34,8 @@ export function TaxCategoryField(props: TaxCategoryFieldProps): ReactElement {
           disabled={loadingTax}
           aria-describedby={hint ? hintId : undefined}
         >
-          <option value="">-</option>
+          {/* Empty = not written: the variant inherits (the label says from where) */}
+          <option value="">{inheritedLabel ?? '-'}</option>
           {taxCategories.map((tc) => (
             <option key={tc._id} value={tc._id}>
               {tc.title} ({tc.code})

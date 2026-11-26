@@ -26,11 +26,14 @@ interface UseProductTransactionReturn {
 
 export function useProductTransaction(options: {
   titles: I18nTitleEntry[]
+  /** `add`: variants added to an existing product (other toast text). Default `create`. */
+  mode?: 'create' | 'add'
   onError?: (err: Error) => void
 }): UseProductTransactionReturn {
   const { componentT, config } = useITSContext()
   const defaultLocale = config.localization.defaultLocale
-  const { titles, onError } = options
+  const { titles, onError, mode = 'create' } = options
+  const messages = mode === 'add' ? 'variantsAdded' : 'productCreated'
   const toast = useToast()
   // Captured here (router context): the toast renders in a portal outside it, so the button
   // navigates with this router instead of an IntentLink.
@@ -44,13 +47,13 @@ export function useProductTransaction(options: {
         await tx.commit()
         const title = titles.find((t) => t.locale === defaultLocale)?.value ?? ''
         const text = componentT.default(
-          'productCreatorTool.messages.productCreated.description',
-          'Product created',
+          `productCreatorTool.messages.${messages}.description`,
+          undefined,
           { title, count },
         )
         toast.push({
           status: 'success',
-          title: componentT.default('productCreatorTool.messages.productCreated.title'),
+          title: componentT.default(`productCreatorTool.messages.${messages}.title`),
           description: link ? (
             <Stack gap={2}>
               <Text size={1}>{text}</Text>
@@ -81,7 +84,7 @@ export function useProductTransaction(options: {
         setSubmitting(false)
       }
     },
-    [titles, defaultLocale, toast, componentT, onError, router],
+    [titles, defaultLocale, messages, toast, componentT, onError, router],
   )
 
   return { submitting, commitTransaction }

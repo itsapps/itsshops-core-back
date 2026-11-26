@@ -72,8 +72,40 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
 - **Submit:** tab `onSubmit` props resolve `true`/`false` (the commit result); tabs reset only
   on `true`, so a failed commit keeps the editor's rows. The wine tab submits only rows that don't
   match an existing variant (`existingWineKeys`).
-- **Title suggestion (wine):** the first picked wine fills the default-locale title once
-  (`stripYear`), only while it is empty; other locales are left as they are.
+- **Wine grid (`WineTab`):** the editor picks a **seed wine** (Autocomplete over all VinoFact
+  wines). VinoFact has no link between vintages (each is its own wine with a free-text name +
+  year), so the grid's rows are every wine with the same `normalizeWineName` (`utils/wineName.ts`:
+  `stripYear`, lower-case, accents folded, whitespace collapsed; tested in
+  `tests/wineName.test.ts`), newest first; "Weiteren Wein hinzufügen" adds any other wine,
+  every row has a labelled ✕. Only the newest 5 rows show until "Ältere Jahrgänge zeigen"
+  (`aria-expanded`); rows with existing/ticked cells and added rows always show. Columns = the
+  volumes used by wine variants in the dataset (`array::unique(…wine.volume)`) + 750 + those
+  added via "Flaschengröße hinzufügen", labelled in litres. The grid is a `<table>` (caption,
+  `th scope`), each cell a checkbox named "Wein 2023, 0,75 l"; existing cells are checked +
+  disabled ("(gibt es schon)" in the name); it scrolls horizontally in its own focusable,
+  labelled region (also in the narrower pane). Each ticked cell is a `WineRow` (id = cell key
+  `${wineId}:${volume}`, same as `existingWineKeys`) with price and, under "Advanced", tax +
+  own title. Clearing the seed (✕) starts over.
+- **Title suggestion (wine, creating only):** picking the seed writes `stripYear(seed.title)`
+  into the default-locale title (other locales untouched) while that title still equals what
+  the suggestion last wrote (`appliedTitle`) — so it follows a re-picked seed until the editor
+  edits it, in any tab (the titles are shared). The input shows "Aus VinoFact übernommen" /
+  "Vorschlag aus VinoFact: …" (`aria-describedby`) and a ↺ button restoring the suggestion
+  (`MainProduct` `titleHint`/`titleAction` → `I18nTitleInputs` `hint`/`action`, default locale).
+- **Duplicate check (creating only, `productManager/duplicates.tsx`):** raw perspective (drafts
+  count, `versions.**` excluded, ids merged by `utils/existingProducts.ts` `mergeDrafts`, the
+  draft wins). Wine: an exact query over all grid wines' VinoFact ids marks those cells as
+  existing and lists "Wein 2023 (0,75 l) ist schon in X"; a hint list (products + wine variants,
+  joined client-side by published id) finds products whose title or wines' names match the
+  seed's name ("Gibt es schon: X — Jahrgänge dort hinzufügen?"). Other kinds: products of the
+  kind with the same `normalizeTitle` (debounced 300 ms). Shown in a caution card with
+  `IntentLink`s, announced once (sr-only `role="status"`); never a submit reason.
+- **Inherited values (all tabs):** an empty row price shows the product price as placeholder
+  (`PriceField inheritedLabel`, "14,90 € vom Produkt"); the empty tax option says what is
+  inherited (`TaxCategoryField inheritedLabel`: product's tax, else the shop default) —
+  `fields/inherited.ts`.
+- **Wording:** the wine tab says "Wein" (section label, submit "Wein mit 3 Jahrgängen &
+  Flaschen anlegen") and "Jahrgänge & Flaschen"; adding uses "… hinzufügen" submit texts.
 - **Add variants (`AddVariantsDialog`)**: one component for the document action
   (`variant="dialog"`, closes after submit) and the desk-structure pane `AddVariantsPane`
   (`variant="pane"`, stays open). It loads product, existing variants, tax categories and the shop
@@ -81,6 +113,13 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
   draft version of an edited variant both count as existing (a draft that changed the volume
   must not free the published key); the other parts filter out `drafts.**`/`versions.**`. The pane reloads after each successful submit (without the
   spinner, which would unmount the tab) so the variants just added show as existing.
+  Wine: the product's VinoFact ids (`seedWineIds`) seed the grid (ids gone from VinoFact are
+  skipped; none → the normal seed picker); a reload merges new seeds in, added rows stay. No
+  title suggestion, no duplicate check. A header card shows the product title, price and tax
+  (or shop default). The toast says "Varianten hinzugefügt" (`useProductTransaction({ mode:
+  'add' })`); the pane also shows a lasting "3 Varianten hinzugefügt" card (cleared on the next
+  submit). The document action is disabled until the product is published, with a tooltip
+  saying so.
 - **a11y:** every field is a real `<label for>` (`LabelField` takes the control's `id`);
   icon-only remove/clear buttons carry `productCreatorTool.a11y.*` labels; option toggles use
   `aria-pressed` + a check icon (not colour alone); combination checkboxes are wrapped in a

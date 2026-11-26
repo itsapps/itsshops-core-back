@@ -18,6 +18,7 @@ import { LaunchIcon as Launch } from '@sanity/icons/Launch'
 import { OlistIcon as Olist } from '@sanity/icons/Olist'
 import { PackageIcon as Package } from '@sanity/icons/Package'
 import { PlugIcon as Plug } from '@sanity/icons/Plug'
+import { ResetIcon as Reset } from '@sanity/icons/Reset'
 import { SchemaIcon as Schema } from '@sanity/icons/Schema'
 import { SearchIcon as Search } from '@sanity/icons/Search'
 import { SparkleIcon as Sparkle } from '@sanity/icons/Sparkle'
@@ -91,6 +92,8 @@ export const IntegrationsIcon = Plug
 export const EditIcon = Edit
 export const ShowIcon = EyeOpen
 export const HideIcon = EyeClosed
+/** Restore a suggested value (e.g. the Product Manager's title suggestion). */
+export const RestoreSuggestionIcon = Reset
 export const EllipsisHorizontalIcon = EllipsisHorizontal
 export const NotificationIcon = Envelope
 export const ErrorOutlineIcon = ErrorOutline

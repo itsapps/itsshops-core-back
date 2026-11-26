@@ -10,6 +10,13 @@ export function ProductTab(props: ProductTabProps): ReactElement {
   const { submitCheck, submitting } = props
   const reasonsId = useId()
   const blocked = !submitCheck.ok && submitCheck.reasons.length > 0
+  // Creating vs. adding to an existing product; the wine tab says "Wein" / "Jahrgang & Flasche"
+  const adding = !!props.hideProductSection
+  const wine = props.global.kind === 'wine'
+  const submitKey = {
+    create: { wine: 'submitWine', other: 'submit' },
+    add: { wine: 'submitAddWine', other: 'submitAdd' },
+  }[adding ? 'add' : 'create'][wine ? 'wine' : 'other']
 
   return (
     <Stack gap={[1, 1, 4, 6]}>
@@ -39,8 +46,10 @@ export function ProductTab(props: ProductTabProps): ReactElement {
           tone="primary"
           text={
             submitting
-              ? componentT.default('productCreatorTool.submitting')
-              : componentT.default('productCreatorTool.submit', 'Create Product', {
+              ? componentT.default(
+                  adding ? 'productCreatorTool.submittingAdd' : 'productCreatorTool.submitting',
+                )
+              : componentT.default(`productCreatorTool.${submitKey}`, undefined, {
                   count: props.rows,
                 })
           }

@@ -1,6 +1,6 @@
 import { ComponentType, ReactNode } from 'react'
 
-import { ProductKind, VinofactWine, VolumeOption } from '../../../types'
+import { ProductKind, VinofactWine } from '../../../types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -94,6 +94,9 @@ export interface MainProductProps {
   onGlobalPriceChange: (val: number | undefined) => void
   onGlobalTaxChange: (val: string) => void
   onGlobalWeightChange: (val: number | undefined) => void
+  /** The wine tab's title suggestion: note + restore button at the default-locale title. */
+  titleHint?: ReactNode
+  titleAction?: ReactNode
 }
 
 /** Whether a tab can submit, and why not (translated, shown above the button). */
@@ -126,6 +129,11 @@ export interface WineTabProps extends ProductKindTabProps {
   /** Resolves `true` when the commit succeeded (the tab resets only then). */
   onSubmit: (rows: WineRow[], options: WineSubmitOptions) => Promise<boolean>
   existingWineKeys?: Set<string>
+  /**
+   * Adding to an existing product: the VinoFact ids of its wine variants. They seed the grid
+   * (with their same-name vintages) instead of the "pick a first wine" step.
+   */
+  seedWineIds?: string[]
 }
 
 export interface PhysicalDigitalTabProps extends ProductKindTabProps {
@@ -172,6 +180,10 @@ export interface LocaleTitleInputProps {
   value: string
   onChange: (locale: string, value: string) => void
   placeholder?: string
+  /** Note below the input, linked with `aria-describedby`. */
+  hint?: ReactNode
+  /** A control next to the input (e.g. "restore suggestion"). */
+  action?: ReactNode
 }
 
 export interface LabelFieldProps {
@@ -190,6 +202,9 @@ export interface I18nTitleInputsProps {
   titles: I18nTitleEntry[]
   onChange: (titles: I18nTitleEntry[]) => void
   placeholder?: string
+  /** Hint + action for the default locale's input (the wine tab's title suggestion). */
+  hint?: ReactNode
+  action?: ReactNode
 }
 
 export interface PriceFieldProps {
@@ -198,6 +213,8 @@ export interface PriceFieldProps {
   readOnly?: boolean
   disabled?: boolean
   required?: boolean
+  /** Placeholder of an empty field when the value is inherited ("14,90 € vom Produkt"). */
+  inheritedLabel?: string
 }
 
 export interface WeightFieldProps {
@@ -214,6 +231,8 @@ export interface TaxCategoryFieldProps {
   required?: boolean
   /** Read-only note below the select (e.g. the shop default). */
   hint?: string
+  /** Text of the empty option: what an empty value inherits ("vom Produkt: …"). */
+  inheritedLabel?: string
 }
 
 export interface GlobalDefaultsProps {
@@ -231,26 +250,25 @@ export interface GlobalDefaultsProps {
 
 export interface VariantSectionHeaderProps {
   count: number
+  /** Overrides "Varianten" (the wine tab says "Jahrgänge & Flaschen"). */
+  title?: string
 }
 
-export interface WineRowCardProps {
+export interface WineVariantCardProps {
   row: WineRow
   index: number
-  canRemove: boolean
-  options: WineOption[]
-  loadingWines: boolean
+  /** "Ried Steinberg — 0,75 l • 2023" */
+  label: string
   loadingTax: boolean
   taxCategories: TaxCategory[]
-  volumeOptions: VolumeOption[]
-  globalPrice: number | undefined
-  globalTaxCategoryId: string
   locales: string[]
   defaultLocale: string
   titlePlaceholder: string
-  existingWineKeys?: Set<string>
+  /** Placeholder of an empty price / text of the empty tax option (B4). */
+  priceInherited?: string
+  taxInherited: string
   onUpdate: (id: string, key: keyof WineRow, val: any) => void
   onRemove: (id: string) => void
-  onQueryChange: (id: string, query: string) => void
 }
 
 export interface OptionToggleCardProps {
@@ -270,6 +288,9 @@ export interface OptionComboCardProps {
   defaultLocale: string
   titlePlaceholder: string
   showWeight: boolean
+  /** Placeholder of an empty price / text of the empty tax option (inherited values). */
+  priceInherited?: string
+  taxInherited: string
   onUpdate: (id: string, key: keyof CombinationRow, val: any) => void
   onToggleCombination: (id: string) => void
 }

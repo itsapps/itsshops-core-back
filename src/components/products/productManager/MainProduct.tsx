@@ -84,8 +84,10 @@ export function MainProduct(props: MainProductProps): ReactElement {
     onGlobalPriceChange,
     onGlobalTaxChange,
     onGlobalWeightChange,
+    titleHint,
+    titleAction,
   } = props
-  const { schemaT } = useITSContext()
+  const { schemaT, componentT } = useITSContext()
 
   return (
     <Card
@@ -95,7 +97,12 @@ export function MainProduct(props: MainProductProps): ReactElement {
       style={{ borderLeft: '3px solid var(--card-focus-ring-color)' }}
     >
       <Stack gap={4}>
-        <SectionLabel>{schemaT.default('product.title')}</SectionLabel>
+        {/* The wine tab speaks of "Wein", not "Produkt" */}
+        <SectionLabel>
+          {kind === 'wine'
+            ? componentT.default('productCreatorTool.wine.product')
+            : schemaT.default('product.title')}
+        </SectionLabel>
         <I18nTitleInputs
           locales={locales}
           defaultLocale={defaultLocale}
@@ -104,6 +111,8 @@ export function MainProduct(props: MainProductProps): ReactElement {
           titles={titles}
           onChange={onTitlesChange}
           placeholder={titlePlaceholder}
+          hint={titleHint}
+          action={titleAction}
         />
 
         {/* Global defaults */}

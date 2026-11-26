@@ -13,6 +13,17 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
   that already exists (also not from the desk-structure pane on a second run, and not
   when a variant has unpublished edits); picking a wine no longer clears the product title in
   other languages; all fields are properly labelled for screen readers.
+- **Product Manager — wine tab as a vintage × bottle-size table:** pick one VinoFact wine and
+  the table lists every vintage with the same name (newest 5, "show older"); tick the cells to
+  create, one variant each (price, and under "Advanced" tax + own title). Other wines (e.g. a
+  renamed vintage) and bottle sizes can be added; the default columns are the volumes already in
+  use + 0.75 l. The product title follows the picked wine until edited (↺ restores it). Before
+  creating, the tool warns when a product or the same wine + size already exists (also drafts),
+  with a link; existing cells can't be ticked. Empty price/tax fields show what they inherit
+  ("14,90 € vom Produkt", "vom Produkt: …" / "Shop-Standard: …") in every tab; the other tabs
+  warn about a product with the same name. Adding variants to a wine product starts with the
+  product's wines in the table, shows the product's price/tax, a "Varianten hinzugefügt" toast
+  and, in the desk pane, a lasting confirmation; the disabled action explains "publish first".
 - **`features.shop.vinofact.importBottleImages`** (default `false`): the Product Manager's "copy
   bottle images from VinoFact" checkbox now starts **unchecked**. **Upgrading:** shops that want
   bottle images on by default set `features.shop.vinofact.importBottleImages: true`.

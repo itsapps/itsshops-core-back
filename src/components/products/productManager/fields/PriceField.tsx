@@ -16,6 +16,7 @@ export function PriceField({
   readOnly = false,
   disabled = false,
   required = false,
+  inheritedLabel,
 }: PriceFieldProps): ReactElement {
   const { schemaT, componentT } = useITSContext()
   const id = useId()
@@ -38,7 +39,10 @@ export function PriceField({
         onChange={handleInputChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        placeholder={componentT.default('productCreatorTool.placeholders.productPrice')}
+        // An inherited price replaces the example ("14,90 € vom Produkt")
+        placeholder={
+          inheritedLabel ?? componentT.default('productCreatorTool.placeholders.productPrice')
+        }
         readOnly={readOnly}
         disabled={disabled}
       />

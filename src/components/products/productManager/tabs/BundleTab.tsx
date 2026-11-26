@@ -10,7 +10,9 @@ import { AddIcon, CloseIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
 import { uid } from '../../../../utils/utils'
 import { compareLabels, variantLabel } from '../../../../utils/variantLabel'
+import { DuplicateNotice, useTitleDuplicates } from '../duplicates'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
+import { inheritedPriceLabel } from '../fields/inherited'
 import { PriceField } from '../fields/PriceField'
 import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
@@ -96,6 +98,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
     locales,
     defaultLocale,
     titlePlaceholder,
+    globalPrice,
     getVariantLabel,
     onRemoveRow,
     onAddItem,
@@ -103,7 +106,7 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
     onQuantityChange,
     onUpdateRow,
   } = props
-  const { studioT, structureT, schemaT, componentT } = useITSContext()
+  const { studioT, structureT, schemaT, componentT, format } = useITSContext()
   const [query, setQuery] = useState('')
 
   const handleRemoveRow = useCallback(() => onRemoveRow(row.id), [onRemoveRow, row.id])
@@ -225,7 +228,12 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
 
         {/* Price (no tax category: VAT comes from the items) */}
         <Stack gap={2}>
-          <PriceField value={row.price} onChange={handlePriceChange} required={false} />
+          <PriceField
+            value={row.price}
+            onChange={handlePriceChange}
+            required={false}
+            inheritedLabel={inheritedPriceLabel(componentT, format, globalPrice)}
+          />
           <Text size={1} muted>
             {componentT.default(
               'productCreatorTool.bundle.vatFromItems',
@@ -398,8 +406,15 @@ export function BundleTab(props: BundleTabProps): ReactElement {
     setRows([emptyBundleRow()])
   }, [submitCheck.ok, onSubmit, rows])
 
+  const duplicateLines = useTitleDuplicates(
+    'bundle',
+    titles.find((t) => t.locale === defaultLocale)?.value ?? '',
+    !hideProductSection,
+  )
+
   const content = (
     <Stack gap={6}>
+      <DuplicateNotice lines={duplicateLines} />
       {/* Bundle variant rows */}
       <Stack gap={3}>
         <VariantSectionHeader count={rows.length} />

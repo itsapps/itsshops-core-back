@@ -42,6 +42,8 @@ type ExistingVariant = Pick<ProductVariant, '_id' | 'weight'> & {
 }
 type ProductWithKind = Pick<Product, '_id'> & {
   kind: ProductKind
+  /** Default-locale title. */
+  title?: string | null
   price?: number
   taxCategoryId?: string
 }
@@ -69,7 +71,8 @@ type LoadResult = {
 const PUBLISHED = '!(_id in path("drafts.**")) && !(_id in path("versions.**"))'
 const LOAD_QUERY = `{
   "product": *[_type == "product" && _id == $productId && ${PUBLISHED}][0]{
-    _id, kind, price, "taxCategoryId": taxCategory._ref
+    _id, kind, price, "taxCategoryId": taxCategory._ref,
+    "title": coalesce(title[language == $locale][0].value, title[0].value)
   },
   "variants": *[_type == "productVariant" && product._ref == $productId && !(_id in path("versions.**"))]{
     _id, kind,
@@ -106,7 +109,7 @@ export function AddVariantsDialog({
   onClose,
   variant,
 }: AddVariantsDialogProps): ReactElement {
-  const { config, sanityClient, componentT } = useITSContext()
+  const { config, sanityClient, componentT, format } = useITSContext()
   const client = sanityClient
   const toast = useToast()
 
@@ -157,10 +160,16 @@ export function AddVariantsDialog({
     load(true)
   }, [load])
 
+  // The pane's persistent confirmation (a toast times out, WCAG 2.2.1); cleared on the next submit
+  const [lastAdded, setLastAdded] = useState<number | null>(null)
+
   // The pane stays open: reload so the variants just added count as existing. The dialog closes.
   const afterCommit = useCallback(
-    (ok: boolean) => {
-      if (ok && variant === 'pane') load(false)
+    (ok: boolean, count: number) => {
+      if (ok && variant === 'pane') {
+        setLastAdded(count)
+        load(false)
+      }
       return ok
     },
     [load, variant],
@@ -183,13 +192,33 @@ export function AddVariantsDialog({
     )
   }, [existingVariants])
 
+  // The product's wines seed the wine grid (with their same-name vintages)
+  const seedWineIds = useMemo(
+    () => [
+      ...new Set(
+        existingVariants
+          .filter((v) => v.kind === 'wine' && v.vinofactWineId)
+          .map((v) => v.vinofactWineId!),
+      ),
+    ],
+    [existingVariants],
+  )
+
   // ─── Submit handlers ────────────────────────────────────────────────────────
-  const { submitting, commitTransaction } = useProductTransaction({ titles: [] })
+  const toastTitles = useMemo(
+    () => [{ locale: defaultLocale, value: product?.title ?? '' }],
+    [defaultLocale, product?.title],
+  )
+  const { submitting, commitTransaction } = useProductTransaction({
+    titles: toastTitles,
+    mode: 'add',
+  })
   const importBottleImagesInBackground = useBackgroundBottleImport()
 
   const handleWineSubmit = useCallback(
     async (rows: WineRow[], options: WineSubmitOptions) => {
       if (!product) return false
+      setLastAdded(null)
 
       const tx = client.transaction()
       const targets = rows.flatMap((r) => {
@@ -199,7 +228,7 @@ export function AddVariantsDialog({
       const ok = await commitTransaction(tx, targets.length, onClose)
       // Not awaited: the dialog closes as before, the import's toasts outlive it.
       if (ok && options.importBottleImages) importBottleImagesInBackground(targets)
-      return afterCommit(ok)
+      return afterCommit(ok, targets.length)
     },
     [
       client,
@@ -215,12 +244,16 @@ export function AddVariantsDialog({
   const handlePhysicalDigitalSubmit = useCallback(
     async (combinations: CombinationRow[]) => {
       if (!product) return false
+      setLastAdded(null)
 
       const tx = client.transaction()
       combinations.forEach((c) =>
         addPhysicalDigitalVariantToTx(tx, productId, product.kind as 'physical' | 'digital', c),
       )
-      return afterCommit(await commitTransaction(tx, combinations.length, onClose))
+      return afterCommit(
+        await commitTransaction(tx, combinations.length, onClose),
+        combinations.length,
+      )
     },
     [client, product, productId, onClose, commitTransaction, afterCommit],
   )
@@ -228,9 +261,10 @@ export function AddVariantsDialog({
   const handleBundleSubmit = useCallback(
     async (rows: BundleVariantRow[]) => {
       if (!product) return false
+      setLastAdded(null)
       const tx = client.transaction()
       rows.forEach((r) => addBundleVariantToTx(tx, productId, r))
-      return afterCommit(await commitTransaction(tx, rows.length, onClose))
+      return afterCommit(await commitTransaction(tx, rows.length, onClose), rows.length)
     },
     [client, product, productId, onClose, commitTransaction, afterCommit],
   )
@@ -245,7 +279,8 @@ export function AddVariantsDialog({
       // The product's price: new variants without their own price inherit it (feeds the tabs'
       // price check; the add-variants submit never writes it).
       globalPrice: product?.price,
-      globalTaxCategoryId: '',
+      // The product's tax category: shown as what new variants inherit (never written here)
+      globalTaxCategoryId: product?.taxCategoryId ?? '',
       taxCategories,
       shopDefaultTaxCategoryId,
       loadingTax,
@@ -285,6 +320,7 @@ export function AddVariantsDialog({
           <WineTab
             global={globalProps}
             existingWineKeys={existingWineKeys}
+            seedWineIds={seedWineIds}
             hideProductSection
             onSubmit={handleWineSubmit}
             submitting={submitting}
@@ -320,14 +356,66 @@ export function AddVariantsDialog({
     }
   }
 
-  return <Stack gap={1}>{renderContent()}</Stack>
+  const taxTitle = (id: string | undefined) => {
+    const tc = id ? taxCategories.find((t) => t._id === id) : undefined
+    return tc ? `${tc.title} (${tc.code})` : undefined
+  }
+  const productTax = taxTitle(product?.taxCategoryId)
+  const shopTax = taxTitle(shopDefaultTaxCategoryId)
+  let taxLine = componentT.default('productCreatorTool.addVariants.noTax')
+  if (productTax) {
+    taxLine = componentT.default('productCreatorTool.addVariants.productTax', undefined, {
+      title: productTax,
+    })
+  } else if (shopTax) {
+    taxLine = componentT.default('productCreatorTool.addVariants.shopDefaultTax', undefined, {
+      title: shopTax,
+    })
+  }
+
+  return (
+    <Stack gap={4}>
+      {/* What the new variants are added to, and what they inherit */}
+      {!loading && product && (
+        <Card padding={3} radius={2} border>
+          <Stack gap={2}>
+            <Text size={1} weight="semibold">
+              {product.title || product._id}
+            </Text>
+            <Text size={1} muted>
+              {product.price
+                ? componentT.default('productCreatorTool.addVariants.productPrice', undefined, {
+                    price: format.currency(product.price / 100),
+                  })
+                : componentT.default('productCreatorTool.addVariants.noProductPrice')}
+            </Text>
+            {product.kind !== 'bundle' && (
+              <Text size={1} muted>
+                {taxLine}
+              </Text>
+            )}
+          </Stack>
+        </Card>
+      )}
+      {variant === 'pane' && lastAdded !== null && (
+        <Card padding={3} radius={2} tone="positive" border>
+          <Text size={1}>
+            {componentT.default('productCreatorTool.addVariants.added', undefined, {
+              count: lastAdded,
+            })}
+          </Text>
+        </Card>
+      )}
+      {renderContent()}
+    </Stack>
+  )
 }
 
 // ─── AddVariantsAction ────────────────────────────────────────────────────────
 
 export const AddVariantsAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const { id, published } = props
-  const { structureT } = useITSContext()
+  const { structureT, componentT } = useITSContext()
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const handleOpen = () => setDialogOpen(true)
@@ -339,6 +427,10 @@ export const AddVariantsAction: DocumentActionComponent = (props: DocumentAction
     label: title,
     icon: AddIcon,
     disabled: !published,
+    // Tooltip: why the action is disabled
+    title: published
+      ? undefined
+      : componentT.default('productCreatorTool.addVariants.publishFirst'),
     onHandle: handleOpen,
     // onClose: handleClose,
     dialog: dialogOpen
