@@ -6,6 +6,10 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
+- **Studio tasks disabled** (`tasks: { enabled: false }`, like comments): the Tasks button is
+  gone, so the Studio no longer creates a `<dataset>-comments` add-on dataset. **Upgrading:** an
+  existing, empty `<dataset>-comments` dataset can be deleted (`sanity dataset delete`); check
+  it for documents first.
 - **`shippingMethod.trackingUrl`** (optional, hidden for pickup): the carrier's tracking page with
   `{code}` for the tracking number, e.g. `https://tracking.dpd.de/status/de_DE/parcel/{code}`
   (validated: `https://` + `{code}`). core-front links each tracking number in the order mails with

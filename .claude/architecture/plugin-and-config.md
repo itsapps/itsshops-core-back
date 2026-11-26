@@ -24,7 +24,8 @@
      (`/structure`, `/presentation`, `/media`) unchanged.
    - studio layout `ITSStudioWrapper(context)` + `CustomToolbar`
    - `document.actions = actionResolver`
-   - **disabled:** comments, releases, scheduledDrafts
+   - **disabled:** comments, tasks, releases, scheduledDrafts (comments and tasks live in a
+     `<dataset>-comments` add-on dataset, which the Studio creates on first use)
 
 2. **`createItsshopsWorkspaces(config)`** — the function customers call. Flow:
    - `mapConfig(config)` → `CoreBackConfig` (`src/config/mapper.ts`)

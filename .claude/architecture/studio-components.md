@@ -99,6 +99,8 @@ React; tests `tests/vinofactImage.test.ts`):
     (`OrderDocumentAction` = "Status aktualisieren": legal transitions from `utils/orderTransitions.ts`;
     choosing `shipped` on a delivery order offers an optional tracking code, saved to
     `fulfillment.trackingCode` in the same patch as the status, before the shipped mail is sent.
+    Several numbers may go in one field (comma-separated); the mails link each via
+    `shippingMethod.trackingUrl` (`schemas.md`).
     Two separate texts: **internal note** → `statusHistory[].note`, studio only, never mailed;
     **message to customer** (shown only while "notify customer" sends a mail, max 2000 chars =
     core-front `CUSTOMER_MESSAGE_MAX_LENGTH`) → `notifyOrder({ customerMessage })`; core-front

@@ -101,6 +101,7 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
       bundles: [...getStructureOverrideBundles(context.config.localization.uiLanguages)],
     },
     releases: { enabled: false },
+    tasks: { enabled: false },
     scheduledDrafts: { enabled: false },
   }
 })
