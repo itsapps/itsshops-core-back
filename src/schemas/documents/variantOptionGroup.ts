@@ -19,6 +19,11 @@ export const variantOptionGroup: ITSDocumentDefinition = {
             { field: '_createdAt', direction: 'asc' },
           ],
         },
+        {
+          title: ctx.t.default('orderings.titleAsc', 'Title (A–Z)'),
+          name: 'titleAsc',
+          by: [{ field: 'title[0].value', direction: 'asc' }],
+        },
       ],
       fields: [
         f('title', 'i18nString', { i18n: 'atLeastOne' }),

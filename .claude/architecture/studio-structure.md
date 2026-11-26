@@ -76,13 +76,30 @@ structure: [
 Per-type editor views:
 - `order` → custom `OrderView` component view + the edit form.
 - everything else → the form + a "references" pane (`getReferenceView`, a `*[references($id)]`
-  DocumentsPane). `getProductReferenceView` exists for product→variant listings.
+  DocumentsPane). `getProductReferenceView` (product→variants, published only) exists but is
+  unused — variants are in the product child list (below).
 
 **Product child list (`src/structure/products.ts`):** clicking a product opens one `S.list()` built
 from a `documentStore.listenQuery` (product item, divider, one `documentListItem` per variant,
 divider, "New variant" → `AddVariantsPane`). Not a mixed `S.documentList`: Sanity validates every
 sort field against every type in it (`wine.*` doesn't exist on `product` → crash). Variant order:
 `VARIANT_ORDER` (`src/utils/variantOrder.ts`, shared with the product preview).
+
+**Option group child list (`src/structure/variantOptions.ts`):** same pattern — group item,
+options (by `sortOrder`), "New option". Pitfalls found on the way, apply to any such list:
+- A live `S.list()` re-resolves its children when it re-emits: a child that makes up an id
+  (`crypto.randomUUID()`) gets a new one on the first edit. New documents get their id in the
+  route instead: `NewVariantOptionPane` calls `usePaneRouter().replaceCurrent({ id, params:
+  { type, template }, payload: templateParams })` — what an intent sets; the document pane reads
+  the template from there and only creates the document on the first edit.
+- `create` intents (a menu item or a documentList's "+") resolve **globally** and only descend
+  through plain lists, never into a documentList's children — they can't reach a nested pane
+  (panes reset, or the wrong list opens with the new id).
+- An explicit `.child()` on the list resolves every id (group → `variantOptionGroup`, else
+  `variantOption`), also a new option not yet in the items. A mixed documentList's default
+  child infers the editor type from the filter — the group opened with the option's form.
+- The group list's own "+" passes `params.template` to its child: then open the group's editor,
+  not the list ("Missing document").
 
 `createStructureTool(ctx)` bundles `{ title, structure, defaultDocumentNode }` and is handed to
 `structureTool(...)` in `src/index.ts`. Custom per-menu panes live in `src/structure/`

@@ -26,3 +26,6 @@ that future-you would otherwise re-litigate.
   (`@sanity/studio-secrets`, admin-only Integrations dialog); no Netlify PAT, Deploy via build hook.
 - [vinofact-bottle-images-copied-into-sanity.md](vinofact-bottle-images-copied-into-sanity.md) —
   bottle shots copied once into the variant's image (plain CORS fetch), existing alts kept.
+- [studio-child-lists-and-list-preview.md](studio-child-lists-and-list-preview.md) — product and
+  option group open one live list (document + children + "New …"); new documents get their id via
+  `replaceCurrent`; the product row's variant summary lives in the preview `media`.

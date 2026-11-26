@@ -12,6 +12,10 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
   variant count (bottom left) and a dot when a variant has a draft (bottom right); the full
   summary ("3 variants · 1 draft · 1 sold out") is its tooltip and screen-reader text. Without a
   product image it shows the first variant's image.
+- **Option groups in the Studio:** a group opens one list with the group, its options (by
+  order) and "New option" (created in this group) — no separate "Options" step. Option groups
+  sort by order or title.
+- **German "Neu: {type}"** instead of Sanity's "Neues {type}" for new documents ("Neues Option").
 - **`product.cmsTitle`** ("Internal name", optional, Studio only): title of the product's list
   preview and searchable, the shop title moves to the subtitle — tells same-named products apart.
   Not read by core-front. **Upgrading:** optional; fill it where products share a name.

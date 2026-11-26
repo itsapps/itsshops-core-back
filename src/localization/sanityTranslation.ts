@@ -34,4 +34,19 @@ export function getStructureOverrideBundles(languages: Language[]): LocaleResour
             : {},
       }),
     )
+    .concat(
+      languages
+        .filter((lang) => lang.id === 'de')
+        .map((lang) =>
+          defineLocaleResourceBundle({
+            locale: lang.locale,
+            namespace: 'structure',
+            // "Neues {{schemaType}}" is wrong for feminine/masculine types ("Neues Option").
+            resources: {
+              'panes.document-header-title.new.text': 'Neu: {{schemaType}}',
+              'browser-document-title.new-document': 'Neu: {{schemaType}}',
+            },
+          }),
+        ),
+    )
 }

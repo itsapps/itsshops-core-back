@@ -36,6 +36,8 @@ export default {
     title: 'Product variants',
   },
   variantOptions: {
+    addOption: 'New option',
+    edit: 'Edit option group',
     title: 'Option groups',
     group: 'Option group',
     groups: 'Option groups',
