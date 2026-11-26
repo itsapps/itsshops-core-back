@@ -100,9 +100,6 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
     i18n: {
       bundles: [...getStructureOverrideBundles(context.config.localization.uiLanguages)],
     },
-    releases: { enabled: false },
-    tasks: { enabled: false },
-    scheduledDrafts: { enabled: false },
   }
 })
 
@@ -166,6 +163,11 @@ export function createItsshopsWorkspaces(config: ItsshopsConfig): WorkspaceOptio
       title: `${language.locale.split('-')[0].toUpperCase()} - ${coreConfig.workspaceName}`,
       icon: coreConfig.workspaceIcon,
       plugins: [itsshopsPlugin(context)],
+      // Workspace-level only: Sanity reads these in getDefaultPluginsOptions(workspace) and
+      // silently ignores them inside a plugin.
+      releases: { enabled: false },
+      tasks: { enabled: false },
+      scheduledDrafts: { enabled: false },
     }
   })
 }

@@ -87,9 +87,9 @@ change, run its `npm run build` (or `npm run dev`) and restart the customer's El
 - `itsshopsPlugin = definePlugin<ITSContext>(...)` — assembles the Sanity plugin: internationalized
   array, structure tool, vision (dev only), media, presentation, translation bundles, `@sanity/assist`
   (field translation for enabled doc types), schema (`buildSchemas` + `templateResolver`), tools,
-  studio layout (`ITSStudioWrapper`) + custom toolbar, document actions (`actionResolver`). Comments, tasks,
-  releases, and scheduledDrafts are disabled (comments and tasks would create a `<dataset>-comments`
-  add-on dataset).
+  studio layout (`ITSStudioWrapper`) + custom toolbar, document actions (`actionResolver`). Comments are disabled
+  here; tasks, releases and scheduledDrafts on each workspace (Sanity ignores those in a plugin;
+  comments and tasks would create a `<dataset>-comments` add-on dataset).
 - `createItsshopsWorkspaces(config)` — `mapConfig(config)` → `CoreBackConfig`, builds a translator,
   a **feature registry**, and i18n field types, then maps over `localization.uiLanguages` to produce
   one `WorkspaceOptions` per locale, each with its own translators, localizer, format helpers,

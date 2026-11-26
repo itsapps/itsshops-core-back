@@ -6,6 +6,9 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
+- **Releases and Tasks really gone from the Studio:** the `releases`/`tasks`/`scheduledDrafts`
+  switches moved from the plugin to each workspace — Sanity silently ignored them in the plugin,
+  so the "Releases" tool and Tasks still showed.
 - **Product list in the Studio:** a product opens one list with the product on top and its
   variants below (live, ordered by vintage/volume, option order, then creation; each with its own
   draft dot) plus "New variant" — one click less to a variant. The product row's image shows the

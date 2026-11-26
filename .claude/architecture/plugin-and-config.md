@@ -24,8 +24,11 @@
      (`/structure`, `/presentation`, `/media`) unchanged.
    - studio layout `ITSStudioWrapper(context)` + `CustomToolbar`
    - `document.actions = actionResolver`
-   - **disabled:** comments, tasks, releases, scheduledDrafts (comments and tasks live in a
-     `<dataset>-comments` add-on dataset, which the Studio creates on first use)
+   - **disabled:** comments (`document.comments`, here in the plugin); tasks, releases and
+     scheduledDrafts are disabled on each **workspace** in `createItsshopsWorkspaces` — Sanity
+     reads those only from the workspace (`getDefaultPluginsOptions(workspace)`) and silently
+     ignores them in a plugin. (Comments and tasks live in a `<dataset>-comments` add-on dataset,
+     which the Studio creates on first use.)
 
 2. **`createItsshopsWorkspaces(config)`** — the function customers call. Flow:
    - `mapConfig(config)` → `CoreBackConfig` (`src/config/mapper.ts`)
