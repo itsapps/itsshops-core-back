@@ -1,4 +1,5 @@
 import { OptionGroupIcon } from '../../assets/icons'
+import { createOptionGroupPreviewMedia } from '../../components/products/OptionGroupPreview'
 import { ITSDocumentDefinition } from '../../types'
 
 export const variantOptionGroup: ITSDocumentDefinition = {
@@ -9,6 +10,7 @@ export const variantOptionGroup: ITSDocumentDefinition = {
   disallowedActions: ['duplicate'],
   build: (ctx) => {
     const { f } = ctx
+    const optionGroupMedia = createOptionGroupPreviewMedia(ctx)
     return {
       orderings: [
         {
@@ -43,12 +45,15 @@ export const variantOptionGroup: ITSDocumentDefinition = {
       ],
       preview: {
         select: {
+          id: '_id',
           title: 'title',
         },
-        prepare({ title }) {
+        prepare({ id, title }) {
+          const groupId = typeof id === 'string' ? id.replace(/^drafts\./, '') : undefined
           return {
             title: ctx.localizer.value(title),
-            media: OptionGroupIcon,
+            // Live option count + draft dot over the icon (see OptionGroupPreview.tsx).
+            media: groupId ? optionGroupMedia(groupId, OptionGroupIcon) : OptionGroupIcon,
           }
         },
       },

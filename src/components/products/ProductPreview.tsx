@@ -10,6 +10,7 @@ import { distinctUntilChanged, map, type Observable, shareReplay } from 'rxjs'
 import { type DocumentStore, type Image, useClient, useDocumentStore } from 'sanity'
 
 import type { ITSContext } from '../../types'
+import { collapseDrafts, PreviewCountMedia } from '../PreviewCountMedia'
 import { createImageBuilder } from '../../utils/imageBuilder'
 import { VARIANT_ORDER } from '../../utils/variantOrder'
 
@@ -28,25 +29,18 @@ interface VariantSummary {
 
 const NON_ACTIVE_STATUSES = ['comingSoon', 'soldOut', 'archived'] as const
 
-// Drafts and published come back as separate rows: one entry per variant, the draft wins (it is
-// what the editor shows).
 function summarize(rows: VariantRow[]): VariantSummary {
-  const byId = new Map<string, { row: VariantRow; isDraft: boolean }>()
-  for (const row of rows) {
-    const isDraft = row._id.startsWith('drafts.')
-    const id = row._id.replace(/^drafts\./, '')
-    if (!byId.has(id) || isDraft) byId.set(id, { row, isDraft })
-  }
+  const variants = collapseDrafts(rows)
   const statusCounts: Record<string, number> = {}
   let drafts = 0
   let firstImage: Image | undefined
-  for (const { row, isDraft } of byId.values()) {
+  for (const { row, isDraft } of variants) {
     if (isDraft) drafts++
     const status = row.status ?? 'active'
     statusCounts[status] = (statusCounts[status] ?? 0) + 1
     if (!firstImage && row.image?.asset) firstImage = row.image
   }
-  return { count: byId.size, drafts, statusCounts, firstImage }
+  return { count: variants.length, drafts, statusCounts, firstImage }
 }
 
 // Subtitle and media of one preview row share one listener per product.
@@ -85,26 +79,13 @@ function useVariantSummary(productId: string): VariantSummary | null {
   return summary
 }
 
-const srOnly = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-} as const
-
 /**
  * Media for the product list preview. Structure document lists render `SanityDefaultPreview`
  * directly (no `components.preview`) and `prepare` must return strings for title/subtitle — only
  * `media` may be a React element. So the live variant summary lives here:
  * - image: the product's own, else the first variant's, else the kind icon
- * - badge bottom left: variant count; dot bottom right: some variant has a draft
- * - full text ("3 variants · 1 draft · 1 sold out") as tooltip and as screen-reader text (it ends
- *   up in the list link's accessible name, so the state isn't colour-only)
+ * - badge + draft dot + tooltip/screen-reader text via `PreviewCountMedia`
+ *   ("3 variants · 1 draft · 1 sold out")
  */
 export const createProductPreviewMedia = (
   ctx: ITSContext,
@@ -142,17 +123,7 @@ export const createProductPreviewMedia = (
     const text = summary ? summaryText(summary) : undefined
 
     return (
-      <span
-        title={text}
-        style={{
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-        }}
-      >
+      <PreviewCountMedia count={summary?.count} drafts={summary?.drafts} text={text}>
         {source ? (
           <img
             src={builder.getUrl({ source, width: 80, height: 80 })}
@@ -162,43 +133,7 @@ export const createProductPreviewMedia = (
         ) : (
           <Icon />
         )}
-        {summary && summary.count > 0 && (
-          <span
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              left: 2,
-              bottom: 2,
-              minWidth: 14,
-              padding: '0 3px',
-              borderRadius: 7,
-              background: 'rgba(0, 0, 0, 0.78)',
-              color: '#fff',
-              font: '600 10px/14px system-ui, sans-serif',
-              textAlign: 'center',
-            }}
-          >
-            {summary.count}
-          </span>
-        )}
-        {summary && summary.drafts > 0 && (
-          <span
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              // Inset so the media frame's rounded, clipped corner doesn't cut it off.
-              bottom: 3,
-              right: 3,
-              width: 11,
-              height: 11,
-              borderRadius: '50%',
-              background: 'var(--card-badge-caution-dot-color, #f59e0b)',
-              boxShadow: '0 0 0 2px var(--card-bg-color, #fff)',
-            }}
-          />
-        )}
-        {text && <span style={srOnly}>{text}</span>}
-      </span>
+      </PreviewCountMedia>
     )
   }
 

@@ -1399,6 +1399,13 @@ export default {
         description: 'Je kleiner die Zahl, desto früher wird die Option angezeigt.',
       },
     },
+    preview: {
+      options_one: '{{count}} Option',
+      options_other: '{{count}} Optionen',
+      noOptions: 'Keine Optionen',
+      drafts_one: '{{count}} Entwurf',
+      drafts_other: '{{count}} Entwürfe',
+    },
   },
   variantOption: {
     title: 'Option',

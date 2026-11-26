@@ -17,7 +17,8 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
   product image it shows the first variant's image.
 - **Option groups in the Studio:** a group opens one list with the group, its options (by
   order) and "New option" (created in this group) — no separate "Options" step. Option groups
-  sort by order or title.
+  sort by order or title. The group row's icon shows the option count and a dot when an option
+  has a draft, like the product row ("3 options · 1 draft" as tooltip and screen-reader text).
 - **German "Neu: {type}"** instead of Sanity's "Neues {type}" for new documents ("Neues Option").
 - **`product.cmsTitle`** ("Internal name", optional, Studio only): title of the product's list
   preview and searchable, the shop title moves to the subtitle — tells same-named products apart.

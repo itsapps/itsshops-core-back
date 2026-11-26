@@ -203,6 +203,12 @@ shared live query per product (`listenQuery` + `shareReplay`, drafts collapsed o
 bottom right, the summary text as `title` tooltip + `sr-only` span. Title = `cmsTitle` || title,
 subtitle = title when `cmsTitle` is set.
 
+The overlay (badge, dot, tooltip, sr-only text) and the draft collapsing are shared in
+`src/components/PreviewCountMedia.tsx` (`PreviewCountMedia`, `collapseDrafts`). The option group
+list uses the same pattern: `createOptionGroupPreviewMedia(ctx)(groupId, icon)`
+(`src/components/products/OptionGroupPreview.tsx`) — group icon + option count + draft dot
+("3 options · 1 draft", keys `variantOptionGroup.preview.*`).
+
 ## Other custom components (`src/components/`)
 
 - `PriceInput.tsx` — currency input; the **only** component re-exported publicly

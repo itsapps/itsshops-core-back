@@ -22,7 +22,8 @@ groups had the same extra "Options" step.
 - **List preview:** structure lists render `SanityDefaultPreview` directly (`components.preview`
   is ignored there) and `prepare` must return strings for title/subtitle. So the live variant
   summary lives in `media` (a React element): count badge, draft dot, tooltip + screen-reader
-  text. Rejected: a denormalized summary field on the product (needs a writer that runs on every
+  text. Option group rows do the same (option count, draft dot; shared `PreviewCountMedia`).
+  Rejected: a denormalized summary field on the product (needs a writer that runs on every
   variant change and would itself create product drafts); a custom list pane (as above).
 - **`product.cmsTitle`** (internal name, Studio only) instead of deriving a distinguishing label:
   the grape variety lives in VinoFact, not in the dataset.

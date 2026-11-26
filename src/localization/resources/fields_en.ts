@@ -1385,6 +1385,13 @@ export default {
         description: 'The lower the number, the earlier the option appears.',
       },
     },
+    preview: {
+      options_one: '{{count}} option',
+      options_other: '{{count}} options',
+      noOptions: 'No options',
+      drafts_one: '{{count}} draft',
+      drafts_other: '{{count}} drafts',
+    },
   },
   variantOption: {
     title: 'Option',
