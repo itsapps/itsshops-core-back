@@ -187,8 +187,8 @@ export function ProductCreator(): ReactElement {
   })
   const importBottleImagesInBackground = useBackgroundBottleImport()
 
-  // The last created product, linked under the header — the toast's button times out
-  // (WCAG 2.2.1), this one stays until the next submit.
+  // The last created product, linked below the tabs (under the submit button) until the next
+  // submit — the toast is text only.
   const [lastCreated, setLastCreated] = useState<{ id: string; title: string } | null>(null)
 
   /** Commit, then remember the product for the persistent link. */
