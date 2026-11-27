@@ -4,9 +4,11 @@ import {
   BundleVariantRow,
   CombinationRow,
   I18nTitleEntry,
+  NewVariantStatus,
   WineRow,
 } from '../../components/products/productManager/ProductCreator.types'
 import { ProductKind } from '../../types'
+import { parseStock } from '../../utils/productManager'
 import { docUid, uid } from '../../utils/utils'
 
 /** Cartesian product of arrays */
@@ -38,9 +40,16 @@ type ProductTxProps = {
   price: number | undefined
   weight: number | undefined
   taxId?: string
+  categoryIds?: string[]
+  manufacturerIds?: string[]
 }
+
+function references(ids: string[] | undefined) {
+  return (ids ?? []).map((_ref) => ({ _type: 'reference', _key: uid(), _ref }))
+}
+
 export function addProductToTx(props: ProductTxProps): string {
-  const { tx, kind, titles, price, taxId, weight } = props
+  const { tx, kind, titles, price, taxId, weight, categoryIds, manufacturerIds } = props
   const productId = docUid('product')
 
   tx.create({
@@ -51,28 +60,38 @@ export function addProductToTx(props: ProductTxProps): string {
     ...(price !== undefined && { price }),
     ...(taxId && { taxCategory: { _type: 'reference', _ref: taxId } }),
     ...(weight !== undefined && { weight }),
+    ...(categoryIds?.length && { categories: references(categoryIds) }),
+    ...(manufacturerIds?.length && { manufacturers: references(manufacturerIds) }),
   })
 
   return productId
 }
 
-function baseVariant(
-  productId: string,
-  kind: ProductKind,
-  titles: I18nTitleEntry[],
-  price: number | undefined,
-  taxId?: string,
-) {
+type BaseVariantOptions = {
+  titles: I18nTitleEntry[]
+  price: number | undefined
+  taxId?: string
+  status?: NewVariantStatus
+  sku?: string
+  /** As typed; written only when a valid whole number ≥ 0 (empty = unlimited). */
+  stock?: string
+}
+
+function baseVariant(productId: string, kind: ProductKind, options: BaseVariantOptions) {
+  const { titles, price, taxId, status = 'active', sku, stock } = options
   const rowTitles = buildI18nTitle(titles)
+  const stockValue = stock === undefined ? undefined : parseStock(stock).value
   return {
     _id: docUid('productVariant'),
     _type: 'productVariant',
     kind,
     product: { _type: 'reference', _ref: productId },
-    status: 'active',
+    status,
     ...(rowTitles.length && { title: rowTitles }),
     ...(price !== undefined && { price }),
     ...(taxId && { taxCategory: { _type: 'reference', _ref: taxId } }),
+    ...(sku?.trim() && { sku: sku.trim() }),
+    ...(stockValue !== undefined && { stock: stockValue }),
   }
 }
 /** Returns the created variant's id (published), or `undefined` when the row is incomplete. */
@@ -83,7 +102,14 @@ export function addWineVariantToTx(
 ): string | undefined {
   if (!row.wine || !row.volume) return undefined
 
-  const variant = baseVariant(productId, 'wine', row.titles, row.price, row.taxCategoryId)
+  const variant = baseVariant(productId, 'wine', {
+    titles: row.titles,
+    price: row.price,
+    taxId: row.taxCategoryId,
+    status: row.status,
+    sku: row.sku,
+    stock: row.stock,
+  })
   tx.create({
     ...variant,
     wine: {
@@ -105,7 +131,14 @@ export function addPhysicalDigitalVariantToTx(
   if (!combo.enabled) return
 
   tx.create({
-    ...baseVariant(productId, kind, combo.titles, combo.price, combo.taxCategoryId),
+    ...baseVariant(productId, kind, {
+      titles: combo.titles,
+      price: combo.price,
+      taxId: combo.taxCategoryId,
+      status: combo.status,
+      sku: combo.sku,
+      stock: combo.stock,
+    }),
     options: combo.optionIds.map((optId) => ({
       _key: uid(),
       _type: 'reference',
@@ -122,10 +155,16 @@ export function addBundleVariantToTx(
 ): void {
   tx.create({
     // no tax category: a bundle is taxed by its items (checkout splits its price over them)
-    ...baseVariant(productId, 'bundle', row.titles, row.price),
+    ...baseVariant(productId, 'bundle', {
+      titles: row.titles,
+      price: row.price,
+      status: row.status,
+      sku: row.sku,
+    }),
     bundleItems: row.items.map((item) => ({
       _type: 'bundleItem',
       _key: uid(),
+      // Last guard only: the tab refuses quantities that aren't whole numbers ≥ 1
       quantity: Math.max(1, parseInt(item.quantity, 10) || 1),
       product: { _type: 'reference', _ref: item.variantId },
     })),

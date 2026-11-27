@@ -19,6 +19,12 @@ import { SectionLabel } from '../fields/SectionLabel'
 import { TaxCategoryField } from '../fields/TaxCategoryField'
 import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
+import {
+  emptyExtras,
+  extrasSetCount,
+  stockReason,
+  VariantExtrasFields,
+} from '../fields/VariantExtrasFields'
 import { WeightField } from '../fields/WeightField'
 import {
   CombinationRow,
@@ -28,6 +34,8 @@ import {
   OptionToggleCardProps,
   PhysicalDigitalTabProps,
   SubmitCheck,
+  SummaryLine,
+  VariantExtras,
 } from '../ProductCreator.types'
 import { ProductTab } from './ProductTab'
 
@@ -38,11 +46,16 @@ function comboLabel(combo: CombinationRow, activeGroups: OptionGroup[]): string 
     .join(' / ')
 }
 
-/** Build combination rows from selected options per group */
+/**
+ * Build combination rows from selected options per group. A combination that was already in
+ * `previous` keeps its row (id, enabled, typed values) — ticking one more option must not wipe
+ * what the editor entered; only new combinations get fresh rows.
+ */
 function buildCombinations(
   groups: OptionGroup[],
   selectedOptions: Record<string, string[]>,
-  existingOptionSets?: Set<string>,
+  existingOptionSets: Set<string> | undefined,
+  previous: CombinationRow[],
 ): CombinationRow[] {
   // Only groups that have at least one option selected
   const activeGroups = groups.filter((g) => (selectedOptions[g._id] ?? []).length > 0)
@@ -51,9 +64,17 @@ function buildCombinations(
   const optionSets = activeGroups.map((g) => selectedOptions[g._id] ?? [])
   const combos = cartesian(optionSets)
 
+  const byKey = new Map(previous.map((row) => [[...row.optionIds].sort().join('|'), row]))
+
   return combos.map((optionIds) => {
     const key = [...optionIds].sort().join('|')
     const alreadyExists = existingOptionSets?.has(key) ?? false
+    const prev = byKey.get(key)
+    if (prev) {
+      // An existing combination is never enabled; one that stopped existing is enabled again
+      const enabled = alreadyExists ? false : prev.alreadyExists || prev.enabled
+      return { ...prev, optionIds, alreadyExists, enabled }
+    }
     return {
       id: uid(),
       optionIds,
@@ -63,6 +84,7 @@ function buildCombinations(
       weight: undefined,
       taxCategoryId: '',
       titles: [],
+      ...emptyExtras(),
     }
   })
 }
@@ -119,7 +141,11 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
     onUpdate,
     onToggleCombination,
   } = props
-  const { componentT } = useITSContext()
+  const { componentT, featureRegistry } = useITSContext()
+  const handleExtrasChange = useCallback(
+    (key: keyof VariantExtras, value: string) => onUpdate(row.id, key, value),
+    [onUpdate, row.id],
+  )
 
   const handleCombinationToggle = useCallback(
     () => onToggleCombination(row.id),
@@ -203,14 +229,21 @@ const OptionComboCard = memo(function OptionComboCard(props: OptionComboCardProp
         {row.enabled && !row.alreadyExists && (
           <Box>
             {/* Tax override — empty inherits the product's, then the shop default */}
-            <AdvancedSection setCount={row.taxCategoryId ? 1 : 0}>
-              <TaxCategoryField
-                value={row.taxCategoryId}
-                taxCategories={taxCategories}
-                loadingTax={loadingTax}
-                onTaxChange={handleTaxChange}
-                inheritedLabel={taxInherited}
-              />
+            <AdvancedSection setCount={(row.taxCategoryId ? 1 : 0) + extrasSetCount(row)}>
+              <Stack gap={4}>
+                <VariantExtrasFields
+                  extras={row}
+                  showStock={featureRegistry.isFeatureEnabled('shop.stock')}
+                  onChange={handleExtrasChange}
+                />
+                <TaxCategoryField
+                  value={row.taxCategoryId}
+                  taxCategories={taxCategories}
+                  loadingTax={loadingTax}
+                  onTaxChange={handleTaxChange}
+                  inheritedLabel={taxInherited}
+                />
+              </Stack>
             </AdvancedSection>
           </Box>
         )}
@@ -287,10 +320,11 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
       .finally(() => setLoadingGroups(false))
   }, [sanityClient, localizer, toast, componentT])
 
-  // Recompute combinations whenever selections change — always reset overrides
+  // Recompute combinations whenever selections change — rows of combinations still selected
+  // keep their values
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset editable combinations when the selection changes
-    setCombinations(buildCombinations(groups, selectedOptions, existingOptionSets))
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- derive editable combinations from the selection
+    setCombinations((prev) => buildCombinations(groups, selectedOptions, existingOptionSets, prev))
   }, [groups, selectedOptions, existingOptionSets])
 
   const toggleOption = useCallback((groupId: string, optionId: string, checked: boolean) => {
@@ -333,16 +367,16 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
       reasons.push(componentT.default('productCreatorTool.reasons.noVariant'))
     }
     // Active variants need a price — the global (product) one or the row's (also when adding
-    // variants to an existing product: `globalPrice` is then the product's price).
-    if (!globalPrice) {
-      const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
-      for (const combo of enabledCombinations.filter((c) => !c.price)) {
-        reasons.push(
-          componentT.default(`productCreatorTool.reasons.${key}`, undefined, {
-            label: comboLabel(combo, activeGroups),
-          }),
-        )
+    // variants to an existing product: `globalPrice` is then the product's price). A
+    // "coming soon" variant may stay without one.
+    const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
+    for (const combo of enabledCombinations) {
+      const label = comboLabel(combo, activeGroups)
+      if (!globalPrice && !combo.price && combo.status === 'active') {
+        reasons.push(componentT.default(`productCreatorTool.reasons.${key}`, undefined, { label }))
       }
+      const stock = stockReason(componentT, label, combo.stock)
+      if (stock) reasons.push(stock)
     }
     return { ok: reasons.length === 0, reasons }
   }, [
@@ -354,6 +388,17 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
     activeGroups,
     componentT,
   ])
+
+  const summaryLines = useMemo(
+    (): SummaryLine[] =>
+      enabledCombinations.map((combo) => ({
+        key: combo.id,
+        label: comboLabel(combo, activeGroups),
+        price: combo.price ?? globalPrice,
+        status: combo.status,
+      })),
+    [enabledCombinations, activeGroups, globalPrice],
+  )
 
   const handleSubmit = useCallback(async () => {
     if (!submitCheck.ok) return
@@ -481,6 +526,7 @@ export function PhysicalDigitalTab(props: PhysicalDigitalTabProps): ReactElement
       handleSubmit={handleSubmit}
       content={content}
       hideProductSection={props.hideProductSection}
+      summaryLines={summaryLines}
     />
   )
 }

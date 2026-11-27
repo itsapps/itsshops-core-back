@@ -275,7 +275,8 @@ export function AddVariantsDialog({
   const globalProps = useMemo(
     () => ({
       kind: product?.kind || 'wine',
-      titles: [],
+      // Only read for the summary ("… zu <title>"): no title check or input when adding
+      titles: product?.title ? [{ locale: defaultLocale, value: product.title }] : [],
       // The product's price: new variants without their own price inherit it (feeds the tabs'
       // price check; the add-variants submit never writes it).
       globalPrice: product?.price,

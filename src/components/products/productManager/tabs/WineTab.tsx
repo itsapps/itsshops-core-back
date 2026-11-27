@@ -15,16 +15,25 @@ import { gridVolumes, gridWines, stripYear, visibleGridWines } from '../../../..
 import { WinePreview } from '../../WinePreview'
 import { DuplicateLine, DuplicateNotice, srOnly, useExistingProducts } from '../duplicates'
 import { AdvancedSection } from '../fields/AdvancedSection'
+import { SectionHeading } from '../fields/SectionHeading'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
 import { inheritedPriceLabel, inheritedTaxLabel } from '../fields/inherited'
 import { LabelField } from '../fields/Label'
 import { PriceField } from '../fields/PriceField'
 import { TaxCategoryField } from '../fields/TaxCategoryField'
 import { VariantRow } from '../fields/VariantRow'
+import {
+  emptyExtras,
+  extrasSetCount,
+  stockReason,
+  VariantExtrasFields,
+} from '../fields/VariantExtrasFields'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
 import {
   I18nTitleEntry,
   SubmitCheck,
+  SummaryLine,
+  VariantExtras,
   WineOption,
   WineRow,
   WineTabProps,
@@ -115,8 +124,12 @@ const WineVariantCard = memo(function WineVariantCard(props: WineVariantCardProp
     onUpdate,
     onRemove,
   } = props
-  const { componentT } = useITSContext()
+  const { componentT, featureRegistry } = useITSContext()
   const handleRemove = useCallback(() => onRemove(row.id), [onRemove, row.id])
+  const handleExtrasChange = useCallback(
+    (key: keyof VariantExtras, value: string) => onUpdate(row.id, key, value),
+    [onUpdate, row.id],
+  )
   const handlePriceChange = useCallback(
     (value: number | undefined) => onUpdate(row.id, 'price', value),
     [onUpdate, row.id],
@@ -129,7 +142,8 @@ const WineVariantCard = memo(function WineVariantCard(props: WineVariantCardProp
     (titles: I18nTitleEntry[]) => onUpdate(row.id, 'titles', titles),
     [onUpdate, row.id],
   )
-  const setCount = (row.taxCategoryId ? 1 : 0) + (row.titles.some((t) => t.value) ? 1 : 0)
+  const setCount =
+    (row.taxCategoryId ? 1 : 0) + (row.titles.some((t) => t.value) ? 1 : 0) + extrasSetCount(row)
 
   return (
     <VariantRow index={index}>
@@ -157,6 +171,11 @@ const WineVariantCard = memo(function WineVariantCard(props: WineVariantCardProp
         />
         <AdvancedSection setCount={setCount}>
           <Stack gap={4}>
+            <VariantExtrasFields
+              extras={row}
+              showStock={featureRegistry.isFeatureEnabled('shop.stock')}
+              onChange={handleExtrasChange}
+            />
             {/* Tax override — empty inherits the product's, then the shop default */}
             <TaxCategoryField
               value={row.taxCategoryId}
@@ -447,6 +466,7 @@ export function WineTab(props: WineTabProps): ReactElement {
           price: undefined,
           taxCategoryId: '',
           titles: [],
+          ...emptyExtras(),
         },
       }
     })
@@ -539,14 +559,23 @@ export function WineTab(props: WineTabProps): ReactElement {
     return allOptions.filter((o) => !inGrid.has(o.value))
   }, [allOptions, rowsInGrid])
 
-  const restoreSuggestion = useCallback(
-    () => applySuggestion(suggestion),
-    [applySuggestion, suggestion],
-  )
+  const titleInputId = useId()
+  // The button disappears once the title equals the suggestion: move focus to the title input
+  const restoreSuggestion = useCallback(() => {
+    applySuggestion(suggestion)
+    requestAnimationFrame(() => document.getElementById(titleInputId)?.focus())
+  }, [applySuggestion, suggestion, titleInputId])
 
   const global = useMemo(
     () => ({
       ...props.global,
+      titleInputId,
+      // Before a wine is picked: say that the title can come from it
+      ...(!hideProductSection &&
+        !suggestion &&
+        !currentTitle && {
+          titleHint: componentT.default('productCreatorTool.wine.titleFromWineLater'),
+        }),
       ...(suggestion && {
         titleHint:
           currentTitle === suggestion
@@ -554,18 +583,27 @@ export function WineTab(props: WineTabProps): ReactElement {
             : componentT.default('productCreatorTool.wine.titleSuggestion', undefined, {
                 title: suggestion,
               }),
-        titleAction: (
-          <Button
-            mode="bleed"
-            icon={RestoreSuggestionIcon}
-            padding={2}
-            onClick={restoreSuggestion}
-            aria-label={componentT.default('productCreatorTool.wine.restoreSuggestion')}
-          />
-        ),
+        // Only while the title differs — when it equals the suggestion there's nothing to restore
+        titleAction:
+          currentTitle === suggestion ? undefined : (
+            <Button
+              mode="ghost"
+              icon={RestoreSuggestionIcon}
+              text={componentT.default('productCreatorTool.wine.restoreSuggestion')}
+              onClick={restoreSuggestion}
+            />
+          ),
       }),
     }),
-    [props.global, suggestion, currentTitle, componentT, restoreSuggestion],
+    [
+      props.global,
+      titleInputId,
+      hideProductSection,
+      suggestion,
+      currentTitle,
+      componentT,
+      restoreSuggestion,
+    ],
   )
 
   // ─── Submit ─────────────────────────────────────────────────────────────────
@@ -579,19 +617,30 @@ export function WineTab(props: WineTabProps): ReactElement {
       reasons.push(componentT.default('productCreatorTool.reasons.noWineCell'))
     }
     // Active variants need a price — the global (product) one or the row's (also when adding
-    // variants to an existing product: `globalPrice` is then the product's price).
-    if (!globalPrice) {
-      const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
-      for (const row of submittableRows.filter((r) => !r.price)) {
-        reasons.push(
-          componentT.default(`productCreatorTool.reasons.${key}`, undefined, {
-            label: wineRowLabel(labelDeps, row),
-          }),
-        )
+    // variants to an existing product: `globalPrice` is then the product's price). A
+    // "coming soon" variant may stay without one (as the schema's `activeNeedsPrice`).
+    const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
+    for (const row of submittableRows) {
+      const label = wineRowLabel(labelDeps, row)
+      if (!globalPrice && !row.price && row.status === 'active') {
+        reasons.push(componentT.default(`productCreatorTool.reasons.${key}`, undefined, { label }))
       }
+      const stock = stockReason(componentT, label, row.stock)
+      if (stock) reasons.push(stock)
     }
     return { ok: reasons.length === 0, reasons }
   }, [hideProductSection, currentTitle, globalPrice, submittableRows, componentT, labelDeps])
+
+  const summaryLines = useMemo(
+    (): SummaryLine[] =>
+      submittableRows.map((row) => ({
+        key: row.id,
+        label: wineRowLabel(labelDeps, row),
+        price: row.price ?? globalPrice,
+        status: row.status,
+      })),
+    [submittableRows, labelDeps, globalPrice],
+  )
 
   const handleSubmit = useCallback(async () => {
     if (!submitCheck.ok) return
@@ -646,7 +695,11 @@ export function WineTab(props: WineTabProps): ReactElement {
         renderValue={renderWineValue}
       />
       <Text size={1} muted>
-        {componentT.default('productCreatorTool.wine.pickFirstHint')}
+        {componentT.default(
+          hideProductSection
+            ? 'productCreatorTool.wine.pickFirstHint'
+            : 'productCreatorTool.wine.pickFirstHintTitle',
+        )}
       </Text>
     </Stack>
   )
@@ -677,6 +730,12 @@ export function WineTab(props: WineTabProps): ReactElement {
                   </Text>
                 </th>
               ))}
+              {/* Last column: remove the row (named for screen readers, empty visually) */}
+              <th scope="col" style={{ padding: '0.5rem' }}>
+                <span style={srOnly}>
+                  {componentT.default('productCreatorTool.wine.removeColumn')}
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -685,24 +744,9 @@ export function WineTab(props: WineTabProps): ReactElement {
               return (
                 <tr key={w.id} style={{ borderTop: '1px solid var(--card-border-color)' }}>
                   <th scope="row" style={{ textAlign: 'start', padding: '0.25rem 0.5rem' }}>
-                    <Flex align="center" gap={2}>
-                      <Box flex={1}>
-                        <Text size={1} weight="regular">
-                          {stripYear(w.title)} <span style={{ opacity: 0.7 }}>{w.year ?? '—'}</span>
-                        </Text>
-                      </Box>
-                      <Button
-                        mode="bleed"
-                        icon={CloseIcon}
-                        padding={2}
-                        onClick={() => removeWine(w.id)}
-                        aria-label={componentT.default(
-                          'productCreatorTool.a11y.removeWine',
-                          undefined,
-                          { title: name },
-                        )}
-                      />
-                    </Flex>
+                    <Text size={1} weight="regular">
+                      {stripYear(w.title)} <span style={{ opacity: 0.7 }}>{w.year ?? '—'}</span>
+                    </Text>
                   </th>
                   {volumes.map((v) => {
                     const key = cellKey(w.id, v)
@@ -726,6 +770,21 @@ export function WineTab(props: WineTabProps): ReactElement {
                       </td>
                     )
                   })}
+                  <td style={{ textAlign: 'end', padding: '0.25rem 0.5rem' }}>
+                    <Button
+                      mode="bleed"
+                      icon={CloseIcon}
+                      padding={2}
+                      onClick={() => removeWine(w.id)}
+                      aria-label={componentT.default(
+                        'productCreatorTool.a11y.removeWine',
+                        undefined,
+                        {
+                          title: name,
+                        },
+                      )}
+                    />
+                  </td>
                 </tr>
               )
             })}
@@ -799,85 +858,107 @@ export function WineTab(props: WineTabProps): ReactElement {
   )
 
   const content = (
-    <Stack gap={4}>
-      <VariantSectionHeader
-        count={submittableRows.length}
-        title={componentT.default('productCreatorTool.wine.sectionTitle')}
-      />
-
-      {loadingWines ? (
-        <Text size={1} muted>
-          {componentT.default('productCreatorTool.wine.loadingWines')}
-        </Text>
-      ) : hasGrid ? (
+    <Stack gap={5}>
+      {/* Step: pick the wine, tick the bottles */}
+      <Card border radius={2} padding={4}>
         <Stack gap={4}>
-          {/* The picked first wine (creating) — clearing it starts the grid over */}
-          {pickedSeed && productSeedIds.length === 0 && (
-            <Card border radius={2} padding={2}>
-              <Flex align="center" gap={2}>
-                <Box flex={1}>
-                  <WinePreview wine={pickedSeed} />
-                </Box>
-                <Button
-                  mode="bleed"
-                  icon={CloseIcon}
-                  padding={2}
-                  onClick={resetGrid}
-                  aria-label={componentT.default('productCreatorTool.a11y.clearWine', undefined, {
-                    title: pickedSeed.title,
-                  })}
-                />
-              </Flex>
-            </Card>
-          )}
-          <DuplicateNotice lines={duplicateLines} />
-          {grid}
-        </Stack>
-      ) : (
-        firstPicker
-      )}
-
-      {/* One card per ticked cell: price, and under "Advanced" tax + own title */}
-      {submittableRows.length > 0 && (
-        <Stack gap={2}>
-          {submittableRows.map((row, index) => (
-            <WineVariantCard
-              key={row.id}
-              row={row}
-              index={index}
-              label={wineRowLabel(labelDeps, row)}
-              loadingTax={loadingTax}
-              taxCategories={taxCategories}
-              locales={props.global.locales}
-              defaultLocale={defaultLocale}
-              titlePlaceholder={props.global.titlePlaceholder}
-              priceInherited={priceInherited}
-              taxInherited={taxInherited}
-              onUpdate={updateRow}
-              onRemove={removeRow}
-            />
-          ))}
-        </Stack>
-      )}
-
-      {/* Copy each new variant's VinoFact bottle image into its image after creating it */}
-      {vinofactClient && (
-        <Flex align="center" gap={2}>
-          <Checkbox
-            id={bottleImagesId}
-            checked={importBottleImages}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setImportBottleImages(e.currentTarget.checked)
-            }
+          <VariantSectionHeader
+            count={submittableRows.length}
+            title={componentT.default('productCreatorTool.wine.sectionTitle')}
+            description={componentT.default('productCreatorTool.wine.sectionDescription')}
           />
-          <Box flex={1}>
-            <Text size={1}>
-              <label htmlFor={bottleImagesId}>
-                {componentT.default('vinofact.bottleImages.checkbox')}
-              </label>
+
+          {loadingWines ? (
+            <Text size={1} muted>
+              {componentT.default('productCreatorTool.wine.loadingWines')}
             </Text>
-          </Box>
-        </Flex>
+          ) : hasGrid ? (
+            <Stack gap={4}>
+              {/* The picked first wine (creating) — clearing it starts the grid over */}
+              {pickedSeed && productSeedIds.length === 0 && (
+                <Card border radius={2} padding={2}>
+                  <Flex align="center" gap={2}>
+                    <Box flex={1}>
+                      <WinePreview wine={pickedSeed} />
+                    </Box>
+                    <Button
+                      mode="bleed"
+                      icon={CloseIcon}
+                      padding={2}
+                      onClick={resetGrid}
+                      aria-label={componentT.default(
+                        'productCreatorTool.a11y.clearWine',
+                        undefined,
+                        { title: pickedSeed.title },
+                      )}
+                    />
+                  </Flex>
+                </Card>
+              )}
+              <DuplicateNotice lines={duplicateLines} />
+              {grid}
+            </Stack>
+          ) : (
+            firstPicker
+          )}
+        </Stack>
+      </Card>
+
+      {/* Next step, once the grid is there: one card per ticked cell (price; under "Advanced"
+          status, SKU, stock, tax, own title) */}
+      {hasGrid && (
+        <Card border radius={2} padding={4}>
+          <Stack gap={4}>
+            <SectionHeading
+              title={componentT.default('productCreatorTool.wine.detailsTitle')}
+              description={componentT.default('productCreatorTool.wine.detailsDescription')}
+            />
+            {submittableRows.length > 0 ? (
+              <Stack gap={2}>
+                {submittableRows.map((row, index) => (
+                  <WineVariantCard
+                    key={row.id}
+                    row={row}
+                    index={index}
+                    label={wineRowLabel(labelDeps, row)}
+                    loadingTax={loadingTax}
+                    taxCategories={taxCategories}
+                    locales={props.global.locales}
+                    defaultLocale={defaultLocale}
+                    titlePlaceholder={props.global.titlePlaceholder}
+                    priceInherited={priceInherited}
+                    taxInherited={taxInherited}
+                    onUpdate={updateRow}
+                    onRemove={removeRow}
+                  />
+                ))}
+              </Stack>
+            ) : (
+              <Text size={1} muted>
+                {componentT.default('productCreatorTool.wine.noCellYet')}
+              </Text>
+            )}
+            {/* Copy each new variant's VinoFact bottle image into its image after creating it */}
+            {vinofactClient && (
+              <Flex align="center" gap={2}>
+                <Checkbox
+                  id={bottleImagesId}
+                  checked={importBottleImages}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setImportBottleImages(e.currentTarget.checked)
+                  }
+                />
+                <Box flex={1}>
+                  <Text size={1}>
+                    <label htmlFor={bottleImagesId}>
+                      {componentT.default('vinofact.bottleImages.checkbox')}
+                    </label>
+                  </Text>
+                </Box>
+              </Flex>
+            )}
+          </Stack>
+        </Card>
       )}
     </Stack>
   )
@@ -891,6 +972,7 @@ export function WineTab(props: WineTabProps): ReactElement {
       handleSubmit={handleSubmit}
       content={content}
       hideProductSection={hideProductSection}
+      summaryLines={summaryLines}
     />
   )
 }

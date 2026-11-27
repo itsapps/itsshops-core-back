@@ -17,13 +17,22 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
   the table lists every vintage with the same name (newest 5, "show older"); tick the cells to
   create, one variant each (price, and under "Advanced" tax + own title). Other wines (e.g. a
   renamed vintage) and bottle sizes can be added; the default columns are the volumes already in
-  use + 0.75 l. The product title follows the picked wine until edited (↺ restores it). Before
+  use + 0.75 l. The product title follows the picked wine until edited ("Vorschlag übernehmen" restores it). Before
   creating, the tool warns when a product or the same wine + size already exists (also drafts),
   with a link; existing cells can't be ticked. Empty price/tax fields show what they inherit
   ("14,90 € vom Produkt", "vom Produkt: …" / "Shop-Standard: …") in every tab; the other tabs
   warn about a product with the same name. Adding variants to a wine product starts with the
   product's wines in the table, shows the product's price/tax, a "Varianten hinzugefügt" toast
   and, in the desk pane, a lasting confirmation; the disabled action explains "publish first".
+- **Product Manager — more per variant, summary:** categories (nested with subcategories) and,
+  under "Advanced", manufacturers on the product; per variant under "Advanced" status (active /
+  coming soon — coming-soon variants need no price), SKU and stock (with `shop.stock`; empty =
+  unlimited). A summary above the button lists what will be created with prices. Ticking another
+  option no longer wipes values typed into physical/digital variants; bundle quantities must be
+  whole numbers ≥ 1. Clearer layout: each step is its own card with a heading and a one-line
+  description (product data for all variants; vintages & bottles; prices & details of the ticked
+  bottles); the empty title and the wine picker say that the title is taken from the wine; the
+  title's "use suggestion" button is a text button shown only while the title differs.
 - **`features.shop.vinofact.importBottleImages`** (default `false`): the Product Manager's "copy
   bottle images from VinoFact" checkbox now starts **unchecked**. **Upgrading:** shops that want
   bottle images on by default set `features.shop.vinofact.importBottleImages: true`.

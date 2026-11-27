@@ -8,11 +8,12 @@ import { LabelField } from './Label'
 
 const LocaleTitleInput = memo(function LocaleTitleInput(props: LocaleTitleInputProps) {
   const { locale, required = false, value, onChange, placeholder, hint, action } = props
+  const generatedId = useId()
+  const id = props.id ?? generatedId
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => onChange(locale, e.currentTarget.value),
     [locale, onChange],
   )
-  const id = useId()
   const hintId = useId()
 
   return (
@@ -42,7 +43,7 @@ const LocaleTitleInput = memo(function LocaleTitleInput(props: LocaleTitleInputP
 
 export function I18nTitleInputs(props: I18nTitleInputsProps): ReactElement {
   const { locales, defaultLocale, requiredLocales, required, titles, onChange, placeholder } = props
-  const { hint, action } = props
+  const { hint, action, defaultInputId } = props
   const { schemaT } = useITSContext()
   const [expanded, setExpanded] = useState(required || titles.some((t) => t.value))
   const toggleId = useId()
@@ -96,6 +97,7 @@ export function I18nTitleInputs(props: I18nTitleInputsProps): ReactElement {
               placeholder={placeholder}
               hint={locale === defaultLocale ? hint : undefined}
               action={locale === defaultLocale ? action : undefined}
+              id={locale === defaultLocale ? defaultInputId : undefined}
             />
           ))}
         </Stack>

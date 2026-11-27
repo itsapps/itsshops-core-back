@@ -3,7 +3,7 @@
 import { Card, Container, Flex, Heading, Stack, Tab, TabList, TabPanel, Text } from '@sanity/ui'
 import { useToast } from '@sanity/ui/toast'
 import { ComponentType, ReactElement } from 'react'
-import { memo, useCallback, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { IntentLink } from 'sanity/router'
 
 import {
@@ -21,8 +21,11 @@ import {
   addWineVariantToTx,
 } from '../../../lib/shop/productVariant.tx'
 import { ProductKind, TaxCategory as CoreTaxCategory } from '../../../types'
+import { categoryTree } from '../../../utils/productManager'
+import { compareLabels } from '../../../utils/variantLabel'
 import {
   BundleVariantRow,
+  ChoiceOption,
   CombinationRow,
   I18nTitleEntry,
   KindTabProps,
@@ -65,7 +68,10 @@ const KindTab = memo(function KindTab(props: KindTabProps) {
 export function ProductCreator(): ReactElement {
   const ctx = useITSContext()
   const toast = useToast()
-  const { config, sanityClient, componentT, schemaT } = ctx
+  const { config, sanityClient, componentT, schemaT, featureRegistry, localizer } = ctx
+  const categoriesOn = featureRegistry.isDocEnabled('category')
+  const manufacturersOn = featureRegistry.isDocEnabled('manufacturer')
+  const subcategories = featureRegistry.isFeatureEnabled('shop.category.subcategories')
   const client = sanityClient
 
   const { fieldLocales, defaultLocale } = config.localization
@@ -80,6 +86,50 @@ export function ProductCreator(): ReactElement {
   // Only a hint: an empty product tax category inherits it (and follows a later change of it)
   const [shopDefaultTaxCategoryId, setShopDefaultTaxCategoryId] = useState<string | undefined>()
   const [loadingTax, setLoadingTax] = useState(true)
+  // Product level only (decisions 1 + 2); published documents only — a published product must
+  // not reference a draft-only one
+  const [categoryOptions, setCategoryOptions] = useState<ChoiceOption[]>([])
+  const [manufacturerOptions, setManufacturerOptions] = useState<ChoiceOption[]>([])
+  const [categoryIds, setCategoryIds] = useState<string[]>([])
+  const [manufacturerIds, setManufacturerIds] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!categoriesOn && !manufacturersOn) return
+    client
+      .fetch<{
+        categories: { _id: string; title: unknown; parentId: string | null }[]
+        manufacturers: { _id: string; name: unknown }[]
+      }>(
+        `{
+          "categories": ${categoriesOn ? '*[_type == "category"] | order(sortOrder asc){_id, title, "parentId": parent._ref}' : '[]'},
+          "manufacturers": ${manufacturersOn ? '*[_type == "manufacturer"]{_id, name}' : '[]'}
+        }`,
+      )
+      .then((data) => {
+        setCategoryOptions(
+          categoryTree(
+            data.categories.map((c) => ({
+              _id: c._id,
+              title: localizer.value(c.title as never) || c._id,
+              parentId: c.parentId,
+            })),
+            subcategories,
+          ),
+        )
+        setManufacturerOptions(
+          data.manufacturers
+            .map((m) => ({ _id: m._id, title: localizer.value(m.name as never) || m._id }))
+            .sort((a, b) => compareLabels(a.title, b.title)),
+        )
+      })
+      .catch((err) => {
+        toast.push({
+          status: 'error',
+          title: componentT.default('productCreatorTool.errors.loadData'),
+          description: err.message,
+        })
+      })
+  }, [client, categoriesOn, manufacturersOn, subcategories, localizer, toast, componentT])
 
   // Load tax categories once — shared across all tabs
   useEffect(() => {
@@ -128,6 +178,8 @@ export function ProductCreator(): ReactElement {
     setTitles([])
     setGlobalPrice(undefined)
     setGlobalTaxCategoryId('')
+    setCategoryIds([])
+    setManufacturerIds([])
   }, [])
 
   const { submitting, commitTransaction } = useProductTransaction({
@@ -166,6 +218,8 @@ export function ProductCreator(): ReactElement {
         price: globalPrice,
         taxId: globalTaxCategoryId,
         weight: globalWeight,
+        categoryIds,
+        manufacturerIds,
       })
       const targets = rows.flatMap((row) => {
         const variantId = addWineVariantToTx(tx, productId, row)
@@ -182,6 +236,8 @@ export function ProductCreator(): ReactElement {
       globalPrice,
       globalTaxCategoryId,
       globalWeight,
+      categoryIds,
+      manufacturerIds,
       commitProduct,
       importBottleImagesInBackground,
     ],
@@ -197,13 +253,25 @@ export function ProductCreator(): ReactElement {
         price: globalPrice,
         taxId: globalTaxCategoryId,
         weight: globalWeight,
+        categoryIds,
+        manufacturerIds,
       })
       for (const combo of combinations) {
         addPhysicalDigitalVariantToTx(tx, productId, activeKind as 'physical' | 'digital', combo)
       }
       return commitProduct(tx, combinations.length, productId)
     },
-    [client, activeKind, titles, globalPrice, globalTaxCategoryId, globalWeight, commitProduct],
+    [
+      client,
+      activeKind,
+      titles,
+      globalPrice,
+      globalTaxCategoryId,
+      globalWeight,
+      categoryIds,
+      manufacturerIds,
+      commitProduct,
+    ],
   )
 
   const handleBundleSubmit = useCallback(
@@ -216,13 +284,30 @@ export function ProductCreator(): ReactElement {
         price: globalPrice,
         // no tax category: a bundle is taxed by its items
         weight: globalWeight,
+        categoryIds,
+        manufacturerIds,
       })
       for (const row of rows) {
         addBundleVariantToTx(tx, productId, row)
       }
       return commitProduct(tx, rows.length, productId)
     },
-    [client, titles, globalPrice, globalWeight, commitProduct],
+    [client, titles, globalPrice, globalWeight, categoryIds, manufacturerIds, commitProduct],
+  )
+
+  const categoryChoices = useMemo(
+    () =>
+      categoriesOn
+        ? { options: categoryOptions, selected: categoryIds, onChange: setCategoryIds }
+        : undefined,
+    [categoriesOn, categoryOptions, categoryIds],
+  )
+  const manufacturerChoices = useMemo(
+    () =>
+      manufacturersOn
+        ? { options: manufacturerOptions, selected: manufacturerIds, onChange: setManufacturerIds }
+        : undefined,
+    [manufacturersOn, manufacturerOptions, manufacturerIds],
   )
 
   const showTabs = enabledKinds.length > 1
@@ -240,6 +325,8 @@ export function ProductCreator(): ReactElement {
     onGlobalPriceChange: handleGlobalPriceChange,
     onGlobalTaxChange: handleGlobalTaxChange,
     onGlobalWeightChange: handleGlobalWeightChange,
+    categoryChoices,
+    manufacturerChoices,
   }
 
   return (
@@ -248,7 +335,9 @@ export function ProductCreator(): ReactElement {
         <Stack gap={6}>
           {/* Header */}
           <Stack gap={2}>
-            <Heading size={3}>{componentT.default('productCreatorTool.title')}</Heading>
+            <Heading as="h1" size={3}>
+              {componentT.default('productCreatorTool.title')}
+            </Heading>
             <Text size={1} muted>
               {componentT.default('productCreatorTool.subtitle')}
             </Text>

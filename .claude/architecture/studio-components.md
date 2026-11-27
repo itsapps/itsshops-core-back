@@ -77,7 +77,7 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
   year), so the grid's rows are every wine with the same `normalizeWineName` (`utils/wineName.ts`:
   `stripYear`, lower-case, accents folded, whitespace collapsed; tested in
   `tests/wineName.test.ts`), newest first; "Weiteren Wein hinzufügen" adds any other wine,
-  every row has a labelled ✕. Only the newest 5 rows show until "Ältere Jahrgänge zeigen"
+  every row has a labelled ✕ in the last column (its header is sr-only "Entfernen"). Only the newest 5 rows show until "Ältere Jahrgänge zeigen"
   (`aria-expanded`); rows with existing/ticked cells and added rows always show. Columns = the
   volumes used by wine variants in the dataset (`array::unique(…wine.volume)`) + 750 + those
   added via "Flaschengröße hinzufügen", labelled in litres. The grid is a `<table>` (caption,
@@ -90,8 +90,10 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
   into the default-locale title (other locales untouched) while that title still equals what
   the suggestion last wrote (`appliedTitle`) — so it follows a re-picked seed until the editor
   edits it, in any tab (the titles are shared). The input shows "Aus VinoFact übernommen" /
-  "Vorschlag aus VinoFact: …" (`aria-describedby`) and a ↺ button restoring the suggestion
-  (`MainProduct` `titleHint`/`titleAction` → `I18nTitleInputs` `hint`/`action`, default locale).
+  "Vorschlag aus VinoFact: …" (`aria-describedby`); only while the title differs, a
+  "Vorschlag übernehmen" button (text + undo icon, not an icon-only ✕-lookalike) restores it and
+  moves focus to the title input, since the button then disappears (`MainProduct`
+  `titleHint`/`titleAction`/`titleInputId` → `I18nTitleInputs` `hint`/`action`/`defaultInputId`).
 - **Duplicate check (creating only, `productManager/duplicates.tsx`):** raw perspective (drafts
   count, `versions.**` excluded, ids merged by `utils/existingProducts.ts` `mergeDrafts`, the
   draft wins). Wine: an exact query over all grid wines' VinoFact ids marks those cells as
@@ -104,6 +106,35 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
   (`PriceField inheritedLabel`, "14,90 € vom Produkt"); the empty tax option says what is
   inherited (`TaxCategoryField inheritedLabel`: product's tax, else the shop default) —
   `fields/inherited.ts`.
+- **Product level (creating only):** categories (`isDocEnabled('category')`, a `fieldset` of
+  checkboxes, published only; with `shop.category.subcategories` nested by `parent` at any depth
+  via `utils/productManager.ts` `categoryTree`) and, under "Advanced", manufacturers
+  (`isDocEnabled('manufacturer')`) — `fields/ChoiceFieldset`; written onto the product by
+  `addProductToTx` (`categoryIds`/`manufacturerIds`), omitted when empty. Never per variant
+  (a variant's categories replace the product's in core-front).
+- **Per-row extras (`fields/VariantExtrasFields`, under "Advanced"):** status `active` /
+  `comingSoon` (default `active`), SKU, and stock only with `shop.stock` and never for bundles.
+  Stock is kept as typed: empty = not written = unlimited (core-front skips the check), else a
+  whole number ≥ 0 (`parseStock`; anything else is a submit reason). Note: a variant made in
+  the Studio starts at the schema's `initialValue: 0`. `baseVariant` takes an options object and
+  writes `sku`/`stock` only when set. The price rule applies to `active` rows only (a
+  `comingSoon` row may stay without a price, like the schema's `activeNeedsPrice`).
+- **Summary (`ProductTab` `summaryLines`):** "Wird angelegt: 1 Produkt, 3 Varianten" (wine: "1
+  Wein, 3 Jahrgänge & Flaschen"; adding: "Wird hinzugefügt: 3 Varianten zu X") plus one line
+  per variant (label, own or inherited price, "kommt bald"). Only the count line is a live
+  region (`role="status"`).
+- **Physical/digital rows keep their values** when another option is ticked: `buildCombinations`
+  reuses the previous row of a combination (same sorted option ids), only new ones are fresh.
+- **Bundle quantity:** `min=1 step=1`; a quantity that isn't a whole number ≥ 1 is a submit
+  reason (the schema's `Rule.min(1)` doesn't run on tool writes); `addBundleVariantToTx`'s clamp
+  stays as a last guard.
+- **Layout (orientation):** the tool has an `h1`; each section is a bordered card with a real
+  heading (`fields/SectionHeading`, `h2`) and a one-line description: the product card ("Wein" /
+  "Produkt" — "Name und Standardwerte für alle …"), the variants section (`VariantSectionHeader`,
+  with count), and in the wine tab a separate "Preise & Details der angekreuzten Flaschen" card
+  as soon as the grid exists ("Noch keine Flasche angekreuzt" until a cell is ticked), so the
+  editor sees that it continues below the grid. Before a wine is picked, the empty title says it
+  will be taken from the wine below, and the wine picker's hint says so too.
 - **Wording:** the wine tab says "Wein" (section label, submit "Wein mit 3 Jahrgängen &
   Flaschen anlegen") and "Jahrgänge & Flaschen"; adding uses "… hinzufügen" submit texts.
 - **Add variants (`AddVariantsDialog`)**: one component for the document action

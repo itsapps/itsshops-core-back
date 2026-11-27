@@ -14,6 +14,23 @@ export default {
       priceMissingExisting: 'Preis fehlt für {{label}} (das Produkt hat keinen Preis)',
       bundleNoItems: '{{label}} enthält keine Produkte',
       noWineCell: 'Keine Flasche in der Tabelle angekreuzt',
+      stockInvalid: '{{label}}: Lagerstand muss leer oder eine ganze Zahl ab 0 sein',
+      bundleQuantity: '{{label}}: Menge muss eine ganze Zahl ab 1 sein',
+    },
+    extras: {
+      stockHint: 'Leer = unbegrenzt (nicht 0).',
+      stockInvalid: 'Eine ganze Zahl ab 0, oder leer für unbegrenzt.',
+    },
+    summary: {
+      label: 'Diese Varianten werden angelegt',
+      create_one: 'Wird angelegt: 1 Produkt, 1 Variante',
+      create_other: 'Wird angelegt: 1 Produkt, {{count}} Varianten',
+      createWine_one: 'Wird angelegt: 1 Wein, 1 Flasche',
+      createWine_other: 'Wird angelegt: 1 Wein, {{count}} Jahrgänge & Flaschen',
+      add_one: 'Wird hinzugefügt: 1 Variante zu {{title}}',
+      add_other: 'Wird hinzugefügt: {{count}} Varianten zu {{title}}',
+      noPrice: 'kein Preis',
+      comingSoon: 'kommt bald',
     },
     inherited: {
       price: '{{price}} vom Produkt',
@@ -30,18 +47,33 @@ export default {
       wineLike: 'Gibt es schon:',
       addVintagesThere: '— Jahrgänge dort hinzufügen?',
     },
+    productSection: {
+      title: 'Produkt',
+      titleWine: 'Wein',
+      description: 'Name und Standardwerte für alle Varianten dieses Produkts.',
+      descriptionWine: 'Name und Standardwerte für alle Jahrgänge & Flaschen dieses Weins.',
+    },
     wine: {
-      product: 'Wein',
       sectionTitle: 'Jahrgänge & Flaschen',
+      sectionDescription:
+        'Wein aus VinoFact wählen, dann in der Tabelle die Flaschen ankreuzen, die angelegt werden sollen.',
+      detailsTitle: 'Preise & Details der angekreuzten Flaschen',
+      detailsDescription: 'Leer = Wert vom Produkt.',
+      noCellYet:
+        'Noch keine Flasche angekreuzt — oben in der Tabelle ankreuzen, was angelegt werden soll.',
       loadingWines: 'Weine werden aus VinoFact geladen…',
       pickFirst: 'Wein aus VinoFact',
       pickFirstHint:
         'Die Tabelle zeigt danach alle Jahrgänge mit diesem Namen; weitere Weine lassen sich hinzufügen.',
       titleFromVinofact: 'Aus VinoFact übernommen',
+      titleFromWineLater: 'Leer lassen: wird aus dem Wein unten übernommen. Oder selbst eintragen.',
+      pickFirstHintTitle:
+        'Der Weinname wird als Produkttitel übernommen (änderbar). Die Tabelle zeigt danach alle Jahrgänge mit diesem Namen; weitere Weine lassen sich hinzufügen.',
       titleSuggestion: 'Vorschlag aus VinoFact: {{title}}',
       restoreSuggestion: 'Vorschlag übernehmen',
       gridCaption: 'Jahrgänge und Flaschengrößen',
       wineColumn: 'Jahrgang',
+      removeColumn: 'Entfernen',
       cellLabel: '{{wine}}, {{volume}}',
       cellLabelExisting: '{{wine}}, {{volume}} (gibt es schon)',
       gridEmpty: 'Keine Weine in der Tabelle — füge unten einen hinzu.',

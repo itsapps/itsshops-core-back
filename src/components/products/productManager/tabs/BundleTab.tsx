@@ -8,11 +8,14 @@ import { memo, useCallback, useEffect, useId, useMemo, useState } from 'react'
 
 import { AddIcon, CloseIcon } from '../../../../assets/icons'
 import { useITSContext } from '../../../../context/ITSCoreProvider'
+import { parseWholeNumber } from '../../../../utils/productManager'
 import { uid } from '../../../../utils/utils'
 import { compareLabels, variantLabel } from '../../../../utils/variantLabel'
 import { DuplicateNotice, useTitleDuplicates } from '../duplicates'
 import { I18nTitleInputs } from '../fields/I18nTitleField'
+import { AdvancedSection } from '../fields/AdvancedSection'
 import { inheritedPriceLabel } from '../fields/inherited'
+import { extrasSetCount, VariantExtrasFields } from '../fields/VariantExtrasFields'
 import { PriceField } from '../fields/PriceField'
 import { VariantRow } from '../fields/VariantRow'
 import { VariantSectionHeader } from '../fields/VariantSectionHeader'
@@ -24,13 +27,15 @@ import {
   BundleVariantRowProps,
   I18nTitleEntry,
   SubmitCheck,
+  SummaryLine,
+  VariantExtras,
 } from '../ProductCreator.types'
 import { ProductTab } from './ProductTab'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function emptyBundleRow(): BundleVariantRow {
-  return { id: uid(), items: [], price: undefined, titles: [] }
+  return { id: uid(), items: [], price: undefined, titles: [], status: 'active', sku: '' }
 }
 
 export const BundleVariantRowItem = memo(function BundleVariantRowItem({
@@ -66,8 +71,12 @@ export const BundleVariantRowItem = memo(function BundleVariantRowItem({
             <TextInput
               id={quantityId}
               type="number"
+              inputMode="numeric"
+              min={1}
+              step={1}
               value={item.quantity}
               onChange={handleQuantityChange}
+              aria-invalid={parseWholeNumber(item.quantity, 1) === undefined || undefined}
             />
           </Box>
           <Button
@@ -130,6 +139,13 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
 
   const handleTitlesChange = useCallback(
     (titles: I18nTitleEntry[]) => onUpdateRow(row.id, 'titles', titles),
+    [onUpdateRow, row.id],
+  )
+
+  const handleExtrasChange = useCallback(
+    // `stock` never comes: the bundle row shows no stock field
+    (key: keyof VariantExtras, value: string) =>
+      onUpdateRow(row.id, key as keyof BundleVariantRow, value),
     [onUpdateRow, row.id],
   )
 
@@ -241,6 +257,11 @@ export const BundleVariantRowCard = memo(function BundleVariantRowCard(
             )}
           </Text>
         </Stack>
+
+        {/* Status + SKU (no stock: a bundle's stock comes from its items) */}
+        <AdvancedSection setCount={extrasSetCount(row)}>
+          <VariantExtrasFields extras={row} showStock={false} onChange={handleExtrasChange} />
+        </AdvancedSection>
       </Stack>
     </VariantRow>
   )
@@ -385,9 +406,18 @@ export function BundleTab(props: BundleTabProps): ReactElement {
           }),
         )
       }
+      // The schema's `Rule.min(1)` doesn't run on tool writes
+      if (row.items.some((item) => parseWholeNumber(item.quantity, 1) === undefined)) {
+        reasons.push(
+          componentT.default('productCreatorTool.reasons.bundleQuantity', undefined, {
+            label: rowLabel(i),
+          }),
+        )
+      }
       // Active variants need a price — the global (product) one or the row's (also when adding
-      // variants to an existing product: `globalPrice` is then the product's price).
-      if (!globalPrice && !row.price) {
+      // variants to an existing product: `globalPrice` is then the product's price). A
+      // "coming soon" variant may stay without one.
+      if (!globalPrice && !row.price && row.status === 'active') {
         const key = hideProductSection ? 'priceMissingExisting' : 'priceMissing'
         reasons.push(
           componentT.default(`productCreatorTool.reasons.${key}`, undefined, {
@@ -398,6 +428,17 @@ export function BundleTab(props: BundleTabProps): ReactElement {
     })
     return { ok: reasons.length === 0, reasons }
   }, [hideProductSection, titles, defaultLocale, globalPrice, rows, componentT, structureT])
+
+  const summaryLines = useMemo(
+    (): SummaryLine[] =>
+      rows.map((row, i) => ({
+        key: row.id,
+        label: `${structureT.default('products.variant')} ${i + 1}`,
+        price: row.price ?? globalPrice,
+        status: row.status,
+      })),
+    [rows, structureT, globalPrice],
+  )
 
   const handleSubmit = useCallback(async () => {
     if (!submitCheck.ok) return
@@ -461,6 +502,7 @@ export function BundleTab(props: BundleTabProps): ReactElement {
       handleSubmit={handleSubmit}
       content={content}
       hideProductSection={props.hideProductSection}
+      summaryLines={summaryLines}
     />
   )
 }

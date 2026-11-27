@@ -6,8 +6,8 @@ import { MainProduct } from '../MainProduct'
 import { ProductTabProps } from '../ProductCreator.types'
 
 export function ProductTab(props: ProductTabProps): ReactElement {
-  const { componentT } = useITSContext()
-  const { submitCheck, submitting } = props
+  const { componentT, format } = useITSContext()
+  const { submitCheck, submitting, summaryLines } = props
   const reasonsId = useId()
   const blocked = !submitCheck.ok && submitCheck.reasons.length > 0
   // Creating vs. adding to an existing product; the wine tab says "Wein" / "Jahrgang & Flasche"
@@ -18,6 +18,24 @@ export function ProductTab(props: ProductTabProps): ReactElement {
     add: { wine: 'submitAddWine', other: 'submitAdd' },
   }[adding ? 'add' : 'create'][wine ? 'wine' : 'other']
 
+  // Summary: only the count line is a live region (the list would be noise on every keystroke)
+  const count = summaryLines.length
+  const { defaultLocale, titles } = props.global
+  const productTitle = titles.find((t) => t.locale === defaultLocale)?.value ?? ''
+  let countLine = ''
+  if (count > 0) {
+    countLine = adding
+      ? componentT.default('productCreatorTool.summary.add', undefined, {
+          count,
+          title: productTitle,
+        })
+      : componentT.default(
+          wine ? 'productCreatorTool.summary.createWine' : 'productCreatorTool.summary.create',
+          undefined,
+          { count },
+        )
+  }
+
   return (
     <Stack gap={[1, 1, 4, 6]}>
       {!props.hideProductSection && <MainProduct {...props.global} />}
@@ -26,6 +44,37 @@ export function ProductTab(props: ProductTabProps): ReactElement {
 
       {/* Submit — stays focusable while blocked (aria-disabled), the reasons describe why */}
       <Flex direction="column" align="flex-end" gap={3} marginBottom={4}>
+        <Stack gap={2} style={{ textAlign: 'end' }}>
+          <div role="status">
+            <Text size={1} weight="semibold">
+              {countLine}
+            </Text>
+          </div>
+          {count > 0 && (
+            <Stack
+              as="ul"
+              gap={2}
+              aria-label={componentT.default('productCreatorTool.summary.label')}
+              style={{ margin: 0, padding: 0, listStyle: 'none' }}
+            >
+              {summaryLines.map((line) => (
+                <Text as="li" key={line.key} size={1} muted>
+                  {[
+                    line.label,
+                    line.price
+                      ? format.currency(line.price / 100)
+                      : componentT.default('productCreatorTool.summary.noPrice'),
+                    line.status === 'comingSoon'
+                      ? componentT.default('productCreatorTool.summary.comingSoon')
+                      : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </Text>
+              ))}
+            </Stack>
+          )}
+        </Stack>
         {blocked && (
           <Stack
             as="ul"

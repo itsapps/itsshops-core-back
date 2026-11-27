@@ -3,9 +3,10 @@ import { ReactElement } from 'react'
 
 import { useITSContext } from '../../../context/ITSCoreProvider'
 import { AdvancedSection } from './fields/AdvancedSection'
+import { ChoiceFieldset } from './fields/ChoiceFieldset'
 import { I18nTitleInputs } from './fields/I18nTitleField'
 import { PriceField } from './fields/PriceField'
-import { SectionLabel } from './fields/SectionLabel'
+import { SectionHeading } from './fields/SectionHeading'
 import { TaxCategoryField } from './fields/TaxCategoryField'
 import { WeightField } from './fields/WeightField'
 import { GlobalDefaultsProps, MainProductProps, TaxCategory } from './ProductCreator.types'
@@ -35,12 +36,13 @@ export function GlobalDefaults(props: GlobalDefaultsProps): ReactElement {
     loadingTax,
     shopDefaultTaxCategoryId,
     globalWeight,
+    manufacturerChoices,
     onPriceChange,
     onTaxChange,
     onWeightChange,
   } = props
 
-  const { componentT } = useITSContext()
+  const { componentT, schemaT } = useITSContext()
   // A bundle is taxed by its items — no tax category to pick (see BundleTab's price hint).
   const showTax = kind !== 'bundle'
   const columns = 1 + (kind === 'physical' ? 1 : 0)
@@ -51,16 +53,29 @@ export function GlobalDefaults(props: GlobalDefaultsProps): ReactElement {
         <PriceField value={globalPrice} onChange={onPriceChange} />
         {kind === 'physical' && <WeightField value={globalWeight} onChange={onWeightChange} />}
       </Grid>
-      {/* Empty = not written: the product follows the shop default (also a later change of it) */}
-      {showTax && (
-        <AdvancedSection setCount={globalTaxCategoryId ? 1 : 0}>
-          <TaxCategoryField
-            value={globalTaxCategoryId}
-            taxCategories={taxCategories}
-            loadingTax={loadingTax}
-            onTaxChange={onTaxChange}
-            hint={shopDefaultTaxHint(componentT, taxCategories, shopDefaultTaxCategoryId)}
-          />
+      {(showTax || manufacturerChoices) && (
+        <AdvancedSection
+          setCount={(globalTaxCategoryId ? 1 : 0) + (manufacturerChoices?.selected.length ? 1 : 0)}
+        >
+          <Stack gap={4}>
+            {/* Empty = not written: the product follows the shop default (also a later change) */}
+            {showTax && (
+              <TaxCategoryField
+                value={globalTaxCategoryId}
+                taxCategories={taxCategories}
+                loadingTax={loadingTax}
+                onTaxChange={onTaxChange}
+                hint={shopDefaultTaxHint(componentT, taxCategories, shopDefaultTaxCategoryId)}
+              />
+            )}
+            {/* Most wine shops are their own producer — hence under "Advanced" */}
+            {manufacturerChoices && manufacturerChoices.options.length > 0 && (
+              <ChoiceFieldset
+                legend={schemaT.default('fields.manufacturers.title')}
+                group={manufacturerChoices}
+              />
+            )}
+          </Stack>
         </AdvancedSection>
       )}
     </Stack>
@@ -86,6 +101,9 @@ export function MainProduct(props: MainProductProps): ReactElement {
     onGlobalWeightChange,
     titleHint,
     titleAction,
+    titleInputId,
+    categoryChoices,
+    manufacturerChoices,
   } = props
   const { schemaT, componentT } = useITSContext()
 
@@ -97,12 +115,19 @@ export function MainProduct(props: MainProductProps): ReactElement {
       style={{ borderLeft: '3px solid var(--card-focus-ring-color)' }}
     >
       <Stack gap={4}>
-        {/* The wine tab speaks of "Wein", not "Produkt" */}
-        <SectionLabel>
-          {kind === 'wine'
-            ? componentT.default('productCreatorTool.wine.product')
-            : schemaT.default('product.title')}
-        </SectionLabel>
+        {/* What this card is for: shared by every variant (the wine tab says "Wein") */}
+        <SectionHeading
+          title={componentT.default(
+            kind === 'wine'
+              ? 'productCreatorTool.productSection.titleWine'
+              : 'productCreatorTool.productSection.title',
+          )}
+          description={componentT.default(
+            kind === 'wine'
+              ? 'productCreatorTool.productSection.descriptionWine'
+              : 'productCreatorTool.productSection.description',
+          )}
+        />
         <I18nTitleInputs
           locales={locales}
           defaultLocale={defaultLocale}
@@ -113,7 +138,16 @@ export function MainProduct(props: MainProductProps): ReactElement {
           placeholder={titlePlaceholder}
           hint={titleHint}
           action={titleAction}
+          defaultInputId={titleInputId}
         />
+
+        {/* Product level only: a variant's categories would replace the product's */}
+        {categoryChoices && categoryChoices.options.length > 0 && (
+          <ChoiceFieldset
+            legend={schemaT.default('fields.categories.title')}
+            group={categoryChoices}
+          />
+        )}
 
         {/* Global defaults */}
         <GlobalDefaults
@@ -124,6 +158,7 @@ export function MainProduct(props: MainProductProps): ReactElement {
           loadingTax={loadingTax}
           shopDefaultTaxCategoryId={shopDefaultTaxCategoryId}
           globalWeight={globalWeight}
+          manufacturerChoices={manufacturerChoices}
           onPriceChange={onGlobalPriceChange}
           onTaxChange={onGlobalTaxChange}
           onWeightChange={onGlobalWeightChange}

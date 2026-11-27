@@ -15,11 +15,22 @@ export interface I18nTitleEntry {
   value: string
 }
 
-export interface WineRow {
+/** The statuses the tool offers (the others are set in the variant document). */
+export type NewVariantStatus = 'active' | 'comingSoon'
+
+/** Per-row extras under "Advanced": status, SKU and (not bundles) stock. */
+export interface VariantExtras {
+  status: NewVariantStatus
+  sku: string
+  /** As typed: '' = unset (unlimited), else a whole number ≥ 0 (checked before submit). */
+  stock: string
+}
+
+export interface WineRow extends VariantExtras {
   id: string
   wine: VinofactWine | null
   volume: string
-  price: number | undefined // display euros e.g. "24.90" — converted to cents on submit
+  price: number | undefined // cents
   taxCategoryId: string
   titles: I18nTitleEntry[]
 }
@@ -42,7 +53,7 @@ export interface OptionGroup {
   options: Option[]
 }
 
-export interface CombinationRow {
+export interface CombinationRow extends VariantExtras {
   id: string
   // one optionId per group, parallel to selectedGroups order
   optionIds: string[]
@@ -70,7 +81,7 @@ export interface BundleItem {
   quantity: string
 }
 
-export interface BundleVariantRow {
+export interface BundleVariantRow extends Omit<VariantExtras, 'stock'> {
   id: string
   items: BundleItem[]
   price: number | undefined
@@ -94,9 +105,36 @@ export interface MainProductProps {
   onGlobalPriceChange: (val: number | undefined) => void
   onGlobalTaxChange: (val: string) => void
   onGlobalWeightChange: (val: number | undefined) => void
+  /** Product categories / manufacturers (creating only; omitted = field not shown). */
+  categoryChoices?: ChoiceGroup
+  manufacturerChoices?: ChoiceGroup
   /** The wine tab's title suggestion: note + restore button at the default-locale title. */
   titleHint?: ReactNode
   titleAction?: ReactNode
+  titleInputId?: string
+}
+
+export interface ChoiceOption {
+  _id: string
+  title: string
+  /** Indent level (subcategories). */
+  depth?: number
+}
+
+/** A checkbox list (categories, manufacturers) with its selection. */
+export interface ChoiceGroup {
+  options: ChoiceOption[]
+  selected: string[]
+  onChange: (ids: string[]) => void
+}
+
+/** One line of the summary above the submit button. */
+export interface SummaryLine {
+  key: string
+  label: string
+  /** Own price, else the product's (cents); `undefined` = none. */
+  price: number | undefined
+  status: NewVariantStatus
 }
 
 /** Whether a tab can submit, and why not (translated, shown above the button). */
@@ -113,6 +151,8 @@ export interface ProductTabProps {
   submitCheck: SubmitCheck
   handleSubmit: () => void
   hideProductSection?: boolean
+  /** The variants that will be created (summary above the button). */
+  summaryLines: SummaryLine[]
 }
 export interface ProductKindTabProps {
   global: MainProductProps
@@ -180,6 +220,8 @@ export interface LocaleTitleInputProps {
   value: string
   onChange: (locale: string, value: string) => void
   placeholder?: string
+  /** The input's `id` (default: generated) — lets a caller move focus to it. */
+  id?: string
   /** Note below the input, linked with `aria-describedby`. */
   hint?: ReactNode
   /** A control next to the input (e.g. "restore suggestion"). */
@@ -202,9 +244,10 @@ export interface I18nTitleInputsProps {
   titles: I18nTitleEntry[]
   onChange: (titles: I18nTitleEntry[]) => void
   placeholder?: string
-  /** Hint + action for the default locale's input (the wine tab's title suggestion). */
+  /** Hint + action + `id` for the default locale's input (the wine tab's title suggestion). */
   hint?: ReactNode
   action?: ReactNode
+  defaultInputId?: string
 }
 
 export interface PriceFieldProps {
@@ -243,6 +286,7 @@ export interface GlobalDefaultsProps {
   loadingTax: boolean
   shopDefaultTaxCategoryId?: string
   globalWeight: number | undefined
+  manufacturerChoices?: ChoiceGroup
   onPriceChange: (val: number | undefined) => void
   onTaxChange: (val: string) => void
   onWeightChange: (val: number | undefined) => void
@@ -252,6 +296,7 @@ export interface VariantSectionHeaderProps {
   count: number
   /** Overrides "Varianten" (the wine tab says "Jahrgänge & Flaschen"). */
   title?: string
+  description?: string
 }
 
 export interface WineVariantCardProps {
