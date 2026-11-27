@@ -86,7 +86,8 @@ sort field against every type in it (`wine.*` doesn't exist on `product` → cra
 `VARIANT_ORDER` (`src/utils/variantOrder.ts`, shared with the product preview).
 The same live query reads whether the product exists (draft or published). Products are only
 created by the Product Manager (the list has no "New"), so a missing product was deleted: the
-list becomes `ProductDeletedPane` ("Dieses Produkt wurde gelöscht.") — otherwise its product
+list becomes `DeletedDocumentPane` (`src/components/`, text via `options.text`: "Dieses Produkt
+wurde gelöscht.") — otherwise its product
 item stays as "Missing document" and its editor would create a new product with the deleted id.
 **Pitfall:** `listenQuery` only re-fetches on mutations matching the query's filter; with a
 string query here that's the variants only, so the product's deletion never arrived. Pass
@@ -107,7 +108,18 @@ options (by `sortOrder`), "New option". Pitfalls found on the way, apply to any 
   `variantOption`), also a new option not yet in the items. A mixed documentList's default
   child infers the editor type from the filter — the group opened with the option's form.
 - The group list's own "+" passes `params.template` to its child: then open the group's editor,
-  not the list ("Missing document").
+  not the list ("Missing document"). **Decide that inside the live stream, not when resolving:**
+  Sanity caches a resolved pane per id + position (`hashContext`), **without the pane params**,
+  and keeps it while you click through sibling groups — a resolve-time choice stuck, so a saved
+  new group reopened from the list still showed its form. `getGroupChildView` wraps the query in
+  `defer` and fixes the mode on its first result per subscription (new + not existing → editor,
+  else list); reopening re-subscribes (Sanity's `publishReplay` + `refCount` reconnects), and the
+  group exists by then → list. The first edit of a new group must not swap its editor away, hence
+  "fixed per subscription".
+- Like the product list: `listen` also matches the group itself, and a group that is gone shows
+  `DeletedDocumentPane` ("Diese Optionengruppe wurde gelöscht.").
+- Both lists `distinctUntilChanged` on what they show: `listen` fires on every keystroke in an
+  editor below them.
 
 `createStructureTool(ctx)` bundles `{ title, structure, defaultDocumentNode }` and is handed to
 `structureTool(...)` in `src/index.ts`. Custom per-menu panes live in `src/structure/`

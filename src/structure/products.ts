@@ -1,8 +1,8 @@
-import { map } from 'rxjs'
+import { distinctUntilChanged, map } from 'rxjs'
 
 import { AddIcon, ProductIcon, productKindIcons } from '../assets/icons'
+import { DeletedDocumentPane } from '../components/DeletedDocumentPane'
 import { AddVariantsPane } from '../components/products/AddVariantsPane'
-import { ProductDeletedPane } from '../components/products/ProductDeletedPane'
 import type { ITSStructureComponent } from '../types'
 import { VARIANT_ORDER } from '../utils/variantOrder'
 
@@ -33,13 +33,23 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
         {},
       )
       .pipe(
-        map((res: { exists: boolean; variantIds: string[] | null }) => {
-          if (!res.exists) {
-            return S.component(ProductDeletedPane).id('productDeleted').title(t('products.edit'))
+        // Drafts and published come back as separate ids — one item per document.
+        map((res: { exists: boolean; variantIds: string[] | null }) => ({
+          exists: res.exists,
+          variantIds: [...new Set((res.variantIds ?? []).map((id) => id.replace(/^drafts\./, '')))],
+        })),
+        // `listen` fires on every edit of the product (typing in its editor): re-build the list
+        // only when what it shows changed
+        distinctUntilChanged(
+          (a, b) => a.exists === b.exists && a.variantIds.join() === b.variantIds.join(),
+        ),
+        map(({ exists, variantIds }) => {
+          if (!exists) {
+            return S.component(DeletedDocumentPane)
+              .id('productDeleted')
+              .title(t('products.edit'))
+              .options({ text: t('products.deleted') })
           }
-          const ids = res.variantIds ?? []
-          // Drafts and published come back as separate ids — one item per document.
-          const variantIds = [...new Set(ids.map((id) => id.replace(/^drafts\./, '')))]
           return S.list()
             .id('editProduct')
             .title(t('products.edit'))

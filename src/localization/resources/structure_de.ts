@@ -38,6 +38,7 @@ export default {
   },
   variantOptions: {
     addOption: 'Neue Option',
+    deleted: 'Diese Optionengruppe wurde gelöscht.',
     edit: 'Optionengruppe bearbeiten',
     title: 'Optionengruppen',
     group: 'Optionengruppe',

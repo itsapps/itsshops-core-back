@@ -6,9 +6,12 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
-- **Deleting a product no longer leaves a "Missing document" in its list:** the product's list
-  (product + variants) turns into "Dieses Produkt wurde gelöscht." — before, clicking the
-  leftover item opened a new product with the deleted id.
+- **Deleting a product or an option group no longer leaves a "Missing document" in its list:**
+  the list (product + variants / group + options) turns into "… wurde gelöscht." — before,
+  clicking the leftover item opened a new document with the deleted id.
+- **A new option group, once saved, opens as list again:** opened again from the group list it
+  shows the group with its options and "Neue Option" like any other group (before: still its
+  form, because Sanity reused the first resolution).
 - **No false "Vinofact-Client nicht initialisiert" after a reload:** the Product Manager's wine
   tab and the variant's wine picker wait for the integration secrets to load instead of
   reporting VinoFact as not set up (context: `secretsLoading`).
