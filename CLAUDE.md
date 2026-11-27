@@ -50,7 +50,8 @@ npm run test        # vitest (watch mode; `npx vitest run` once) — tests/vinof
                     #   SANITY_STUDIO_VINOFACT_API_URL (origin override); skipped when missing
 npm run extract     # sanity schema extract --workspace de  → schema.json (input to typegen)
 npm run typegen     # sanity typegen generate                → src/types/sanity.types.ts (used; see datasets.md)
-npm run lint / format   # eslint: 0 errors (warnings, mostly `any`, remain) — keep it at 0 errors
+npm run lint / format   # eslint: keep it at 0 errors (warnings, mostly `any`, remain); 2026-11-27: 5
+                    #   errors (no-nested-ternary in orderStatusHistory.ts, prettier in tests/menuLevels.test.ts) — fix
 ```
 
 Data ops on a dataset (count/delete documents by type, ad-hoc GROQ) use core-front's `itsshops`
