@@ -1,7 +1,8 @@
-import { map } from 'rxjs'
+import { map, scan } from 'rxjs'
 
 import { AddIcon, ProductIcon, productKindIcons } from '../assets/icons'
 import { AddVariantsPane } from '../components/products/AddVariantsPane'
+import { ProductDeletedPane } from '../components/products/ProductDeletedPane'
 import type { ITSStructureComponent } from '../types'
 import { VARIANT_ORDER } from '../utils/variantOrder'
 
@@ -11,16 +12,35 @@ export const productsMenu: ITSStructureComponent = (S, context, ctx) => {
 
   // EXPERIMENT: product + its variants in one list. A mixed documentList can only sort by fields
   // every type has (Sanity rejects `wine.*` on `product`), so the list is built from a live query.
+  //
+  // The product item stays in the list even when the product doesn't exist: that is how a new
+  // product ("Neu: Produkt" from the list) is edited before its first save. Once the product
+  // existed and is gone (deleted, draft discarded), the list is replaced by a notice — its
+  // "Missing document" item would let an editor create a new product with the old id.
   const getProductChildView = (productId: string) =>
     context.documentStore
       .listenQuery(
-        `*[_type == "productVariant" && product._ref == $productId && !(_id in path("versions.**"))]
-          | order(${VARIANT_ORDER})._id`,
+        `{
+          "exists": count(*[_id in [$productId, "drafts." + $productId]]) > 0,
+          "variantIds": *[_type == "productVariant" && product._ref == $productId && !(_id in path("versions.**"))]
+            | order(${VARIANT_ORDER})._id
+        }`,
         { productId },
         {},
       )
       .pipe(
-        map((ids: string[]) => {
+        scan(
+          (state: { seen: boolean; gone: boolean; ids: string[] }, res: any) => ({
+            seen: state.seen || res.exists,
+            gone: (state.seen || res.exists) && !res.exists,
+            ids: res.variantIds ?? [],
+          }),
+          { seen: false, gone: false, ids: [] },
+        ),
+        map(({ gone, ids }: { gone: boolean; ids: string[] }) => {
+          if (gone) {
+            return S.component(ProductDeletedPane).id('productDeleted').title(t('products.edit'))
+          }
           // Drafts and published come back as separate ids — one item per document.
           const variantIds = [...new Set(ids.map((id) => id.replace(/^drafts\./, '')))]
           return S.list()

@@ -84,6 +84,13 @@ from a `documentStore.listenQuery` (product item, divider, one `documentListItem
 divider, "New variant" → `AddVariantsPane`). Not a mixed `S.documentList`: Sanity validates every
 sort field against every type in it (`wine.*` doesn't exist on `product` → crash). Variant order:
 `VARIANT_ORDER` (`src/utils/variantOrder.ts`, shared with the product preview).
+The product item is listed even when the product doesn't exist yet — that's how a new product
+("New: Product" from the list) is edited before its first save. The same query also reads
+whether the product exists (draft or published); a `scan` remembers whether it ever did, and
+once it existed and is gone (deleted, draft discarded) the list becomes `ProductDeletedPane`
+("Dieses Produkt wurde gelöscht."). Otherwise the item stays as "Missing document" and its
+editor would create a new product with the deleted id. Gap: a reload on a deleted product's URL
+can't tell it from a new one and still shows the item.
 
 **Option group child list (`src/structure/variantOptions.ts`):** same pattern — group item,
 options (by `sortOrder`), "New option". Pitfalls found on the way, apply to any such list:

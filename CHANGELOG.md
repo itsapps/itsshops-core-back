@@ -6,6 +6,9 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
+- **Deleting a product no longer leaves a "Missing document" in its list:** the product's list
+  (product + variants) turns into "Dieses Produkt wurde gelöscht." — before, clicking the
+  leftover item opened a new product with the deleted id.
 - **No false "Vinofact-Client nicht initialisiert" after a reload:** the Product Manager's wine
   tab and the variant's wine picker wait for the integration secrets to load instead of
   reporting VinoFact as not set up (context: `secretsLoading`).

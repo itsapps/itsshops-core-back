@@ -21,6 +21,7 @@ export default {
     variant: 'Variante',
     variants: 'Varianten',
     addVariant: 'Neue Variante',
+    deleted: 'Dieses Produkt wurde gelöscht.',
     kinds: {
       title: 'Produktarten',
       list: {
