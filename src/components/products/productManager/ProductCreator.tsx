@@ -332,7 +332,8 @@ export function ProductCreator(): ReactElement {
   return (
     <Flex padding={4} direction="column" height="fill" flex={1}>
       <Container width={2}>
-        <Stack gap={6}>
+        {/* Room below the last element (the "Zuletzt angelegt" card), not flush with the edge */}
+        <Stack gap={6} paddingBottom={6}>
           {/* Header */}
           <Stack gap={2}>
             <Heading as="h1" size={3}>
@@ -342,23 +343,6 @@ export function ProductCreator(): ReactElement {
               {componentT.default('productCreatorTool.subtitle')}
             </Text>
           </Stack>
-
-          {lastCreated && (
-            <Card padding={3} radius={2} tone="positive" border>
-              <Flex align="center" justify="space-between" gap={3} wrap="wrap">
-                <Text size={1}>
-                  {componentT.default('productCreatorTool.lastCreated', undefined, {
-                    title: lastCreated.title,
-                  })}
-                </Text>
-                <Text size={1} weight="semibold">
-                  <IntentLink intent="edit" params={{ id: lastCreated.id, type: 'product' }}>
-                    {componentT.default('productCreatorTool.messages.productCreated.open')}
-                  </IntentLink>
-                </Text>
-              </Flex>
-            </Card>
-          )}
 
           {/* Tabs — only shown when multiple kinds are enabled */}
           {showTabs && (
@@ -429,6 +413,26 @@ export function ProductCreator(): ReactElement {
               )}
             </TabPanel>
           ))}
+
+          {/* Right under the submit button, where the editor is when the product is created (the
+              form empties, so this is where they look); stays until the next submit — the
+              toast times out (WCAG 2.2.1) */}
+          {lastCreated && (
+            <Card padding={3} radius={2} tone="positive" border>
+              <Flex align="center" justify="space-between" gap={3} wrap="wrap">
+                <Text size={1}>
+                  {componentT.default('productCreatorTool.lastCreated', undefined, {
+                    title: lastCreated.title,
+                  })}
+                </Text>
+                <Text size={1} weight="semibold">
+                  <IntentLink intent="edit" params={{ id: lastCreated.id, type: 'product' }}>
+                    {componentT.default('productCreatorTool.messages.productCreated.open')}
+                  </IntentLink>
+                </Text>
+              </Flex>
+            </Card>
+          )}
         </Stack>
       </Container>
     </Flex>

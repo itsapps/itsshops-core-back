@@ -45,7 +45,7 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
 - **Product link after creation:** the success toast carries an "Produkt öffnen" button (toast
   `duration` 10 s; it navigates with the router captured in the hook — the toast portal is
   outside the router context, so no `IntentLink` there). Because a toast times out (WCAG 2.2.1),
-  `ProductCreator` also shows a persistent "Zuletzt angelegt: <title>" card under the header with
+  `ProductCreator` also shows a persistent "Zuletzt angelegt: <title>" card below the tabs (right under the submit button, where the editor is — not at the top, which they never see) with
   an `IntentLink`, cleared on the next submit. `AddVariantsAction` passes no link (the product
   is open).
 - **Bottle images (`shop.vinofact`):** `WineTab` has a checkbox "Flaschenbilder aus VinoFact

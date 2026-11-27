@@ -55,9 +55,13 @@ export function useProductTransaction(options: {
           status: 'success',
           title: componentT.default(`productCreatorTool.messages.${messages}.title`),
           description: link ? (
-            <Stack gap={2}>
+            // The toast shrink-wraps its content to the text, so `width: 100%` alone stays narrow.
+            // Its inner width per @sanity/ui: layer `min(420px, 100vw)` − 2 × 20px layer padding
+            // − 2 × 12px content padding − 2 × 1px border = 66px less
+            <Stack gap={2} style={{ minWidth: 'calc(min(420px, 100vw) - 66px)' }}>
               <Text size={1}>{text}</Text>
               <Button
+                style={{ width: '100%' }}
                 mode="ghost"
                 text={componentT.default('productCreatorTool.messages.productCreated.open')}
                 onClick={() =>
