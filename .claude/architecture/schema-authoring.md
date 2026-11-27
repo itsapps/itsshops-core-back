@@ -101,6 +101,7 @@ instead of re-deriving the same field clusters:
 | `actionGroup({ max?, … })` | an array of internal-link "actions" with a localized preview |
 | `variantReferences` / `variantReference` | references to `productVariant` (filtered to non-archived, `disableNew`, translated member title) |
 | `priceField` | a positive `number` field rendered with the `PriceInput` component |
+| `inherited(field, spec)` / `inheritedBy(field, spec)` | wrap a field that a variant inherits from its product: sets `components.field` (`InheritedField` on the variant, `OverriddenByVariants` on the product; an existing `components.input` is kept) and `options.inherit` (`InheritSpec`, one per field in `utils/inheritance.ts` `INHERIT_SPECS`). The field **must** have a static description (`fields_*.ts`) — Sanity links `aria-describedby` to the description only then. Wrap *after* `priceField` (it sets its own `components`). See `studio-components.md` → "Inheritance hints" |
 | `countryCodeField` / `countryCodesField` | country select(s) from `ctx.constants.countryOptions`; single variant adds an async cross-document uniqueness check |
 | `filterField` | feature-aware product/wine/option filter array for the `productList` module |
 

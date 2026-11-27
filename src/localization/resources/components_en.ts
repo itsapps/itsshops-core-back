@@ -670,6 +670,26 @@ export default {
     products: 'Products',
     variants: 'Product variants',
   },
+  inheritance: {
+    productImage: 'Product image',
+    noValue: 'no value',
+    unnamedVariant: 'Variant {{n}}',
+    draftSuffix: ' (draft)',
+    variant: {
+      fromProduct: 'From the product: {{value}}',
+      fromShopDefault: 'From the shop default: {{value}}',
+      productEmpty: 'The product has no value.',
+      noCompareAt: 'No compare-at price (own price set).',
+      own: 'Own value — product: {{value}}. Clear the field to use the product value.',
+      ownProductEmpty: 'Own value — the product has none.',
+      draftDiffers: '(Product draft: {{value}})',
+    },
+    product: {
+      overridden_one: 'Own value in {{n}} of {{count}} variant.',
+      overridden_other: 'Own value in {{n}} of {{count}} variants.',
+      listLabel: 'Variants with an own value',
+    },
+  },
   exporters: {
     xlsx: {
       inventory: {

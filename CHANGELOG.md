@@ -15,6 +15,12 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 - **Compare-at price warning:** a compare-at price that isn't higher than the price (variant: own
   price, else the product's) warns — the shop doesn't show it (core-front: a variant with its own
   price no longer inherits the product's compare-at price).
+- **Inherited values live in the form:** a variant's inheritable fields say what the variant uses
+  now — "Vom Produkt: 14,90 €", "Eigener Wert — Produkt: …", "Kein Streichpreis (eigener Preis
+  gesetzt)", plus "(Entwurf am Produkt: …)" when the product's draft differs; the product's fields
+  say "Eigener Wert in 2 von 5 Varianten." and link those variants. New builders
+  `inherited` / `inheritedBy` (`schema-authoring.md`). **Upgrading:** nothing; a shop that
+  replaces one of these fields in a schema extension loses the hint unless it wraps its field too.
 
 - **Deleting a product or an option group no longer leaves a "Missing document" in its list:**
   the list (product + variants / group + options) turns into "… wurde gelöscht." — before,

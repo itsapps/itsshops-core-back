@@ -3,6 +3,7 @@ import { createProductPreviewMedia } from '../../components/products/ProductPrev
 // import { GenerateVariants } from '../../components/GenerateVariants'
 // import { CreateProductFromWines } from '../../components/products/CreateProductFromWines'
 import { ITSDocumentDefinition, ProductKind } from '../../types'
+import { INHERIT_SPECS } from '../../utils/inheritance'
 
 export const product: ITSDocumentDefinition = {
   name: 'product',
@@ -13,15 +14,17 @@ export const product: ITSDocumentDefinition = {
   disallowedActions: ['duplicate'],
   build: (ctx) => {
     const { f } = ctx
+    // Fields variants inherit: "Eigener Wert in 2 von 5 Varianten." + links to them.
+    const inheritedBy = ctx.builders.inheritedBy
 
     const groupedData = ctx.builders.buildGroupedSchema([
       {
         name: 'infos',
         fields: [
-          f('title', 'i18nString', { i18n: 'atLeastOne' }),
+          inheritedBy(f('title', 'i18nString', { i18n: 'atLeastOne' }), INHERIT_SPECS.title),
           // Studio only (list preview, search) — tells same-named products apart. Not projected.
           f('cmsTitle', 'string'),
-          f('description', 'i18nText'),
+          inheritedBy(f('description', 'i18nText'), INHERIT_SPECS.description),
           f('kind', 'string', {
             options: {
               list: ctx.config.schemaSettings.productKinds.map((type) => ({ value: type })),
@@ -31,43 +34,55 @@ export const product: ITSDocumentDefinition = {
             hidden: !ctx.config.isDev,
             validation: (Rule) => Rule.required(),
           }),
-          f('weight', 'number', {
-            validation: (rule) => rule.positive().integer(),
-            hidden: ({ document }) => document?.kind !== 'physical',
-          }),
-          f('specifications', 'array', {
-            of: [{ type: 'productSpecification' }],
-          }),
+          inheritedBy(
+            f('weight', 'number', {
+              validation: (rule) => rule.positive().integer(),
+              hidden: ({ document }) => document?.kind !== 'physical',
+            }),
+            INHERIT_SPECS.weight,
+          ),
+          inheritedBy(
+            f('specifications', 'array', {
+              of: [{ type: 'productSpecification' }],
+            }),
+            INHERIT_SPECS.specifications,
+          ),
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [
-                f('categories', 'array', {
-                  validation: (rule) => rule.unique(),
-                  of: [
-                    {
-                      type: 'reference',
-                      title: ctx.t.default('category.title'),
-                      to: [{ type: 'category' }],
+                inheritedBy(
+                  f('categories', 'array', {
+                    validation: (rule) => rule.unique(),
+                    of: [
+                      {
+                        type: 'reference',
+                        title: ctx.t.default('category.title'),
+                        to: [{ type: 'category' }],
+                      },
+                    ],
+                    options: {
+                      disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
+                      sortable: false,
                     },
-                  ],
-                  options: {
-                    disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
-                    sortable: false,
-                  },
-                }),
+                  }),
+                  INHERIT_SPECS.categories,
+                ),
               ]
             : []),
           ...(ctx.featureRegistry.isDocEnabled('manufacturer')
             ? [
-                f('manufacturers', 'array', {
-                  validation: (rule) => rule.unique(),
-                  of: [
-                    {
-                      type: 'reference',
-                      title: ctx.t.default('manufacturer.title'),
-                      to: [{ type: 'manufacturer' }],
-                    },
-                  ],
-                }),
+                inheritedBy(
+                  f('manufacturers', 'array', {
+                    validation: (rule) => rule.unique(),
+                    of: [
+                      {
+                        type: 'reference',
+                        title: ctx.t.default('manufacturer.title'),
+                        to: [{ type: 'manufacturer' }],
+                      },
+                    ],
+                  }),
+                  INHERIT_SPECS.manufacturers,
+                ),
               ]
             : []),
         ],
@@ -76,58 +91,67 @@ export const product: ITSDocumentDefinition = {
         name: 'pricing',
         fields: [
           // A bundle is taxed by its items — no own category.
-          f('taxCategory', 'reference', {
-            to: [{ type: 'taxCategory' }],
-            group: 'vat',
-            hidden: ({ document }) => document?.kind === 'bundle',
-          }),
-          ctx.builders.priceField({
-            validation: (Rule) => [
-              Rule.positive(),
-              // Emptying the product price leaves variants that relied on it unpriced (a variant's
-              // own price check only runs when it is edited) — warn, never block.
-              Rule.custom(async (value, context) => {
-                if (typeof value === 'number') return true
-                const id = (context.document?._id ?? '').replace(/^drafts\./, '')
-                if (!id) return true
-                const client = context.getClient({ apiVersion: ctx.config.apiVersion })
-                const count = await client.fetch<number>(
-                  `count(*[_type == "productVariant" && product._ref == $id && status == "active" && !defined(price) && !(_id in path("drafts.**"))])`,
-                  { id },
-                )
-                return count === 0
-                  ? true
-                  : ctx.t.default(
-                      'product.validation.variantsWithoutPrice',
-                      `${count} active variants have no price of their own`,
-                      { count },
-                    )
-              }).warning(),
-            ],
-            group: 'pricing',
-          }),
-          ctx.builders.priceField({
-            name: 'compareAtPrice',
-            validation: (Rule) => [
-              Rule.positive(),
-              // The shop drops a compare-at price that isn't above the price — warn, never block.
-              Rule.custom((value, context) => {
-                const price = (context.document as { price?: unknown } | undefined)?.price
-                if (typeof value !== 'number' || typeof price !== 'number' || value > price) {
-                  return true
-                }
-                return ctx.t.default(
-                  'product.validation.compareAtNotHigher',
-                  "The compare-at price is not higher than the price and won't be shown",
-                )
-              }).warning(),
-            ],
-          }),
+          inheritedBy(
+            f('taxCategory', 'reference', {
+              to: [{ type: 'taxCategory' }],
+              group: 'vat',
+              hidden: ({ document }) => document?.kind === 'bundle',
+            }),
+            INHERIT_SPECS.taxCategory,
+          ),
+          inheritedBy(
+            ctx.builders.priceField({
+              validation: (Rule) => [
+                Rule.positive(),
+                // Emptying the product price leaves variants that relied on it unpriced (a variant's
+                // own price check only runs when it is edited) — warn, never block.
+                Rule.custom(async (value, context) => {
+                  if (typeof value === 'number') return true
+                  const id = (context.document?._id ?? '').replace(/^drafts\./, '')
+                  if (!id) return true
+                  const client = context.getClient({ apiVersion: ctx.config.apiVersion })
+                  const count = await client.fetch<number>(
+                    `count(*[_type == "productVariant" && product._ref == $id && status == "active" && !defined(price) && !(_id in path("drafts.**"))])`,
+                    { id },
+                  )
+                  return count === 0
+                    ? true
+                    : ctx.t.default(
+                        'product.validation.variantsWithoutPrice',
+                        `${count} active variants have no price of their own`,
+                        { count },
+                      )
+                }).warning(),
+              ],
+              group: 'pricing',
+            }),
+            INHERIT_SPECS.price,
+          ),
+          inheritedBy(
+            ctx.builders.priceField({
+              name: 'compareAtPrice',
+              validation: (Rule) => [
+                Rule.positive(),
+                // The shop drops a compare-at price that isn't above the price — warn, never block.
+                Rule.custom((value, context) => {
+                  const price = (context.document as { price?: unknown } | undefined)?.price
+                  if (typeof value !== 'number' || typeof price !== 'number' || value > price) {
+                    return true
+                  }
+                  return ctx.t.default(
+                    'product.validation.compareAtNotHigher',
+                    "The compare-at price is not higher than the price and won't be shown",
+                  )
+                }).warning(),
+              ],
+            }),
+            INHERIT_SPECS.compareAtPrice,
+          ),
         ],
       },
       {
         name: 'media',
-        fields: [f('image', 'localeAltImage')],
+        fields: [inheritedBy(f('image', 'localeAltImage'), INHERIT_SPECS.image)],
       },
       {
         name: 'seo',

@@ -30,6 +30,7 @@ import { BundleTab } from './productManager/tabs/BundleTab'
 import { PhysicalDigitalTab } from './productManager/tabs/PhysicalDigitalTab'
 import { WineTab } from './productManager/tabs/WineTab'
 import { useBackgroundBottleImport } from './useBottleImageImport'
+import { taxLabel } from '../../utils/inheritance'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -357,10 +358,8 @@ export function AddVariantsDialog({
     }
   }
 
-  const taxTitle = (id: string | undefined) => {
-    const tc = id ? taxCategories.find((t) => t._id === id) : undefined
-    return tc ? `${tc.title} (${tc.code})` : undefined
-  }
+  const taxTitle = (id: string | undefined) =>
+    taxLabel(id ? taxCategories.find((t) => t._id === id) : undefined)
   const productTax = taxTitle(product?.taxCategoryId)
   const shopTax = taxTitle(shopDefaultTaxCategoryId)
   let taxLine = componentT.default('productCreatorTool.addVariants.noTax')

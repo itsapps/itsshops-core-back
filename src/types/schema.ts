@@ -22,6 +22,7 @@ import { ITSBlockDefinition } from './blocks'
 import { FieldContext, ITSContext } from './context'
 import { PriceOptions } from './fields'
 import { FieldTranslators, I18nValidationOptions } from './localization'
+import type { InheritSpec } from '../utils/inheritance'
 
 export type ITSSanityDefinedAction = NonNullable<DocumentActionComponent['action']>
 
@@ -232,6 +233,14 @@ export interface ITSBuilders {
   countryCodeField: (options: ITSCountryCodeOptions) => FieldDefinition
   countryCodesField: (options: ITSCountryCodesOptions) => FieldDefinition
   priceField: (options: PriceOptions) => FieldDefinition<'number'>
+  /**
+   * Variant field that falls back to the product's value when empty: adds a live hint to its
+   * description ("Vom Produkt: 14,90 €" / "Eigener Wert — Produkt: …"). The field needs a static
+   * description (`fields_*.ts`), else the hint isn't linked to the input for screen readers.
+   */
+  inherited: <T extends FieldDefinition>(field: T, inherit: InheritSpec) => T
+  /** Product field variants inherit: adds "Eigener Wert in 2 von 5 Varianten." + links to them. */
+  inheritedBy: <T extends FieldDefinition>(field: T, inherit: InheritSpec) => T
   buildGroupedSchema: (props: GroupFieldsInput[]) => GroupFieldsOutput
   filterField: () => FieldDefinition[]
 }

@@ -1,4 +1,6 @@
 import { WineIcon, FilterIcon, ProductVariantIcon } from '../assets/icons'
+import { InheritedField } from '../components/inheritance/InheritedField'
+import { OverriddenByVariants } from '../components/inheritance/OverriddenByVariants'
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
 import { enabledSystemPages } from './systemPages'
@@ -265,6 +267,21 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       })
       return field
     },
+
+    inherited: (field, inherit) => ({
+      ...field,
+      components: { ...(field as { components?: object }).components, field: InheritedField },
+      options: { ...(field.options as object), inherit },
+    }),
+
+    inheritedBy: (field, inherit) => ({
+      ...field,
+      components: {
+        ...(field as { components?: object }).components,
+        field: OverriddenByVariants,
+      },
+      options: { ...(field.options as object), inherit },
+    }),
 
     buildGroupedSchema: (props) => {
       const groups = props.map((item, index) => ({

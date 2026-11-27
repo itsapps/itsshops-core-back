@@ -307,6 +307,36 @@ list uses the same pattern: `createOptionGroupPreviewMedia(ctx)(groupId, icon)`
 (`src/components/products/OptionGroupPreview.tsx`) — group icon + option count + draft dot
 ("3 options · 1 draft", keys `variantOptionGroup.preview.*`).
 
+### Inheritance hints (`src/components/inheritance/`)
+
+An empty variant field uses the product's value (rules: core-front `data-layer.md` → "Variant →
+product fallbacks"). Both forms say so live, on top of the static descriptions in `fields_*.ts`:
+
+- **Variant form — `InheritedField`** (`builders.inherited`): appends one sentence to the field's
+  description: "Vom Produkt: 14,90 €" / "Vom Shop-Standard: …" (tax) / "Produkt hat keinen Wert." /
+  "Kein Streichpreis (eigener Preis gesetzt)." (compare-at while the variant has an own price,
+  O1) / "Eigener Wert — Produkt: … Feld leeren, um den Produktwert zu verwenden.", plus
+  "(Entwurf am Produkt: …)" when the product's draft differs. It shows the **published** product
+  (what the shop builds). Data: `useInheritedProduct()` — one `listenQuery` per product id
+  (module `Map` + `shareReplay`, as `ProductPreview`), references dereferenced to `{ _ref, title }`;
+  the shop default tax is fetched once per session. Renamed tax categories / categories /
+  manufacturers show after reopening the form (the listener watches the product only).
+- **Product form — `OverriddenByVariants`** (`builders.inheritedBy`): "Eigener Wert in 2 von 5
+  Varianten." in the description + a `<ul>` of `IntentLink`s to those variants below the input
+  (label: own title — `variantDetails`, else "Variante n"; a draft row gets " (Entwurf)" — drafts
+  are collapsed, the draft wins). Nothing when no variant overrides. Compare-at: a variant with an
+  own price **or** own compare-at counts. The total counts only variants that have the field
+  (`onlyKinds` / `exceptKinds`: weight → physical, tax → not bundles). Data:
+  `useOverridingVariants(productId)`, one listener per product.
+- **One rule set:** `src/utils/inheritance.ts` (`isSet`, `formatInherited`, `variantHint`,
+  `overridesProduct`, `INHERIT_SPECS`; tests `tests/inheritance.test.ts`) — also used by the
+  Product Manager's `fields/inherited.ts` (`taxLabel`, a product price of 0 is a price).
+- **a11y:** the hint is a string in Sanity's `desc_<id>` node, which the input's
+  `aria-describedby` points at only when the schema field has a static description — keep one on
+  every wrapped field. State is text, never colour or icon only. No "reset to product value"
+  button (O4): editors clear the field. `seo` has only the static text (sub-field merge).
+- Strings: `components_*.ts` → `inheritance.*`.
+
 ## Other custom components (`src/components/`)
 
 - `PriceInput.tsx` — currency input; the **only** component re-exported publicly

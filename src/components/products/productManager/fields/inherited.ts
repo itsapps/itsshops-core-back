@@ -1,4 +1,5 @@
 import type { ITSFormatter, ITSTranslator } from '../../../../types/localization'
+import { isSet, taxLabel } from '../../../../utils/inheritance'
 import { TaxCategory } from '../ProductCreator.types'
 
 /** "14,90 € vom Produkt" — the placeholder of an empty row price (nothing when no price). */
@@ -7,15 +8,14 @@ export function inheritedPriceLabel(
   format: Pick<ITSFormatter, 'currency'>,
   productPrice: number | undefined,
 ): string | undefined {
-  if (!productPrice) return undefined
+  if (!isSet('number', productPrice)) return undefined
   return componentT.default('productCreatorTool.inherited.price', undefined, {
-    price: format.currency(productPrice / 100),
+    price: format.currency((productPrice as number) / 100),
   })
 }
 
 function taxTitle(taxCategories: TaxCategory[], id: string | undefined): string | undefined {
-  const tc = id ? taxCategories.find((t) => t._id === id) : undefined
-  return tc ? `${tc.title} (${tc.code})` : undefined
+  return taxLabel(id ? taxCategories.find((t) => t._id === id) : undefined)
 }
 
 /**

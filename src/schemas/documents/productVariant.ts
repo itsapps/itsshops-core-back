@@ -11,6 +11,7 @@ import {
   ProductVariant,
   VariantOptionReference,
 } from '../../types'
+import { INHERIT_SPECS } from '../../utils/inheritance'
 import { validateRequiredArrayIfKind } from '../../utils/validation'
 import { variantDetails } from '../../utils/variantLabel'
 
@@ -24,6 +25,8 @@ export const productVariant: ITSDocumentDefinition = {
   hideInStructure: true,
   build: (ctx) => {
     const { f, t } = ctx
+    // Inheritable fields: a live hint says what the variant uses (own value or the product's).
+    const inherited = ctx.builders.inherited
     const stockEnabled = ctx.featureRegistry.isFeatureEnabled('shop.stock')
     const bundlesOn = ctx.featureRegistry.isFeatureEnabled('shop.productKind.bundle')
     const vinofactOn = ctx.featureRegistry.isFeatureEnabled('shop.vinofact')
@@ -55,20 +58,23 @@ export const productVariant: ITSDocumentDefinition = {
 
           ...(ctx.featureRegistry.isDocEnabled('category')
             ? [
-                f('categories', 'array', {
-                  validation: (rule) => rule.unique(),
-                  of: [
-                    {
-                      type: 'reference',
-                      title: ctx.t.default('category.title'),
-                      to: [{ type: 'category' }],
+                inherited(
+                  f('categories', 'array', {
+                    validation: (rule) => rule.unique(),
+                    of: [
+                      {
+                        type: 'reference',
+                        title: ctx.t.default('category.title'),
+                        to: [{ type: 'category' }],
+                      },
+                    ],
+                    options: {
+                      disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
+                      sortable: false,
                     },
-                  ],
-                  options: {
-                    disableActions: ['duplicate', 'addBefore', 'addAfter', 'copy'],
-                    sortable: false,
-                  },
-                }),
+                  }),
+                  INHERIT_SPECS.categories,
+                ),
               ]
             : []),
 
@@ -82,16 +88,19 @@ export const productVariant: ITSDocumentDefinition = {
 
           ...(ctx.featureRegistry.isDocEnabled('manufacturer')
             ? [
-                f('manufacturers', 'array', {
-                  validation: (rule) => rule.unique(),
-                  of: [
-                    {
-                      type: 'reference',
-                      title: ctx.t.default('manufacturer.title'),
-                      to: [{ type: 'manufacturer' }],
-                    },
-                  ],
-                }),
+                inherited(
+                  f('manufacturers', 'array', {
+                    validation: (rule) => rule.unique(),
+                    of: [
+                      {
+                        type: 'reference',
+                        title: ctx.t.default('manufacturer.title'),
+                        to: [{ type: 'manufacturer' }],
+                      },
+                    ],
+                  }),
+                  INHERIT_SPECS.manufacturers,
+                ),
               ]
             : []),
         ],
@@ -99,8 +108,8 @@ export const productVariant: ITSDocumentDefinition = {
       {
         name: 'infos',
         fields: [
-          f('title', 'i18nString'),
-          f('description', 'i18nText'),
+          inherited(f('title', 'i18nString'), INHERIT_SPECS.title),
+          inherited(f('description', 'i18nText'), INHERIT_SPECS.description),
           f('product', 'reference', {
             to: [{ type: 'product' }],
             readOnly: !ctx.config.isDev,
@@ -108,38 +117,53 @@ export const productVariant: ITSDocumentDefinition = {
           }),
 
           f('sku', 'string'),
-          f('specifications', 'array', {
-            of: [{ type: 'productSpecification' }],
-          }),
+          inherited(
+            f('specifications', 'array', {
+              of: [{ type: 'productSpecification' }],
+            }),
+            INHERIT_SPECS.specifications,
+          ),
         ],
       },
       {
         name: 'pricing',
         fields: [
           // A bundle is taxed by its items (checkout splits its price over them) — no own category.
-          f('taxCategory', 'reference', {
-            to: [{ type: 'taxCategory' }],
-            group: 'vat',
-            hidden: ({ document }) => document?.kind === 'bundle',
-          }),
-          ctx.builders.priceField({
-            validation: (Rule) => [Rule.positive(), activeNeedsPrice(ctx, Rule)],
-            group: 'pricing',
-          }),
-          ctx.builders.priceField({
-            name: 'compareAtPrice',
-            validation: (Rule) => [Rule.positive(), compareAtAbovePrice(ctx, Rule)],
-          }),
+          inherited(
+            f('taxCategory', 'reference', {
+              to: [{ type: 'taxCategory' }],
+              group: 'vat',
+              hidden: ({ document }) => document?.kind === 'bundle',
+            }),
+            INHERIT_SPECS.taxCategory,
+          ),
+          inherited(
+            ctx.builders.priceField({
+              validation: (Rule) => [Rule.positive(), activeNeedsPrice(ctx, Rule)],
+              group: 'pricing',
+            }),
+            INHERIT_SPECS.price,
+          ),
+          inherited(
+            ctx.builders.priceField({
+              name: 'compareAtPrice',
+              validation: (Rule) => [Rule.positive(), compareAtAbovePrice(ctx, Rule)],
+            }),
+            INHERIT_SPECS.compareAtPrice,
+          ),
         ],
       },
       {
         name: 'media',
         fields: [
           // With VinoFact: a button below the image copies the wine's bottle image into it.
-          f(
-            'image',
-            'localeAltImage',
-            vinofactOn ? { components: { input: VinofactImageInput } } : {},
+          inherited(
+            f(
+              'image',
+              'localeAltImage',
+              vinofactOn ? { components: { input: VinofactImageInput } } : {},
+            ),
+            INHERIT_SPECS.image,
           ),
         ],
       },
@@ -356,10 +380,13 @@ function getOptionsFields(ctx: FieldContext): FieldDefinition[] {
 
 function getPhysicalFields(ctx: FieldContext): FieldDefinition[] {
   return [
-    ctx.f('weight', 'number', {
-      validation: (rule) => rule.positive().integer(),
-      hidden: ({ parent }) => parent?.kind !== 'physical',
-    }),
+    ctx.builders.inherited(
+      ctx.f('weight', 'number', {
+        validation: (rule) => rule.positive().integer(),
+        hidden: ({ parent }) => parent?.kind !== 'physical',
+      }),
+      INHERIT_SPECS.weight,
+    ),
   ]
 }
 
