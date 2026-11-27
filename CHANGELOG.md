@@ -32,7 +32,9 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
   whole numbers ≥ 1. Clearer layout: each step is its own card with a heading and a one-line
   description (product data for all variants; vintages & bottles; prices & details of the ticked
   bottles); the empty title and the wine picker say that the title is taken from the wine; the
-  title's "use suggestion" button is a text button shown only while the title differs.
+  title's "use suggestion" button is a text button shown only while the title differs. The
+  "Zuletzt angelegt … Produkt öffnen" card moved from the top to right under the submit button;
+  the success toast no longer has an "Produkt öffnen" button.
 - **`features.shop.vinofact.importBottleImages`** (default `false`): the Product Manager's "copy
   bottle images from VinoFact" checkbox now starts **unchecked**. **Upgrading:** shops that want
   bottle images on by default set `features.shop.vinofact.importBottleImages: true`.

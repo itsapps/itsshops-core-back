@@ -42,12 +42,11 @@ a tab per enabled `schemaSettings.productKinds` value — **wine / physical / di
   committed through `src/lib/hooks/useProductTransaction.tsx` (`commitTransaction` resolves
   `true` after a successful commit; errors become a toast). Prices are entered in euros and
   converted to cents on submit.
-- **Product link after creation:** the success toast carries an "Produkt öffnen" button (toast
-  `duration` 10 s; it navigates with the router captured in the hook — the toast portal is
-  outside the router context, so no `IntentLink` there). Because a toast times out (WCAG 2.2.1),
-  `ProductCreator` also shows a persistent "Zuletzt angelegt: <title>" card below the tabs (right under the submit button, where the editor is — not at the top, which they never see) with
-  an `IntentLink`, cleared on the next submit. `AddVariantsAction` passes no link (the product
-  is open).
+- **Product link after creation:** the success toast is text only (no button — a toast times
+  out, WCAG 2.2.1, is hard to reach by keyboard, and `@sanity/ui`'s toast shrink-wraps its
+  content, so a button there can't span it). `ProductCreator` shows a persistent "Zuletzt
+  angelegt: <title>" card with an `IntentLink` **below the tabs**, i.e. right under the submit
+  button where the editor is (at the top it went unnoticed), cleared on the next submit.
 - **Bottle images (`shop.vinofact`):** `WineTab` has a checkbox "Flaschenbilder aus VinoFact
   übernehmen" (default from `features.shop.vinofact.importBottleImages`, `false` unless set; only
   with a `vinofactClient`; also in `AddVariantsAction`'s dialog).

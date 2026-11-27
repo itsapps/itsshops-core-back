@@ -196,10 +196,7 @@ export function ProductCreator(): ReactElement {
     async (tx: Parameters<typeof commitTransaction>[0], count: number, productId: string) => {
       const title = titles.find((t) => t.locale === defaultLocale)?.value ?? ''
       setLastCreated(null)
-      const ok = await commitTransaction(tx, count, resetShared, {
-        documentId: productId,
-        documentType: 'product',
-      })
+      const ok = await commitTransaction(tx, count, resetShared)
       if (ok) setLastCreated({ id: productId, title })
       return ok
     },
