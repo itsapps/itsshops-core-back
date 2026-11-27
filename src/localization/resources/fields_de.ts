@@ -342,6 +342,36 @@ export default {
   product: {
     title: 'Produkt',
     fields: {
+      seo: {
+        description: 'Gilt für alle Varianten, die keinen eigenen Wert haben (pro Feld).',
+      },
+      image: {
+        description: 'Gilt für alle Varianten, die keinen eigenen Wert haben.',
+      },
+      manufacturers: {
+        description: 'Gilt für alle Varianten, die keinen eigenen Wert haben.',
+      },
+      categories: {
+        description: 'Gilt für alle Varianten, die keinen eigenen Wert haben.',
+      },
+      taxCategory: {
+        description:
+          'Gilt für alle Varianten, die keinen eigenen Wert haben. Leer = Shop-Standard.',
+      },
+      compareAtPrice: {
+        description:
+          'Streichpreis. Gilt für alle Varianten, die keinen eigenen Preis und keinen eigenen Streichpreis haben. Wird nur angezeigt, wenn er höher als der Preis ist.',
+      },
+      price: {
+        description: 'Gilt für alle Varianten, die keinen eigenen Wert haben.',
+      },
+      specifications: {
+        description:
+          'Eigenschaften wie Material oder Schnitt, auf der Produktseite als Liste angezeigt (z. B. „Material: 100% Baumwolle“). Gilt für alle Varianten, die keinen eigenen Wert haben.',
+      },
+      title: {
+        description: 'Gilt für alle Varianten, die keinen eigenen Titel haben.',
+      },
       cmsTitle: {
         title: 'Interner Name',
         description:
@@ -350,7 +380,7 @@ export default {
       description: {
         title: 'Beschreibung',
         description:
-          'Wird auf der Produktseite angezeigt. Leerzeilen trennen Absätze. Bei Weinen ersetzt sie die Vinofact-Beschreibung.',
+          'Wird auf der Produktseite angezeigt. Leerzeilen trennen Absätze. Bei Weinen ersetzt sie die Vinofact-Beschreibung. Gilt für alle Varianten, die keinen eigenen Wert haben.',
       },
       variants: {
         title: 'Produktvarianten',
@@ -358,8 +388,7 @@ export default {
       },
       weight: {
         title: 'Gewicht',
-        description:
-          'Gewicht in Gramm. Wird verwendet, wenn eine Variante kein Gewicht gesetzt hat.',
+        description: 'Gewicht in Gramm. Gilt für alle Varianten, die keinen eigenen Wert haben.',
       },
     },
     orderings: {
@@ -382,6 +411,8 @@ export default {
       },
     },
     validation: {
+      compareAtNotHigher:
+        'Der Streichpreis ist nicht höher als der Preis und wird im Shop nicht angezeigt.',
       variantsWithoutPrice_one: '{{count}} aktive Variante hat keinen eigenen Preis.',
       variantsWithoutPrice_other: '{{count}} aktive Varianten haben keinen eigenen Preis.',
     },
@@ -389,15 +420,43 @@ export default {
   productVariant: {
     title: 'Produktvariante',
     fields: {
+      seo: {
+        description: 'Leere Felder = vom Produkt.',
+      },
+      image: {
+        description: 'Leer = vom Produkt.',
+      },
+      manufacturers: {
+        description:
+          'Leer = vom Produkt. Wenn gesetzt, ersetzen sie die Hersteller des Produkts (werden nicht ergänzt).',
+      },
+      categories: {
+        description:
+          'Leer = vom Produkt. Wenn gesetzt, ersetzen sie die Kategorien des Produkts (werden nicht ergänzt).',
+      },
+      taxCategory: {
+        description: 'Leer = vom Produkt, sonst Shop-Standard.',
+      },
+      compareAtPrice: {
+        description:
+          'Streichpreis. Leer = vom Produkt, aber nur wenn die Variante keinen eigenen Preis hat. Wird nur angezeigt, wenn er höher als der Preis ist.',
+      },
+      price: {
+        description: 'Leer = vom Produkt.',
+      },
+      title: {
+        description:
+          'Leer = vom Produkt. Ein eigener Titel gilt auch in Sprachen ohne eigene Übersetzung und bestimmt die URL der Variante.',
+      },
       description: {
         title: 'Beschreibung',
         description:
-          'Ersetzt die Beschreibung des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.',
+          'Leer = vom Produkt. Fehlt eine Sprache, gilt die Beschreibung des Produkts in dieser Sprache.',
       },
       specifications: {
         title: 'Produktdetails',
         description:
-          'Ersetzt die Produktdetails des Produkts für diese Variante. Leer lassen, um die des Produkts zu verwenden.',
+          'Leer = vom Produkt. Wenn gesetzt, ersetzen sie die Produktdetails des Produkts (werden nicht ergänzt).',
       },
       coverImage: {
         title: 'Cover-Bild',
@@ -424,8 +483,7 @@ export default {
       },
       weight: {
         title: 'Gewicht',
-        description:
-          'Gewicht in Gramm. Wenn gesetzt, wird es statt dem Gewicht des Produkts verwendet.',
+        description: 'Gewicht in Gramm. Leer = vom Produkt.',
       },
       status: {
         title: 'Status',
@@ -444,6 +502,8 @@ export default {
       bundleItems_other: '{{count}} Produkte',
     },
     validation: {
+      compareAtNotHigher:
+        'Der Streichpreis ist nicht höher als der Preis und wird im Shop nicht angezeigt.',
       priceRequired:
         'Eine aktive Variante braucht einen Preis – einen eigenen oder den des Produkts.',
       usedInActiveBundles_one:

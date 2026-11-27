@@ -79,8 +79,19 @@ variant's non-empty list replaces the product's (no merge); resolved + rendered 
 (`data-layer.md` → "Variant resolution").
 
 **Product description:** `product` and `productVariant` both have an optional `description`
-(`i18nText`, plain text; blank lines = paragraphs), any kind. The variant's replaces the product's;
-for wines it takes precedence over the VinoFact description.
+(`i18nText`, plain text; blank lines = paragraphs), any kind. The variant's replaces the product's
+per locale (a missing language falls back to the product's text in that language); for wines it
+takes precedence over the VinoFact description.
+
+**Variant → product inheritance:** an empty variant field means "use the product's value". The
+rules (incl. categories/manufacturers *replace*, compare-at price only without own price) live in
+core-front `data-layer.md` → "Variant → product fallbacks" — the reference. Every inheritable field
+carries a static description saying so: `productVariant.fields.<name>.description` ("Leer = vom
+Produkt.") and `product.fields.<name>.description` ("Gilt für alle Varianten, die keinen eigenen
+Wert haben."), for `title`, `description`, `specifications`, `price`, `compareAtPrice`,
+`taxCategory`, `categories`, `manufacturers`, `weight`, `image`, `seo`. Keep them in step with the
+core-front table. A compare-at price not above the price warns (variant: own price, else the
+published product's; product: its own price) — the shop doesn't show it.
 
 **Settings validation (feature-conditional):** `settings` / `shopSettings` fields the frontend
 depends on are required only when the feature that uses them is on (the rule is chosen at build

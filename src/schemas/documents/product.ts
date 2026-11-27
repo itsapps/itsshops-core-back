@@ -108,7 +108,20 @@ export const product: ITSDocumentDefinition = {
           }),
           ctx.builders.priceField({
             name: 'compareAtPrice',
-            validation: (Rule) => Rule.positive(),
+            validation: (Rule) => [
+              Rule.positive(),
+              // The shop drops a compare-at price that isn't above the price — warn, never block.
+              Rule.custom((value, context) => {
+                const price = (context.document as { price?: unknown } | undefined)?.price
+                if (typeof value !== 'number' || typeof price !== 'number' || value > price) {
+                  return true
+                }
+                return ctx.t.default(
+                  'product.validation.compareAtNotHigher',
+                  "The compare-at price is not higher than the price and won't be shown",
+                )
+              }).warning(),
+            ],
           }),
         ],
       },

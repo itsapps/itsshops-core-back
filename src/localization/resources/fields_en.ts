@@ -339,6 +339,35 @@ export default {
   product: {
     title: 'Product',
     fields: {
+      seo: {
+        description: 'Applies to every variant without a value of its own (per field).',
+      },
+      image: {
+        description: 'Applies to every variant without a value of its own.',
+      },
+      manufacturers: {
+        description: 'Applies to every variant without a value of its own.',
+      },
+      categories: {
+        description: 'Applies to every variant without a value of its own.',
+      },
+      taxCategory: {
+        description: 'Applies to every variant without a value of its own. Empty = shop default.',
+      },
+      compareAtPrice: {
+        description:
+          'Compare-at price. Applies to every variant without its own price and its own compare-at price. Shown only when it is higher than the price.',
+      },
+      price: {
+        description: 'Applies to every variant without a value of its own.',
+      },
+      specifications: {
+        description:
+          'Properties such as material or cut, listed on the product page (e.g. “Material: 100% cotton”). Applies to every variant without a value of its own.',
+      },
+      title: {
+        description: 'Applies to every variant without a title of its own.',
+      },
       cmsTitle: {
         title: 'Internal name',
         description:
@@ -347,7 +376,7 @@ export default {
       description: {
         title: 'Description',
         description:
-          'Shown on the product page. Blank lines separate paragraphs. For wines it replaces the Vinofact description.',
+          'Shown on the product page. Blank lines separate paragraphs. For wines it replaces the Vinofact description. Applies to every variant without a value of its own.',
       },
       variants: {
         title: 'Product variants',
@@ -355,7 +384,7 @@ export default {
       },
       weight: {
         title: 'Weight',
-        description: 'Weight in grams. Used when a variant has no weight set.',
+        description: 'Weight in grams. Applies to every variant without a value of its own.',
       },
     },
     orderings: {
@@ -378,6 +407,8 @@ export default {
       },
     },
     validation: {
+      compareAtNotHigher:
+        "The compare-at price is not higher than the price and won't be shown in the shop.",
       variantsWithoutPrice_one: '{{count}} active variant has no price of its own.',
       variantsWithoutPrice_other: '{{count}} active variants have no price of their own.',
     },
@@ -385,15 +416,43 @@ export default {
   productVariant: {
     title: 'Product variant',
     fields: {
+      seo: {
+        description: 'Empty fields = from the product.',
+      },
+      image: {
+        description: 'Empty = from the product.',
+      },
+      manufacturers: {
+        description:
+          "Empty = from the product. When set, they replace the product's manufacturers (not added to them).",
+      },
+      categories: {
+        description:
+          "Empty = from the product. When set, they replace the product's categories (not added to them).",
+      },
+      taxCategory: {
+        description: 'Empty = from the product, else the shop default.',
+      },
+      compareAtPrice: {
+        description:
+          'Compare-at price. Empty = from the product, but only if the variant has no price of its own. Shown only when it is higher than the price.',
+      },
+      price: {
+        description: 'Empty = from the product.',
+      },
+      title: {
+        description:
+          "Empty = from the product. An own title also applies in languages without their own translation and sets the variant's URL.",
+      },
       description: {
         title: 'Description',
         description:
-          "Replaces the product's description for this variant. Leave empty to use the product's.",
+          "Empty = from the product. A missing language falls back to the product's description in that language.",
       },
       specifications: {
         title: 'Product details',
         description:
-          "Replaces the product's details for this variant. Leave empty to use the product's.",
+          "Empty = from the product. When set, they replace the product's details (not added to them).",
       },
       coverImage: {
         title: 'Cover image',
@@ -420,7 +479,7 @@ export default {
       },
       weight: {
         title: 'Weight',
-        description: 'Weight in grams. If set, used instead of the product weight.',
+        description: 'Weight in grams. Empty = from the product.',
       },
       status: {
         title: 'Status',
@@ -439,6 +498,8 @@ export default {
       bundleItems_other: '{{count}} products',
     },
     validation: {
+      compareAtNotHigher:
+        "The compare-at price is not higher than the price and won't be shown in the shop.",
       priceRequired: "An active variant needs a price — its own or the product's.",
       usedInActiveBundles_one:
         'Part of an active bundle: {{names}}. It shows as sold out in the shop until it is changed.',
@@ -578,7 +639,7 @@ export default {
       trackingUrl: {
         title: 'Tracking link',
         description:
-          'Optional. Address of the carrier\'s tracking page, {code} stands for the tracking number, e.g. https://tracking.dpd.de/status/de_DE/parcel/{code}. The order mails then link each tracking number.',
+          "Optional. Address of the carrier's tracking page, {code} stands for the tracking number, e.g. https://tracking.dpd.de/status/de_DE/parcel/{code}. The order mails then link each tracking number.",
       },
       eligibleCountries: {
         title: 'Countries',

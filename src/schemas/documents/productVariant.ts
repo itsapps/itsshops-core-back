@@ -84,7 +84,13 @@ export const productVariant: ITSDocumentDefinition = {
             ? [
                 f('manufacturers', 'array', {
                   validation: (rule) => rule.unique(),
-                  of: [{ type: 'reference', title: ctx.t.default('manufacturer.title'), to: [{ type: 'manufacturer' }] }],
+                  of: [
+                    {
+                      type: 'reference',
+                      title: ctx.t.default('manufacturer.title'),
+                      to: [{ type: 'manufacturer' }],
+                    },
+                  ],
                 }),
               ]
             : []),
@@ -122,7 +128,7 @@ export const productVariant: ITSDocumentDefinition = {
           }),
           ctx.builders.priceField({
             name: 'compareAtPrice',
-            validation: (Rule) => Rule.positive(),
+            validation: (Rule) => [Rule.positive(), compareAtAbovePrice(ctx, Rule)],
           }),
         ],
       },
@@ -335,7 +341,13 @@ function getWineFields(ctx: FieldContext): FieldDefinition[] {
 function getOptionsFields(ctx: FieldContext): FieldDefinition[] {
   return [
     ctx.f('options', 'array', {
-      of: [{ type: 'reference', title: ctx.t.default('variantOption.title'), to: [{ type: 'variantOption' }] }],
+      of: [
+        {
+          type: 'reference',
+          title: ctx.t.default('variantOption.title'),
+          to: [{ type: 'variantOption' }],
+        },
+      ],
       hidden: ({ parent }: { parent: ProductVariant }) =>
         !parent?.kind || !['physical', 'digital'].includes(parent.kind),
     }),
@@ -377,6 +389,32 @@ function activeNeedsPrice(ctx: FieldContext, rule: NumberRule): NumberRule {
           "An active variant needs a price — its own or the product's",
         )
   })
+}
+
+/**
+ * Compare-at price (warning): when set, it must be higher than the variant's own price, else the
+ * published product's price — the shop drops a compare-at price that isn't (core-front
+ * `effectiveCompareAtPrice`). No price at all → no warning.
+ */
+function compareAtAbovePrice(ctx: FieldContext, rule: NumberRule): NumberRule {
+  return rule
+    .custom(async (value, context) => {
+      if (typeof value !== 'number') return true
+      const doc = context.document as ProductVariant | undefined
+      let price: number | null | undefined = doc?.price
+      if (typeof price !== 'number') {
+        const productId = publishedId(doc?.product?._ref)
+        if (!productId) return true
+        const client = context.getClient({ apiVersion: ctx.config.apiVersion })
+        price = await client.fetch<number | null>(`*[_id == $id][0].price`, { id: productId })
+      }
+      if (typeof price !== 'number' || value > price) return true
+      return ctx.t.default(
+        'productVariant.validation.compareAtNotHigher',
+        "The compare-at price is not higher than the price and won't be shown",
+      )
+    })
+    .warning()
 }
 
 /** Status (warning): name the active bundles that contain this variant when it leaves `active`. */

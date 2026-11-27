@@ -6,6 +6,16 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
+- **Variant fields say what they inherit:** every field a variant takes from its product when
+  empty (title, description, details, price, compare-at price, tax category, categories,
+  manufacturers, weight, image, SEO) now has a hint ("Leer = vom Produkt.", categories and
+  manufacturers *replace* the product's), and the product's fields say they apply to every
+  variant without an own value. **Upgrading:** a shop that overrides one of these
+  `productVariant.fields.*` / `product.fields.*` descriptions keeps its own text.
+- **Compare-at price warning:** a compare-at price that isn't higher than the price (variant: own
+  price, else the product's) warns — the shop doesn't show it (core-front: a variant with its own
+  price no longer inherits the product's compare-at price).
+
 - **Deleting a product or an option group no longer leaves a "Missing document" in its list:**
   the list (product + variants / group + options) turns into "… wurde gelöscht." — before,
   clicking the leftover item opened a new document with the deleted id.
