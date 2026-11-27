@@ -17,6 +17,7 @@ import { media } from 'sanity-plugin-media'
 
 // import pkg from '../package.json'
 import { CustomToolbar } from './components/CustomToolbar'
+import { InheritanceField } from './components/inheritance/InheritanceField'
 // import { CreateWineProducts } from './components/products/CreateWineProducts'
 import { actionResolver } from './config/actions'
 import { createAllCountryOptions } from './config/constants/countries'
@@ -92,6 +93,10 @@ export const itsshopsPlugin = definePlugin<ITSContext>((context) => {
         layout: ITSStudioWrapper(context),
         toolMenu: (props) => CustomToolbar({ ...props }),
       },
+    },
+    // Variant ⇄ product inheritance hints (fields marked by builders.inherited / inheritedBy).
+    form: {
+      components: { field: InheritanceField },
     },
     document: {
       comments: { enabled: false },

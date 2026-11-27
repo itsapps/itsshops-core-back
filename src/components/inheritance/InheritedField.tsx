@@ -6,20 +6,20 @@ import { type InheritSpec, isSet, variantHint } from '../../utils/inheritance'
 import { useInheritedProduct } from './useInheritedProduct'
 
 /**
- * Field component of an inheritable variant field (`builders.inherited`): appends one sentence
+ * Hint of an inheritable variant field (`builders.inherited`, rendered by `InheritanceField`): appends one sentence
  * to the field's static description saying what the variant uses now — "Vom Produkt: 14,90 €",
  * "Eigener Wert — Produkt: …", plus "(Entwurf am Produkt: …)" when the product's draft differs.
  * The description is a string (Sanity's `BaseFieldProps.description`) and lands in the
  * `desc_<id>` node the input's `aria-describedby` points at — Sanity only renders that link when
  * the schema field has a static description, which every wrapped field has (fields_*.ts).
  */
-export function InheritedField(props: FieldProps): ReactElement {
+export function InheritedField(props: FieldProps & { spec: InheritSpec }): ReactElement {
   const { localizer, format, componentT } = useITSContext()
   const product = useInheritedProduct()
   const ownPrice = useFormValue(['price'])
-  const spec = (props.schemaType.options as { inherit?: InheritSpec } | undefined)?.inherit
+  const { spec, ...fieldProps } = props
 
-  if (!spec || !product) return props.renderDefault(props)
+  if (!product) return props.renderDefault(fieldProps)
 
   const field = spec.field ?? props.name
   const hint = variantHint(
@@ -35,5 +35,5 @@ export function InheritedField(props: FieldProps): ReactElement {
     { localizer, format, t: componentT.default },
   )
   const description = [props.description, hint].filter(Boolean).join(' ')
-  return props.renderDefault({ ...props, description })
+  return props.renderDefault({ ...fieldProps, description })
 }

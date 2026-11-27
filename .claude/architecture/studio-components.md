@@ -312,6 +312,11 @@ list uses the same pattern: `createOptionGroupPreviewMedia(ctx)(groupId, icon)`
 An empty variant field uses the product's value (rules: core-front `data-layer.md` → "Variant →
 product fallbacks"). Both forms say so live, on top of the static descriptions in `fields_*.ts`:
 
+- **Wiring:** `builders.inherited` / `inheritedBy` only mark the field (`options.inherit` /
+  `options.inheritedBy`); `InheritanceField` (plugin `form.components.field`, `src/index.ts`) renders
+  `InheritedField` / `OverriddenByVariants` for marked fields and passes every other field through.
+  Never as field-level `components.field` — that replaces the type's components (i18n fields lost
+  their language input; seen 2026-11-27).
 - **Variant form — `InheritedField`** (`builders.inherited`): appends one sentence to the field's
   description: "Vom Produkt: 14,90 €" / "Vom Shop-Standard: …" (tax) / "Produkt hat keinen Wert." /
   "Kein Streichpreis (eigener Preis gesetzt)." (compare-at while the variant has an own price,

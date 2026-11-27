@@ -151,7 +151,13 @@ export const product: ITSDocumentDefinition = {
       },
       {
         name: 'media',
-        fields: [inheritedBy(f('image', 'localeAltImage'), INHERIT_SPECS.image)],
+        fields: [
+          inheritedBy(
+            // `hotspot` again: field-level options replace localeAltImage's (no merge).
+            f('image', 'localeAltImage', { options: { hotspot: true } }),
+            INHERIT_SPECS.image,
+          ),
+        ],
       },
       {
         name: 'seo',

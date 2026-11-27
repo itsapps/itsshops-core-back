@@ -161,7 +161,11 @@ export const productVariant: ITSDocumentDefinition = {
             f(
               'image',
               'localeAltImage',
-              vinofactOn ? { components: { input: VinofactImageInput } } : {},
+              // `hotspot` again: field-level options replace localeAltImage's (no merge).
+              {
+                options: { hotspot: true },
+                ...(vinofactOn && { components: { input: VinofactImageInput } }),
+              },
             ),
             INHERIT_SPECS.image,
           ),

@@ -1,6 +1,4 @@
 import { WineIcon, FilterIcon, ProductVariantIcon } from '../assets/icons'
-import { InheritedField } from '../components/inheritance/InheritedField'
-import { OverriddenByVariants } from '../components/inheritance/OverriddenByVariants'
 import { PriceInput } from '../components/PriceInput'
 import { CoreFactory, ITSBuilders, ITSContext } from '../types'
 import { enabledSystemPages } from './systemPages'
@@ -268,19 +266,17 @@ export const createBuilders = (factory: CoreFactory, ctx: ITSContext): ITSBuilde
       return field
     },
 
+    // Only a marker in `options`; the plugin-level field component `InheritanceField` renders
+    // the hint. No field-level `components`/extra `options` keys of the type: Sanity replaces the
+    // type's with the field's (no merge) — the caller passes type options it needs (image hotspot).
     inherited: (field, inherit) => ({
       ...field,
-      components: { ...(field as { components?: object }).components, field: InheritedField },
       options: { ...(field.options as object), inherit },
     }),
 
     inheritedBy: (field, inherit) => ({
       ...field,
-      components: {
-        ...(field as { components?: object }).components,
-        field: OverriddenByVariants,
-      },
-      options: { ...(field.options as object), inherit },
+      options: { ...(field.options as object), inheritedBy: inherit },
     }),
 
     buildGroupedSchema: (props) => {
