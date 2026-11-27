@@ -16,7 +16,10 @@ every custom component uses. It augments the per-locale `ITSContext` with runtim
   secrets document's `functionsSecret` as `x-server-secret` — without one (not entered / still
   loading) every call returns `{ error: integrations.missingSecrets }` without a request, shown by
   the callers' toasts), `vinofactClient` (only once `vinofactToken` is in the secrets document;
-  missing → the `vinofact.notInitialized` toast)
+  missing → the `vinofact.notInitialized` toast), `secretsLoading` (the secrets document is still
+  loading — right after a page reload `vinofactClient` is missing for a moment; code that loads on
+  mount (`WineTab`, `WineSelector`) returns early while it's `true` and runs again once loaded,
+  instead of showing `notInitialized`)
 - plus all of `ITSContext`: `config`, `featureRegistry`, `locale`, `localizer`, `format`,
   `constants`, `t`/`schemaT`/`structureT`/`componentT`, `i18nFieldTypes`.
 

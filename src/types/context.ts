@@ -35,6 +35,11 @@ export interface ITSProviderContext extends ITSContext {
   imageBuilder: ITSImageBuilder
   frontendClient: ITSFrontendClient
   vinofactClient?: ITSVinofactClient
+  /**
+   * The integration secrets (dataset `secrets.itsshops`) are still loading — clients that need
+   * them (`vinofactClient`) are missing until then. Wait instead of reporting them as not set up.
+   */
+  secretsLoading: boolean
 }
 
 export interface FieldContext extends ITSContext {

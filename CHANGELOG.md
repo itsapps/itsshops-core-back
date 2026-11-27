@@ -6,6 +6,9 @@ Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Rele
 
 ## Unreleased
 
+- **No false "Vinofact-Client nicht initialisiert" after a reload:** the Product Manager's wine
+  tab and the variant's wine picker wait for the integration secrets to load instead of
+  reporting VinoFact as not set up (context: `secretsLoading`).
 - **Product Manager — clearer and safer:** submit reasons are listed above the button instead
   of a silently disabled button; the tax category moved under "Advanced" and is no longer
   pre-filled with the shop default (empty = inherited, so a product follows a later change of

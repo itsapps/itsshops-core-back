@@ -17,7 +17,7 @@ export const ITSCoreProvider = ({ children, ctx }: { children: ReactNode; ctx: I
   const isDev = ctx.config.isDev
   // Credentials live in the dataset (`secrets.itsshops`, readable by logged-in members only),
   // never in the bundle. Entered in the toolbar's Integrations dialog.
-  const { secrets } = useSecrets<ITSIntegrationSecrets>(SECRETS_NAMESPACE)
+  const { secrets, loading: secretsLoading } = useSecrets<ITSIntegrationSecrets>(SECRETS_NAMESPACE)
   const functionsSecret = secrets?.functionsSecret ?? ''
   const vinofactToken = secrets?.vinofactToken ?? ''
 
@@ -98,8 +98,9 @@ export const ITSCoreProvider = ({ children, ctx }: { children: ReactNode; ctx: I
       imageBuilder,
       frontendClient,
       vinofactClient,
+      secretsLoading,
     }),
-    [ctx, t, sanityClient, imageBuilder, frontendClient, vinofactClient],
+    [ctx, t, sanityClient, imageBuilder, frontendClient, vinofactClient, secretsLoading],
   )
 
   return <ITSCoreContext.Provider value={value}>{children}</ITSCoreContext.Provider>

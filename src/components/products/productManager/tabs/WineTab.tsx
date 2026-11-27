@@ -215,7 +215,8 @@ export function WineTab(props: WineTabProps): ReactElement {
   } = props.global
   const { onSubmit, submitting, existingWineKeys, hideProductSection, seedWineIds } = props
   const ctx = useITSContext()
-  const { vinofactClient, sanityClient, constants, componentT, config, localizer, format } = ctx
+  const { vinofactClient, secretsLoading, sanityClient, constants, componentT, config } = ctx
+  const { localizer, format } = ctx
   const toast = useToast()
   const labelDeps = useMemo(() => ({ localizer, format }), [localizer, format])
 
@@ -251,6 +252,9 @@ export function WineTab(props: WineTabProps): ReactElement {
   const tableId = useId()
 
   const loadWines = useCallback(async () => {
+    // Right after a reload the secrets (VinoFact token) are still loading: wait, this runs again
+    // once they're there
+    if (secretsLoading) return
     if (!vinofactClient) {
       toast.push({
         status: 'error',
@@ -277,7 +281,7 @@ export function WineTab(props: WineTabProps): ReactElement {
     } finally {
       setLoadingWines(false)
     }
-  }, [vinofactClient, toast, componentT])
+  }, [vinofactClient, secretsLoading, toast, componentT])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch wines on mount

@@ -55,7 +55,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
 
   // const hasError = validationErrors.length > 0
 
-  const { vinofactClient, studioT, componentT } = useITSContext()
+  const { vinofactClient, secretsLoading, studioT, componentT } = useITSContext()
   const toast = useToast()
 
   const [wines, setWines] = useState<VinofactWine[]>([])
@@ -64,6 +64,9 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
   const [error, setError] = useState<string | null>(null)
 
   const loadWines = useCallback(async () => {
+    // Right after a reload the secrets (VinoFact token) are still loading: wait, this runs again
+    // once they're there
+    if (secretsLoading) return
     if (!vinofactClient) {
       toast.push({
         status: 'error',
@@ -91,7 +94,7 @@ export function WineSelector(props: ObjectInputProps): ReactElement {
     } finally {
       setLoading(false)
     }
-  }, [vinofactClient, toast, componentT])
+  }, [vinofactClient, secretsLoading, toast, componentT])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch wines on mount
