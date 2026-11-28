@@ -108,6 +108,12 @@ instead of re-deriving the same field clusters:
 ## Extending from a consumer project
 
 - **Add fields to a core schema** → `config.schemaExtensions['<docName>'] = { fields, groups?, fieldsets?, preview?, icon? }` (merged in `shapeSchema`).
+  Fieldset titles come from `<docName>.fieldsets.<name>` (fieldset `description` is not
+  translated). **Gotcha:** products and their variants are created by the Product Manager
+  (`product` has `allowCreate: false`; `addProductToTx` in `src/lib/shop/productVariant.tx.ts`
+  writes a client transaction), which never applies schema `initialValue`s, so an extension field
+  on `product`/`productVariant` starts **unset**. Prefer fields whose unset value means the
+  default (e.g. name a boolean `hideX` when X shows by default) over relying on `initialValue`.
 - **Add a whole new document/object** → `config.documents` / `config.objects` (each an
   `ITSDocumentDefinition`/`ITSObjectDefinition` using the same `build(ctx)` + `f`/`builders` API).
 - Gate anything custom with a `feature` tag rather than branching, so it follows the registry.
