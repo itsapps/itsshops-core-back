@@ -119,8 +119,7 @@ for new-order mails + withdrawal notifications, empty → `senderEmail`); `compa
 `shippingMethod.deliveryTime` (optional i18n, snapshotted to `order.fulfillment.deliveryTime`);
 `shippingMethod.trackingUrl` (optional, delivery only, `https://…{code}…` — validated; read by the
 mails at send time, not snapshotted, to link each `fulfillment.trackingCode` number).
-**Store pickup** (core-front `commerce-and-netlify.md` → "Store pickup", plan
-handbook `plans/store-pickup.md`): `shippingMethod.methodType` `pickup` — always in the list (no
+**Store pickup** (core-front `commerce-and-netlify.md` → "Store pickup"): `shippingMethod.methodType` `pickup` — always in the list (no
 feature flag; a published pickup method turns pickup on in the checkout). Pickup fields, hidden
 unless pickup: `pickupFee` (price, initial 0), `pickupAddress` (`businessAddress`; line1/zip/city/
 country required via `requiredSubfields(…, { when })`, country must be an enabled `taxCountry` —
