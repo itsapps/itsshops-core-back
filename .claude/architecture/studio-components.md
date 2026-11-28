@@ -333,6 +333,8 @@ product fallbacks"). Both forms say so live, on top of the static descriptions i
   own price **or** own compare-at counts. The total counts only variants that have the field
   (`onlyKinds` / `exceptKinds`: weight → physical, tax → not bundles). Data:
   `useOverridingVariants(productId)`, one listener per product.
+- **No "reset to product value" button** (owner, 2026-11-27): editors clear the field. If asked
+  for, it fits in `InheritedField` (`props.inputProps.onChange(unset())`).
 - **One rule set:** `src/utils/inheritance.ts` (`isSet`, `formatInherited`, `variantHint`,
   `overridesProduct`, `INHERIT_SPECS`; tests `tests/inheritance.test.ts`) — also used by the
   Product Manager's `fields/inherited.ts` (`taxLabel`, a product price of 0 is a price).
