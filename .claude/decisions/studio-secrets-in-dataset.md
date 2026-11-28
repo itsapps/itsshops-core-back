@@ -26,16 +26,28 @@ Rejected: the PAT in the secrets document (every member and every Studio script 
 account-wide token → the shop's server keys and deploying their own code); `sanity-plugin-netlify`
 (stores a PAT in the dataset too, no Sanity 6 peer); a signed Netlify deploy notification writing a
 status doc (a function + Netlify setting per site, still no cancel); per-user "action documents"
-replacing the shared secret (more machinery than the leak needs — kept as a later option in the
-plan).
+replacing the shared secret (more machinery than the leak needs — kept as a later option, below).
 
 ## Consequences
 
 - Every logged-in member, viewers included, can read the secrets (custom roles = Enterprise).
 - Secrets are per dataset (`development` = staging, `production` = live) and part of every dataset
   export (backups).
-- The Deploy button lost the "building" lock and cancel (the badge is an image). Upgrade path: a
-  core-front server proxy with the PAT in server env.
+- The Deploy button lost the "building" lock and cancel (the badge is an image). Upgrade path:
+  see "Later options".
 - Sanity plans to deprecate the package once native server-side secrets exist (with a migration
   path) — one hook to swap.
-- Plan with rollout and rotation: handbook `plans/studio-auth-and-security-hardening.md`.
+
+## Later options (designed 2026-11-11, not built)
+
+- **Deploy status via a server proxy**, if editors miss the building state: the PAT goes into the
+  shop's **server env** (`NETLIFY_ACCESS_TOKEN`, Functions scope) and a core-front function
+  `/api/studio/deploy` does exactly three things with it — latest build, trigger, cancel —
+  authenticated like refund/mail (`x-server-secret` from the secrets document + CORS allowlist).
+  The PAT never reaches the browser; whoever can read the server env is a Netlify member already.
+  Brings back the building lock, a "done" toast and cancel.
+- **Action documents** instead of the shared secret, if per-user identity, an audit log or
+  admin-only refunds are ever wanted: the Studio writes an `itsshops-action.<uuid>` doc with the
+  editor's session, the server reads it with `SANITY_TOKEN`, claims it atomically
+  (`ifRevisionId`), takes the author from the transaction history, runs the action and writes the
+  result back.

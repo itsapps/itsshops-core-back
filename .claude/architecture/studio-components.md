@@ -397,8 +397,8 @@ product fallbacks"). Both forms say so live, on top of the static descriptions i
     `net::ERR_BLOCKED_BY_ORB`) = Netlify answered 404 JSON → `SANITY_STUDIO_NETLIFY_SITE_ID` is not
     an existing site; it must be the **frontend** project of that environment (Project
     configuration → General → Project ID). Upgrade path if editors miss the status: a
-    core-front `/api/studio/deploy` proxy with the PAT in server env (core-front plan
-    `studio-auth-and-security-hardening.md` → B).
+    core-front `/api/studio/deploy` proxy with the PAT in server env
+    (`decisions/studio-secrets-in-dataset.md` → "Later options").
 
 ## Where each is wired (`src/index.ts`)
 

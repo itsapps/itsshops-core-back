@@ -131,7 +131,7 @@ So a leftover in either file or in the Studio's Netlify env is public. Only publ
 dataset, endpoint URLs, site id). Credentials the Studio must send live in the dataset document
 `secrets.itsshops` (`@sanity/studio-secrets`, keys in `src/types/secrets.ts`), entered by an
 administrator in the toolbar's Integrations dialog; a Netlify PAT is not used at all (Deploy = build
-hook). Background: handbook `plans/studio-auth-and-security-hardening.md`.
+hook). Why: `decisions/studio-secrets-in-dataset.md`.
 
 ## Feature flags (superset of frontend)
 
