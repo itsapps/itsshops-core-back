@@ -4,7 +4,7 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Releasing a customer to production".
 
-## Unreleased
+## 7.2.0
 
 - **Removed: the legacy order fields** `appliedCoupons` (object type `appliedCoupon`) and the
   `fulfillment.freeShippingReason` values `product` / `coupon`, and the order view's fallback to
