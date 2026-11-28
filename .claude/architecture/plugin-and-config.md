@@ -54,14 +54,16 @@ Defined in `src/types/context.ts`.
 **Which country list** (owner's rule, 2026-11-05; why: [../decisions/country-lists-shop-vs-all.md](../decisions/country-lists-shop-vs-all.md)) — both in `src/config/constants/countries.ts`:
 - `countryOptions` — the shop's countries (today: geographic Europe, the 52 codes in
   `EUROPE_COUNTRY_CODES`; `createCountries` names them per UI locale, `flagEmoji` makes the
-  tax-country preview flag). For what the shop **sells/delivers to or is**: tax countries, shipping,
-  order addresses (`addressStrict`), the shop's own address (`businessAddress`).
+  tax-country preview flag). For what the shop **sells/delivers to or is**: tax countries, shipping
+  methods, the shop's own address (`businessAddress`).
 - `allCountryOptions` — every ISO country (`createAllCountryOptions`, names from
   `Intl.DisplayNames` like core-front's `countryList` filter). For where a **person lives**: the
   customer account (`address`), a customer's interest list. Matches the frontend forms, which offer
-  every country (registration, interest form).
-- Open: the checkout billing address could take every country too (VAT follows the delivery
-  country); parked — handbook `plans/billing-address-all-countries.md`.
+  every country (registration, interest form). Also the order addresses (`addressStrict`, billing +
+  shipping, since 7.0.1): a pickup order's billing address may come from anywhere, and the checkout
+  already limits the shipping address to the tax countries.
+- Open: the checkout billing address on delivery could take every country too (VAT follows the
+  delivery country) — handbook `plans/billing-address-all-countries.md`.
 
 ## Feature registry (`src/config/features.ts`)
 

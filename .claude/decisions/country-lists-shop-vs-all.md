@@ -32,3 +32,12 @@ name and — for the tax-country preview — the flag were read.
 - Some shop-list names changed wording with the switch ("Tschechien", "Republik Moldau", "Czechia");
   stored codes are unchanged, no migration.
 - A shop selling outside Europe would need a configurable shop list — not built until one does.
+
+## Update (7.0.1, documented 2026-11-28)
+
+- Order addresses (`addressStrict`, billing + shipping) moved to `allCountryOptions`: a store-pickup
+  order's billing address may come from any country. The checkout still limits the shipping address
+  to the tax countries, so "delivery stays restricted" holds.
+- Billing address in the checkout: decided on 2026-11-28 to offer every country on delivery too and
+  to require the wallet billing address in express checkout. It is a core-front-only change, see
+  handbook `plans/billing-address-all-countries.md`.

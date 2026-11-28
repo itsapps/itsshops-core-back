@@ -16,7 +16,7 @@ export const address: ITSSchemaDefinition = {
         f('zip', 'string'),
         f('city', 'i18nString'),
         // Where the person lives (customer account), not a delivery address: every country.
-        // Orders use `addressStrict` (shop's countries).
+        // Orders use `addressStrict` (also every country; the checkout limits shipping).
         f('country', 'string', {
           options: {
             list: ctx.constants.allCountryOptions,
