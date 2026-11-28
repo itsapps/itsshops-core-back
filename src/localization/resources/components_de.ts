@@ -344,9 +344,6 @@ export default {
     freeShippingReason: {
       threshold: 'Versandkostenfrei ab Bestellwert',
       discount: 'Versandkostenfrei durch Rabatt',
-      // Orders before the discounts migration (core-back < 7.0.0).
-      product: 'Versandkostenfrei durch Produkt',
-      coupon: 'Versandkostenfrei durch Gutschein',
     },
     status: {
       title: 'Status',

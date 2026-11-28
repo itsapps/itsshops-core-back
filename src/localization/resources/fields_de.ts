@@ -272,9 +272,6 @@ export default {
     appliedDiscounts: {
       title: 'Angewendete Rabatte',
     },
-    appliedCoupons: {
-      title: 'Eingelöste Rabattcodes (altes Format)',
-    },
     freeProducts: {
       title: 'Geschenke',
     },
@@ -1351,8 +1348,6 @@ export default {
         options: {
           threshold: 'Bestellwert',
           discount: 'Rabatt',
-          product: 'Produkt (altes Format)',
-          coupon: 'Gutschein (altes Format)',
         },
       },
       taxSnapshot: {
@@ -1974,32 +1969,6 @@ export default {
       amount: {
         title: 'Ersparnis',
         description: 'Abgezogener Betrag in Cent (Versand: die erlassenen Versandkosten)',
-      },
-    },
-  },
-  appliedCoupon: {
-    title: 'Eingelöster Rabattcode',
-    fields: {
-      couponRef: {
-        title: 'Rabattcode',
-      },
-      code: {
-        title: 'Code',
-      },
-      discountType: {
-        title: 'Ermässigungstyp',
-        options: {
-          percent: 'Prozent',
-          fixed: 'Fixer Betrag',
-          freeShipping: 'Gratisversand',
-        },
-      },
-      value: {
-        title: 'Wert',
-      },
-      discountAmount: {
-        title: 'Abgezogener Betrag',
-        description: 'Tatsächlich abgezogener Betrag in Cent',
       },
     },
   },

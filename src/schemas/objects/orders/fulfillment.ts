@@ -52,14 +52,12 @@ export const fulfillment: ITSSchemaDefinition = {
         hidden: lockSnapshot,
       }),
       // Why a delivery method cost 0 (set only then): threshold > discount (the shipping entry in
-      // `appliedDiscounts`). `product` / `coupon` are pre-7.0.0 values, until the migration ran.
+      // `appliedDiscounts`).
       f('freeShippingReason', 'string', {
         options: {
           list: [
             { value: 'threshold' },
             { value: 'discount' },
-            { value: 'product' },
-            { value: 'coupon' },
           ],
         },
         hidden: lockSnapshot,

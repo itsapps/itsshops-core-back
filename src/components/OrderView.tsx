@@ -110,8 +110,7 @@ type Fulfillment = {
   methodTitle?: string
   methodType: 'delivery' | 'pickup'
   shippingCost: number
-  /** `product` / `coupon`: orders before the discounts migration (core-back < 7.0.0). */
-  freeShippingReason?: 'threshold' | 'discount' | 'product' | 'coupon'
+  freeShippingReason?: 'threshold' | 'discount'
   trackingCode?: string
   /** Pickup snapshot (city in the customer's locale). */
   pickupAddress?: { line1?: string; line2?: string; zip?: string; city?: string; country?: string }
@@ -162,26 +161,6 @@ type AppliedDiscount = {
   amount?: number
 }
 
-/** Pre-7.0.0 shape — only on orders the discounts migration hasn't reached yet. */
-type LegacyAppliedCoupon = {
-  _key: string
-  code: string
-  discountType: 'percent' | 'fixed' | 'freeShipping'
-  value?: number
-  discountAmount: number
-}
-
-const fromLegacyCoupon = (c: LegacyAppliedCoupon): AppliedDiscount => ({
-  _key: c._key,
-  code: c.code,
-  title: c.code,
-  trigger: 'code',
-  target: c.discountType === 'freeShipping' ? 'shipping' : 'order',
-  valueType: c.discountType === 'freeShipping' ? 'free' : c.discountType,
-  value: c.value,
-  amount: c.discountAmount,
-})
-
 type PaymentMethod = {
   type?: string
   brand?: string
@@ -212,7 +191,6 @@ interface OrderDocument extends SanityDocument {
   statusHistory?: StatusHistoryEntry[]
   refunds?: OrderRefund[]
   appliedDiscounts?: AppliedDiscount[]
-  appliedCoupons?: LegacyAppliedCoupon[]
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -399,9 +377,7 @@ export const OrderView: UserViewComponent = (props) => {
   const { customer, totals, fulfillment } = order
   const shippingAddress = customer?.shippingAddress
   const isPickup = fulfillment?.methodType === 'pickup'
-  const appliedDiscounts: AppliedDiscount[] = order.appliedDiscounts?.length
-    ? order.appliedDiscounts
-    : (order.appliedCoupons ?? []).map(fromLegacyCoupon)
+  const appliedDiscounts: AppliedDiscount[] = order.appliedDiscounts ?? []
   const shippingDiscount = appliedDiscounts.find((d) => d.target === 'shipping')
   // The deadline only matters while the order waits for pickup ("Abholbereit").
   const pickupDue =

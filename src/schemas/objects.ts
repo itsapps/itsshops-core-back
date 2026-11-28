@@ -13,7 +13,6 @@ import { localeImage } from './objects/localeImage'
 import { menuItemTypes } from './objects/menuItem'
 import { productSelector, productSelectorCriteria } from './objects/productSelector'
 import { productSpecification } from './objects/productSpecification'
-import { appliedCoupon } from './objects/orders/appliedCoupon'
 import { appliedDiscount } from './objects/orders/appliedDiscount'
 import { fulfillment } from './objects/orders/fulfillment'
 import { fulfillmentPackagingLine } from './objects/orders/fulfillmentPackagingLine'
@@ -74,7 +73,6 @@ export const getCoreObjects = (
     productSelector,
     productSelectorCriteria,
     productSpecification,
-    appliedCoupon,
     appliedDiscount,
     orderCustomer,
     orderItem,

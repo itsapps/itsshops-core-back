@@ -4,6 +4,14 @@ Versions are git tags (no `v` prefix); customers pin them in `package.json`
 (`github:itsapps/itsshops-core-back#<tag>`). **Upgrading** lists what a customer must change.
 Releasing: core-front `.claude/workflows/consuming-core-and-deploy.md` → "Releasing a customer to production".
 
+## Unreleased
+
+- **Removed: the legacy order fields** `appliedCoupons` (object type `appliedCoupon`) and the
+  `fulfillment.freeShippingReason` values `product` / `coupon`, and the order view's fallback to
+  them. **Upgrading:** a dataset that still has `coupon` docs or orders with `appliedCoupons`
+  runs core-front's `itsshops sanity migrate-discounts` first (see 7.0.0); afterwards nothing.
+  Pair with core-front's release that drops the webhook transition.
+
 ## 7.1.0
 
 - **Variant fields say what they inherit:** every field a variant takes from its product when

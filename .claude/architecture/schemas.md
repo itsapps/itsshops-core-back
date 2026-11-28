@@ -158,8 +158,7 @@ feature is off). `shopSettings.discountExclusions` (group "Rabatte"): never disc
 discounts. Order snapshot (core-front writes it, read-only): `appliedDiscounts[]`
 (`appliedDiscount`), `orderItem.discount` / `orderItemBundleItem.discount` (gross cents, whole line),
 `fulfillment.freeShippingReason` `threshold` | `discount` (only when a delivery method cost 0; hidden
-outside dev). Legacy, until every dataset ran core-front's `itsshops sanity migrate-discounts`:
-read-only `appliedCoupons` and reason values `product` / `coupon`; the migration writes a status
+outside dev). Orders migrated by core-front's `itsshops sanity migrate-discounts` carry a status
 history entry of type `system` (`discountsMigrated`). `coupon` and
 `productVariant.grantsFreeShipping` are removed.
 Order snapshots written by the payment webhook, read-only: `order.orderDate`, `order.payment`

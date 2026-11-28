@@ -338,9 +338,6 @@ export default {
     freeShippingReason: {
       threshold: 'Free shipping (order value)',
       discount: 'Free shipping (discount)',
-      // Orders before the discounts migration (core-back < 7.0.0).
-      product: 'Free shipping (product)',
-      coupon: 'Free shipping (coupon)',
     },
     status: {
       title: 'Status',

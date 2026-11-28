@@ -270,9 +270,6 @@ export default {
     appliedDiscounts: {
       title: 'Applied discounts',
     },
-    appliedCoupons: {
-      title: 'Redeemed coupons (old format)',
-    },
     freeProducts: {
       title: 'Gifts',
     },
@@ -1338,8 +1335,6 @@ export default {
         options: {
           threshold: 'Order value',
           discount: 'Discount',
-          product: 'Product (old format)',
-          coupon: 'Coupon (old format)',
         },
       },
       taxSnapshot: {
@@ -1951,32 +1946,6 @@ export default {
       amount: {
         title: 'Saved',
         description: 'Amount deducted in cents (shipping: the waived shipping cost)',
-      },
-    },
-  },
-  appliedCoupon: {
-    title: 'Redeemed coupon',
-    fields: {
-      couponRef: {
-        title: 'Coupon',
-      },
-      code: {
-        title: 'Code',
-      },
-      discountType: {
-        title: 'Discount type',
-        options: {
-          percent: 'Percent',
-          fixed: 'Fixed amount',
-          freeShipping: 'Free shipping',
-        },
-      },
-      value: {
-        title: 'Value',
-      },
-      discountAmount: {
-        title: 'Deducted amount',
-        description: 'Amount actually deducted, in cents',
       },
     },
   },

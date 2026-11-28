@@ -398,11 +398,6 @@ export type OrderMeta = {
       _key: string
     } & AppliedDiscount
   >
-  appliedCoupons?: Array<
-    {
-      _key: string
-    } & AppliedCoupon
-  >
 }
 
 export type OrderTotals = {
@@ -447,7 +442,7 @@ export type Fulfillment = {
   deliveryTime?: string
   methodType?: 'delivery' | 'pickup'
   shippingCost?: number
-  freeShippingReason?: 'threshold' | 'discount' | 'product' | 'coupon'
+  freeShippingReason?: 'threshold' | 'discount'
   taxSnapshot?: VatBreakdownItem
   packagingLines?: Array<
     {
@@ -476,11 +471,6 @@ export type Order = {
     {
       _key: string
     } & AppliedDiscount
-  >
-  appliedCoupons?: Array<
-    {
-      _key: string
-    } & AppliedCoupon
   >
   orderNumber?: string
   invoiceNumber?: string
@@ -1346,15 +1336,6 @@ export type AppliedDiscount = {
   amount?: number
 }
 
-export type AppliedCoupon = {
-  _type: 'appliedCoupon'
-  couponRef?: DiscountReference
-  code?: string
-  discountType?: 'percent' | 'fixed' | 'freeShipping'
-  value?: number
-  discountAmount?: number
-}
-
 export type Discount = {
   _id: string
   _type: 'discount'
@@ -1775,6 +1756,7 @@ export type Product = {
   _updatedAt: string
   _rev: string
   title?: InternationalizedArrayString
+  cmsTitle?: string
   description?: InternationalizedArrayText
   kind?: 'wine' | 'physical' | 'digital' | 'bundle'
   weight?: number
@@ -2188,7 +2170,6 @@ export type AllSanitySchemaTypes =
   | AddressStrict
   | DiscountReference
   | AppliedDiscount
-  | AppliedCoupon
   | Discount
   | ProductSpecification
   | CategoryReference

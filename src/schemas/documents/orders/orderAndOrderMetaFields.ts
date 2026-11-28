@@ -67,13 +67,6 @@ export const buildShared = (ctx: FieldContext) => {
         options: { sortable: false },
         readOnly: !ctx.config.isDev,
       }),
-      // Legacy (before core-back 7.0.0): readable until the discounts migration ran everywhere.
-      f('appliedCoupons', 'array', {
-        of: [{ type: 'appliedCoupon' }],
-        options: { sortable: false },
-        readOnly: true,
-        hidden: ({ value }) => !Array.isArray(value) || value.length === 0,
-      }),
     ],
     orderFreeProducts: [
       // f('freeProducts', 'array', {
